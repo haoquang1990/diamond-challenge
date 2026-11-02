@@ -32,3 +32,38 @@ project:
 modes:
   rigor: minimal
   automation: guided
+
+platform:
+  multiplayer: false
+  online: false              # phase 2 adds accounts and sync
+  targets: [Mobile, Web]
+  primary_input: "Touch"
+  gamepad_support: "None"
+  touch_support: "Full"
+  cert_tier: none
+
+engine:
+  name: "Web"
+  version: "React 19 / Vite 8 / TypeScript 6"
+  language: "TypeScript"
+  rendering: "DOM/CSS"
+  physics: "none"
+
+specialists:
+  code: null
+  shader: null
+  ui: null
+  additional: []
+
+naming:
+  classes: PascalCase
+  variables: camelCase
+  constants: SCREAMING_SNAKE
+  signals: on_event_name
+  files: kebab-case
+  scenes: PascalCase         # React components
+
+commands:
+  build: "npm run build"
+  test: "npm test"
+  run: "npm run dev"
