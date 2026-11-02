@@ -1,12 +1,12 @@
 # Story 002: Mục tiêu ngày + streak
 
 > **Epic**: diamond-challenge
-> **Status**: Ready
+> **Status**: In Progress
 > **Layer**: Core
 > **Type**: Logic
 > **Estimate**: M
 > **Manifest Version**: N/A (minimal — no control manifest)
-> **Last Updated**: —
+> **Last Updated**: 2026-11-02
 
 ## Context
 
