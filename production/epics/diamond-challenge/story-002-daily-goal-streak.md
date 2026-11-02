@@ -1,7 +1,7 @@
 # Story 002: Mục tiêu ngày + streak
 
 > **Epic**: diamond-challenge
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Core
 > **Type**: Logic
 > **Estimate**: M
@@ -74,3 +74,10 @@
 
 - Depends on: `production/epics/diamond-challenge/story-001-event-log.md`
 - Unlocks: `story-004-today-screen.md`, `story-006-diamond-map.md`
+
+## Completion Notes
+**Completed**: 2026-11-02
+**Criteria**: 8/8 passing (behaviour checked by a scratchpad smoke script, 12/12 PASS, incl. Việt Nam day boundary and America/New_York DST both directions)
+**Deviations**: None. Accepted by the user: any event with `payload.xp` counts toward XP (incl. `settings_changed`); events dated after `now` count toward `totalXp` but never extend the streak.
+**Test Evidence**: waived at qa.level minimal; AC6 says "(có test)" — the scratchpad script becomes `tests/unit/progress/streak.test.ts` in story 004
+**Reviewed by**: self, no independent review
