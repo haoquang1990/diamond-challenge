@@ -1,7 +1,7 @@
 # Story 001: Nhật ký sự kiện cục bộ
 
 > **Epic**: diamond-challenge
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Foundation
 > **Type**: Logic
 > **Estimate**: M
@@ -76,3 +76,10 @@
 
 - Depends on: None
 - Unlocks: `story-002-daily-goal-streak.md`, `story-003-log-activity.md`, `story-005-lessons.md`
+
+## Completion Notes
+**Completed**: 2026-11-02
+**Criteria**: 7/7 passing (AC3, AC6, AC7 checked in real Chromium via Playwright; AC2 also via fake-indexeddb smoke script)
+**Deviations**: None. Note: a stored record with no `timestamp` field is never indexed, so it is never read and not warned about (no crash).
+**Test Evidence**: waived at qa.level minimal; the check scripts become `tests/unit/event-log/event-log.test.ts` in story 004
+**Reviewed by**: self, no independent review

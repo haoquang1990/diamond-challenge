@@ -41,6 +41,7 @@
 
 - Dựng khung dự án Vite + React + TypeScript + Vitest ở story này nếu chưa có (phiên bản ghi trong `package.json`).
 - Ảnh chụp ở trạng thái rỗng, đang dở và đã hoàn thành mục tiêu.
+- Cài Vitest, lưu script kiểm tra story 001 thành tests/unit/event-log/event-log.test.ts; kiểm tra trên trình duyệt thật (Playwright) rằng dữ liệu còn sau khi tải lại trang.
 
 ---
 
