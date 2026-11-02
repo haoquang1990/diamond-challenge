@@ -56,9 +56,6 @@
 - `src/data/event-store.ts`
 - `src/data/indexeddb-event-store.ts`
 - `src/data/memory-event-store.ts`
-- `tests/unit/event-log/event-log.test.ts`
-
----
 
 ## QA Test Cases
 
