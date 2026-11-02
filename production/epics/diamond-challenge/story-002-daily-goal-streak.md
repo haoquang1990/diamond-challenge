@@ -54,9 +54,6 @@
 
 - `src/domain/progress.ts`
 - `src/config/game-config.json`
-- `tests/unit/progress/streak.test.ts`
-
----
 
 ## QA Test Cases
 
