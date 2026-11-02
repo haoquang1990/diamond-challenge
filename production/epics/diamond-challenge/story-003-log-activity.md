@@ -52,11 +52,19 @@
 
 ## Files
 
-- `src/ui/screens/log-activity-screen.tsx`
+- `package.json`
+- `package-lock.json`
+- `tsconfig.json`
+- `vite.config.ts`
+- `index.html`
+- `src/main.tsx`
+- `src/app.tsx`
 - `src/config/game-config.json`
-- `production/qa/evidence/story-003-log-activity.png`
-
----
+- `src/ui/activity-types.ts`
+- `src/ui/play-ting.ts`
+- `src/ui/strings.ts`
+- `src/ui/screens/log-activity-screen.tsx`
+- `src/ui/styles.css`
 
 ## QA Test Cases
 

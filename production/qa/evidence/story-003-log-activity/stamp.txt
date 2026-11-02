@@ -1,0 +1,13 @@
+Reviewed-Content-Hash: package.json ad4ab00ceaadbaba572de377b62da55a1d260ff9
+Reviewed-Content-Hash: package-lock.json 469812c536678a567837ffd37795fe8b9944ae7e
+Reviewed-Content-Hash: tsconfig.json 454b2fb77cd7ce816adaa09b7d3b1b3ca49030aa
+Reviewed-Content-Hash: vite.config.ts ffb912889af6c1fef393595b515329d54b89ad12
+Reviewed-Content-Hash: index.html fedfeee845789319e48c28014cd90d90f8445e36
+Reviewed-Content-Hash: src/main.tsx 9e2ddc0efcddb256010f25a3366a59d49038d846
+Reviewed-Content-Hash: src/app.tsx 6fc105370b7078bb91896f5ec5e26e532b4ac97b
+Reviewed-Content-Hash: src/config/game-config.json 8031d11d9addd804e7650c8b5eb5d14cce2b2eba
+Reviewed-Content-Hash: src/ui/activity-types.ts fae60fe499d458941c58c6667cc1958e6ffb0168
+Reviewed-Content-Hash: src/ui/play-ting.ts c6c159cd03d179bc7577098b448e4f200420c024
+Reviewed-Content-Hash: src/ui/strings.ts 8e6d7ae99a7a76b67a7e4551ecd794bc62463ebf
+Reviewed-Content-Hash: src/ui/screens/log-activity-screen.tsx b618100b6799173067dc60fae88160c5a45e5312
+Reviewed-Content-Hash: src/ui/styles.css be0d79c142f216b2c3633ec82358978fe68931d7

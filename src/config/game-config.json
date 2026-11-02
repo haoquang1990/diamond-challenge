@@ -1,3 +1,10 @@
 {
-  "dailyXpGoal": 30
+  "dailyXpGoal": 30,
+  "activityTypes": [
+    { "id": "add_name", "name": "Thêm tên vào danh sách", "xp": 5 },
+    { "id": "follow_up", "name": "Follow-up", "xp": 10 },
+    { "id": "demo", "name": "Demo sản phẩm", "xp": 15 },
+    { "id": "opp", "name": "Trình bày cơ hội (opp)", "xp": 20 },
+    { "id": "new_customer", "name": "Khách hàng mới", "xp": 25 }
+  ]
 }
