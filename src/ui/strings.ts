@@ -44,6 +44,25 @@ export const STRINGS = {
   currentStage: 'Chặng hiện tại',
   stagePending: 'Bản đồ Con đường Diamond sắp có',
 
+  // Học (lessons)
+  lessonListTitle: 'Học',
+  lessonListPrompt: 'Chọn một bài ngắn, khoảng 2 phút.',
+  lessonDoneToday: 'Đã học hôm nay',
+  lessonErrorTitle: 'Không mở được bài học',
+  lessonErrorBody: 'File bài học bị hỏng hoặc đang trống. Hãy kiểm tra src/content/lessons.json.',
+  lessonSkippedNote: 'Một số bài bị lỗi nên đã được bỏ qua.',
+  lessonCorrect: 'Đúng rồi!',
+  lessonWrong: 'Chưa đúng',
+  lessonNext: 'Tiếp',
+  lessonFinish: 'Hoàn thành',
+  lessonCheckAnswer: 'Chọn một đáp án',
+  lessonFinishing: 'Đang lưu…',
+  lessonSaveError: 'Không lưu được bài học. Thử lại nhé.',
+  lessonCompleteTitle: 'Hoàn thành bài học!',
+  lessonRepeatNote: 'Bạn đã học bài này hôm nay, không cộng XP lần nữa.',
+  lessonBackToList: 'Về danh sách',
+  lessonLeave: 'Thoát bài',
+
   // Placeholder screens
   comingSoon: 'Sắp có',
   comingSoonBody: 'Tính năng này đang được xây dựng.',
@@ -72,4 +91,14 @@ export function streakLabel(days: number): string {
 /** Nudge shown while today's goal is open and a streak is at stake. */
 export function keepStreakLabel(days: number): string {
   return `Hoàn thành hôm nay để giữ chuỗi ${days} ngày!`;
+}
+
+/** Question progress, e.g. `questionProgressLabel(2, 4)` → "Câu 2/4". */
+export function questionProgressLabel(current: number, total: number): string {
+  return `Câu ${current}/${total}`;
+}
+
+/** Lesson score, e.g. `scoreLabel(3, 4)` → "Đúng 3/4 câu". */
+export function scoreLabel(correct: number, total: number): string {
+  return `Đúng ${correct}/${total} câu`;
 }

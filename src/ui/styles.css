@@ -286,3 +286,34 @@ body { margin: 0; }
   .goal-met__plus { animation: none; }
   .xp-bar__fill { transition: none; }
 }
+
+/* Học (lessons) */
+.lesson-progress { margin: 0; font-weight: 800; color: var(--color-muted); }
+.lesson-options { display: flex; flex-direction: column; gap: 10px; }
+.lesson-option {
+  width: 100%;
+  min-height: 56px;
+  padding: 12px 16px;
+  border: 2px solid var(--color-border);
+  border-bottom-width: 4px;
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  font: inherit;
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+.lesson-option:focus-visible { outline: 3px solid var(--color-diamond-dark); outline-offset: 2px; }
+.lesson-option:disabled { cursor: default; color: inherit; }
+.lesson-option--correct { border-color: var(--color-success); background: var(--color-success-light); }
+.lesson-option--wrong { border-color: var(--color-error); }
+.lesson-feedback { padding: 12px 16px; border-radius: var(--radius); }
+.lesson-feedback--correct { background: var(--color-success-light); }
+.lesson-feedback--wrong { border: 2px solid var(--color-error); }
+.lesson-feedback__title { margin: 0; font-weight: 800; }
+.lesson-feedback--correct .lesson-feedback__title { color: var(--color-success); }
+.lesson-feedback--wrong .lesson-feedback__title { color: var(--color-error); }
+.lesson-feedback__body { margin: 4px 0 0; font-weight: 600; }
+.lesson-complete__lesson { margin: 0; font-weight: 700; }
+.lesson-item--done { background: var(--color-success-light); }

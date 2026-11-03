@@ -52,11 +52,12 @@
 ## Files
 
 - `src/content/lessons.json`
-- `src/ui/screens/lesson-screen.tsx`
 - `src/domain/lesson.ts`
-- `production/qa/evidence/story-005-lesson-*.png`
-
----
+- `src/ui/screens/lesson-screen.tsx`
+- `src/app.tsx`
+- `src/ui/strings.ts`
+- `src/ui/styles.css`
+- `tests/unit/lesson/lesson.test.ts`
 
 ## QA Test Cases
 

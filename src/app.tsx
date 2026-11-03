@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import type { EventStore } from './data/event-store';
 import { ComingSoonScreen } from './ui/screens/coming-soon-screen';
+import { LessonScreen } from './ui/screens/lesson-screen';
 import { LogActivityScreen } from './ui/screens/log-activity-screen';
 import { TodayScreen } from './ui/screens/today-screen';
 import { STRINGS } from './ui/strings';
@@ -31,17 +32,20 @@ const TABS: readonly { readonly id: Tab; readonly label: string }[] = [
  */
 export function App({ eventStore }: AppProps) {
   const [tab, setTab] = useState<Tab>('today');
+  const [lessonActive, setLessonActive] = useState(false);
   const goToday = () => setTab('today');
+  const onLessonActive = useCallback((active: boolean) => setLessonActive(active), []);
 
   if (tab === 'do') {
     return <LogActivityScreen eventStore={eventStore} onDone={goToday} onCancel={goToday} />;
   }
 
   return (
-    <div className="app-shell app-shell--tabs">
+    <div className={tab === 'learn' && lessonActive ? 'app-shell' : 'app-shell app-shell--tabs'}>
       {tab === 'today' && <TodayScreen eventStore={eventStore} onLearn={() => setTab('learn')} onDo={() => setTab('do')} />}
-      {tab === 'learn' && <ComingSoonScreen title={STRINGS.tabLearn} />}
+      {tab === 'learn' && <LessonScreen eventStore={eventStore} onDone={goToday} onActiveChange={onLessonActive} />}
       {tab === 'path' && <ComingSoonScreen title={STRINGS.tabPath} />}
+      {!(tab === 'learn' && lessonActive) && (
       <nav className="tab-bar" aria-label={STRINGS.navLabel}>
         {TABS.map(({ id, label }) => (
           <button
@@ -55,6 +59,7 @@ export function App({ eventStore }: AppProps) {
           </button>
         ))}
       </nav>
+      )}
     </div>
   );
 }
