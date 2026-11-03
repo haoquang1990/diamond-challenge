@@ -1,12 +1,12 @@
 # Story 003: Ghi hoạt động Làm
 
 > **Epic**: diamond-challenge
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Feature
 > **Type**: UI
 > **Estimate**: M
 > **Manifest Version**: N/A (minimal — no control manifest)
-> **Last Updated**: 2026-11-02
+> **Last Updated**: 2026-11-03
 
 ## Context
 
@@ -85,3 +85,10 @@
 
 - Depends on: `production/epics/diamond-challenge/story-001-event-log.md`
 - Unlocks: `story-004-today-screen.md`
+
+## Completion Notes
+**Completed**: 2026-11-03
+**Criteria**: 8/8 passing (AC2/AC6 via IndexedDB on Chromium, accepted by the user; AC4 "ting" heard by the user on a real device; AC3 measured as 3 taps from Hôm nay)
+**Deviations**: Vite scaffold moved here from story 004 (user-approved). Advisory: `SAVED_FEEDBACK_MS = 2500` is hardcoded in `log-activity-screen.tsx`.
+**Test Evidence**: screenshots in production/qa/evidence/story-003-log-activity/ (01–06); stamp shows `src/app.tsx`, `src/ui/strings.ts`, `src/ui/styles.css` changed afterwards by story 005 (additive Học tab), the Làm screen itself unchanged
+**Reviewed by**: self, no independent review
