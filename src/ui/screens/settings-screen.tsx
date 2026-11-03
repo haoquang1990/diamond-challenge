@@ -118,8 +118,17 @@ export function SettingsScreen({
     void save({ ...previous, enabled }, previous, request);
   };
 
-  const onTimeChange = (value: string) => {
-    if (state.kind !== 'ready' || busy || parseReminderTime(value) === null || value === state.settings.time) return;
+  /**
+   * The time input keeps a local draft while the picker is open and saves once on
+   * blur. iOS fires change events while the wheel spins, before the user taps ✓;
+   * saving (and disabling the input) on each one closed the picker mid-selection.
+   */
+  const [draftTime, setDraftTime] = useState<string | null>(null);
+
+  const onTimeCommit = () => {
+    const value = draftTime;
+    setDraftTime(null);
+    if (value === null || state.kind !== 'ready' || busy || parseReminderTime(value) === null || value === state.settings.time) return;
     void save({ ...state.settings, time: value }, state.settings, null);
   };
 
@@ -177,9 +186,9 @@ export function SettingsScreen({
               <input
                 type="time"
                 className="time-input"
-                value={state.settings.time}
-                onChange={(e) => onTimeChange(e.target.value)}
-                disabled={busy}
+                value={draftTime ?? state.settings.time}
+                onChange={(e) => setDraftTime(e.target.value)}
+                onBlur={onTimeCommit}
               />
             </label>
             {saveStatus === 'saving' && (
