@@ -44,3 +44,11 @@ Chạy trang qua `http://localhost` (secure context), service worker đã active
 - **P1 — Nhắc trong app + thông báo cục bộ "cố gắng tối đa" (khuyến nghị):** cài đặt giờ nhắc; banner trong app; nếu trình duyệt có `showTrigger` thì dùng, nếu không thì chỉ banner. Ghi rõ với người dùng rằng nhắc ngoài app chưa đảm bảo.
 - **P2 — Lịch .ics:** cho người dùng thêm lịch lặp hằng ngày vào lịch của điện thoại; đáng tin cậy vì do hệ điều hành lo, nhưng không biết hôm nay đã đạt mục tiêu hay chưa và không mở thẳng đúng màn hình.
 - **P3 — Hoãn nhắc ngoài app tới giai đoạn 2** (web push từ máy chủ cùng tài khoản), MVP chỉ có banner trong app.
+
+## F. Quyết định (người dùng, 2026-11-03)
+**Chọn P1.** Phạm vi MVP:
+- Cài đặt bật/tắt nhắc và giờ nhắc, lưu bằng sự kiện `settings_changed`.
+- Xin quyền thông báo khi người dùng bật nhắc (từ một lần chạm), xử lý đủ: cấp / từ chối / chưa hỏi / không hỗ trợ.
+- **Banner trong app** trên Hôm nay khi đã tới giờ nhắc mà chưa đạt mục tiêu ngày; banner riêng khi quyền bị từ chối hoặc nền tảng không hỗ trợ.
+- **Thông báo cục bộ "cố gắng tối đa":** nếu trình duyệt có `showTrigger` thì đặt lịch; nếu không, chỉ hiện thông báo khi app đang mở (hoặc chạy nền còn sống) tới giờ nhắc. Không nhắc khi đã đạt mục tiêu.
+- Ghi rõ trong app rằng nhắc ngoài app chưa được đảm bảo. Nhắc đáng tin cậy (web push từ máy chủ) để giai đoạn 2.
