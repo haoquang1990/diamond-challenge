@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import type { EventStore } from './data/event-store';
-import { ComingSoonScreen } from './ui/screens/coming-soon-screen';
+import { DiamondPathScreen } from './ui/screens/diamond-path-screen';
 import { LessonScreen } from './ui/screens/lesson-screen';
 import { LogActivityScreen } from './ui/screens/log-activity-screen';
 import { TodayScreen } from './ui/screens/today-screen';
@@ -44,7 +44,7 @@ export function App({ eventStore }: AppProps) {
     <div className={tab === 'learn' && lessonActive ? 'app-shell' : 'app-shell app-shell--tabs'}>
       {tab === 'today' && <TodayScreen eventStore={eventStore} onLearn={() => setTab('learn')} onDo={() => setTab('do')} />}
       {tab === 'learn' && <LessonScreen eventStore={eventStore} onDone={goToday} onActiveChange={onLessonActive} />}
-      {tab === 'path' && <ComingSoonScreen title={STRINGS.tabPath} />}
+      {tab === 'path' && <DiamondPathScreen eventStore={eventStore} />}
       {!(tab === 'learn' && lessonActive) && (
       <nav className="tab-bar" aria-label={STRINGS.navLabel}>
         {TABS.map(({ id, label }) => (

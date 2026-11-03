@@ -3,6 +3,8 @@ import gameConfig from '../../config/game-config.json';
 import type { EventStore } from '../../data/event-store';
 import { computeProgress } from '../../domain/progress';
 import type { Progress, ProgressConfig } from '../../domain/progress';
+import type { StageDef } from '../../domain/stages';
+import { DEFAULT_STAGES, StageCelebrationCard, acknowledgeStage, buildStageView } from './diamond-path-screen';
 import {
   STRINGS,
   keepStreakLabel,
@@ -21,6 +23,8 @@ export interface TodayScreenProps {
   readonly onDo: () => void;
   /** Name of the current Con đường stage (story 006); a neutral placeholder is shown when absent. */
   readonly currentStageName?: string;
+  /** Stages used to derive the current stage when `currentStageName` is absent; defaults to game-config.json. */
+  readonly stages?: readonly StageDef[];
   /** Daily-goal config; defaults to game-config.json. */
   readonly config?: ProgressConfig;
   /** Clock; defaults to the real one. Injected for tests and screenshots. */
@@ -40,7 +44,7 @@ export interface TodayScreenProps {
 type ScreenState =
   | { readonly kind: 'loading' }
   | { readonly kind: 'error' }
-  | { readonly kind: 'ready'; readonly progress: Progress; readonly isNewUser: boolean };
+  | { readonly kind: 'ready'; readonly progress: Progress; readonly isNewUser: boolean; readonly stageName: string | null; readonly celebrate: StageDef | null };
 
 const DEFAULT_CONFIG: ProgressConfig = { dailyXpGoal: gameConfig.dailyXpGoal };
 
@@ -62,6 +66,7 @@ export function TodayScreen({
   onLearn,
   onDo,
   currentStageName,
+  stages = DEFAULT_STAGES,
   config = DEFAULT_CONFIG,
   now = realNow,
   timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -77,7 +82,15 @@ export function TodayScreen({
       .then((events) => {
         if (cancelled) return;
         const progress = computeProgress(events, now(), config, timeZone);
-        setState({ kind: 'ready', progress, isNewUser: events.length === 0 });
+        const view = buildStageView(events, stages, now(), timeZone);
+        setState({
+          kind: 'ready',
+          progress,
+          isNewUser: events.length === 0,
+          stageName: view.progress.current?.name ?? null,
+          celebrate: view.celebrate,
+        });
+        if (view.celebrate !== null) void acknowledgeStage(eventStore, view.celebrate);
       })
       .catch((error: unknown) => {
         if (cancelled) return;
@@ -87,7 +100,7 @@ export function TodayScreen({
     return () => {
       cancelled = true;
     };
-  }, [eventStore, config, now, timeZone, reloadKey]);
+  }, [eventStore, config, stages, now, timeZone, reloadKey]);
 
   useEffect(() => {
     const onVisible = () => {
@@ -98,6 +111,7 @@ export function TodayScreen({
   }, [reload]);
 
   const streak = state.kind === 'ready' ? state.progress.streak : 0;
+  const stageName = currentStageName ?? (state.kind === 'ready' ? state.stageName ?? undefined : undefined);
   const goalMet = state.kind === 'ready' && state.progress.dailyGoal.met;
 
   return (
@@ -129,6 +143,13 @@ export function TodayScreen({
         </div>
       )}
 
+      {state.kind === 'ready' && state.celebrate !== null && (
+        <StageCelebrationCard
+          stage={state.celebrate}
+          onDismiss={() => setState({ ...state, celebrate: null })}
+        />
+      )}
+
       {state.kind === 'ready' && state.isNewUser && (
         <section className="card card--welcome">
           <h2 className="card__title">{STRINGS.welcomeTitle}</h2>
@@ -140,8 +161,8 @@ export function TodayScreen({
 
       <section className="card stage-slot" aria-label={STRINGS.currentStage}>
         <span className="stage-slot__label">{STRINGS.currentStage}</span>
-        <span className={currentStageName === undefined ? 'stage-slot__name stage-slot__name--pending' : 'stage-slot__name'}>
-          {currentStageName ?? STRINGS.stagePending}
+        <span className={stageName === undefined ? 'stage-slot__name stage-slot__name--pending' : 'stage-slot__name'}>
+          {stageName ?? STRINGS.stagePending}
         </span>
       </section>
 

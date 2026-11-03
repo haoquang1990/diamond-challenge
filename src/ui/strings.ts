@@ -63,6 +63,22 @@ export const STRINGS = {
   lessonBackToList: 'Về danh sách',
   lessonLeave: 'Thoát bài',
 
+  // Con đường (story 006)
+  pathTitle: 'Con đường',
+  pathPrompt: 'Từng chặng trên hành trình của bạn.',
+  pathDisclaimer: 'Đây là lộ trình thói quen, không phải xác nhận danh hiệu chính thức của Amway.',
+  pathLoadError: 'Không tải được Con đường. Thử lại nhé.',
+  pathNoStages: 'Chưa có chặng nào. Hãy kiểm tra src/config/game-config.json.',
+  stageDone: 'Đã qua',
+  stageCurrent: 'Chặng hiện tại',
+  stageLocked: 'Chưa mở khóa',
+  stageConditions: 'Điều kiện mở khóa',
+  stageReached: 'Đã đạt',
+  stageLastReached: 'Bạn đã tới chặng cuối. Giữ vững thói quen nhé!',
+  stageXpMetMilestoneMissing: 'Đủ XP, còn thiếu mốc hoạt động',
+  stageContinue: 'Tiếp tục',
+  stageNeed: 'Còn thiếu',
+
   // Placeholder screens
   comingSoon: 'Sắp có',
   comingSoonBody: 'Tính năng này đang được xây dựng.',
@@ -101,4 +117,24 @@ export function questionProgressLabel(current: number, total: number): string {
 /** Lesson score, e.g. `scoreLabel(3, 4)` → "Đúng 3/4 câu". */
 export function scoreLabel(correct: number, total: number): string {
   return `Đúng ${correct}/${total} câu`;
+}
+
+/** Celebration headline, e.g. "Bạn đã lên chặng Silver!". */
+export function stageReachedLabel(name: string): string {
+  return `Bạn đã lên chặng ${name}!`;
+}
+
+/** Progress toward the next stage, e.g. "42% tới Gold". */
+export function stagePercentLabel(percent: number, nextName: string): string {
+  return `${percent}% tới ${nextName}`;
+}
+
+/** Stage XP requirement, e.g. "Cần 300 XP". */
+export function stageXpNeedLabel(xp: number): string {
+  return `Cần ${xp} XP`;
+}
+
+/** Milestone count, e.g. "5 lần Khách hàng mới: 3/5". */
+export function milestoneCountLabel(label: string, current: number, target: number): string {
+  return `${label}: ${Math.min(current, target)}/${target}`;
 }
