@@ -1,12 +1,12 @@
 # Story 005: Bài Học ngắn
 
 > **Epic**: diamond-challenge
-> **Status**: Ready
+> **Status**: In Progress
 > **Layer**: Feature
 > **Type**: UI
 > **Estimate**: M
 > **Manifest Version**: N/A (minimal — no control manifest)
-> **Last Updated**: —
+> **Last Updated**: 2026-11-03
 
 ## Context
 
