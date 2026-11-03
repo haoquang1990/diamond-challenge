@@ -79,6 +79,30 @@ export const STRINGS = {
   stageContinue: 'Tiếp tục',
   stageNeed: 'Còn thiếu',
 
+  // Nhắc nhở (story 007)
+  reminderButton: 'Nhắc nhở',
+  reminderButtonLabel: 'Mở cài đặt nhắc nhở',
+  settingsTitle: 'Cài đặt nhắc nhở',
+  settingsPrompt: 'Nhắc bạn hoàn thành mục tiêu ngày, chỉ khi hôm nay chưa đạt.',
+  reminderToggle: 'Nhắc mỗi ngày',
+  reminderTimeLabel: 'Giờ nhắc',
+  reminderSaving: 'Đang lưu…',
+  reminderSaved: 'Đã lưu.',
+  reminderSaveError: 'Không lưu được cài đặt. Thử lại nhé.',
+  settingsLoadError: 'Không tải được cài đặt. Thử lại nhé.',
+  permissionHeading: 'Thông báo trên điện thoại',
+  permissionGranted: 'Đã cho phép thông báo.',
+  permissionDenied: 'Thông báo đang bị chặn. Bạn có thể bật lại trong cài đặt trình duyệt hoặc điện thoại.',
+  permissionDefault: 'Chưa cho phép thông báo. Bật nhắc nhở để được hỏi.',
+  permissionDefaultEnabled: 'Bạn chưa trả lời yêu cầu cho phép thông báo. Tắt rồi bật lại nhắc nhở để được hỏi lại.',
+  permissionUnsupported: 'Trình duyệt hoặc điện thoại này không hỗ trợ thông báo của app.',
+  permissionFallback: 'App vẫn sẽ nhắc bạn bằng banner trên màn Hôm nay khi bạn mở app.',
+  reminderDisclaimer:
+    'Lưu ý: nhắc nhở khi app đang đóng chưa được đảm bảo trên mọi điện thoại. Trên iPhone/iPad cần thêm app vào Màn hình chính. Chắc chắn nhất là banner trong app.',
+  reminderDueTitle: 'Đến giờ rồi!',
+  reminderNoticeOff: 'Thông báo bị tắt, app sẽ nhắc bạn ngay trong app.',
+  reminderNotificationTitle: 'Diamond Challenge',
+
   // Placeholder screens
   comingSoon: 'Sắp có',
   comingSoonBody: 'Tính năng này đang được xây dựng.',
@@ -137,4 +161,28 @@ export function stageXpNeedLabel(xp: number): string {
 /** Milestone count, e.g. "5 lần Khách hàng mới: 3/5". */
 export function milestoneCountLabel(label: string, current: number, target: number): string {
   return `${label}: ${Math.min(current, target)}/${target}`;
+}
+
+/** What today's goal still needs; same shape as `ReminderMissing` in src/domain/reminders.ts. */
+export interface ReminderMissingText {
+  readonly xp: number;
+  readonly lesson: boolean;
+  readonly activity: boolean;
+}
+
+/**
+ * Short reminder text with the current streak, e.g.
+ * `reminderMessage(5, { xp: 0, lesson: true, activity: true })` →
+ * "Giữ chuỗi 5 ngày nhé! Còn 1 bài Học và 1 việc Làm."
+ * With no streak: "Bắt đầu chuỗi ngày ngay hôm nay nhé!"
+ */
+export function reminderMessage(streak: number, missing: ReminderMissingText): string {
+  const head = streak > 0 ? `Giữ chuỗi ${streak} ngày nhé!` : 'Bắt đầu chuỗi ngày ngay hôm nay nhé!';
+  const parts: string[] = [];
+  if (missing.lesson) parts.push('1 bài Học');
+  if (missing.activity) parts.push('1 việc Làm');
+  if (missing.xp > 0) parts.push(`${missing.xp} XP`);
+  if (parts.length === 0) return head;
+  const list = parts.length === 1 ? parts[0] : `${parts.slice(0, -1).join(', ')} và ${parts[parts.length - 1]}`;
+  return `${head} Còn ${list}.`;
 }

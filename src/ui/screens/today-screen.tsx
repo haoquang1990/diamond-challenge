@@ -4,10 +4,15 @@ import type { EventStore } from '../../data/event-store';
 import { computeProgress } from '../../domain/progress';
 import type { Progress, ProgressConfig } from '../../domain/progress';
 import type { StageDef } from '../../domain/stages';
+import { nextReminderAt, parseReminderConfig, readReminderSettings, reminderMissing, shouldShowReminder } from '../../domain/reminders';
+import type { ReminderConfig, ReminderSettings } from '../../domain/reminders';
+import { browserNotificationPlatform } from '../../notifications/reminders';
+import type { ReminderPermission } from '../../notifications/reminders';
 import { DEFAULT_STAGES, StageCelebrationCard, acknowledgeStage, buildStageView } from './diamond-path-screen';
 import {
   STRINGS,
   keepStreakLabel,
+  reminderMessage,
   streakLabel,
   xpProgressLabel,
   xpRemainingLabel,
@@ -31,6 +36,12 @@ export interface TodayScreenProps {
   readonly now?: () => Date;
   /** IANA time zone defining the local day; defaults to the device's. */
   readonly timeZone?: string;
+  /** Opens Cài đặt nhắc nhở (story 007); the header button is hidden when absent. */
+  readonly onOpenSettings?: () => void;
+  /** Reminder defaults; defaults to game-config.json. */
+  readonly reminderConfig?: ReminderConfig;
+  /** Current notification permission; defaults to the browser's. Injected for tests and screenshots. */
+  readonly notificationPermission?: () => ReminderPermission;
 }
 
 /**
@@ -44,9 +55,11 @@ export interface TodayScreenProps {
 type ScreenState =
   | { readonly kind: 'loading' }
   | { readonly kind: 'error' }
-  | { readonly kind: 'ready'; readonly progress: Progress; readonly isNewUser: boolean; readonly stageName: string | null; readonly celebrate: StageDef | null };
+  | { readonly kind: 'ready'; readonly progress: Progress; readonly isNewUser: boolean; readonly stageName: string | null; readonly celebrate: StageDef | null; readonly reminder: ReminderSettings; readonly reminderDue: boolean };
 
 const DEFAULT_CONFIG: ProgressConfig = { dailyXpGoal: gameConfig.dailyXpGoal };
+const DEFAULT_REMINDER_CONFIG = parseReminderConfig(gameConfig.reminder);
+const DEFAULT_PERMISSION = browserNotificationPlatform().permission;
 
 function realNow(): Date {
   return new Date();
@@ -60,6 +73,12 @@ function realNow(): Date {
  * come from {@link computeProgress}; the log is re-read every time the screen
  * mounts (i.e. on every return from Học / Làm) and when the app becomes
  * visible again (catches a day rollover while backgrounded).
+ *
+ * Story 007 (additive): a "Nhắc nhở" header button opens the settings; a
+ * reminder banner shows once the reminder time has passed and today's goal
+ * is still open (the screen reloads itself at that moment if it is open);
+ * a separate notice shows when reminders are on but notifications are
+ * denied or unsupported.
  */
 export function TodayScreen({
   eventStore,
@@ -70,6 +89,9 @@ export function TodayScreen({
   config = DEFAULT_CONFIG,
   now = realNow,
   timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone,
+  onOpenSettings,
+  reminderConfig = DEFAULT_REMINDER_CONFIG,
+  notificationPermission = DEFAULT_PERMISSION,
 }: TodayScreenProps) {
   const [state, setState] = useState<ScreenState>({ kind: 'loading' });
   const [reloadKey, setReloadKey] = useState(0);
@@ -83,12 +105,15 @@ export function TodayScreen({
         if (cancelled) return;
         const progress = computeProgress(events, now(), config, timeZone);
         const view = buildStageView(events, stages, now(), timeZone);
+        const reminder = readReminderSettings(events, reminderConfig);
         setState({
           kind: 'ready',
           progress,
           isNewUser: events.length === 0,
           stageName: view.progress.current?.name ?? null,
           celebrate: view.celebrate,
+          reminder,
+          reminderDue: shouldShowReminder(reminder, now(), timeZone, progress.dailyGoal.met),
         });
         if (view.celebrate !== null) void acknowledgeStage(eventStore, view.celebrate);
       })
@@ -100,7 +125,7 @@ export function TodayScreen({
     return () => {
       cancelled = true;
     };
-  }, [eventStore, config, stages, now, timeZone, reloadKey]);
+  }, [eventStore, config, stages, now, timeZone, reminderConfig, reloadKey]);
 
   useEffect(() => {
     const onVisible = () => {
@@ -110,21 +135,57 @@ export function TodayScreen({
     return () => document.removeEventListener('visibilitychange', onVisible);
   }, [reload]);
 
+  // While open, re-read the log when today's reminder time arrives so the banner appears.
+  const waitForReminder =
+    state.kind === 'ready' && state.reminder.enabled && !state.reminderDue && !state.progress.dailyGoal.met
+      ? state.reminder
+      : null;
+  useEffect(() => {
+    if (waitForReminder === null) return;
+    const current = now();
+    const at = nextReminderAt(waitForReminder, current, timeZone);
+    if (at === null) return;
+    const id = window.setTimeout(reload, Math.max(0, at.getTime() - current.getTime()));
+    return () => window.clearTimeout(id);
+  }, [waitForReminder, now, timeZone, reload]);
+
   const streak = state.kind === 'ready' ? state.progress.streak : 0;
   const stageName = currentStageName ?? (state.kind === 'ready' ? state.stageName ?? undefined : undefined);
   const goalMet = state.kind === 'ready' && state.progress.dailyGoal.met;
+  const permission = notificationPermission();
+  const notificationsOff =
+    state.kind === 'ready' && state.reminder.enabled && (permission === 'denied' || permission === 'unsupported');
 
   return (
     <main className="screen">
       <header className="screen__header today-header">
         <h1 className="screen__title">{STRINGS.todayTitle}</h1>
-        {state.kind === 'ready' && (
-          <p className={streak > 0 ? 'streak-chip streak-chip--active' : 'streak-chip'} aria-label={streakLabel(streak)}>
-            <FlameIcon />
-            <span className="streak-chip__count">{streak}</span>
-          </p>
-        )}
+        <div className="today-header__actions">
+          {onOpenSettings !== undefined && (
+            <button type="button" className="reminder-button" onClick={onOpenSettings} aria-label={STRINGS.reminderButtonLabel}>
+              <BellIcon />
+              <span>{STRINGS.reminderButton}</span>
+            </button>
+          )}
+          {state.kind === 'ready' && (
+            <p className={streak > 0 ? 'streak-chip streak-chip--active' : 'streak-chip'} aria-label={streakLabel(streak)}>
+              <FlameIcon />
+              <span className="streak-chip__count">{streak}</span>
+            </p>
+          )}
+        </div>
       </header>
+
+      {state.kind === 'ready' && state.reminderDue && (
+        <section className="reminder-banner" role="status" aria-live="polite">
+          <BellIcon />
+          <p className="reminder-banner__text">
+            <strong>{STRINGS.reminderDueTitle}</strong> {reminderMessage(streak, reminderMissing(state.progress.dailyGoal))}
+          </p>
+        </section>
+      )}
+
+      {notificationsOff && <p className="reminder-notice">{STRINGS.reminderNoticeOff}</p>}
 
       {state.kind === 'loading' && (
         <p className="message" role="status">
@@ -246,6 +307,15 @@ function FlameIcon() {
   return (
     <svg className="flame-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
       <path d="M12 2c1 4 5 6 5 11a5 5 0 0 1-10 0c0-2 1-3.5 2-4.5 0 2 1 3 2 3 0-3-1-6 1-9.5z" />
+    </svg>
+  );
+}
+
+/** Flat bell glyph for the reminder entry and banner (decorative). */
+function BellIcon() {
+  return (
+    <svg className="bell-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M12 2a6 6 0 0 0-6 6v4l-2 4h16l-2-4V8a6 6 0 0 0-6-6zm-2.5 16a2.5 2.5 0 0 0 5 0z" />
     </svg>
   );
 }

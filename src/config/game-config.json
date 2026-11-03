@@ -1,5 +1,9 @@
 {
   "dailyXpGoal": 30,
+  "reminder": {
+    "defaultTime": "20:00",
+    "enabledByDefault": false
+  },
   "activityTypes": [
     {
       "id": "add_name",

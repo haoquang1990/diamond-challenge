@@ -11,6 +11,9 @@
  *     everything else -> cache first, network fallback; successful network
  *                    responses are stored for next time.
  *
+ * - notificationclick (story 007): close the reminder and focus an open app
+ *   window (and ask it to show Hôm nay), or open './' (Hôm nay is the default screen).
+ *
  * All URLs are relative to this file, so it works under a GitHub Pages
  * subpath. Hand-written on purpose: no build plugin, no dependencies.
  * Bump CACHE_NAME only to force-drop old cached files.
@@ -76,4 +79,22 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin) return;
   event.respondWith(request.mode === 'navigate' ? networkFirstNavigation(request) : cacheFirst(request));
+});
+
+/** Reminder tap: focus an existing app window, else open the app (it starts on Hôm nay). */
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  event.waitUntil(
+    (async () => {
+      const scope = self.registration.scope;
+      const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+      const existing = windows.find((client) => client.url.startsWith(scope));
+      if (existing) {
+        existing.postMessage({ type: 'reminder-open-today' });
+        await existing.focus();
+        return;
+      }
+      await self.clients.openWindow(new URL('./', scope).href);
+    })(),
+  );
 });
