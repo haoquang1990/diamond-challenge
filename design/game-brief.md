@@ -14,7 +14,7 @@
 - Mỗi hoạt động Làm gắn với một người. Hoạt động có thể kéo theo việc chuyển giai đoạn của người đó.
 - XP của từng loại hoạt động và XP chuyển tới từng giai đoạn được lấy từ file cấu hình.
 - Toàn bộ thông tin về người lưu trên máy và được tính lại từ nhật ký sự kiện, giống XP và streak.
-- Mỗi người có **Người bảo trợ** (chính mình hoặc một NPP) để dựng cây tuyến dưới; mỗi NPP có hai ô nhập tay "Số KH" và "Số NPP tầng 1".
+- Mỗi người có **Người bảo trợ** (chính mình hoặc một NPP) để dựng cây tuyến dưới; số KH và số NPP tầng 1 của mỗi người đều đếm từ danh sách.
 - **Mục tiêu 30x30x4x4:** bản thân đạt 30x30 (≥30 khách hàng và ≥30 NPP tầng 1) và có ≥4 nhánh đạt chuẩn (mỗi nhánh có người đạt 30x30 ở ít nhất 4 tầng khác nhau). Mốc phụ: 250 liên hệ. Chi tiết ở `design/gdd/crm.md`.
 
 ## Player goal & fail state — what "working" looks like
@@ -26,7 +26,7 @@
 2. **Ghi hoạt động Làm gắn với một người:** chọn người, chọn loại hoạt động, ghi chú tùy chọn, nhận XP, và có thể đồng thời chuyển giai đoạn.
 3. **Bài Học ngắn:** trắc nghiệm 3–5 câu lấy từ file dữ liệu.
 4. **Hôm nay: mục tiêu ngày + streak:** streak, thanh XP ngày, phần còn thiếu, lối vào Học và Làm.
-5. **Bản đồ Con đường Diamond và Bảng 30x30x4x4:** các chặng tạo động lực, mở khóa theo tổng XP và mốc hoạt động; bảng hiện tiến độ của mình (liên hệ/KH/NPP) và 4 nhánh có điểm sâu cao nhất, số liệu tự nhập, không phải xác nhận chính thức.
+5. **Bản đồ Con đường Diamond và Bảng 30x30x4x4:** các chặng tạo động lực, mở khóa theo tổng XP và mốc hoạt động; bảng hiện tiến độ của mình (liên hệ/KH/NPP) và 4 nhánh có điểm sâu cao nhất, số liệu tính từ danh sách, không phải xác nhận chính thức.
 6. **Lưu cục bộ, sẵn sàng đồng bộ, có sao lưu và khôi phục bằng file:** dữ liệu là nhật ký sự kiện lưu trên máy. Người dùng xuất được một file sao lưu và nhập lại file đó (ví dụ khi đổi điện thoại).
 7. **Nhắc nhở hằng ngày:** banner trong app, cộng thông báo cục bộ nếu trình duyệt hỗ trợ.
 
@@ -39,7 +39,7 @@
 - Kết nối với doanh số, PV, BV thật của Amway. Bản đồ là lộ trình thói quen, không phải xác nhận danh hiệu chính thức.
 - Logo, thương hiệu và tài liệu chính thức của Amway.
 - Streak freeze, cửa hàng hay tiền ảo, trình soạn bài học trong app.
-- Tự động đồng bộ số liệu của tuyến dưới (giai đoạn 2 thay ô nhập tay bằng số đồng bộ từ tài khoản thật).
+- Đồng bộ số liệu tuyến dưới từ tài khoản thật (giai đoạn 2).
 
 ## Build order
 1. ~~Nhật ký sự kiện + tính XP/streak~~ (đã có).

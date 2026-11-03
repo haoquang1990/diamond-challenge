@@ -79,7 +79,8 @@ entities:
     sponsor_rule: "sponsorId null = me; else a person at stage downline; tier = 1 + hops to me (T1 = sponsored by me)"
     branch_rule: "a T1 downline plus all their descendants; depth = distinct tiers holding at least one 30x30 achiever"
     added: 2026-11-03
-    revised: 2026-11-03   # added sponsor_rule, branch_rule
+    count_rule: "customers(x)/t1(x) counted from list by sponsor, for me and every NPP; no manual entry"
+    revised: 2026-11-03   # added sponsor_rule, branch_rule, count_rule
 
 # Example (template reference):
 #
@@ -182,7 +183,6 @@ constants:
     depth_target: 4
     branch_target: 4
     top_branches_shown: 4
-    manual_stale_days: 30
     config_key: "src/config/game-config.json > target30x30x4x4"
     added: 2026-11-03
     revised: ""
