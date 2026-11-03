@@ -1,7 +1,7 @@
 # Story 004: Màn Hôm nay
 
 > **Epic**: diamond-challenge
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Presentation
 > **Type**: UI
 > **Estimate**: M
@@ -89,3 +89,10 @@
 
 - Depends on: `production/epics/diamond-challenge/story-002-daily-goal-streak.md`, `production/epics/diamond-challenge/story-003-log-activity.md`
 - Unlocks: `story-005-lessons.md`, `story-007-reminders.md`
+
+## Completion Notes
+**Completed**: 2026-11-03
+**Criteria**: 8/8 passing (checked on a production build in Chromium at 390×844; offline checked via service worker on Chromium only, not on a real phone or GitHub Pages)
+**Deviations**: Depends on story 003, which was still In Progress when this closed (user chose "Proceed anyway"). The "+1" badge on the goal-met card has very low contrast (accepted; revisit in polish). The stage slot is a placeholder until story 006; the goal-met state was reached by injecting a `lesson_completed` event because story 005 is not built.
+**Test Evidence**: screenshots in production/qa/evidence/story-004-today-screen/ (01–06); Vitest suites tests/unit/event-log/event-log.test.ts (7) and tests/unit/progress/streak.test.ts (12) also added, 19/19 passing
+**Reviewed by**: self, no independent review
