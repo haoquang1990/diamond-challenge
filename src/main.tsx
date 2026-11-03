@@ -12,3 +12,14 @@ createRoot(rootElement).render(
     <App eventStore={new IndexedDbEventStore('diamond-challenge')} />
   </StrictMode>,
 );
+
+// PWA: cache the app shell for offline use (public/sw.js). Production only, so
+// the dev server is never served stale files. The relative URL keeps the
+// worker's scope at the deploy subpath (e.g. GitHub Pages /<repo>/).
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch((error: unknown) => {
+      console.warn('[pwa] service worker registration failed', error);
+    });
+  });
+}

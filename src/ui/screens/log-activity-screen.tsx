@@ -19,6 +19,8 @@ export interface LogActivityScreenProps {
   readonly onDone: () => void;
   /** Activity types to offer; defaults to the ones in game-config.json. */
   readonly activityTypes?: readonly ActivityType[];
+  /** When provided, a back button is shown that calls it (leave without saving). */
+  readonly onCancel?: () => void;
 }
 
 /**
@@ -42,7 +44,12 @@ type ScreenState =
  * Undo appends a compensating `activity_logged` with `{ compensates: id }`;
  * nothing is ever deleted.
  */
-export function LogActivityScreen({ eventStore, onDone, activityTypes = ACTIVITY_TYPES }: LogActivityScreenProps) {
+export function LogActivityScreen({
+  eventStore,
+  onDone,
+  activityTypes = ACTIVITY_TYPES,
+  onCancel,
+}: LogActivityScreenProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [note, setNote] = useState('');
   const [state, setState] = useState<ScreenState>({ kind: 'editing', error: null, undone: false });
@@ -121,6 +128,11 @@ export function LogActivityScreen({ eventStore, onDone, activityTypes = ACTIVITY
   return (
     <main className="screen">
       <header className="screen__header">
+        {onCancel !== undefined && (
+          <button type="button" className="back-button" onClick={onCancel} disabled={busy}>
+            ‹ {STRINGS.back}
+          </button>
+        )}
         <h1 className="screen__title">{STRINGS.logActivityTitle}</h1>
         <p className="screen__prompt">{STRINGS.logActivityPrompt}</p>
       </header>

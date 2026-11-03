@@ -15,9 +15,61 @@ export const STRINGS = {
   saveError: 'Không lưu được. Thử lại nhé.',
   undoError: 'Không hoàn tác được. Thử lại nhé.',
   undone: 'Đã hoàn tác. Bạn có thể chọn lại.',
+  back: 'Quay lại',
+
+  // Navigation (bottom tab bar)
+  navLabel: 'Điều hướng chính',
+  tabToday: 'Hôm nay',
+  tabLearn: 'Học',
+  tabDo: 'Làm',
+  tabPath: 'Con đường',
+
+  // Hôm nay
+  todayTitle: 'Hôm nay',
+  loading: 'Đang tải…',
+  loadError: 'Không tải được tiến độ. Thử lại nhé.',
+  retry: 'Thử lại',
+  welcomeTitle: 'Chào mừng bạn!',
+  welcomeBody: 'Mỗi ngày: 1 bài Học + 1 việc Làm và đủ XP để giữ chuỗi ngày.',
+  goalTitle: 'Mục tiêu hôm nay',
+  goalMetTitle: 'Đã đạt mục tiêu hôm nay!',
+  goalMetBody: 'Quay lại ngày mai để giữ chuỗi nhé.',
+  stillNeeded: 'Còn thiếu',
+  lessonDone: 'Đã có bài Học',
+  lessonMissing: 'còn 1 bài Học',
+  activityDone: 'Đã có việc Làm',
+  activityMissing: 'còn 1 việc Làm',
+  learnButton: 'Học',
+  doButton: 'Làm',
+  currentStage: 'Chặng hiện tại',
+  stagePending: 'Bản đồ Con đường Diamond sắp có',
+
+  // Placeholder screens
+  comingSoon: 'Sắp có',
+  comingSoonBody: 'Tính năng này đang được xây dựng.',
 } as const;
 
 /** Formats an XP amount, e.g. `xpLabel(15)` → "+15 XP". */
 export function xpLabel(xp: number): string {
   return `+${xp} XP`;
+}
+
+/** XP still needed today, e.g. `xpRemainingLabel(12)` → "còn 12 XP". */
+export function xpRemainingLabel(xp: number): string {
+  return `còn ${xp} XP`;
+}
+
+/** XP progress toward the daily threshold, e.g. `xpProgressLabel(18, 30)` → "18 / 30 XP". */
+export function xpProgressLabel(xp: number, threshold: number): string {
+  return `${xp} / ${threshold} XP`;
+}
+
+/** Streak length, e.g. `streakLabel(3)` → "3 ngày liên tiếp". */
+export function streakLabel(days: number): string {
+  return `${days} ngày liên tiếp`;
+}
+
+/** Nudge shown while today's goal is open and a streak is at stake. */
+export function keepStreakLabel(days: number): string {
+  return `Hoàn thành hôm nay để giữ chuỗi ${days} ngày!`;
 }

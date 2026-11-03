@@ -53,11 +53,22 @@
 
 ## Files
 
+- `src/app.tsx`
+- `src/main.tsx`
+- `index.html`
+- `src/ui/strings.ts`
+- `src/ui/styles.css`
 - `src/ui/screens/today-screen.tsx`
-- `src/app.tsx` (exists since story 003 — add navigation)
+- `src/ui/screens/coming-soon-screen.tsx`
+- `src/ui/screens/log-activity-screen.tsx`
 - `public/manifest.webmanifest`
-- `production/qa/evidence/story-004-today-screen/*.png`
-- Scaffold (`package.json`, `vite.config.ts`, `tsconfig.json`, `index.html`, `src/main.tsx`, Vitest) was moved to story 003 with the user's approval on 2026-11-02.
+- `public/icon.svg`
+- `public/sw.js`
+- `package.json`
+- `package-lock.json`
+- `tsconfig.json`
+- `tests/unit/event-log/event-log.test.ts`
+- `tests/unit/progress/streak.test.ts`
 
 ## QA Test Cases
 
