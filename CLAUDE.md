@@ -5,14 +5,18 @@ Each agent owns a specific domain, enforcing separation of concerns and quality.
 
 ## Technology Stack
 
-- **Engine**: [CHOOSE: Godot 4 / Unity / Unreal Engine 5]
-- **Language**: [CHOOSE: GDScript / C# / C++ / Blueprint]
+- **Engine**: None (web app, not a game engine) — Vite + React + TypeScript, PWA, mobile-first
+- **Language**: TypeScript
+- **Local data**: IndexedDB (event log, sync-ready); phase 2 adds Supabase
+- **Hosting**: GitHub Pages or Cloudflare Pages
 - **Version Control**: Git with trunk-based development
-- **Build System**: [SPECIFY after choosing engine]
-- **Asset Pipeline**: [SPECIFY after choosing engine]
+- **Build System**: Vite (`npm run build`); tests with Vitest
+- **Asset Pipeline**: static assets under `public/` and `src/assets/`
+- **Versions**: major lines React 19, Vite 8, TypeScript 6. NOT SOURCEABLE — exact
+  versions are not pinned here; `package.json` and the lockfile are authoritative.
 
-> **Note**: Engine-specialist agents exist for Godot, Unity, and Unreal with
-> dedicated sub-specialists. Use the set matching your engine.
+> **Note**: No engine specialist applies (`specialists` in `project.yaml` is empty).
+> General agents (`lead-programmer`, `ui-programmer`, `gameplay-programmer`) cover the code.
 
 ## Project Structure
 
@@ -20,14 +24,7 @@ Each agent owns a specific domain, enforcing separation of concerns and quality.
 
 ## Engine Version Reference
 
-<!-- ENGINE-REFERENCE-IMPORT: the line below is engine-specific. /setup-engine
-     rewrites it to @docs/engine-reference/<engine>/VERSION.md for the chosen
-     engine, so a Unity or Unreal project stops loading the Godot reference every
-     session. It defaults to Godot (the template's example engine); skills that
-     need the pinned version read docs/engine-reference/<engine>/VERSION.md on
-     demand regardless of this import. -->
-@docs/engine-reference/godot/VERSION.md
-
+None: this project has no game engine. `docs/engine-reference/` (Godot, Unity, Unreal) is template material and is not used here.
 
 ## Technical Preferences
 

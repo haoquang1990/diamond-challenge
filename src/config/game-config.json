@@ -1,0 +1,80 @@
+{
+  "dailyXpGoal": 30,
+  "reminder": {
+    "defaultTime": "20:00",
+    "enabledByDefault": false
+  },
+  "activityTypes": [
+    {
+      "id": "add_name",
+      "name": "Thêm tên vào danh sách",
+      "xp": 5
+    },
+    {
+      "id": "follow_up",
+      "name": "Follow-up",
+      "xp": 10
+    },
+    {
+      "id": "demo",
+      "name": "Demo sản phẩm",
+      "xp": 15
+    },
+    {
+      "id": "opp",
+      "name": "Trình bày cơ hội (opp)",
+      "xp": 20
+    },
+    {
+      "id": "new_customer",
+      "name": "Khách hàng mới",
+      "xp": 25
+    }
+  ],
+  "stages": [
+    {
+      "id": "start",
+      "name": "Khởi động",
+      "xp": 0
+    },
+    {
+      "id": "silver",
+      "name": "Silver",
+      "xp": 300
+    },
+    {
+      "id": "gold",
+      "name": "Gold",
+      "xp": 900
+    },
+    {
+      "id": "platinum",
+      "name": "Platinum",
+      "xp": 2000
+    },
+    {
+      "id": "emerald",
+      "name": "Emerald",
+      "xp": 4000,
+      "milestones": [
+        {
+          "activityType": "new_customer",
+          "count": 5,
+          "label": "5 lần Khách hàng mới"
+        }
+      ]
+    },
+    {
+      "id": "diamond",
+      "name": "Diamond",
+      "xp": 7500,
+      "milestones": [
+        {
+          "activityType": "new_customer",
+          "count": 15,
+          "label": "15 lần Khách hàng mới"
+        }
+      ]
+    }
+  ]
+}

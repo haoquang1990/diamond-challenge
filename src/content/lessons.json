@@ -1,0 +1,209 @@
+{
+  "lessons": [
+    {
+      "id": "prospect-list",
+      "title": "Lập danh sách người quen",
+      "xp": 10,
+      "questions": [
+        {
+          "prompt": "Khi bắt đầu lập danh sách, cách nào hiệu quả nhất?",
+          "options": [
+            "Ghi ra mọi người bạn quen, chưa vội đánh giá ai",
+            "Chỉ ghi những người bạn nghĩ chắc chắn sẽ đồng ý",
+            "Chờ có người hỏi rồi mới ghi"
+          ],
+          "correctIndex": 0,
+          "explanation": "Ghi hết trước, không tự đoán thay người khác."
+        },
+        {
+          "prompt": "Nên gợi nhớ tên người từ đâu?",
+          "options": [
+            "Chỉ từ gia đình",
+            "Từ danh bạ điện thoại, bạn cũ, đồng nghiệp, hàng xóm",
+            "Chỉ từ người giàu có"
+          ],
+          "correctIndex": 1,
+          "explanation": "Danh bạ và các nhóm quen biết giúp bạn nhớ được nhiều tên hơn."
+        },
+        {
+          "prompt": "Bao lâu nên bổ sung danh sách một lần?",
+          "options": [
+            "Làm một lần rồi thôi",
+            "Thêm tên mới đều đặn, mỗi khi gặp người mới",
+            "Chỉ khi hết người để liên hệ"
+          ],
+          "correctIndex": 1,
+          "explanation": "Danh sách sống nhờ được cập nhật thường xuyên."
+        }
+      ]
+    },
+    {
+      "id": "friendly-invitation",
+      "title": "Lời mời thân thiện",
+      "xp": 10,
+      "questions": [
+        {
+          "prompt": "Mở đầu lời mời tốt nhất là gì?",
+          "options": [
+            "Hỏi thăm chân thành, rồi mới nói lý do liên hệ",
+            "Vào thẳng việc bán hàng ngay câu đầu",
+            "Nhắn một tin dài giải thích mọi thứ"
+          ],
+          "correctIndex": 0,
+          "explanation": "Quan tâm đến người đối diện trước tạo thiện cảm."
+        },
+        {
+          "prompt": "Lời mời nên giữ ở mức nào?",
+          "options": [
+            "Ngắn gọn, rõ giờ giấc, dễ nói \"có\" hoặc \"không\"",
+            "Mập mờ để tạo bất ngờ",
+            "Hứa hẹn thật nhiều để họ hào hứng"
+          ],
+          "correctIndex": 0,
+          "explanation": "Ngắn, rõ và trung thực giúp người nghe thoải mái quyết định."
+        },
+        {
+          "prompt": "Người được mời trả lời \"để mình xem lại\". Bạn nên làm gì?",
+          "options": [
+            "Nài nỉ họ trả lời ngay",
+            "Cảm ơn và hẹn một thời điểm để hỏi lại nhẹ nhàng",
+            "Xóa họ khỏi danh sách"
+          ],
+          "correctIndex": 1,
+          "explanation": "Tôn trọng thời gian của họ và giữ liên lạc."
+        }
+      ]
+    },
+    {
+      "id": "simple-presentation",
+      "title": "Trình bày cơ hội đơn giản",
+      "xp": 15,
+      "questions": [
+        {
+          "prompt": "Một buổi trình bày tốt nên bắt đầu bằng gì?",
+          "options": [
+            "Thật nhiều thuật ngữ chuyên môn",
+            "Hỏi người nghe đang quan tâm điều gì",
+            "Đọc nguyên một bản slide dài"
+          ],
+          "correctIndex": 1,
+          "explanation": "Hiểu nhu cầu của họ trước rồi mới trình bày."
+        },
+        {
+          "prompt": "Cách trình bày nào dễ hiểu nhất?",
+          "options": [
+            "Nói nhiều ý cùng lúc cho đầy đủ",
+            "Chia sẻ 2–3 ý chính bằng ví dụ gần gũi",
+            "Chỉ nói về bản thân mình"
+          ],
+          "correctIndex": 1,
+          "explanation": "Ít ý, ví dụ gần gũi thì người nghe dễ nhớ."
+        },
+        {
+          "prompt": "Khi nói về kết quả, bạn nên làm gì?",
+          "options": [
+            "Nói thật, không hứa hẹn chắc chắn về kết quả",
+            "Cam kết ai cũng sẽ thành công",
+            "Tránh trả lời mọi câu hỏi"
+          ],
+          "correctIndex": 0,
+          "explanation": "Kết quả mỗi người khác nhau, nói thật giữ được lòng tin."
+        },
+        {
+          "prompt": "Kết thúc buổi trình bày nên có gì?",
+          "options": [
+            "Một bước tiếp theo rõ ràng và nhẹ nhàng",
+            "Im lặng rồi chia tay",
+            "Ép họ quyết định ngay hôm nay"
+          ],
+          "correctIndex": 0,
+          "explanation": "Một bước tiếp theo nhỏ giúp cuộc trò chuyện đi tiếp."
+        }
+      ]
+    },
+    {
+      "id": "follow-up",
+      "title": "Theo dõi sau cuộc gặp",
+      "xp": 10,
+      "questions": [
+        {
+          "prompt": "Khi nào nên liên hệ lại sau cuộc gặp?",
+          "options": [
+            "Trong vòng 1–2 ngày, khi họ còn nhớ",
+            "Sau vài tháng",
+            "Không bao giờ, chờ họ liên hệ"
+          ],
+          "correctIndex": 0,
+          "explanation": "Liên hệ sớm giúp cuộc trò chuyện không bị nguội."
+        },
+        {
+          "prompt": "Tin nhắn theo dõi nên có nội dung gì?",
+          "options": [
+            "Lời cảm ơn và một câu hỏi mở về suy nghĩ của họ",
+            "Nhắc đi nhắc lại một nội dung",
+            "Trách họ chưa trả lời"
+          ],
+          "correctIndex": 0,
+          "explanation": "Cảm ơn và hỏi mở khiến họ dễ chia sẻ thật lòng."
+        },
+        {
+          "prompt": "Nên ghi lại điều gì sau mỗi lần trao đổi?",
+          "options": [
+            "Không cần ghi gì",
+            "Ngày trao đổi, điều họ quan tâm, hẹn lần sau",
+            "Chỉ ghi tên"
+          ],
+          "correctIndex": 1,
+          "explanation": "Ghi chú giúp bạn lần sau nói đúng điều họ quan tâm."
+        }
+      ]
+    },
+    {
+      "id": "handling-no",
+      "title": "Đón nhận lời từ chối",
+      "xp": 15,
+      "questions": [
+        {
+          "prompt": "Ai đó nói \"không\". Cách nghĩ nào lành mạnh nhất?",
+          "options": [
+            "Họ ghét mình",
+            "Đó là câu trả lời cho lúc này, không phải đánh giá con người mình",
+            "Mình không hợp với việc này"
+          ],
+          "correctIndex": 1,
+          "explanation": "Lời từ chối thường nói về hoàn cảnh của họ, không phải giá trị của bạn."
+        },
+        {
+          "prompt": "Người nghe nói \"mình bận lắm\". Bạn nên làm gì?",
+          "options": [
+            "Tranh luận cho đến khi họ hết bận",
+            "Cảm thông và hỏi xem lúc nào thuận tiện hơn",
+            "Phớt lờ và nói tiếp"
+          ],
+          "correctIndex": 1,
+          "explanation": "Đồng cảm trước, rồi mới đề nghị thời điểm khác."
+        },
+        {
+          "prompt": "Người nghe hỏi \"liệu có đáng tin không?\". Cách đáp tốt là gì?",
+          "options": [
+            "Lắng nghe lo lắng, trả lời trung thực và chia sẻ điều bạn biết",
+            "Đổi chủ đề",
+            "Nói họ không nên nghi ngờ"
+          ],
+          "correctIndex": 0,
+          "explanation": "Lo lắng là bình thường, trả lời trung thực xây dựng lòng tin."
+        },
+        {
+          "prompt": "Sau một lời từ chối, bạn nên làm gì?",
+          "options": [
+            "Cảm ơn họ, giữ mối quan hệ tốt và tiếp tục với người tiếp theo",
+            "Bỏ cuộc cả ngày",
+            "Nhắn nhiều lần để thay đổi ý họ"
+          ],
+          "correctIndex": 0,
+          "explanation": "Giữ thái độ tử tế, để cửa luôn mở."
+        }
+      ]
+    }
+  ]
+}
