@@ -1,7 +1,7 @@
 # Story 005: Bài Học ngắn
 
 > **Epic**: diamond-challenge
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Feature
 > **Type**: UI
 > **Estimate**: M
@@ -78,3 +78,10 @@
 
 - Depends on: `production/epics/diamond-challenge/story-001-event-log.md`, `production/epics/diamond-challenge/story-004-today-screen.md`
 - Unlocks: None
+
+## Completion Notes
+**Completed**: 2026-11-03
+**Criteria**: 8/8 passing (checked on a production build in Chromium at 390×844; lesson duration not timed and not tried on a real phone)
+**Deviations**: None blocking. Advisory, not yet logged as tech debt: (1) the same-day replay message ("Bạn đã học bài này hôm nay, không cộng XP lần nữa.") is shown in the large XP font; (2) the lessons error card tells end users to "check src/content/lessons.json", a developer hint; (3) the 5 sample lessons were written by an agent and accepted as placeholder content.
+**Test Evidence**: screenshots in production/qa/evidence/story-005-lessons/ (01–08; 08 taken from a scratch build with a corrupt lessons.json); Vitest tests/unit/lesson/lesson.test.ts (21 tests), 40/40 passing in the full suite
+**Reviewed by**: self, no independent review
