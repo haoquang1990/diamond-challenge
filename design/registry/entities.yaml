@@ -54,7 +54,7 @@
 #   in any other shape is reported as unsupported layout, with its number.
 
 version: 1
-last_updated: ""
+last_updated: "2026-11-03"
 
 # ─── ENTITIES ────────────────────────────────────────────────────────────────
 # Named game-world objects: enemies, NPCs, characters, factions, bosses.
@@ -65,9 +65,21 @@ last_updated: ""
 # Attribute fields: any key stats that could appear in another GDD
 #   (health, damage, drops, faction, etc.)
 
-entities: []
+entities:
+  - name: person
+    status: active
+    source: design/gdd/crm.md
+    referenced_by:
+      - design/gdd/crm.md
+      - design/game-brief.md
+    stages: "acquaintance > contacted > demoed > heard_opp > customer > downline"
+    stage_xp: "acquaintance 0, contacted 5, demoed 10, heard_opp 20, customer 30, downline 50"
+    stage_xp_rule: "next stage only, once per person per stage"
+    linked_user_id: "null at MVP; phase 2"
+    added: 2026-11-03
+    revised: ""
 
-# Example (remove when first real entry is added):
+# Example (template reference):
 #
 # entities:
 #   - name: goblin
