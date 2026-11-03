@@ -75,12 +75,10 @@ entities:
     stages: "acquaintance > contacted > demoed > heard_opp > customer > downline"
     stage_xp: "acquaintance 0, contacted 5, demoed 10, heard_opp 20, customer 30, downline 50"
     stage_xp_rule: "next stage only, once per person per stage"
-    linked_user_id: "null at MVP; phase 2"
-    sponsor_rule: "sponsorId null = me; else a person at stage downline; tier = 1 + hops to me (T1 = sponsored by me)"
-    branch_rule: "a T1 downline plus all their descendants; depth = distinct tiers holding at least one 30x30 achiever"
+    linked_user_id: "null in phase 1; set in phase 2 when I create an account for an F1"
+    f1_rule: "phase 1: every non-archived person in my own list at stage customer = my KH, at stage downline = my NPP F1; no sponsor field, no multi-tier tree on device"
     added: 2026-11-03
-    count_rule: "customers(x)/t1(x) counted from list by sponsor, for me and every NPP; no manual entry"
-    revised: 2026-11-03   # added sponsor_rule, branch_rule, count_rule
+    revised: 2026-11-03   # replaced sponsor_rule/branch_rule/count_rule (on-device sponsor tree) with f1_rule; tree moves to phase 2 server
 
 # Example (template reference):
 #
@@ -177,15 +175,16 @@ constants:
     source: design/gdd/crm.md
     referenced_by:
       - design/gdd/crm.md
+      - design/phase-2-notes.md
     contacts_target: 250
     customers_target: 30
-    t1_target: 30
-    depth_target: 4
-    branch_target: 4
-    top_branches_shown: 4
-    config_key: "src/config/game-config.json > target30x30x4x4"
+    f1_target: 30          # was t1_target (renamed 2026-11-03)
+    depth_target: 4        # phase 2, computed by server
+    branch_target: 4       # phase 2, computed by server
+    top_branches_shown: 4  # phase 2, Bảng 4x4
+    config_key: "phase 1: src/config/game-config.json > target30x30 (contacts, customers, f1); phase 2: server config (depth, branch, top branches)"
     added: 2026-11-03
-    revised: ""
+    revised: 2026-11-03
 
 # Example:
 #

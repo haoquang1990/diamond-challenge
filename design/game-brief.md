@@ -1,6 +1,6 @@
 # Game Brief: Diamond Challenge
 
-**One-sentence pitch:** CRM được game hoá cho nhà phân phối Amway: một danh sách Người duy nhất mà bạn đưa dần từ "Người quen" tới "NPP tuyến dưới". Mỗi việc làm thật với một người, mỗi lần chuyển giai đoạn và mỗi bài học ngắn đều cho XP, giữ streak và đẩy bạn tiến trên Con đường Diamond, cùng một bảng theo dõi mục tiêu 30x30x4x4 của chính bạn.
+**One-sentence pitch:** CRM được game hoá cho nhà phân phối Amway: một danh sách Người duy nhất mà bạn đưa dần từ "Người quen" tới "NPP tuyến dưới". Mỗi việc làm thật với một người, mỗi lần chuyển giai đoạn và mỗi bài học ngắn đều cho XP, giữ streak và đẩy bạn tiến trên Con đường Diamond, cùng một Bảng 30x30 của chính bạn.
 
 ## Core loop
 - Mở app, vào màn **Hôm nay**: thấy streak, XP hôm nay so với mục tiêu ngày, cùng hai nút **Học** và **Làm**.
@@ -14,8 +14,8 @@
 - Mỗi hoạt động Làm gắn với một người. Hoạt động có thể kéo theo việc chuyển giai đoạn của người đó.
 - XP của từng loại hoạt động và XP chuyển tới từng giai đoạn được lấy từ file cấu hình.
 - Toàn bộ thông tin về người lưu trên máy và được tính lại từ nhật ký sự kiện, giống XP và streak.
-- Mỗi người có **Người bảo trợ** (chính mình hoặc một NPP) để dựng cây tuyến dưới; số KH và số NPP tầng 1 của mỗi người đều đếm từ danh sách.
-- **Mục tiêu 30x30x4x4:** bản thân đạt 30x30 (≥30 khách hàng và ≥30 NPP tầng 1) và có ≥4 nhánh đạt chuẩn (mỗi nhánh có người đạt 30x30 ở ít nhất 4 tầng khác nhau). Mốc phụ: 250 liên hệ. Chi tiết ở `design/gdd/crm.md`.
+- Mỗi người chỉ quản lý danh sách của chính mình: KH và NPP F1 của mình.
+- **Giai đoạn 1:** mục tiêu 30x30 (≥30 KH, ≥30 NPP F1), mốc phụ 250 liên hệ. Mục tiêu 30x30x4x4 và Bảng 4x4 ở giai đoạn 2 (`design/phase-2-notes.md`). Chi tiết ở `design/gdd/crm.md`.
 
 ## Player goal & fail state — what "working" looks like
 - **Mục tiêu:** mỗi ngày đạt mục tiêu XP (có ít nhất 1 Học và 1 Làm), duy trì streak, đưa người trong danh sách tiến qua các giai đoạn, và đi hết các chặng tới Diamond.
@@ -26,26 +26,25 @@
 2. **Ghi hoạt động Làm gắn với một người:** chọn người, chọn loại hoạt động, ghi chú tùy chọn, nhận XP, và có thể đồng thời chuyển giai đoạn.
 3. **Bài Học ngắn:** trắc nghiệm 3–5 câu lấy từ file dữ liệu.
 4. **Hôm nay: mục tiêu ngày + streak:** streak, thanh XP ngày, phần còn thiếu, lối vào Học và Làm.
-5. **Bản đồ Con đường Diamond và Bảng 30x30x4x4:** các chặng tạo động lực, mở khóa theo tổng XP và mốc hoạt động; bảng hiện tiến độ của mình (liên hệ/KH/NPP) và 4 nhánh có điểm sâu cao nhất, số liệu tính từ danh sách, không phải xác nhận chính thức.
+5. **Bản đồ Con đường Diamond và Bảng 30x30:** các chặng tạo động lực, mở khóa theo tổng XP và mốc hoạt động; bảng hiện tiến độ của mình (liên hệ/KH/NPP F1), số liệu tính từ danh sách, không phải xác nhận chính thức.
 6. **Lưu cục bộ, sẵn sàng đồng bộ, có sao lưu và khôi phục bằng file:** dữ liệu là nhật ký sự kiện lưu trên máy. Người dùng xuất được một file sao lưu và nhập lại file đó (ví dụ khi đổi điện thoại).
 7. **Nhắc nhở hằng ngày:** banner trong app, cộng thông báo cục bộ nếu trình duyệt hỗ trợ.
 
 ## Out of scope — not building this
 - Giải đấu tuần trong nhóm, tài khoản, server, đồng bộ (giai đoạn 2).
-- **Liên kết "NPP tuyến dưới" với tài khoản thật của người đó** (giai đoạn 2, làm cùng tài khoản do admin tạo).
+- **Tạo tài khoản cho NPP F1, cây hệ thống nhiều tầng, đồng bộ số tổng hợp và Bảng 4x4** (giai đoạn 2, `design/phase-2-notes.md`).
 - Đưa danh sách Người lên server hay chia sẻ cho tuyến trên.
 - Nhập danh bạ điện thoại tự động.
 - Bảng xếp hạng, bạn bè, chat, chia sẻ mạng xã hội.
 - Kết nối với doanh số, PV, BV thật của Amway. Bản đồ là lộ trình thói quen, không phải xác nhận danh hiệu chính thức.
 - Logo, thương hiệu và tài liệu chính thức của Amway.
 - Streak freeze, cửa hàng hay tiền ảo, trình soạn bài học trong app.
-- Đồng bộ số liệu tuyến dưới từ tài khoản thật (giai đoạn 2).
 
 ## Build order
 1. ~~Nhật ký sự kiện + tính XP/streak~~ (đã có).
 2. ~~Làm, Hôm nay, Học, Bản đồ, Nhắc nhở~~ (đã có, Làm hiện chưa gắn với người).
-3. **Mô hình Người trong nhật ký sự kiện**: thêm người, sửa người, chuyển giai đoạn, kèm XP chuyển giai đoạn, cây bảo trợ và tính 30x30x4x4 (hàm thuần có test). Đây là phần rủi ro nhất vì thay đổi cấu trúc sự kiện.
-4. **Màn danh sách Người**, **Làm gắn với người** (gồm xử lý các hoạt động cũ chưa gắn với ai) và **màn Bảng 30x30x4x4**.
+3. **Mô hình Người trong nhật ký sự kiện**: thêm người, sửa người, chuyển giai đoạn, kèm XP chuyển giai đoạn và tính 30x30 (hàm thuần có test). Đây là phần rủi ro nhất vì thay đổi cấu trúc sự kiện.
+4. **Màn danh sách Người**, **Làm gắn với người** (gồm xử lý các hoạt động cũ chưa gắn với ai) và **màn Bảng 30x30**.
 5. **Sao lưu và khôi phục bằng file**.
 
 ---
