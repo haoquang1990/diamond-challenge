@@ -52,12 +52,13 @@
 ## Files
 
 - `src/domain/stages.ts`
-- `src/config/game-config.json`
 - `src/ui/screens/diamond-path-screen.tsx`
-- `tests/unit/progress/stages.test.ts`
-- `production/qa/evidence/story-006-diamond-path.png`
-
----
+- `src/config/game-config.json`
+- `src/app.tsx`
+- `src/ui/screens/today-screen.tsx`
+- `src/ui/strings.ts`
+- `src/ui/styles.css`
+- `tests/unit/stages/stages.test.ts`
 
 ## QA Test Cases
 
