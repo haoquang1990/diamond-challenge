@@ -52,3 +52,15 @@ Chạy trang qua `http://localhost` (secure context), service worker đã active
 - **Banner trong app** trên Hôm nay khi đã tới giờ nhắc mà chưa đạt mục tiêu ngày; banner riêng khi quyền bị từ chối hoặc nền tảng không hỗ trợ.
 - **Thông báo cục bộ "cố gắng tối đa":** nếu trình duyệt có `showTrigger` thì đặt lịch; nếu không, chỉ hiện thông báo khi app đang mở (hoặc chạy nền còn sống) tới giờ nhắc. Không nhắc khi đã đạt mục tiêu.
 - Ghi rõ trong app rằng nhắc ngoài app chưa được đảm bảo. Nhắc đáng tin cậy (web push từ máy chủ) để giai đoạn 2.
+
+## G. Đã thử sau khi làm P1 (2026-11-03)
+| Môi trường | Kết quả |
+|---|---|
+| Chromium 153 (Playwright, `channel: 'chromium'`, quyền đã cấp, app đang mở) | Tới giờ nhắc 20:01 (giả lập đồng hồ), hiện thông báo `daily-reminder` qua service worker, nội dung nhắc streak và phần còn thiếu; banner "Đến giờ rồi!" hiện trên Hôm nay |
+| Chromium 153 (quyền bị chặn) | Không có thông báo; banner nhắc trong app vẫn hiện, kèm dòng "Thông báo bị tắt, app sẽ nhắc bạn ngay trong app." |
+| Chromium 153 (chưa trả lời yêu cầu quyền) | Màn Cài đặt hướng dẫn tắt rồi bật lại để được hỏi lại |
+| Đã đạt mục tiêu ngày | Không có banner nhắc |
+| Bấm vào thông báo để mở Hôm nay | **NOT TESTED** — Playwright headless không bấm được vào thông báo hệ thống |
+| Thông báo khi app đã đóng | **NOT TESTED** — Notification Triggers không có trong Chromium 153 nên đường này không chạy |
+| Thiết bị Android thật | **NOT TESTED** |
+| Thiết bị iOS thật (đã thêm vào Màn hình chính) | **NOT TESTED** |

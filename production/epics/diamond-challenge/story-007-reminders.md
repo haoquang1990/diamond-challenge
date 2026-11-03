@@ -51,12 +51,17 @@
 
 ## Files
 
+- `src/domain/reminders.ts`
 - `src/notifications/reminders.ts`
 - `src/ui/screens/settings-screen.tsx`
-- `src/service-worker.ts`
+- `src/ui/screens/today-screen.tsx`
+- `src/app.tsx`
+- `public/sw.js`
+- `src/config/game-config.json`
+- `src/ui/strings.ts`
+- `src/ui/styles.css`
+- `tests/unit/reminders/reminders.test.ts`
 - `production/qa/evidence/story-007-feasibility.md`
-
----
 
 ## QA Test Cases
 
