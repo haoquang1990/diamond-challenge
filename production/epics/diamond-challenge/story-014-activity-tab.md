@@ -1,7 +1,7 @@
 # Story 014: Tab Hoạt động + Bảng 30x30 mở Danh bạ đã lọc
 
 > **Epic**: diamond-challenge
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Presentation
 > **Type**: UI
 > **Estimate**: M
@@ -84,3 +84,10 @@
 
 - Depends on: `production/epics/diamond-challenge/story-012-person-tasks-labels.md`, `production/epics/diamond-challenge/story-013-contacts-tab.md`, `production/epics/diamond-challenge/story-010-board-30x30.md`
 - Unlocks: None
+
+## Completion Notes
+**Completed**: 2026-11-04
+**Criteria**: 9/9 passing (production build in Chromium 390×844 and 320px; not tried on a real phone)
+**Deviations**: Advisory, not logged as tech debt: (1) the optional note field was dropped from the Hoạt động flow, completing a task is one tap; (2) the reminder text changed from "1 việc Làm" to "1 Hoạt động" (strings.ts and three expectations in reminders.test.ts), so story 007's screenshots still show the old wording; (3) at 320px the HOẠT ĐỘNG button and the tab label wrap to two lines, and at 390px the "Hoạt động" and "Con đường" tab labels sit close together; (4) screenshots 01 and 05 were not opened by the reviewer
+**Test Evidence**: screenshots in production/qa/evidence/story-014-activity-tab/ (01–14 plus stamp.txt, stamp unchanged); full suite 219/219
+**Reviewed by**: self, no independent review
