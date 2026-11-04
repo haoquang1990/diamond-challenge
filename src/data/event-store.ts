@@ -89,6 +89,12 @@ export interface EventStore {
   append(event: NewEvent): Promise<LogEvent>;
   /** Returns events with `from <= timestamp <= to`, oldest first (ties in insertion order). */
   list(range?: EventRange): Promise<LogEvent[]>;
+  /**
+   * Bulk import (story 011): inserts events verbatim (id, timestamp, userId, schemaVersion,
+   * payload, syncedAt kept) only when no event with that id exists; duplicates (also inside
+   * `events`) are skipped. Never overwrites or deletes. Equal timestamps list in the given order.
+   */
+  importEvents(events: readonly LogEvent[]): Promise<{ added: number; skipped: number }>;
 }
 
 /** Builds a complete event from caller input. Shared by all implementations. */

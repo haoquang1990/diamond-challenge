@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
+import type { ChangeEvent } from 'react';
 import gameConfig from '../../config/game-config.json';
+import { backupFileName, buildBackup, parseBackup } from '../../data/backup';
+import type { BackupRejectReason } from '../../data/backup';
 import type { EventStore } from '../../data/event-store';
 import { parseReminderConfig, parseReminderTime, readReminderSettings } from '../../domain/reminders';
 import type { ReminderConfig, ReminderSettings } from '../../domain/reminders';
@@ -19,7 +22,45 @@ export interface SettingsScreenProps {
   readonly platform?: NotificationPlatform;
   /** Reminder defaults; defaults to game-config.json. */
   readonly reminderConfig?: ReminderConfig;
+  /** Saves backup text as a file; defaults to a Blob download via <a download>. */
+  readonly download?: (fileName: string, text: string) => void;
+  /** Clock for the backup file name and `exportedAt`; defaults to the real time. */
+  readonly now?: () => Date;
 }
+
+/** Default file download: Blob + temporary <a download> (works on phones and desktop). */
+function downloadTextFile(fileName: string, text: string): void {
+  const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function rejectText(reason: BackupRejectReason): string {
+  switch (reason) {
+    case 'not-json':
+      return STRINGS.backupRejectNotJson;
+    case 'unknown-version':
+      return STRINGS.backupRejectVersion;
+    case 'events-not-array':
+      return STRINGS.backupRejectEvents;
+    case 'not-object':
+    case 'wrong-format':
+      return STRINGS.backupRejectFormat;
+  }
+}
+
+/** Outcome line under the backup buttons. */
+type BackupStatus =
+  | { readonly kind: 'idle' }
+  | { readonly kind: 'busy' }
+  | { readonly kind: 'exported' }
+  | { readonly kind: 'imported'; readonly added: number; readonly skipped: number; readonly invalid: number }
+  | { readonly kind: 'error'; readonly text: string };
 
 /**
  * Screen states:
@@ -65,6 +106,8 @@ export function SettingsScreen({
   onSaved,
   platform = DEFAULT_PLATFORM,
   reminderConfig = DEFAULT_REMINDER_CONFIG,
+  download = downloadTextFile,
+  now = () => new Date(),
 }: SettingsScreenProps) {
   const [state, setState] = useState<ScreenState>({ kind: 'loading' });
   const [reloadKey, setReloadKey] = useState(0);
@@ -108,6 +151,44 @@ export function SettingsScreen({
   );
 
   const busy = saveStatus === 'saving';
+  const [backup, setBackup] = useState<BackupStatus>({ kind: 'idle' });
+  const backupBusy = backup.kind === 'busy';
+
+  const onExport = async () => {
+    if (backupBusy) return;
+    setBackup({ kind: 'busy' });
+    try {
+      const at = now();
+      download(backupFileName(at), JSON.stringify(buildBackup(await eventStore.list(), at), null, 2));
+      setBackup({ kind: 'exported' });
+    } catch (error) {
+      console.error('[settings] backup export failed', error);
+      setBackup({ kind: 'error', text: STRINGS.backupExportError });
+    }
+  };
+
+  const onImportFile = async (e: ChangeEvent<HTMLInputElement>) => {
+    const input = e.target;
+    const file = input.files?.[0];
+    if (file === undefined || backupBusy) return;
+    setBackup({ kind: 'busy' });
+    try {
+      const parsed = parseBackup(await file.text());
+      if (!parsed.ok) {
+        setBackup({ kind: 'error', text: rejectText(parsed.reason) });
+      } else {
+        const result = await eventStore.importEvents(parsed.events);
+        setBackup({ kind: 'imported', added: result.added, skipped: result.skipped + parsed.invalid, invalid: parsed.invalid });
+        setReloadKey((k) => k + 1);
+        onSaved?.();
+      }
+    } catch (error) {
+      console.error('[settings] backup import failed', error);
+      setBackup({ kind: 'error', text: STRINGS.backupImportError });
+    } finally {
+      input.value = '';
+    }
+  };
 
   const onToggle = () => {
     if (state.kind !== 'ready' || busy) return;
@@ -217,6 +298,49 @@ export function SettingsScreen({
           </section>
 
           <p className="reminder-disclaimer">{STRINGS.reminderDisclaimer}</p>
+
+          <section className="card person-section" aria-labelledby="backup-title">
+            <h2 id="backup-title" className="card__title">
+              {STRINGS.backupHeading}
+            </h2>
+            <p className="backup-warning">{STRINGS.backupWarning}</p>
+            <div className="backup-actions">
+              <button type="button" className="button button--secondary" onClick={() => void onExport()} disabled={backupBusy}>
+                {STRINGS.backupExport}
+              </button>
+              <label className={backupBusy ? 'button button--secondary backup-file backup-file--disabled' : 'button button--secondary backup-file'}>
+                {STRINGS.backupImport}
+                <input
+                  type="file"
+                  accept=".json,application/json"
+                  className="backup-file__input"
+                  onChange={(e) => void onImportFile(e)}
+                  disabled={backupBusy}
+                />
+              </label>
+            </div>
+            {backup.kind === 'busy' && (
+              <p className="message" role="status">
+                {STRINGS.backupBusy}
+              </p>
+            )}
+            {backup.kind === 'exported' && (
+              <p className="message" role="status">
+                {STRINGS.backupExported}
+              </p>
+            )}
+            {backup.kind === 'imported' && (
+              <p className="message" role="status">
+                {STRINGS.backupImportDone(backup.added, backup.skipped)}
+                {backup.invalid > 0 && ` ${STRINGS.backupImportInvalid(backup.invalid)}`}
+              </p>
+            )}
+            {backup.kind === 'error' && (
+              <p className="message message--error" role="alert">
+                {backup.text}
+              </p>
+            )}
+          </section>
         </>
       )}
     </main>

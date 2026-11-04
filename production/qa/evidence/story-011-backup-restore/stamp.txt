@@ -1,0 +1,8 @@
+Reviewed-Content-Hash: src/data/backup.ts bb704e03e6f148a46f31f449b44410da36f1fe5f
+Reviewed-Content-Hash: src/data/event-store.ts 40f057a43e7763966544af51e1adb0e667cd92fc
+Reviewed-Content-Hash: src/data/indexeddb-event-store.ts d07bbe61ee17dfa682c339d4ec34f085c846e701
+Reviewed-Content-Hash: src/data/memory-event-store.ts d2fb885d756b293ae7309a98d4b5bc9d96b62dca
+Reviewed-Content-Hash: src/ui/screens/settings-screen.tsx 3bc90bc29bb223f9879c9c185f976a03e5bc74d4
+Reviewed-Content-Hash: src/ui/strings.ts be5ae32d7166bbc72a2139617776bdde6b81dfb9
+Reviewed-Content-Hash: src/ui/styles.css d982c5fccac90046ab28ba824689f06d3183a2a1
+Reviewed-Content-Hash: tests/unit/backup/backup.test.ts 54b1fd9f7cac349a54d4dde1d4cb531fd65f9d7c

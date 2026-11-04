@@ -626,3 +626,10 @@ body { margin: 0; }
 .phone-field__row { display: flex; gap: 8px; }
 .phone-field__country { flex: 0 1 45%; min-width: 0; }
 .phone-field__number { flex: 1 1 0; min-width: 0; }
+
+.backup-warning { margin: 0; font-weight: 700; color: var(--color-warn); overflow-wrap: anywhere; }
+.backup-actions { display: flex; flex-direction: column; gap: 12px; }
+.backup-file { position: relative; display: flex; align-items: center; justify-content: center; min-height: var(--touch-min); cursor: pointer; }
+.backup-file--disabled { cursor: default; }
+.backup-file__input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.backup-file__input:disabled { cursor: default; }
