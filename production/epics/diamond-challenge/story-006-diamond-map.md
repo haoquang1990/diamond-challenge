@@ -1,12 +1,12 @@
 # Story 006: Bản đồ Con đường Diamond
 
 > **Epic**: diamond-challenge
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Presentation
 > **Type**: UI
 > **Estimate**: M
 > **Manifest Version**: N/A (minimal — no control manifest)
-> **Last Updated**: 2026-11-03
+> **Last Updated**: 2026-11-04
 
 ## Context
 
@@ -79,3 +79,10 @@
 
 - Depends on: `production/epics/diamond-challenge/story-002-daily-goal-streak.md`
 - Unlocks: None
+
+## Completion Notes
+**Completed**: 2026-11-04
+**Criteria**: 7/7 passing (production build in Chromium 390×844, screenshots recaptured 2026-11-04 after stories 010–013 changed shared files; phone viewport confirmed by the user on a real phone)
+**Deviations**: Advisory, not logged as tech debt: (1) the Con đường milestone still reads "Khách hàng mới" while the person task with the same id new_customer is now named "Chốt khách hàng"; unify the wording in a later story; (2) screenshot 04 was not opened by the reviewer; (3) no screenshot of the map at Emerald or later
+**Test Evidence**: screenshots in production/qa/evidence/story-006-diamond-map/ (01–05 plus stamp.txt, stamp unchanged); tests/unit/stages/stages.test.ts (20 tests); full suite 219/219
+**Reviewed by**: self, no independent review
