@@ -54,7 +54,7 @@
 #   in any other shape is reported as unsupported layout, with its number.
 
 version: 1
-last_updated: ""
+last_updated: "2026-11-03"
 
 # ─── ENTITIES ────────────────────────────────────────────────────────────────
 # Named game-world objects: enemies, NPCs, characters, factions, bosses.
@@ -65,9 +65,22 @@ last_updated: ""
 # Attribute fields: any key stats that could appear in another GDD
 #   (health, damage, drops, faction, etc.)
 
-entities: []
+entities:
+  - name: person
+    status: active
+    source: design/gdd/crm.md
+    referenced_by:
+      - design/gdd/crm.md
+      - design/game-brief.md
+    stages: "acquaintance > contacted > demoed > heard_opp > customer > downline"
+    stage_xp: "acquaintance 0, contacted 5, demoed 10, heard_opp 20, customer 30, downline 50"
+    stage_xp_rule: "next stage only, once per person per stage"
+    linked_user_id: "null in phase 1; set in phase 2 when I create an account for an F1"
+    f1_rule: "phase 1: every non-archived person in my own list at stage customer = my KH, at stage downline = my NPP F1; no sponsor field, no multi-tier tree on device"
+    added: 2026-11-03
+    revised: 2026-11-03   # replaced sponsor_rule/branch_rule/count_rule (on-device sponsor tree) with f1_rule; tree moves to phase 2 server
 
-# Example (remove when first real entry is added):
+# Example (template reference):
 #
 # entities:
 #   - name: goblin
@@ -156,7 +169,22 @@ formulas: []
 #
 # Required fields: name, status, source, referenced_by, value, unit, added
 
-constants: []
+constants:
+  - name: target_30x30x4x4
+    status: active
+    source: design/gdd/crm.md
+    referenced_by:
+      - design/gdd/crm.md
+      - design/phase-2-notes.md
+    contacts_target: 250
+    customers_target: 30
+    f1_target: 30          # was t1_target (renamed 2026-11-03)
+    depth_target: 4        # phase 2, computed by server
+    branch_target: 4       # phase 2, computed by server
+    top_branches_shown: 4  # phase 2, Bảng 4x4
+    config_key: "phase 1: src/config/game-config.json > target30x30 (contacts, customers, f1); phase 2: server config (depth, branch, top branches)"
+    added: 2026-11-03
+    revised: 2026-11-03
 
 # Example:
 #

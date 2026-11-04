@@ -1,0 +1,11 @@
+Reviewed-Content-Hash: src/ui/people-config.ts 72ecaa19f5e0bddef828d058aeeb726346fc3b54
+Reviewed-Content-Hash: src/ui/people-helpers.ts 4f7c57f939abf0f63a022d90cee398ab0fd17442
+Reviewed-Content-Hash: src/ui/screens/people-screen.tsx 5acdc7e2cdcebfdee346ab3e135768fa7ca8b817
+Reviewed-Content-Hash: src/ui/screens/person-form.tsx 7f2ae529e4e4716fa7313c26a9ea6dc42901f287
+Reviewed-Content-Hash: src/ui/screens/log-activity-screen.tsx 25dd9d352905f245bfedab882a4c795a2647e638
+Reviewed-Content-Hash: src/ui/activity-types.ts 11b5289203de05f5ba0ba10130317c5cfce5d252
+Reviewed-Content-Hash: src/app.tsx a20f3f87002b3235fc6fe8c2f0393138eafbf1a5
+Reviewed-Content-Hash: src/ui/strings.ts 2e0bc4e5a9c1c5bf1744d65e09a74efa64388ce3
+Reviewed-Content-Hash: src/ui/styles.css fe87e828f54b5192875c68d0ff5ec683fd6d30a0
+Reviewed-Content-Hash: src/config/game-config.json 9b2a70bf679d1d088d8dba749e9e905e2eedd935
+Reviewed-Content-Hash: tests/unit/people-ui/people-helpers.test.ts f9d380d12cfc1c460eab0804bbd35722c1b10729

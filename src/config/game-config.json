@@ -13,22 +13,26 @@
     {
       "id": "follow_up",
       "name": "Follow-up",
-      "xp": 10
+      "xp": 10,
+      "suggestsStage": "contacted"
     },
     {
       "id": "demo",
       "name": "Demo sản phẩm",
-      "xp": 15
+      "xp": 15,
+      "suggestsStage": "demoed"
     },
     {
       "id": "opp",
       "name": "Trình bày cơ hội (opp)",
-      "xp": 20
+      "xp": 20,
+      "suggestsStage": "heard_opp"
     },
     {
       "id": "new_customer",
       "name": "Khách hàng mới",
-      "xp": 25
+      "xp": 25,
+      "suggestsStage": "customer"
     }
   ],
   "stages": [
@@ -76,5 +80,18 @@
         }
       ]
     }
-  ]
+  ],
+  "personStages": [
+    { "id": "acquaintance", "name": "Người quen", "xp": 0 },
+    { "id": "contacted", "name": "Đã liên hệ", "xp": 5 },
+    { "id": "demoed", "name": "Đã demo", "xp": 10 },
+    { "id": "heard_opp", "name": "Đã nghe opp", "xp": 20 },
+    { "id": "customer", "name": "Khách hàng", "xp": 30 },
+    { "id": "downline", "name": "NPP tuyến dưới", "xp": 50 }
+  ],
+  "target30x30": {
+    "contactsTarget": 250,
+    "customersTarget": 30,
+    "f1Target": 30
+  }
 }
