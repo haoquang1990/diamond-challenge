@@ -1,7 +1,7 @@
 # Story 009: Màn danh sách Người + Làm gắn với một người
 
 > **Epic**: diamond-challenge
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Feature
 > **Type**: UI
 > **Estimate**: L
@@ -88,3 +88,10 @@
 
 - Depends on: `production/epics/diamond-challenge/story-008-people-model.md`, `production/epics/diamond-challenge/story-003-log-activity.md`, `production/epics/diamond-challenge/story-004-today-screen.md`
 - Unlocks: None
+
+## Completion Notes
+**Completed**: 2026-11-04
+**Criteria**: 9/9 passing (production build in Chromium 390×844 and 320×844; the undo button of a stage change was not clicked in the browser, its logic is covered by story 008 tests; not tried on a real phone)
+**Deviations**: Advisory, not logged as tech debt: (1) the stage-change prompt in Làm has no undo of its own (undo from the person detail); (2) adding a person in the Người tab writes two events non-atomically (person without XP if the second fails, an error is shown); (3) the "Con đường" tab label wraps to two lines at 320px; (4) the person picker in Làm has no typing search.
+**Test Evidence**: screenshots in production/qa/evidence/story-009-people-list/ (01–10; 02 and 04 not opened by the reviewer); tests/unit/people-ui/people-helpers.test.ts (5 tests); full suite 173/173
+**Reviewed by**: self, no independent review
