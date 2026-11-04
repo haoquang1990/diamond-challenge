@@ -1,7 +1,7 @@
 # Story 014: Tab Hoạt động + Bảng 30x30 mở Danh bạ đã lọc
 
 > **Epic**: diamond-challenge
-> **Status**: Ready
+> **Status**: In Progress
 > **Layer**: Presentation
 > **Type**: UI
 > **Estimate**: M
