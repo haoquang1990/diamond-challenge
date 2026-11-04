@@ -1,18 +1,17 @@
 # Game Brief: Diamond Challenge
 
-**One-sentence pitch:** CRM được game hoá cho nhà phân phối Amway: một danh sách Người duy nhất mà bạn đưa dần từ "Người quen" tới "NPP tuyến dưới". Mỗi việc làm thật với một người, mỗi lần chuyển giai đoạn và mỗi bài học ngắn đều cho XP, giữ streak và đẩy bạn tiến trên Con đường Diamond, cùng một Bảng 30x30 của chính bạn.
+**One-sentence pitch:** CRM được game hoá cho nhà phân phối Amway: một Danh bạ duy nhất, mỗi người có danh sách việc cần làm (Liên hệ, Demo, Trình bày opp, Follow-up, Chốt khách hàng, Chốt NPP) và nhãn KH / NPP khi bạn chốt. Mỗi việc làm thật với một người và mỗi bài học ngắn đều cho XP, giữ streak và đẩy bạn tiến trên Con đường Diamond, cùng một Bảng 30x30 của chính bạn.
 
 ## Core loop
 - Mở app, vào màn **Hôm nay**: thấy streak, XP hôm nay so với mục tiêu ngày, cùng hai nút **Học** và **Làm**.
-- **Làm**: chọn **một người** trong danh sách (hoặc thêm người mới), ghi một hoạt động thật với người đó (liên hệ, demo, opp, follow-up…), nhận XP. Khi người đó tiến lên giai đoạn tiếp theo thì nhận thêm XP chuyển giai đoạn.
+- **Hoạt động** (tên cũ: Làm): chọn **một người** trong Danh bạ (hoặc thêm người mới), chọn một việc còn trong danh sách của người đó (liên hệ, demo, opp, follow-up, chốt khách hàng, chốt NPP), nhận XP; việc đó biến khỏi danh sách và vào lịch sử. Chốt khách hàng / Chốt NPP gắn nhãn KH / NPP.
 - **Học**: làm một bài kỹ năng ngắn (3–5 câu, khoảng 2 phút) để nhận XP.
-- Đạt mục tiêu ngày thì streak +1. Tổng XP đẩy bạn tiến trên bản đồ Con đường Diamond. Danh sách Người cho thấy ai đang chờ bạn bước tiếp theo, đó là lý do để ngày mai quay lại.
+- Đạt mục tiêu ngày thì streak +1. Tổng XP đẩy bạn tiến trên bản đồ Con đường Diamond. Danh bạ cho thấy ai đang chờ bạn bước tiếp theo, đó là lý do để ngày mai quay lại.
 
 ## Thực thể trung tâm: Người
-- **Một danh sách duy nhất.** Mỗi người có tên, ghi chú, và đúng một **giai đoạn**:
-  **Người quen → Đã liên hệ → Đã demo → Đã nghe opp → Khách hàng → NPP tuyến dưới**.
-- Mỗi hoạt động Làm gắn với một người. Hoạt động có thể kéo theo việc chuyển giai đoạn của người đó.
-- XP của từng loại hoạt động và XP chuyển tới từng giai đoạn được lấy từ file cấu hình.
+- **Một Danh bạ duy nhất.** Mỗi người có tên, ghi chú, số điện thoại (chọn mã nước, mặc định +84), danh sách việc cần làm và tối đa một **nhãn**: KH hoặc NPP (do chốt). Bộ lọc: Tất cả / Khách hàng / NPP / Đã lưu trữ.
+- Mỗi hoạt động gắn với một người. Làm xong một việc thì việc đó biến khỏi danh sách (trừ Follow-up).
+- Danh sách việc và XP của từng việc lấy từ file cấu hình. Dữ liệu giai đoạn cũ được chuyển sang mô hình này khi đọc, không mất lịch sử và XP.
 - Toàn bộ thông tin về người lưu trên máy và được tính lại từ nhật ký sự kiện, giống XP và streak.
 - Mỗi người chỉ quản lý danh sách của chính mình: KH và NPP F1 của mình.
 - **Giai đoạn 1:** mục tiêu 30x30 (≥30 KH, ≥30 NPP F1), mốc phụ 250 liên hệ. Mục tiêu 30x30x4x4 và Bảng 4x4 ở giai đoạn 2 (`design/phase-2-notes.md`). Chi tiết ở `design/gdd/crm.md`.
@@ -22,8 +21,8 @@
 - **Thất bại:** qua nửa đêm (giờ máy) mà chưa đạt mục tiêu ngày thì streak về 0.
 
 ## MVP — what must exist to be the game
-1. **Danh sách Người + giai đoạn:** thêm và sửa người, xem theo giai đoạn, chuyển giai đoạn để nhận XP. Giai đoạn và XP lấy từ cấu hình.
-2. **Ghi hoạt động Làm gắn với một người:** chọn người, chọn loại hoạt động, ghi chú tùy chọn, nhận XP, và có thể đồng thời chuyển giai đoạn.
+1. **Danh bạ + việc cần làm + nhãn KH/NPP:** thêm và sửa người (kèm số điện thoại), lọc theo nhãn, lưu trữ và khôi phục, hoàn thành việc để nhận XP. Việc và XP lấy từ cấu hình.
+2. **Ghi hoạt động gắn với một người:** chọn người, chọn một việc còn trong danh sách của người đó, nhận XP; chốt khách hàng / chốt NPP gắn nhãn.
 3. **Bài Học ngắn:** trắc nghiệm 3–5 câu lấy từ file dữ liệu.
 4. **Hôm nay: mục tiêu ngày + streak:** streak, thanh XP ngày, phần còn thiếu, lối vào Học và Làm.
 5. **Bản đồ Con đường Diamond và Bảng 30x30:** các chặng tạo động lực, mở khóa theo tổng XP và mốc hoạt động; bảng hiện tiến độ của mình (liên hệ/KH/NPP F1), số liệu tính từ danh sách, không phải xác nhận chính thức.
@@ -44,7 +43,7 @@
 1. ~~Nhật ký sự kiện + tính XP/streak~~ (đã có).
 2. ~~Làm, Hôm nay, Học, Bản đồ, Nhắc nhở~~ (đã có, Làm hiện chưa gắn với người).
 3. **Mô hình Người trong nhật ký sự kiện**: thêm người, sửa người, chuyển giai đoạn, kèm XP chuyển giai đoạn và tính 30x30 (hàm thuần có test). Đây là phần rủi ro nhất vì thay đổi cấu trúc sự kiện.
-4. **Màn danh sách Người**, **Làm gắn với người** (gồm xử lý các hoạt động cũ chưa gắn với ai) và **màn Bảng 30x30**.
+4. **Màn Danh bạ**, **Hoạt động gắn với người** (gồm xử lý các hoạt động cũ chưa gắn với ai) và **màn Bảng 30x30** (đã có). Chỉnh sửa theo phản hồi dùng thử (2026-11-04): thay giai đoạn bằng việc cần làm + nhãn, thêm lọc, lưu trữ/khôi phục, số điện thoại, chuyển dữ liệu cũ (`design/gdd/crm.md`).
 5. **Sao lưu và khôi phục bằng file**.
 
 ---
