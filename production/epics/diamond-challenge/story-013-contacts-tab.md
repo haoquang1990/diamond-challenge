@@ -1,7 +1,7 @@
 # Story 013: Danh bạ, bộ lọc, lưu trữ/khôi phục, chi tiết người
 
 > **Epic**: diamond-challenge
-> **Status**: Ready
+> **Status**: In Progress
 > **Layer**: Presentation
 > **Type**: UI
 > **Estimate**: L
