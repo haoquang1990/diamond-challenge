@@ -23,3 +23,7 @@ Theo Build order của brief: nhật ký sự kiện + XP/streak → Làm + Hôm
 | 005 | Bài Học ngắn | UI | Ready | N/A |
 | 006 | Bản đồ Con đường Diamond | UI | Ready | N/A |
 | 007 | Nhắc nhở hằng ngày | Integration | Ready | N/A |
+| 008 | Mô hình Người + XP chuyển giai đoạn + tính 30x30 | Logic | Ready | N/A |
+| 009 | Màn danh sách Người + Làm gắn với một người | UI | Ready | N/A |
+| 010 | Bảng 30x30 | UI | Ready | N/A |
+| 011 | Sao lưu và khôi phục bằng file | Integration | Ready | N/A |
