@@ -1,14 +1,15 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { EventStore, LogEvent } from '../../data/event-store';
 import { deriveActivityOwners, derivePeople } from '../../domain/people';
-import type { Person } from '../../domain/people';
+import type { Person, PersonPhone } from '../../domain/people';
 import { ACTIVITY_TYPES } from '../activity-types';
 import type { ActivityType } from '../activity-types';
 import { PEOPLE_CONFIG } from '../people-config';
-import { groupPeopleByStage, listUnassignedActivities } from '../people-helpers';
+import { CONTACTS_FILTERS, countContacts, filterContacts, listUnassignedActivities } from '../people-helpers';
+import type { ContactsFilter } from '../people-helpers';
 import { playTing } from '../play-ting';
-import { STRINGS, shortDateLabel, stageGroupLabel, xpLabel } from '../strings';
-import { AddPersonForm, PersonDetail } from './person-form';
+import { STRINGS, filterChipLabel, lastContactLabel, nppSinceLabel, shortDateLabel, xpLabel } from '../strings';
+import { AddPersonForm, LabelBadge, PersonDetail } from './person-form';
 
 /** Props for {@link PeopleScreen}. */
 export interface PeopleScreenProps {
@@ -27,8 +28,9 @@ type LoadState =
 const ADD_NAME_ACTIVITY_ID = 'add_name';
 
 /**
- * Tab "Người": non-archived people grouped by stage, add form, person detail
- * and the section for activities not yet linked to a person. Re-reads the
+ * Tab "Danh bạ": filter chips (Tất cả / Khách hàng / NPP / Đã lưu trữ) over
+ * one derived list, add form, person detail, restore of archived people and
+ * the section for activities not yet linked to a person. Re-reads the
  * event log on mount and after every write; keeps no copy of truth.
  */
 export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES }: PeopleScreenProps) {
@@ -36,6 +38,10 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES }: Peo
   const [openId, setOpenId] = useState<string | null>(null);
   const [addedXp, setAddedXp] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [filter, setFilter] = useState<ContactsFilter>('all');
+  /** null = automatic: open while the list is empty, collapsed once there are people. */
+  const [showAdd, setShowAdd] = useState<boolean | null>(null);
+  const [restoringId, setRestoringId] = useState<string | null>(null);
 
   const reload = useCallback(async (): Promise<void> => {
     try {
@@ -84,6 +90,8 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES }: Peo
         eventStore={eventStore}
         person={opened}
         people={people}
+        events={events}
+        activityTypes={activityTypes}
         config={PEOPLE_CONFIG}
         onChanged={reload}
         onBack={() => setOpenId(null)}
@@ -91,12 +99,16 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES }: Peo
     );
   }
 
+  const addOpen = showAdd ?? people.length === 0;
   const addNameType = activityTypes.find((t) => t.id === ADD_NAME_ACTIVITY_ID);
 
-  async function addPerson(name: string, note: string): Promise<void> {
+  async function addPerson(name: string, note: string, phone: PersonPhone | null): Promise<void> {
     setError(null);
     const personId = crypto.randomUUID();
-    await eventStore.append({ type: 'person_added', payload: { personId, name, ...(note === '' ? {} : { note }) } });
+    await eventStore.append({
+      type: 'person_added',
+      payload: { personId, name, ...(note === '' ? {} : { note }), ...(phone === null ? {} : { phone }) },
+    });
     if (addNameType !== undefined) {
       try {
         await eventStore.append({
@@ -115,7 +127,34 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES }: Peo
     await reload();
   }
 
-  const groups = groupPeopleByStage(people, PEOPLE_CONFIG);
+  async function restore(personId: string): Promise<void> {
+    setError(null);
+    setRestoringId(personId);
+    try {
+      await eventStore.append({ type: 'person_restored', payload: { personId } });
+      await reload();
+    } catch (e) {
+      console.error('[people] restore failed', e);
+      setError(STRINGS.restoreError);
+    } finally {
+      setRestoringId(null);
+    }
+  }
+
+  const counts = countContacts(allPeople);
+  const shown = filterContacts(allPeople, filter);
+  const filterNames: Record<ContactsFilter, string> = {
+    all: STRINGS.filterAll,
+    kh: STRINGS.filterKh,
+    npp: STRINGS.filterNpp,
+    archived: STRINGS.filterArchived,
+  };
+  const emptyText: Record<ContactsFilter, { title: string; body: string }> = {
+    all: { title: STRINGS.emptyAllTitle, body: STRINGS.peopleEmptyBody },
+    kh: { title: STRINGS.filterKh, body: STRINGS.emptyKhBody },
+    npp: { title: STRINGS.filterNpp, body: STRINGS.emptyNppBody },
+    archived: { title: STRINGS.filterArchived, body: STRINGS.emptyArchivedBody },
+  };
   const unassigned = listUnassignedActivities(events, deriveActivityOwners(events));
 
   return (
@@ -126,8 +165,20 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES }: Peo
       </header>
 
       <section className="card person-section" aria-label={STRINGS.addPersonTitle}>
-        <h2 className="person-section__heading">{STRINGS.addPersonTitle}</h2>
-        <AddPersonForm people={people} onSubmit={addPerson} />
+        <button
+          type="button"
+          className="button button--secondary"
+          aria-expanded={addOpen}
+          onClick={() => setShowAdd(!addOpen)}
+        >
+          {addOpen ? STRINGS.addPersonToggleClose : STRINGS.addPersonToggleOpen}
+        </button>
+        {addOpen && (
+          <>
+            <h2 className="person-section__heading">{STRINGS.addPersonTitle}</h2>
+            <AddPersonForm people={people} onSubmit={addPerson} />
+          </>
+        )}
         {addedXp !== null && (
           <p className="message" role="status">
             {STRINGS.personAddedXp} · {xpLabel(addedXp)}
@@ -140,27 +191,60 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES }: Peo
         )}
       </section>
 
-      {people.length === 0 ? (
+      <div className="filter-bar" role="group" aria-label={STRINGS.filterBarLabel}>
+        {CONTACTS_FILTERS.map((f) => (
+          <button
+            key={f}
+            type="button"
+            className={f === filter ? 'chip chip--selected' : 'chip'}
+            aria-pressed={f === filter}
+            onClick={() => setFilter(f)}
+          >
+            {filterChipLabel(filterNames[f], counts[f])}
+          </button>
+        ))}
+      </div>
+
+      {shown.length === 0 ? (
         <section className="card card--welcome">
-          <h2 className="person-section__heading">{STRINGS.peopleEmptyTitle}</h2>
-          <p className="message">{STRINGS.peopleEmptyBody}</p>
+          <h2 className="person-section__heading">{emptyText[filter].title}</h2>
+          <p className="message">{emptyText[filter].body}</p>
         </section>
       ) : (
-        groups.map(({ stage, people: inStage }) => (
-          <section key={stage.id} className="people-group" aria-label={stage.name}>
-            <h2 className="people-group__heading">{stageGroupLabel(stage.name, inStage.length)}</h2>
-            <ul className="people-list">
-              {inStage.map((person) => (
-                <li key={person.personId}>
-                  <button type="button" className="person-row" onClick={() => setOpenId(person.personId)}>
+        <ul className="people-list">
+          {shown.map((person) =>
+            filter === 'archived' ? (
+              <li key={person.personId} className="person-row person-row--static">
+                <span className="person-row__main">
+                  <span className="person-row__name">{person.name}</span>
+                </span>
+                <button
+                  type="button"
+                  className="button button--secondary person-row__action"
+                  onClick={() => void restore(person.personId)}
+                  disabled={restoringId !== null}
+                >
+                  {STRINGS.restore}
+                </button>
+              </li>
+            ) : (
+              <li key={person.personId}>
+                <button type="button" className="person-row" onClick={() => setOpenId(person.personId)}>
+                  <span className="person-row__main">
                     <span className="person-row__name">{person.name}</span>
-                    <span className="person-row__stage">{stage.name}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))
+                    {filter === 'kh' && person.lastContactAt !== undefined && (
+                      <span className="person-row__stage">{lastContactLabel(person.lastContactAt)}</span>
+                    )}
+                    {filter === 'npp' && person.nppAt != null && (
+                      <span className="person-row__stage">{nppSinceLabel(person.nppAt)}</span>
+                    )}
+                  </span>
+                  {person.label != null && <LabelBadge label={person.label} />}
+                </button>
+              </li>
+            ),
+          )}
+        </ul>
       )}
 
       {unassigned.length > 0 && (

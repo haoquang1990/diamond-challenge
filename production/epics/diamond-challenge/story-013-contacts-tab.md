@@ -58,15 +58,13 @@
 
 ## Files
 
+- `src/ui/people-helpers.ts`
 - `src/ui/screens/people-screen.tsx`
 - `src/ui/screens/person-form.tsx`
-- `src/ui/people-helpers.ts`
-- `src/app.tsx`
 - `src/ui/strings.ts`
 - `src/ui/styles.css`
+- `tests/unit/people-ui/contacts-helpers.test.ts`
 - `production/qa/evidence/story-013-contacts-tab/*.png`
-
----
 
 ## QA Test Cases
 

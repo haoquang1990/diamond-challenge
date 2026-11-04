@@ -3,7 +3,7 @@ export const STRINGS = {
   logActivityTitle: 'Làm',
   logActivityPrompt: 'Hôm nay bạn đã làm gì?',
   noActivityTypes: 'Chưa có loại hoạt động nào. Hãy thêm vào file cấu hình.',
-  noteLabel: 'Ghi chú (không bắt buộc)',
+  noteLabel: 'Ghi chú (FORMHD)',
   notePlaceholder: 'Vd. tên khách, nội dung trao đổi…',
   save: 'Lưu',
   saving: 'Đang lưu…',
@@ -23,7 +23,7 @@ export const STRINGS = {
   tabLearn: 'Học',
   tabDo: 'Làm',
   tabPath: 'Con đường',
-  tabPeople: 'Người',
+  tabPeople: 'Danh bạ',
 
   // Hôm nay
   todayTitle: 'Hôm nay',
@@ -104,12 +104,39 @@ export const STRINGS = {
   reminderNoticeOff: 'Thông báo bị tắt, app sẽ nhắc bạn ngay trong app.',
   reminderNotificationTitle: 'Diamond Challenge',
 
-  // Người (story 009)
-  peopleTitle: 'Người',
-  peoplePrompt: 'Những người trong danh sách của bạn.',
-  peopleLoadError: 'Không tải được danh sách người. Thử lại nhé.',
+  // Danh bạ (story 009, 013)
+  peopleTitle: 'Danh bạ',
+  peoplePrompt: 'Những người trong danh bạ của bạn.',
+  peopleLoadError: 'Không tải được Danh bạ. Thử lại nhé.',
   peopleEmptyTitle: 'Chưa có ai trong danh sách',
   peopleEmptyBody: 'Hãy thêm người đầu tiên bạn quen. Bắt đầu bằng một cái tên, thế là đủ.',
+  filterAll: 'Tất cả',
+  filterKh: 'Khách hàng',
+  filterNpp: 'NPP',
+  filterArchived: 'Đã lưu trữ',
+  filterBarLabel: 'Lọc danh bạ',
+  emptyAllTitle: 'Chưa có ai trong Danh bạ',
+  emptyKhBody: 'Chưa có khách hàng nào. Mở một người và bấm "Chốt khách hàng" khi họ mua.',
+  emptyNppBody: 'Chưa có NPP nào. Mở một người và bấm "Chốt NPP" khi họ tham gia đội nhóm.',
+  emptyArchivedBody: 'Chưa có ai được lưu trữ.',
+  labelKh: 'KH',
+  labelNpp: 'NPP',
+  restore: 'Khôi phục',
+  restoreError: 'Không khôi phục được. Thử lại nhé.',
+  addPersonToggleOpen: 'Thêm người',
+  addPersonToggleClose: 'Thu gọn',
+  phoneCountryLabel: 'Mã nước',
+  phoneNumberLabel: 'Số điện thoại',
+  phonePlaceholder: 'Vd. 912345678',
+  phoneUnknownCountry: 'Mã nước không hợp lệ.',
+  phoneNotDigits: 'Số điện thoại chỉ gồm chữ số.',
+  phoneBadLength: 'Số điện thoại cần từ 6 đến 15 chữ số.',
+  activitySectionTitle: 'Hoạt động',
+  activityNoneLeft: 'Đã làm hết các việc. Giỏi lắm!',
+  historyTitle: 'Lịch sử',
+  historyEmpty: 'Chưa có hoạt động nào.',
+  taskUndone: 'Đã hoàn tác việc vừa làm.',
+  personDetailPhone: 'Số điện thoại',
   addPersonTitle: 'Thêm người',
   addPersonButton: 'Thêm người',
   boardOpen: 'Bảng 30x30',
@@ -123,7 +150,7 @@ export const STRINGS = {
   boardContactsMet: 'Đã đạt mốc liên hệ',
   boardDisclaimer: 'Số liệu tính từ danh sách bạn tự nhập, không phải xác nhận chính thức.',
   boardEmptyBody: 'Chưa có ai trong danh sách. Thêm người đầu tiên để Bảng bắt đầu chạy.',
-  boardGoPeople: 'Đến màn Người',
+  boardGoPeople: 'Đến Danh bạ',
   personNameLabel: 'Tên',
   personNamePlaceholder: 'Vd. Lan',
   personNameRequired: 'Hãy nhập tên.',
@@ -133,13 +160,8 @@ export const STRINGS = {
   personDetailTitle: 'Thông tin người',
   personSaveChanges: 'Lưu thay đổi',
   personSaved: 'Đã lưu.',
-  personCurrentStage: 'Giai đoạn hiện tại',
   personChangeStage: 'Đổi giai đoạn',
-  personChangeStageConfirm: 'Chuyển giai đoạn',
   personStageNoXp: 'không có XP',
-  personStageUndone: 'Đã hoàn tác giai đoạn.',
-  personStagePickFirst: 'Chọn giai đoạn mới',
-  personStageSame: 'Người này đang ở giai đoạn này.',
   personArchive: 'Lưu trữ người này',
   personArchiveConfirmTitle: 'Lưu trữ người này?',
   personArchiveConfirmBody: 'Họ sẽ biến khỏi danh sách. XP bạn đã nhận vẫn được giữ.',
@@ -269,6 +291,31 @@ export function stageChangedLabel(stageName: string, xp: number): string {
 /** Confirm-archive prompt title with the person's name. */
 export function archivedLabel(name: string): string {
   return `Đã lưu trữ ${name}.`;
+}
+
+/** Contacts row detail, e.g. "Liên hệ gần nhất: 04/11/2026". */
+export function lastContactLabel(iso: string): string {
+  return `Liên hệ gần nhất: ${shortDateLabel(iso)}`;
+}
+
+/** NPP row detail, e.g. "Lên NPP: 04/11/2026". */
+export function nppSinceLabel(iso: string): string {
+  return `Lên NPP: ${shortDateLabel(iso)}`;
+}
+
+/** Filter chip text with count, e.g. "Khách hàng (3)". */
+export function filterChipLabel(name: string, count: number): string {
+  return `${name} (${count})`;
+}
+
+/** Legacy stage change shown read-only in history. */
+export function historyStageLabel(stageName: string): string {
+  return `Chuyển sang ${stageName}`;
+}
+
+/** Aria label for a task button, e.g. "Demo, +10 XP". */
+export function taskButtonLabel(name: string, xp: number): string {
+  return `${name}, ${xpLabel(xp)}`;
 }
 
 /** Short local date for a legacy activity row. */

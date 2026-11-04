@@ -1,0 +1,5 @@
+Reviewed-Content-Hash: src/ui/people-helpers.ts dfe2de4e9a89aab292c4c434f50d98d8a6490946
+Reviewed-Content-Hash: src/ui/screens/people-screen.tsx a16796cccf88f143e10f2f253b196d028376a366
+Reviewed-Content-Hash: src/ui/screens/person-form.tsx 201c11fdf436bcfa4679a673b08edfc251ecce91
+Reviewed-Content-Hash: src/ui/strings.ts 8f30ae4700ef27577a55ce935ece6770322a64e1
+Reviewed-Content-Hash: src/ui/styles.css d4473aafa9cdf296fd1f46f35f5ce8b12b9565fe
