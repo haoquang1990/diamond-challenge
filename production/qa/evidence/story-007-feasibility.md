@@ -60,7 +60,7 @@ Chạy trang qua `http://localhost` (secure context), service worker đã active
 | Chromium 153 (quyền bị chặn) | Không có thông báo; banner nhắc trong app vẫn hiện, kèm dòng "Thông báo bị tắt, app sẽ nhắc bạn ngay trong app." |
 | Chromium 153 (chưa trả lời yêu cầu quyền) | Màn Cài đặt hướng dẫn tắt rồi bật lại để được hỏi lại |
 | Đã đạt mục tiêu ngày | Không có banner nhắc |
-| Bấm vào thông báo để mở Hôm nay | **NOT TESTED** — Playwright headless không bấm được vào thông báo hệ thống |
-| Thông báo khi app đã đóng | **NOT TESTED** — Notification Triggers không có trong Chromium 153 nên đường này không chạy |
-| Thiết bị Android thật | **NOT TESTED** |
-| Thiết bị iOS thật (đã thêm vào Màn hình chính) | **NOT TESTED** |
+| Bấm vào thông báo để mở Hôm nay | Người dùng báo (2026-11-04, iPhone thật): bấm vào thông báo mở đúng màn Hôm nay. Báo cáo bằng lời, không có ảnh chụp lưu lại |
+| Thông báo khi app đã đóng | Chromium 153: không chạy (không có Notification Triggers). Người dùng báo (2026-11-04, iPhone thật): thông báo tới khi app đã đóng. Báo cáo bằng lời, không có ảnh chụp lưu lại; chưa rõ cơ chế (lịch cục bộ hay nền còn sống) |
+| Thiết bị Android thật | **NOT TESTED** (chưa thử được; xác nhận 2026-11-04) |
+| Thiết bị iOS thật (đã thêm vào Màn hình chính) | Người dùng báo (2026-11-04): bật nhắc, chọn giờ (lỗi bánh xe giờ đã sửa ở PR #3), xin quyền thông báo và banner trên Hôm nay hoạt động đúng. Báo cáo bằng lời, không có ảnh chụp lưu lại |
