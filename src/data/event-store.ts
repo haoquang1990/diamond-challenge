@@ -11,8 +11,28 @@
 /** Current event schema version written to every new event. */
 export const EVENT_SCHEMA_VERSION = 1;
 
-/** Every event type the log accepts. */
-export const EVENT_TYPES = ['activity_logged', 'lesson_completed', 'settings_changed'] as const;
+/**
+ * Every event type the log accepts.
+ *
+ * Payload conventions (owned by the features that append them):
+ * - `activity_logged`: `{ activityType, xp, personId?: string }`. `personId` is the
+ *   optional person (see `src/domain/people.ts`) the activity was done with.
+ * - `person_added`: `{ personId, name, note? }`
+ * - `person_updated`: `{ personId, name?, note? }` (latest wins)
+ * - `person_archived`: `{ personId }`
+ * - `person_stage_changed`: `{ personId, from, to, xp }` (xp feeds computeProgress)
+ * - `activity_reassigned`: `{ activityId, personId }` (carries no xp)
+ */
+export const EVENT_TYPES = [
+  'activity_logged',
+  'lesson_completed',
+  'settings_changed',
+  'person_added',
+  'person_updated',
+  'person_archived',
+  'person_stage_changed',
+  'activity_reassigned',
+] as const;
 
 /** Discriminator for an event. */
 export type EventType = (typeof EVENT_TYPES)[number];

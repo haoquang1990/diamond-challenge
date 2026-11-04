@@ -63,8 +63,6 @@
 - `src/config/game-config.json`
 - `tests/unit/people/people.test.ts`
 
----
-
 ## QA Test Cases
 
 *N/A — no qa-lead specs at this tier; implement against the Acceptance Criteria above.*
