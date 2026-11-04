@@ -1,7 +1,7 @@
 # Story 012: Việc cần làm + nhãn KH/NPP + chuyển dữ liệu cũ
 
 > **Epic**: diamond-challenge
-> **Status**: Ready
+> **Status**: In Progress
 > **Layer**: Foundation
 > **Type**: Logic
 > **Estimate**: L
