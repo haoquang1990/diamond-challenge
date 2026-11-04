@@ -1,7 +1,7 @@
 # Story 008: Mô hình Người + XP chuyển giai đoạn + tính 30x30
 
 > **Epic**: diamond-challenge
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Foundation
 > **Type**: Logic
 > **Estimate**: L
@@ -82,3 +82,10 @@
 
 - Depends on: `production/epics/diamond-challenge/story-001-event-log.md`, `production/epics/diamond-challenge/story-002-daily-goal-streak.md`
 - Unlocks: `story-009-people-list.md`, `story-010-board-30x30.md`
+
+## Completion Notes
+**Completed**: 2026-11-04
+**Criteria**: 9/9 passing (62 Vitest tests; data written by the previous build reads back unchanged in real Chromium and a stage-change event adds its XP to Hôm nay)
+**Deviations**: None blocking. Advisory: un-assigning an activity from a person is not supported (only reassigning to another person); an invalid config falls back to unreachable targets and reports `problems`.
+**Test Evidence**: tests/unit/people/people.test.ts (62 tests), full suite 168/168
+**Reviewed by**: self, no independent review
