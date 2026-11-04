@@ -1,12 +1,12 @@
 # Story 011: Sao lưu và khôi phục bằng file
 
 > **Epic**: diamond-challenge
-> **Status**: Ready
+> **Status**: Complete
 > **Layer**: Feature
 > **Type**: Integration
 > **Estimate**: M
 > **Manifest Version**: N/A (minimal — no control manifest)
-> **Last Updated**: —
+> **Last Updated**: 2026-11-04
 
 ## Context
 
@@ -33,7 +33,7 @@
 - [ ] File sai định dạng, không phải JSON, hoặc `formatVersion` lạ: từ chối cả file với thông báo rõ, nhật ký hiện tại không đổi.
 - [ ] Sau khi nhập, hiện kết quả "thêm N, bỏ qua M" và các màn (Hôm nay, Người, Con đường) hiển thị dữ liệu mới.
 - [ ] Có nhắc người dùng giữ file cẩn thận vì chứa tên và ghi chú về người khác.
-- [ ] Khôi phục sang trình duyệt mới (hoặc sau khi xóa dữ liệu) dựng lại đúng XP, streak, danh sách Người và giai đoạn.
+- [ ] Khôi phục sang trình duyệt mới (hoặc sau khi xóa dữ liệu) dựng lại đúng XP, streak, Danh bạ, việc đã làm và nhãn KH/NPP (kể cả dữ liệu cũ có giai đoạn); `person_restored`, `taskId` và `phone` được `parseStoredEvent` chấp nhận (cập nhật theo story 012, 2026-11-04).
 - [ ] Kiểm thử trên trình duyệt thật bằng Playwright: xuất, xóa dữ liệu, nhập lại, và dữ liệu như cũ.
 
 ---
@@ -66,8 +66,6 @@
 - `tests/unit/backup/backup.test.ts`
 - `production/qa/evidence/story-011-backup-restore/`
 
----
-
 ## QA Test Cases
 
 *N/A — no qa-lead specs at this tier; implement against the Acceptance Criteria above.*
@@ -85,5 +83,12 @@
 
 ## Dependencies
 
-- Depends on: `production/epics/diamond-challenge/story-001-event-log.md`
+- Depends on: `production/epics/diamond-challenge/story-001-event-log.md`, `production/epics/diamond-challenge/story-012-person-tasks-labels.md` (làm sau 012 để file sao lưu có kiểu sự kiện mới)
 - Unlocks: None
+
+## Completion Notes
+**Completed**: 2026-11-04
+**Criteria**: 9/9 passing (real Chromium 390×844 and 320px: export, brand-new browser, rejected files, partial and full import, second import adds 0, all screens identical to the source)
+**Deviations**: Advisory, not logged as tech debt: (1) the "bỏ qua" count shown to the user is duplicates plus corrupt events, with a separate sentence when any were corrupt; (2) restored events keep their original userId; (3) restoring the reminder settings was not verified, the test data had reminders off on both sides; (4) download and file picking not tried on a real phone; no automated UI test for the settings screen
+**Test Evidence**: tests/unit/backup/backup.test.ts (7 tests); screenshots and sample-backup.json in production/qa/evidence/story-011-backup-restore/ (stamp unchanged); full suite 226/226
+**Reviewed by**: self, no independent review

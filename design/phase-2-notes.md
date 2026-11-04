@@ -5,7 +5,7 @@ Chưa làm trong MVP (xem Out of scope trong `design/game-brief.md`). Ghi lại 
 ## Tài khoản: đăng ký và đăng nhập
 - **Không cho tự đăng ký.**
 - **Admin chỉ tạo người gốc** (tài khoản đầu tiên của một hệ thống), **đặt lại mật khẩu** và **sửa người bảo trợ**.
-- **Người dùng tạo tài khoản cho NPP F1 của chính mình:** trên một người trong danh sách ở giai đoạn NPP, bấm **"Tạo tài khoản"**, nhập **SĐT + mật khẩu tạm**. Tài khoản mới **tự gắn mình là người bảo trợ**; app ghi `linkedUserId` vào người đó.
+- **Người dùng tạo tài khoản cho NPP F1 của chính mình:** trên một người trong Danh bạ có nhãn NPP, bấm **"Tạo tài khoản"**, nhập **SĐT + mật khẩu tạm**. Tài khoản mới **tự gắn mình là người bảo trợ**; app ghi `linkedUserId` vào người đó.
 - Mỗi người **chỉ tạo được tài khoản cho F1 của mình**.
 - **Đăng nhập** bằng số điện thoại + mật khẩu. **Bắt buộc đổi mật khẩu** ở lần đăng nhập đầu tiên.
 - Admin đặt lại mật khẩu thì cấp mật khẩu tạm mới, người dùng lại phải đổi khi đăng nhập.
@@ -39,7 +39,7 @@ Cây lấy từ quan hệ bảo trợ giữa các tài khoản. Không phân lo�
 - **Vòng lặp bảo trợ:** server từ chối mọi thay đổi tạo vòng lặp.
 - **Số đồng bộ bị cũ hoặc chưa có:** vẫn dùng số gần nhất, hiện "cập nhật lúc…"; chưa đồng bộ lần nào thì coi như chưa đạt 30x30.
 - **SĐT đã có tài khoản:** từ chối tạo; nếu người đó đã có tài khoản do người khác tạo thì phải nhờ admin sửa người bảo trợ.
-- **F1 bị chuyển lùi khỏi giai đoạn NPP hoặc lưu trữ trên máy:** tài khoản của họ vẫn giữ; app cảnh báo người đó đã có tài khoản.
+- **F1 bị gỡ nhãn NPP (hoàn tác việc chốt) hoặc lưu trữ trên máy:** tài khoản của họ vẫn giữ; app cảnh báo người đó đã có tài khoản.
 - **Chưa có F1 nào có tài khoản:** Bảng 4x4 hiện "Chưa có nhánh nào".
 
 ## Liên quan

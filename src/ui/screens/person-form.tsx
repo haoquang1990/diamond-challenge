@@ -1,16 +1,77 @@
 import { useState } from 'react';
-import type { EventStore } from '../../data/event-store';
-import { buildStageChangeEvent, findDuplicateNames, planStageChange, validatePersonName } from '../../domain/people';
-import type { PeopleConfig, Person } from '../../domain/people';
-import { STRINGS, stageChangedLabel, stageXpPreview } from '../strings';
+import type { EventStore, LogEvent } from '../../data/event-store';
+import { buildTaskCompletionEvent, findDuplicateNames, pendingTasks, validatePersonName, validatePhone } from '../../domain/people';
+import type { PeopleConfig, Person, PersonPhone } from '../../domain/people';
+import { COUNTRY_CODES, PEOPLE_CONFIG, PERSON_TASKS } from '../people-config';
+import { buildPersonHistory, formatPhone } from '../people-helpers';
+import { playTing } from '../play-ting';
+import { STRINGS, historyStageLabel, shortDateLabel, taskButtonLabel, xpLabel } from '../strings';
+
+/** Maps a phone validation failure to its message. */
+function phoneErrorText(reason: 'unknown_country' | 'not_digits' | 'bad_length'): string {
+  if (reason === 'unknown_country') return STRINGS.phoneUnknownCountry;
+  return reason === 'not_digits' ? STRINGS.phoneNotDigits : STRINGS.phoneBadLength;
+}
+
+/** Props for {@link PhoneInput}. */
+interface PhoneInputProps {
+  readonly country: string;
+  readonly number: string;
+  readonly onChange: (country: string, number: string) => void;
+  readonly disabled: boolean;
+  readonly error: string | null;
+}
+
+/** Country-code select (default first) plus a tel input. */
+function PhoneInput({ country, number, onChange, disabled, error }: PhoneInputProps) {
+  return (
+    <div className="phone-field">
+      <span className="note__label">{STRINGS.phoneNumberLabel}</span>
+      <div className="phone-field__row">
+        <select
+          className="select phone-field__country"
+          value={country}
+          onChange={(e) => onChange(e.target.value, number)}
+          disabled={disabled}
+          aria-label={STRINGS.phoneCountryLabel}
+        >
+          {COUNTRY_CODES.map((c) => (
+            <option key={c.code} value={c.code}>
+              {c.code} {c.name}
+            </option>
+          ))}
+        </select>
+        <input
+          className="note__input phone-field__number"
+          type="tel"
+          inputMode="tel"
+          value={number}
+          placeholder={STRINGS.phonePlaceholder}
+          onChange={(e) => onChange(country, e.target.value)}
+          disabled={disabled}
+          autoComplete="off"
+          aria-label={STRINGS.phoneNumberLabel}
+          aria-invalid={error !== null}
+        />
+      </div>
+      {error !== null && (
+        <p className="message message--error" role="alert">
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
+
+const DEFAULT_COUNTRY = COUNTRY_CODES[0]?.code ?? '+84';
 
 /** Props for {@link AddPersonForm}. */
 export interface AddPersonFormProps {
   /** People used for the non-blocking duplicate-name warning. */
   readonly people: readonly Person[];
   /** Writes the person; a rejected promise shows a save error and keeps the input. */
-  readonly onSubmit: (name: string, note: string) => Promise<void>;
-  /** Hide the note field (compact use inside the Làm flow). */
+  readonly onSubmit: (name: string, note: string, phone: PersonPhone | null) => Promise<void>;
+  /** Hide the note and phone fields (compact use inside the Làm flow). */
   readonly compact?: boolean;
 }
 
@@ -21,6 +82,9 @@ export interface AddPersonFormProps {
 export function AddPersonForm({ people, onSubmit, compact = false }: AddPersonFormProps) {
   const [name, setName] = useState('');
   const [note, setNote] = useState('');
+  const [country, setCountry] = useState(DEFAULT_COUNTRY);
+  const [number, setNumber] = useState('');
+  const [phoneError, setPhoneError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -32,12 +96,20 @@ export function AddPersonForm({ people, onSubmit, compact = false }: AddPersonFo
       setError(STRINGS.personNameRequired);
       return;
     }
+    const phone = compact ? { ok: true as const, phone: null } : validatePhone(country, number, PEOPLE_CONFIG);
+    if (!phone.ok) {
+      setPhoneError(phoneErrorText(phone.reason));
+      return;
+    }
     setBusy(true);
     setError(null);
+    setPhoneError(null);
     try {
-      await onSubmit(checked.name, note.trim());
+      await onSubmit(checked.name, note.trim(), phone.phone);
       setName('');
       setNote('');
+      setNumber('');
+      setCountry(DEFAULT_COUNTRY);
     } catch (e) {
       console.error('[people] add failed', e);
       setError(STRINGS.personSaveError);
@@ -71,6 +143,19 @@ export function AddPersonForm({ people, onSubmit, compact = false }: AddPersonFo
         />
       </label>
       {!compact && (
+        <PhoneInput
+          country={country}
+          number={number}
+          onChange={(c, n) => {
+            setCountry(c);
+            setNumber(n);
+            setPhoneError(null);
+          }}
+          disabled={busy}
+          error={phoneError}
+        />
+      )}
+      {!compact && (
         <label className="note">
           <span className="note__label">{STRINGS.noteLabel}</span>
           <textarea className="note__input" rows={2} value={note} onChange={(e) => setNote(e.target.value)} disabled={busy} />
@@ -99,37 +184,44 @@ export interface PersonDetailProps {
   readonly person: Person;
   /** All derived people (for rename duplicate warning). */
   readonly people: readonly Person[];
-  readonly config: PeopleConfig;
+  /** The loaded event log (history is derived from it). */
+  readonly events: readonly LogEvent[];
+  /** Names for legacy activity types in the history. */
+  readonly activityTypes: readonly { readonly id: string; readonly name: string }[];
+  readonly config?: PeopleConfig;
   /** Re-read the log after any write. */
   readonly onChanged: () => Promise<void>;
   readonly onBack: () => void;
 }
 
-interface StageUndo {
+/** Last completed task, kept for undo and the XP feedback. */
+interface TaskUndo {
   readonly eventId: string;
-  readonly stageName: string;
+  readonly taskName: string;
   readonly xp: number;
 }
 
 /**
- * Detail view of one person: edit name/note, change stage (with XP preview and
- * undo by compensating event) and archive (with confirm). State of record is
- * the event log; this only holds form state.
+ * Detail view of one person: label, edit name/note/phone, to-do tasks
+ * ("Hoạt động", completed through one activity_logged event, undo by
+ * compensating event), read-only history and archive (with confirm).
+ * State of record is the event log; this only holds form state.
  */
-export function PersonDetail({ eventStore, person, people, config, onChanged, onBack }: PersonDetailProps) {
+export function PersonDetail({ eventStore, person, people, events, activityTypes, config = PEOPLE_CONFIG, onChanged, onBack }: PersonDetailProps) {
   const [name, setName] = useState(person.name);
   const [note, setNote] = useState(person.note);
-  const [targetStage, setTargetStage] = useState<string | null>(null);
+  const [country, setCountry] = useState(person.phone?.country ?? DEFAULT_COUNTRY);
+  const [number, setNumber] = useState(person.phone?.number ?? '');
+  const [phoneError, setPhoneError] = useState<string | null>(null);
   const [confirmArchive, setConfirmArchive] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
-  const [stageUndo, setStageUndo] = useState<StageUndo | null>(null);
+  const [taskUndo, setTaskUndo] = useState<TaskUndo | null>(null);
 
-  const currentStage = config.stages.find((s) => s.id === person.stageId);
   const duplicate = name.trim() !== '' && findDuplicateNames(people, name, person.personId).duplicate;
-  const targetPlan = targetStage === null ? null : planStageChange(person, targetStage, config);
-  const targetDef = config.stages.find((s) => s.id === targetStage);
+  const todo = pendingTasks(person, config);
+  const history = buildPersonHistory(events, person.personId, config, [...PERSON_TASKS, ...activityTypes]);
 
   async function run(action: () => Promise<void>): Promise<void> {
     setBusy(true);
@@ -152,32 +244,42 @@ export function PersonDetail({ eventStore, person, people, config, onChanged, on
         setError(STRINGS.personNameRequired);
         return;
       }
+      const phone = validatePhone(country, number, config);
+      if (!phone.ok) {
+        setPhoneError(phoneErrorText(phone.reason));
+        return;
+      }
+      setPhoneError(null);
       await eventStore.append({
         type: 'person_updated',
-        payload: { personId: person.personId, name: checked.name, note: note.trim() },
+        payload: {
+          personId: person.personId,
+          name: checked.name,
+          note: note.trim(),
+          phone: phone.phone ?? { country, number: '' },
+        },
       });
       await onChanged();
       setInfo(STRINGS.personSaved);
     });
 
-  const changeStage = () =>
+  const completeTask = (taskId: string) =>
     run(async () => {
-      if (targetStage === null) return;
-      const built = buildStageChangeEvent(person, targetStage, config);
+      const built = buildTaskCompletionEvent(person, taskId, config);
       if (!built.ok) return;
       const saved = await eventStore.append(built.event);
-      setStageUndo({ eventId: saved.id, stageName: targetDef?.name ?? '', xp: built.xp });
-      setTargetStage(null);
+      playTing();
+      setTaskUndo({ eventId: saved.id, taskName: config.tasks?.find((t) => t.id === taskId)?.name ?? '', xp: built.xp });
       await onChanged();
     });
 
-  const undoStage = () =>
+  const undoTask = () =>
     run(async () => {
-      if (stageUndo === null) return;
-      await eventStore.append({ type: 'person_stage_changed', payload: { compensates: stageUndo.eventId } });
-      setStageUndo(null);
+      if (taskUndo === null) return;
+      await eventStore.append({ type: 'activity_logged', payload: { compensates: taskUndo.eventId } });
+      setTaskUndo(null);
       await onChanged();
-      setInfo(STRINGS.personStageUndone);
+      setInfo(STRINGS.taskUndone);
     });
 
   const archive = () =>
@@ -193,7 +295,15 @@ export function PersonDetail({ eventStore, person, people, config, onChanged, on
         <button type="button" className="back-button" onClick={onBack} disabled={busy}>
           ‹ {STRINGS.back}
         </button>
-        <h1 className="screen__title">{STRINGS.personDetailTitle}</h1>
+        <h1 className="screen__title">
+          {STRINGS.personDetailTitle}
+          {person.label != null && <LabelBadge label={person.label} />}
+        </h1>
+        {person.phone != null && (
+          <p className="screen__prompt">
+            {STRINGS.personDetailPhone}: <strong>{formatPhone(person.phone)}</strong>
+          </p>
+        )}
       </header>
 
       <section className="card person-section" aria-label={STRINGS.personDetailTitle}>
@@ -211,6 +321,17 @@ export function PersonDetail({ eventStore, person, people, config, onChanged, on
             autoComplete="off"
           />
         </label>
+        <PhoneInput
+          country={country}
+          number={number}
+          onChange={(c, n) => {
+            setCountry(c);
+            setNumber(n);
+            setPhoneError(null);
+          }}
+          disabled={busy}
+          error={phoneError}
+        />
         <label className="note">
           <span className="note__label">{STRINGS.noteLabel}</span>
           <textarea className="note__input" rows={2} value={note} onChange={(e) => setNote(e.target.value)} disabled={busy} />
@@ -225,50 +346,55 @@ export function PersonDetail({ eventStore, person, people, config, onChanged, on
         </button>
       </section>
 
-      <section className="card person-section" aria-label={STRINGS.personChangeStage}>
-        <h2 className="person-section__heading">{STRINGS.personChangeStage}</h2>
-        <p className="message">
-          {STRINGS.personCurrentStage}: <strong>{currentStage?.name ?? person.stageId}</strong>
-        </p>
-        <div className="activity-list" role="radiogroup" aria-label={STRINGS.personStagePickFirst}>
-          {config.stages
-            .filter((s) => s.id !== person.stageId)
-            .map((s) => {
-              const plan = planStageChange(person, s.id, config);
-              const checked = s.id === targetStage;
-              return (
+      <section className="card person-section" aria-label={STRINGS.activitySectionTitle}>
+        <h2 className="person-section__heading">{STRINGS.activitySectionTitle}</h2>
+        {todo.length === 0 ? (
+          <p className="message">{STRINGS.activityNoneLeft}</p>
+        ) : (
+          <ul className="people-list">
+            {todo.map((t) => (
+              <li key={t.id}>
                 <button
-                  key={s.id}
                   type="button"
-                  role="radio"
-                  aria-checked={checked}
-                  className={checked ? 'activity-option activity-option--selected' : 'activity-option'}
-                  onClick={() => setTargetStage(s.id)}
+                  className="task-row"
+                  onClick={() => void completeTask(t.id)}
                   disabled={busy}
+                  aria-label={taskButtonLabel(t.name, t.xp)}
                 >
-                  <span className="activity-option__name">{s.name}</span>
-                  <span className="activity-option__xp">{stageXpPreview(plan.ok ? plan.xp : 0)}</span>
+                  <span className="task-row__name">{t.name}</span>
+                  <span className="activity-option__xp">{xpLabel(t.xp)}</span>
                 </button>
-              );
-            })}
-        </div>
-        <button
-          type="button"
-          className="button button--primary"
-          onClick={() => void changeStage()}
-          disabled={busy || targetPlan === null || !targetPlan.ok}
-        >
-          {targetPlan === null || !targetPlan.ok
-            ? STRINGS.personStagePickFirst
-            : `${STRINGS.personChangeStageConfirm} · ${stageXpPreview(targetPlan.xp)}`}
-        </button>
-        {stageUndo !== null && (
+              </li>
+            ))}
+          </ul>
+        )}
+        {taskUndo !== null && (
           <div className="person-result" role="status" aria-live="polite">
-            <p className="message">{stageChangedLabel(stageUndo.stageName, stageUndo.xp)}</p>
-            <button type="button" className="button button--secondary" onClick={() => void undoStage()} disabled={busy}>
+            <p className="message">
+              {taskUndo.taskName} · <strong>{xpLabel(taskUndo.xp)}</strong>
+            </p>
+            <button type="button" className="button button--secondary" onClick={() => void undoTask()} disabled={busy}>
               {STRINGS.undo}
             </button>
           </div>
+        )}
+      </section>
+
+      <section className="card person-section" aria-label={STRINGS.historyTitle}>
+        <h2 className="person-section__heading">{STRINGS.historyTitle}</h2>
+        {history.length === 0 ? (
+          <p className="message">{STRINGS.historyEmpty}</p>
+        ) : (
+          <ul className="history-list">
+            {history.map((h) => (
+              <li key={h.id} className="history-row">
+                <span className="history-row__name">
+                  {h.kind === 'stage' ? historyStageLabel(h.name) : h.name === '' ? STRINGS.legacyUnknownActivity : h.name}
+                </span>
+                <span className="person-row__stage">{shortDateLabel(h.timestamp)}</span>
+              </li>
+            ))}
+          </ul>
         )}
       </section>
 
@@ -307,3 +433,7 @@ export function PersonDetail({ eventStore, person, people, config, onChanged, on
   );
 }
 
+/** KH / NPP badge. */
+export function LabelBadge({ label }: { readonly label: 'KH' | 'NPP' }) {
+  return <span className={label === 'KH' ? 'badge badge--kh' : 'badge badge--npp'}>{label === 'KH' ? STRINGS.labelKh : STRINGS.labelNpp}</span>;
+}

@@ -35,4 +35,25 @@ export class MemoryEventStore implements EventStore {
     result.sort((a, b) => (a.timestamp < b.timestamp ? -1 : a.timestamp > b.timestamp ? 1 : 0));
     return Promise.resolve(result);
   }
+
+  /** @inheritdoc */
+  importEvents(events: readonly LogEvent[]): Promise<{ added: number; skipped: number }> {
+    const known = new Set<string>();
+    for (const raw of this.events) {
+      const id = (raw as { id?: unknown } | null)?.id;
+      if (typeof id === 'string') known.add(id);
+    }
+    let added = 0;
+    let skipped = 0;
+    for (const event of events) {
+      if (known.has(event.id)) {
+        skipped += 1;
+        continue;
+      }
+      known.add(event.id);
+      this.events.push(event);
+      added += 1;
+    }
+    return Promise.resolve({ added, skipped });
+  }
 }

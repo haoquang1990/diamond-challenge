@@ -89,6 +89,26 @@
     { "id": "customer", "name": "Khách hàng", "xp": 30 },
     { "id": "downline", "name": "NPP tuyến dưới", "xp": 50 }
   ],
+  "personTasks": [
+    { "id": "contact", "name": "Liên hệ", "xp": 5 },
+    { "id": "demo", "name": "Demo", "xp": 10 },
+    { "id": "opp", "name": "Trình bày opp", "xp": 20 },
+    { "id": "follow_up", "name": "Follow-up", "xp": 10, "repeatable": true },
+    { "id": "new_customer", "name": "Chốt khách hàng", "xp": 30, "label": "KH" },
+    { "id": "new_npp", "name": "Chốt NPP", "xp": 50, "label": "NPP" }
+  ],
+  "countryCodes": [
+    { "code": "+84", "name": "Việt Nam" },
+    { "code": "+1", "name": "Hoa Kỳ / Canada" },
+    { "code": "+44", "name": "Anh" },
+    { "code": "+61", "name": "Úc" },
+    { "code": "+65", "name": "Singapore" },
+    { "code": "+81", "name": "Nhật Bản" },
+    { "code": "+82", "name": "Hàn Quốc" },
+    { "code": "+86", "name": "Trung Quốc" },
+    { "code": "+66", "name": "Thái Lan" },
+    { "code": "+60", "name": "Malaysia" }
+  ],
   "target30x30": {
     "contactsTarget": 250,
     "customersTarget": 30,

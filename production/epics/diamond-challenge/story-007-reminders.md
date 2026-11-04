@@ -1,12 +1,12 @@
 # Story 007: Nhắc nhở hằng ngày
 
 > **Epic**: diamond-challenge
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Feature
 > **Type**: Integration
 > **Estimate**: L
 > **Manifest Version**: N/A (minimal — no control manifest)
-> **Last Updated**: 2026-11-03
+> **Last Updated**: 2026-11-04
 
 ## Context
 
@@ -82,3 +82,10 @@
 
 - Depends on: `production/epics/diamond-challenge/story-004-today-screen.md`
 - Unlocks: None
+
+## Completion Notes
+**Completed**: 2026-11-04
+**Criteria**: 8/8 passing (iPhone confirmed by the user, Android not tried; screenshots recaptured 2026-11-04 on the current build)
+**Deviations**: Advisory, not logged as tech debt: (1) the iPhone results, including the system notification arriving with the app closed and tapping it opening Hôm nay, are the user's verbal report with no retained screenshots, and the mechanism (local schedule or a live background page) is unconfirmed; Chromium 153 has no Notification Triggers; (2) Android not tried, recorded as NOT TESTED in story-007-feasibility.md; (3) screenshots 01, 02, 06, 08, 09 and 10 were not opened by the reviewer, their results come from the capture scripts
+**Test Evidence**: production/qa/evidence/story-007-feasibility.md; screenshots in production/qa/evidence/story-007-reminders/ (01–10 plus stamp.txt, stamp unchanged); tests/unit/reminders/reminders.test.ts (33 tests); full suite 219/219
+**Reviewed by**: self, no independent review

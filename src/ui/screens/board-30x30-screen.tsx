@@ -3,6 +3,7 @@ import type { EventStore } from '../../data/event-store';
 import { computePeopleStats, derivePeople } from '../../domain/people';
 import type { PeopleStats } from '../../domain/people';
 import { PEOPLE_CONFIG } from '../people-config';
+import type { ContactsFilter } from '../people-helpers';
 import { STRINGS, boardCountLabel, boardMissingLabel } from '../strings';
 
 /** Props for {@link Board30x30Screen}. */
@@ -13,6 +14,8 @@ export interface Board30x30ScreenProps {
   readonly onBack: () => void;
   /** Opens the Người screen; the empty state shows a button only when provided. */
   readonly onOpenPeople?: () => void;
+  /** Opens Danh bạ filtered to a label; the Khách hàng and NPP F1 rows are buttons only when provided. */
+  readonly onOpenContacts?: (filter: ContactsFilter) => void;
 }
 
 type LoadState =
@@ -30,14 +33,16 @@ interface RowProps {
   readonly count: number;
   readonly target: number;
   readonly met?: boolean;
+  /** When set the row is a button (>=44px) with a chevron. */
+  readonly onOpen?: () => void;
 }
 
-function ProgressRow({ label, count, target, met = false }: RowProps) {
+function ProgressRow({ label, count, target, met = false, onOpen }: RowProps) {
   const text = boardCountLabel(label, count, target);
   const percent = percentOf(count, target);
-  return (
-    <div className="board-row">
-      <p className="board-row__label">
+  const labelNode = (
+    <>
+      <span className="board-row__label">
         {text}
         {met && (
           <span className="board-row__check">
@@ -45,7 +50,21 @@ function ProgressRow({ label, count, target, met = false }: RowProps) {
             ✓ {STRINGS.boardContactsMet}
           </span>
         )}
-      </p>
+      </span>
+    </>
+  );
+  return (
+    <div className="board-row">
+      {onOpen === undefined ? (
+        <p className="board-row__label">{labelNode}</p>
+      ) : (
+        <button type="button" className="board-row__button" onClick={onOpen} aria-label={`${STRINGS.boardOpenContactsHint}: ${text}`}>
+          {labelNode}
+          <span className="board-row__chevron" aria-hidden="true">
+            ›
+          </span>
+        </button>
+      )}
       <div
         className="xp-bar"
         role="progressbar"
@@ -65,7 +84,7 @@ function ProgressRow({ label, count, target, met = false }: RowProps) {
  * Bảng 30x30: contacts, customers and NPP F1 against the configured targets.
  * Read only: re-derives from the event log on every mount and never appends.
  */
-export function Board30x30Screen({ eventStore, onBack, onOpenPeople }: Board30x30ScreenProps) {
+export function Board30x30Screen({ eventStore, onBack, onOpenPeople, onOpenContacts }: Board30x30ScreenProps) {
   const [state, setState] = useState<LoadState>({ kind: 'loading' });
   const [reloadKey, setReloadKey] = useState(0);
   const retry = useCallback(() => {
@@ -136,8 +155,18 @@ export function Board30x30Screen({ eventStore, onBack, onOpenPeople }: Board30x3
 
           <section className="card">
             <ProgressRow label={STRINGS.boardContacts} count={state.stats.contacts} target={contactsTarget} met={state.stats.contactsMet} />
-            <ProgressRow label={STRINGS.boardCustomers} count={state.stats.customers} target={customersTarget} />
-            <ProgressRow label={STRINGS.boardF1} count={state.stats.f1} target={f1Target} />
+            <ProgressRow
+              label={STRINGS.boardCustomers}
+              count={state.stats.customers}
+              target={customersTarget}
+              onOpen={onOpenContacts === undefined ? undefined : () => onOpenContacts('kh')}
+            />
+            <ProgressRow
+              label={STRINGS.boardF1}
+              count={state.stats.f1}
+              target={f1Target}
+              onOpen={onOpenContacts === undefined ? undefined : () => onOpenContacts('npp')}
+            />
           </section>
 
           {state.stats.achieved ? (

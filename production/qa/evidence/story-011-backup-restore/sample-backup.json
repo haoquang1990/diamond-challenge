@@ -1,0 +1,229 @@
+{
+  "format": "diamond-challenge-backup",
+  "formatVersion": 1,
+  "exportedAt": "2026-11-04T15:02:52.710Z",
+  "events": [
+    {
+      "id": "382bb293-f2f4-49af-b9f6-6526f2e156b5",
+      "type": "person_added",
+      "timestamp": "2026-10-26T15:02:48.356Z",
+      "userId": "032528e7-67c7-44c3-925d-09e692a27f47",
+      "schemaVersion": 1,
+      "payload": {
+        "personId": "an",
+        "name": "An",
+        "phone": {
+          "country": "+84",
+          "number": "912345678"
+        }
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "be673eb6-ec9a-48e1-8ee0-52e8df14918b",
+      "type": "person_added",
+      "timestamp": "2026-10-26T15:02:48.366Z",
+      "userId": "032528e7-67c7-44c3-925d-09e692a27f47",
+      "schemaVersion": 1,
+      "payload": {
+        "personId": "binh",
+        "name": "Bình"
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "21f104ec-2475-4770-a9e1-c4c217571d3b",
+      "type": "person_added",
+      "timestamp": "2026-10-26T15:02:48.376Z",
+      "userId": "032528e7-67c7-44c3-925d-09e692a27f47",
+      "schemaVersion": 1,
+      "payload": {
+        "personId": "chi",
+        "name": "Chi"
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "63079591-d390-428f-9f11-3edfadc8188e",
+      "type": "person_added",
+      "timestamp": "2026-10-26T15:02:48.386Z",
+      "userId": "032528e7-67c7-44c3-925d-09e692a27f47",
+      "schemaVersion": 1,
+      "payload": {
+        "personId": "dung",
+        "name": "Dũng"
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "cca10695-0939-4716-82e3-aeee77b978a4",
+      "type": "person_added",
+      "timestamp": "2026-10-26T15:02:48.396Z",
+      "userId": "032528e7-67c7-44c3-925d-09e692a27f47",
+      "schemaVersion": 1,
+      "payload": {
+        "personId": "em",
+        "name": "Em"
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "df8d21f8-14f6-490e-8e2e-6d7231ca5077",
+      "type": "activity_logged",
+      "timestamp": "2026-10-26T15:02:48.456Z",
+      "userId": "032528e7-67c7-44c3-925d-09e692a27f47",
+      "schemaVersion": 1,
+      "payload": {
+        "activityType": "add_name",
+        "xp": 5,
+        "personId": "an"
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "9c9349ba-936c-49b9-9626-a906bdaa175d",
+      "type": "person_stage_changed",
+      "timestamp": "2026-10-27T15:02:48.406Z",
+      "userId": "032528e7-67c7-44c3-925d-09e692a27f47",
+      "schemaVersion": 1,
+      "payload": {
+        "personId": "binh",
+        "from": "acquaintance",
+        "to": "contacted",
+        "xp": 5
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "ac81f858-38b9-44c3-863a-0016bb3c1a58",
+      "type": "person_stage_changed",
+      "timestamp": "2026-10-28T15:02:48.416Z",
+      "userId": "032528e7-67c7-44c3-925d-09e692a27f47",
+      "schemaVersion": 1,
+      "payload": {
+        "personId": "binh",
+        "from": "acquaintance",
+        "to": "demoed",
+        "xp": 10
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "a20bc09d-b66a-435c-834b-57c5f4aaed05",
+      "type": "person_stage_changed",
+      "timestamp": "2026-10-29T15:02:48.426Z",
+      "userId": "032528e7-67c7-44c3-925d-09e692a27f47",
+      "schemaVersion": 1,
+      "payload": {
+        "personId": "binh",
+        "from": "acquaintance",
+        "to": "heard_opp",
+        "xp": 20
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "58dd3d52-359a-4111-ae77-2954d2fcc583",
+      "type": "person_stage_changed",
+      "timestamp": "2026-10-30T15:02:48.436Z",
+      "userId": "032528e7-67c7-44c3-925d-09e692a27f47",
+      "schemaVersion": 1,
+      "payload": {
+        "personId": "chi",
+        "from": "acquaintance",
+        "to": "customer",
+        "xp": 30
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "bf3ab2e2-bfbf-47cf-bd86-1e1ab3a798a4",
+      "type": "person_stage_changed",
+      "timestamp": "2026-10-31T15:02:48.446Z",
+      "userId": "032528e7-67c7-44c3-925d-09e692a27f47",
+      "schemaVersion": 1,
+      "payload": {
+        "personId": "dung",
+        "from": "acquaintance",
+        "to": "downline",
+        "xp": 0
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "d9a293c8-30e5-41a2-aef8-914d532eaa80",
+      "type": "activity_logged",
+      "timestamp": "2026-11-01T15:02:48.466Z",
+      "userId": "032528e7-67c7-44c3-925d-09e692a27f47",
+      "schemaVersion": 1,
+      "payload": {
+        "activityType": "demo",
+        "xp": 15
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "6407cfa9-0ce8-4405-99fb-3a5d0769cd2c",
+      "type": "person_archived",
+      "timestamp": "2026-11-02T15:02:48.507Z",
+      "userId": "032528e7-67c7-44c3-925d-09e692a27f47",
+      "schemaVersion": 1,
+      "payload": {
+        "personId": "em"
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "6b912cd4-21cc-465f-9a86-28d379b408ef",
+      "type": "activity_logged",
+      "timestamp": "2026-11-03T03:02:48.476Z",
+      "userId": "032528e7-67c7-44c3-925d-09e692a27f47",
+      "schemaVersion": 1,
+      "payload": {
+        "activityType": "follow_up",
+        "taskId": "follow_up",
+        "xp": 10,
+        "personId": "an"
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "1169caa3-1dfa-4f24-8d5b-433d947afbb8",
+      "type": "activity_logged",
+      "timestamp": "2026-11-03T05:26:48.486Z",
+      "userId": "032528e7-67c7-44c3-925d-09e692a27f47",
+      "schemaVersion": 1,
+      "payload": {
+        "activityType": "new_customer",
+        "taskId": "new_customer",
+        "xp": 30,
+        "personId": "an"
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "526c1f90-cd11-44b7-83e9-a0e231e08ee8",
+      "type": "lesson_completed",
+      "timestamp": "2026-11-03T07:50:48.497Z",
+      "userId": "032528e7-67c7-44c3-925d-09e692a27f47",
+      "schemaVersion": 1,
+      "payload": {
+        "lessonId": "x",
+        "xp": 10
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "c073ec4a-b80f-4f02-b66d-755bc3e597bf",
+      "type": "settings_changed",
+      "timestamp": "2026-11-03T15:02:48.517Z",
+      "userId": "032528e7-67c7-44c3-925d-09e692a27f47",
+      "schemaVersion": 1,
+      "payload": {
+        "reminderEnabled": true,
+        "reminderTime": "20:00"
+      },
+      "syncedAt": null
+    }
+  ]
+}

@@ -89,6 +89,32 @@ export class IndexedDbEventStore implements EventStore {
     return rows.map((raw) => parseStoredEvent(raw)).filter((e): e is LogEvent => e !== null);
   }
 
+  /** @inheritdoc */
+  async importEvents(events: readonly LogEvent[]): Promise<{ added: number; skipped: number }> {
+    const db = await this.dbPromise;
+    const tx = db.transaction(EVENTS_STORE, 'readwrite');
+    const store = tx.objectStore(EVENTS_STORE);
+    const existing: unknown[] = await requestToPromise(store.getAll());
+    const known = new Set<string>();
+    for (const raw of existing) {
+      const id = (raw as { id?: unknown } | null)?.id;
+      if (typeof id === 'string') known.add(id);
+    }
+    let added = 0;
+    let skipped = 0;
+    for (const event of events) {
+      if (known.has(event.id)) {
+        skipped += 1;
+        continue;
+      }
+      known.add(event.id);
+      store.add(event);
+      added += 1;
+    }
+    await transactionDone(tx);
+    return { added, skipped };
+  }
+
   private async loadOrCreateUserId(): Promise<string> {
     const db = await this.dbPromise;
     const tx = db.transaction(META_STORE, 'readwrite');

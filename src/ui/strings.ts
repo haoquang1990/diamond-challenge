@@ -1,10 +1,8 @@
 /** Player-facing Vietnamese strings for the UI. No i18n framework at MVP. */
 export const STRINGS = {
-  logActivityTitle: 'Làm',
-  logActivityPrompt: 'Hôm nay bạn đã làm gì?',
-  noActivityTypes: 'Chưa có loại hoạt động nào. Hãy thêm vào file cấu hình.',
-  noteLabel: 'Ghi chú (không bắt buộc)',
-  notePlaceholder: 'Vd. tên khách, nội dung trao đổi…',
+  logActivityTitle: 'Hoạt động',
+  logActivityPrompt: 'Chọn việc bạn vừa làm.',
+  noteLabel: 'Ghi chú (FORMHD)',
   save: 'Lưu',
   saving: 'Đang lưu…',
   pickFirst: 'Chọn một hoạt động',
@@ -21,9 +19,9 @@ export const STRINGS = {
   navLabel: 'Điều hướng chính',
   tabToday: 'Hôm nay',
   tabLearn: 'Học',
-  tabDo: 'Làm',
+  tabDo: 'Hoạt động',
   tabPath: 'Con đường',
-  tabPeople: 'Người',
+  tabPeople: 'Danh bạ',
 
   // Hôm nay
   todayTitle: 'Hôm nay',
@@ -31,17 +29,17 @@ export const STRINGS = {
   loadError: 'Không tải được tiến độ. Thử lại nhé.',
   retry: 'Thử lại',
   welcomeTitle: 'Chào mừng bạn!',
-  welcomeBody: 'Mỗi ngày: 1 bài Học + 1 việc Làm và đủ XP để giữ chuỗi ngày.',
+  welcomeBody: 'Mỗi ngày: 1 bài Học + 1 Hoạt động và đủ XP để giữ chuỗi ngày.',
   goalTitle: 'Mục tiêu hôm nay',
   goalMetTitle: 'Đã đạt mục tiêu hôm nay!',
   goalMetBody: 'Quay lại ngày mai để giữ chuỗi nhé.',
   stillNeeded: 'Còn thiếu',
   lessonDone: 'Đã có bài Học',
   lessonMissing: 'còn 1 bài Học',
-  activityDone: 'Đã có việc Làm',
-  activityMissing: 'còn 1 việc Làm',
+  activityDone: 'Đã có Hoạt động',
+  activityMissing: 'còn 1 Hoạt động',
   learnButton: 'Học',
-  doButton: 'Làm',
+  doButton: 'Hoạt động',
   currentStage: 'Chặng hiện tại',
   stagePending: 'Bản đồ Con đường Diamond sắp có',
 
@@ -83,8 +81,23 @@ export const STRINGS = {
   // Nhắc nhở (story 007)
   reminderButton: 'Nhắc nhở',
   reminderButtonLabel: 'Mở cài đặt nhắc nhở',
-  settingsTitle: 'Cài đặt nhắc nhở',
+  settingsTitle: 'Cài đặt',
   settingsPrompt: 'Nhắc bạn hoàn thành mục tiêu ngày, chỉ khi hôm nay chưa đạt.',
+  backupHeading: 'Sao lưu và khôi phục',
+  backupWarning:
+    'Lưu ý: file sao lưu chứa tên, số điện thoại và ghi chú về người khác. Hãy giữ file cẩn thận, đừng gửi cho người lạ.',
+  backupExport: 'Xuất sao lưu',
+  backupImport: 'Nhập từ file',
+  backupBusy: 'Đang xử lý…',
+  backupExported: 'Đã xuất file sao lưu. Hãy cất file ở nơi an toàn.',
+  backupExportError: 'Không xuất được file sao lưu. Thử lại nhé.',
+  backupImportError: 'Không nhập được file. Dữ liệu hiện tại không đổi. Thử lại nhé.',
+  backupRejectNotJson: 'Đây không phải file JSON. Dữ liệu hiện tại không đổi.',
+  backupRejectFormat: 'File này không phải file sao lưu của Diamond Challenge. Dữ liệu hiện tại không đổi.',
+  backupRejectVersion: 'File sao lưu có phiên bản lạ, app chưa đọc được. Dữ liệu hiện tại không đổi.',
+  backupRejectEvents: 'File sao lưu bị hỏng (thiếu danh sách sự kiện). Dữ liệu hiện tại không đổi.',
+  backupImportDone: (added: number, skipped: number) => `Đã thêm ${added}, bỏ qua ${skipped}.`,
+  backupImportInvalid: (invalid: number) => `Trong đó ${invalid} sự kiện hỏng đã bị bỏ qua.`,
   reminderToggle: 'Nhắc mỗi ngày',
   reminderTimeLabel: 'Giờ nhắc',
   reminderSaving: 'Đang lưu…',
@@ -104,12 +117,39 @@ export const STRINGS = {
   reminderNoticeOff: 'Thông báo bị tắt, app sẽ nhắc bạn ngay trong app.',
   reminderNotificationTitle: 'Diamond Challenge',
 
-  // Người (story 009)
-  peopleTitle: 'Người',
-  peoplePrompt: 'Những người trong danh sách của bạn.',
-  peopleLoadError: 'Không tải được danh sách người. Thử lại nhé.',
+  // Danh bạ (story 009, 013)
+  peopleTitle: 'Danh bạ',
+  peoplePrompt: 'Những người trong danh bạ của bạn.',
+  peopleLoadError: 'Không tải được Danh bạ. Thử lại nhé.',
   peopleEmptyTitle: 'Chưa có ai trong danh sách',
   peopleEmptyBody: 'Hãy thêm người đầu tiên bạn quen. Bắt đầu bằng một cái tên, thế là đủ.',
+  filterAll: 'Tất cả',
+  filterKh: 'Khách hàng',
+  filterNpp: 'NPP',
+  filterArchived: 'Đã lưu trữ',
+  filterBarLabel: 'Lọc danh bạ',
+  emptyAllTitle: 'Chưa có ai trong Danh bạ',
+  emptyKhBody: 'Chưa có khách hàng nào. Mở một người và bấm "Chốt khách hàng" khi họ mua.',
+  emptyNppBody: 'Chưa có NPP nào. Mở một người và bấm "Chốt NPP" khi họ tham gia đội nhóm.',
+  emptyArchivedBody: 'Chưa có ai được lưu trữ.',
+  labelKh: 'KH',
+  labelNpp: 'NPP',
+  restore: 'Khôi phục',
+  restoreError: 'Không khôi phục được. Thử lại nhé.',
+  addPersonToggleOpen: 'Thêm người',
+  addPersonToggleClose: 'Thu gọn',
+  phoneCountryLabel: 'Mã nước',
+  phoneNumberLabel: 'Số điện thoại',
+  phonePlaceholder: 'Vd. 912345678',
+  phoneUnknownCountry: 'Mã nước không hợp lệ.',
+  phoneNotDigits: 'Số điện thoại chỉ gồm chữ số.',
+  phoneBadLength: 'Số điện thoại cần từ 6 đến 15 chữ số.',
+  activitySectionTitle: 'Hoạt động',
+  activityNoneLeft: 'Đã làm hết các việc. Giỏi lắm!',
+  historyTitle: 'Lịch sử',
+  historyEmpty: 'Chưa có hoạt động nào.',
+  taskUndone: 'Đã hoàn tác việc vừa làm.',
+  personDetailPhone: 'Số điện thoại',
   addPersonTitle: 'Thêm người',
   addPersonButton: 'Thêm người',
   boardOpen: 'Bảng 30x30',
@@ -119,11 +159,13 @@ export const STRINGS = {
   boardContacts: 'Liên hệ',
   boardCustomers: 'Khách hàng',
   boardF1: 'NPP F1',
+  boardBackFromContacts: 'Quay lại Bảng 30x30',
+  boardOpenContactsHint: 'Mở Danh bạ',
   boardAchieved: 'Đạt 30x30',
   boardContactsMet: 'Đã đạt mốc liên hệ',
   boardDisclaimer: 'Số liệu tính từ danh sách bạn tự nhập, không phải xác nhận chính thức.',
   boardEmptyBody: 'Chưa có ai trong danh sách. Thêm người đầu tiên để Bảng bắt đầu chạy.',
-  boardGoPeople: 'Đến màn Người',
+  boardGoPeople: 'Đến Danh bạ',
   personNameLabel: 'Tên',
   personNamePlaceholder: 'Vd. Lan',
   personNameRequired: 'Hãy nhập tên.',
@@ -133,13 +175,8 @@ export const STRINGS = {
   personDetailTitle: 'Thông tin người',
   personSaveChanges: 'Lưu thay đổi',
   personSaved: 'Đã lưu.',
-  personCurrentStage: 'Giai đoạn hiện tại',
   personChangeStage: 'Đổi giai đoạn',
-  personChangeStageConfirm: 'Chuyển giai đoạn',
   personStageNoXp: 'không có XP',
-  personStageUndone: 'Đã hoàn tác giai đoạn.',
-  personStagePickFirst: 'Chọn giai đoạn mới',
-  personStageSame: 'Người này đang ở giai đoạn này.',
   personArchive: 'Lưu trữ người này',
   personArchiveConfirmTitle: 'Lưu trữ người này?',
   personArchiveConfirmBody: 'Họ sẽ biến khỏi danh sách. XP bạn đã nhận vẫn được giữ.',
@@ -152,15 +189,14 @@ export const STRINGS = {
   legacyUnknownPerson: 'Người không rõ',
   legacyUnknownActivity: 'Hoạt động',
   legacyNoPeople: 'Hãy thêm một người trước để gắn hoạt động.',
-  // Làm chọn người
+  // Hoạt động: chọn người, chọn việc
   pickPersonPrompt: 'Bạn làm việc này với ai?',
   pickPersonEmpty: 'Chưa có ai trong danh sách. Hãy thêm người đầu tiên ngay bên dưới.',
   pickPersonAddHeading: 'Hoặc thêm người mới',
   changePerson: 'Đổi người',
   withPerson: 'Với',
-  stageMoved: 'Đã chuyển giai đoạn.',
-  stageSuggestYes: 'Có',
-  stageSuggestNo: 'Không',
+  pickTaskNone: 'Người này chưa có việc nào cần làm.',
+  pickTaskHeading: 'Chọn việc đã làm',
 
   // Placeholder screens
   comingSoon: 'Sắp có',
@@ -232,14 +268,14 @@ export interface ReminderMissingText {
 /**
  * Short reminder text with the current streak, e.g.
  * `reminderMessage(5, { xp: 0, lesson: true, activity: true })` →
- * "Giữ chuỗi 5 ngày nhé! Còn 1 bài Học và 1 việc Làm."
+ * "Giữ chuỗi 5 ngày nhé! Còn 1 bài Học và 1 Hoạt động."
  * With no streak: "Bắt đầu chuỗi ngày ngay hôm nay nhé!"
  */
 export function reminderMessage(streak: number, missing: ReminderMissingText): string {
   const head = streak > 0 ? `Giữ chuỗi ${streak} ngày nhé!` : 'Bắt đầu chuỗi ngày ngay hôm nay nhé!';
   const parts: string[] = [];
   if (missing.lesson) parts.push('1 bài Học');
-  if (missing.activity) parts.push('1 việc Làm');
+  if (missing.activity) parts.push('1 Hoạt động');
   if (missing.xp > 0) parts.push(`${missing.xp} XP`);
   if (parts.length === 0) return head;
   const list = parts.length === 1 ? parts[0] : `${parts.slice(0, -1).join(', ')} và ${parts[parts.length - 1]}`;
@@ -256,19 +292,34 @@ export function stageXpPreview(xp: number): string {
   return xp > 0 ? xpLabel(xp) : STRINGS.personStageNoXp;
 }
 
-/** Suggestion after logging, e.g. "Chuyển Lan sang Đã liên hệ? (+5 XP)". */
-export function stageSuggestionLabel(personName: string, stageName: string, xp: number): string {
-  return `Chuyển ${personName} sang ${stageName}? (${stageXpPreview(xp)})`;
-}
-
-/** Result after a stage change, e.g. "Đã chuyển sang Đã demo · +10 XP". */
-export function stageChangedLabel(stageName: string, xp: number): string {
-  return `Đã chuyển sang ${stageName} · ${stageXpPreview(xp)}`;
-}
-
 /** Confirm-archive prompt title with the person's name. */
 export function archivedLabel(name: string): string {
   return `Đã lưu trữ ${name}.`;
+}
+
+/** Contacts row detail, e.g. "Liên hệ gần nhất: 04/11/2026". */
+export function lastContactLabel(iso: string): string {
+  return `Liên hệ gần nhất: ${shortDateLabel(iso)}`;
+}
+
+/** NPP row detail, e.g. "Lên NPP: 04/11/2026". */
+export function nppSinceLabel(iso: string): string {
+  return `Lên NPP: ${shortDateLabel(iso)}`;
+}
+
+/** Filter chip text with count, e.g. "Khách hàng (3)". */
+export function filterChipLabel(name: string, count: number): string {
+  return `${name} (${count})`;
+}
+
+/** Legacy stage change shown read-only in history. */
+export function historyStageLabel(stageName: string): string {
+  return `Chuyển sang ${stageName}`;
+}
+
+/** Aria label for a task button, e.g. "Demo, +10 XP". */
+export function taskButtonLabel(name: string, xp: number): string {
+  return `${name}, ${xpLabel(xp)}`;
 }
 
 /** Short local date for a legacy activity row. */

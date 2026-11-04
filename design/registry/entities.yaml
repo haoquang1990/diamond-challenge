@@ -72,13 +72,13 @@ entities:
     referenced_by:
       - design/gdd/crm.md
       - design/game-brief.md
-    stages: "acquaintance > contacted > demoed > heard_opp > customer > downline"
-    stage_xp: "acquaintance 0, contacted 5, demoed 10, heard_opp 20, customer 30, downline 50"
-    stage_xp_rule: "next stage only, once per person per stage"
+    tasks: "contact 5, demo 10, opp 20, follow_up 10 (repeatable), new_customer 30 (label KH), new_npp 50 (label NPP)"
+    task_rule: "completing a task writes activity_logged with taskId; non-repeatable tasks leave the person's list; undo by compensating event"
+    label_rule: "at most one label; new_npp replaces KH and never reverts; legacy person_stage_changed maps customer->KH, downline->NPP, read-only"
     linked_user_id: "null in phase 1; set in phase 2 when I create an account for an F1"
-    f1_rule: "phase 1: every non-archived person in my own list at stage customer = my KH, at stage downline = my NPP F1; no sponsor field, no multi-tier tree on device"
+    f1_rule: "phase 1: every non-archived person in my own list with label KH = my KH, with label NPP = my NPP F1; no sponsor field, no multi-tier tree on device"
     added: 2026-11-03
-    revised: 2026-11-03   # replaced sponsor_rule/branch_rule/count_rule (on-device sponsor tree) with f1_rule; tree moves to phase 2 server
+    revised: 2026-11-04   # stages replaced by tasks + labels (KH/NPP); earlier: sponsor tree moved to phase 2 server
 
 # Example (template reference):
 #

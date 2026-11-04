@@ -1,7 +1,13 @@
-/** Pure helpers for the Người screens (grouping, stage suggestion, legacy activities). */
+/** Pure helpers for the Danh bạ screens (grouping, stage suggestion, legacy activities). */
 import type { LogEvent } from '../data/event-store';
-import { UNKNOWN_PERSON_ID, planStageChange } from '../domain/people';
-import type { PeopleConfig, Person, PersonStageDef } from '../domain/people';
+import {
+  UNKNOWN_PERSON_ID,
+  deriveActivityOwners,
+  planStageChange,
+  sortCustomersByLastContact,
+  sortNppByDate,
+} from '../domain/people';
+import type { PeopleConfig, Person, PersonPhone, PersonStageDef } from '../domain/people';
 
 /** Non-archived people sharing one stage. */
 export interface StageGroup {
@@ -70,4 +76,88 @@ export function listUnassignedActivities(
     else if (owner === UNKNOWN_PERSON_ID) result.push({ event, unknownOwner: true });
   }
   return result.sort((a, b) => (a.event.timestamp < b.event.timestamp ? 1 : a.event.timestamp > b.event.timestamp ? -1 : 0));
+}
+
+/** Filter chips of the Danh bạ tab. */
+export type ContactsFilter = 'all' | 'kh' | 'npp' | 'archived';
+
+/** Chip order in the UI; the first is the default. */
+export const CONTACTS_FILTERS: readonly ContactsFilter[] = ['all', 'kh', 'npp', 'archived'];
+
+/**
+ * People shown under one filter chip (no separate lists, one source).
+ * - all: non-archived, newest added first (derivePeople yields add order, so reversed; stable).
+ * - kh: label KH, longest without contact first.
+ * - npp: label NPP, newest NPP first.
+ * - archived: archived people, newest added first.
+ */
+export function filterContacts(people: readonly Person[], filter: ContactsFilter): Person[] {
+  const newestFirst = (list: readonly Person[]): Person[] => [...list].reverse();
+  switch (filter) {
+    case 'all':
+      return newestFirst(people.filter((p) => !p.archived));
+    case 'kh':
+      return sortCustomersByLastContact(people.filter((p) => !p.archived && p.label === 'KH'));
+    case 'npp':
+      return sortNppByDate(people.filter((p) => !p.archived && p.label === 'NPP'));
+    case 'archived':
+      return newestFirst(people.filter((p) => p.archived));
+  }
+}
+
+/** Number of people under each filter chip. */
+export function countContacts(people: readonly Person[]): Record<ContactsFilter, number> {
+  return {
+    all: filterContacts(people, 'all').length,
+    kh: filterContacts(people, 'kh').length,
+    npp: filterContacts(people, 'npp').length,
+    archived: filterContacts(people, 'archived').length,
+  };
+}
+
+/** "+84 912345678", or '' when the person has no phone. */
+export function formatPhone(phone: PersonPhone | null | undefined): string {
+  return phone === null || phone === undefined ? '' : `${phone.country} ${phone.number}`;
+}
+
+/** One line of a person's history (read-only). */
+export interface HistoryEntry {
+  readonly id: string;
+  readonly timestamp: string;
+  readonly kind: 'activity' | 'stage';
+  /** Activity/task name (kind 'activity', '' when unknown) or stage name (kind 'stage'). */
+  readonly name: string;
+}
+
+/**
+ * History of one person, newest first: non-compensated activities they own
+ * (names from `namedTypes`, tasks first) and legacy non-compensated stage
+ * changes to a configured stage. Pure; ties keep log order reversed.
+ */
+export function buildPersonHistory(
+  events: readonly LogEvent[],
+  personId: string,
+  config: PeopleConfig,
+  namedTypes: readonly { readonly id: string; readonly name: string }[],
+): HistoryEntry[] {
+  const compensated = new Set<string>();
+  for (const e of events) {
+    const target = e.payload.compensates;
+    if (typeof target === 'string') compensated.add(target);
+  }
+  const owners = deriveActivityOwners(events);
+  const entries: HistoryEntry[] = [];
+  for (const e of events) {
+    if (compensated.has(e.id) || typeof e.payload.compensates === 'string') continue;
+    if (e.type === 'activity_logged') {
+      if (owners.get(e.id) !== personId) continue;
+      const typeId = e.payload.activityType;
+      const name = namedTypes.find((t) => t.id === typeId)?.name ?? '';
+      entries.push({ id: e.id, timestamp: e.timestamp, kind: 'activity', name });
+    } else if (e.type === 'person_stage_changed' && e.payload.personId === personId) {
+      const stage = config.stages.find((s) => s.id === e.payload.to);
+      if (stage !== undefined) entries.push({ id: e.id, timestamp: e.timestamp, kind: 'stage', name: stage.name });
+    }
+  }
+  return entries.reverse().sort((a, b) => (a.timestamp < b.timestamp ? 1 : a.timestamp > b.timestamp ? -1 : 0));
 }

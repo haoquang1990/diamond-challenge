@@ -15,11 +15,14 @@ export const EVENT_SCHEMA_VERSION = 1;
  * Every event type the log accepts.
  *
  * Payload conventions (owned by the features that append them):
- * - `activity_logged`: `{ activityType, xp, personId?: string }`. `personId` is the
- *   optional person (see `src/domain/people.ts`) the activity was done with.
- * - `person_added`: `{ personId, name, note? }`
- * - `person_updated`: `{ personId, name?, note? }` (latest wins)
+ * - `activity_logged`: `{ activityType, xp, personId?: string, taskId?: string }`. `personId` is the
+ *   optional person (see `src/domain/people.ts`) the activity was done with; `taskId` marks the
+ *   completion of a person task (activityType equals taskId then).
+ * - `person_added`: `{ personId, name, note?, phone?: { country, number } }`
+ * - `person_updated`: `{ personId, name?, note?, phone?: { country, number } }` (latest wins;
+ *   an empty `number` clears the phone)
  * - `person_archived`: `{ personId }`
+ * - `person_restored`: `{ personId }` (archived state = latest of archived / restored)
  * - `person_stage_changed`: `{ personId, from, to, xp }` (xp feeds computeProgress)
  * - `activity_reassigned`: `{ activityId, personId }` (carries no xp)
  */
@@ -30,6 +33,7 @@ export const EVENT_TYPES = [
   'person_added',
   'person_updated',
   'person_archived',
+  'person_restored',
   'person_stage_changed',
   'activity_reassigned',
 ] as const;
@@ -85,6 +89,12 @@ export interface EventStore {
   append(event: NewEvent): Promise<LogEvent>;
   /** Returns events with `from <= timestamp <= to`, oldest first (ties in insertion order). */
   list(range?: EventRange): Promise<LogEvent[]>;
+  /**
+   * Bulk import (story 011): inserts events verbatim (id, timestamp, userId, schemaVersion,
+   * payload, syncedAt kept) only when no event with that id exists; duplicates (also inside
+   * `events`) are skipped. Never overwrites or deletes. Equal timestamps list in the given order.
+   */
+  importEvents(events: readonly LogEvent[]): Promise<{ added: number; skipped: number }>;
 }
 
 /** Builds a complete event from caller input. Shared by all implementations. */
