@@ -1,7 +1,7 @@
 # Story 010: Bảng 30x30
 
 > **Epic**: diamond-challenge
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Presentation
 > **Type**: UI
 > **Estimate**: M
@@ -80,3 +80,10 @@
 
 - Depends on: `production/epics/diamond-challenge/story-008-people-model.md`, `production/epics/diamond-challenge/story-006-diamond-map.md`
 - Unlocks: None
+
+## Completion Notes
+**Completed**: 2026-11-04
+**Criteria**: 9/9 passing (production build in Chromium 390×844 and 320px; AC-8 measured by script event counts, not an image; not tried on a real phone)
+**Deviations**: Advisory, not logged as tech debt: (1) dependency story 006 was still In Progress when this started (accepted); (2) screenshots 02 and 05 were not opened by the reviewer, their numbers come from the capture script; (3) changing `target30x30` in the config was not tried in the browser (no hardcoded 250/30 found by grep); (4) not tried on a real phone.
+**Test Evidence**: screenshots in production/qa/evidence/story-010-board-30x30/ (00–06 plus stamp.txt, stamp unchanged); full suite 173/173
+**Reviewed by**: self, no independent review
