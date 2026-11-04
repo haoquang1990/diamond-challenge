@@ -9,6 +9,7 @@ import { PeopleScreen } from './ui/screens/people-screen';
 import { LogActivityScreen } from './ui/screens/log-activity-screen';
 import { SettingsScreen } from './ui/screens/settings-screen';
 import { TodayScreen } from './ui/screens/today-screen';
+import type { ContactsFilter } from './ui/people-helpers';
 import { STRINGS } from './ui/strings';
 
 /** Props for {@link App}. */
@@ -44,7 +45,7 @@ const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'board'>; readonly
  * Hôm nay. Switching tabs unmounts the previous screen, so Hôm nay re-reads
  * the event log every time it is shown.
  *
- * Làm is a focused flow: it hides the tab bar and returns to Hôm nay via its
+ * Hoạt động (tab id 'do') is a focused flow: it hides the tab bar and returns to Hôm nay via its
  * back button (`onCancel`) or after a save (`onDone`). Cài đặt nhắc nhở
  * behaves the same way (no tab bar, "Quay lại" to Hôm nay).
  *
@@ -56,6 +57,8 @@ const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'board'>; readonly
 export function App({ eventStore, notificationPlatform = DEFAULT_PLATFORM }: AppProps) {
   const [tab, setTab] = useState<Tab>('today');
   const [lessonActive, setLessonActive] = useState(false);
+  /** Set when Danh bạ was opened from Bảng 30x30 (preselected filter + back control); null otherwise. */
+  const [fromBoard, setFromBoard] = useState<ContactsFilter | null>(null);
   const goToday = () => setTab('today');
   const onLessonActive = useCallback((active: boolean) => setLessonActive(active), []);
 
@@ -106,7 +109,13 @@ export function App({ eventStore, notificationPlatform = DEFAULT_PLATFORM }: App
   if (tab === 'board') {
     return (
       <div className="app-shell">
-        <Board30x30Screen eventStore={eventStore} onBack={() => setTab('path')} onOpenPeople={() => setTab('people')} />
+        <Board30x30Screen eventStore={eventStore} onBack={() => setTab('path')}
+          onOpenPeople={() => setTab('people')}
+          onOpenContacts={(filter) => {
+            setFromBoard(filter);
+            setTab('people');
+          }}
+        />
       </div>
     );
   }
@@ -132,7 +141,21 @@ export function App({ eventStore, notificationPlatform = DEFAULT_PLATFORM }: App
       )}
       {tab === 'learn' && <LessonScreen eventStore={eventStore} onDone={goToday} onActiveChange={onLessonActive} />}
       {tab === 'path' && <DiamondPathScreen eventStore={eventStore} onOpenBoard={() => setTab('board')} />}
-      {tab === 'people' && <PeopleScreen eventStore={eventStore} />}
+      {tab === 'people' && (
+        <PeopleScreen
+          key={fromBoard ?? 'tab'}
+          eventStore={eventStore}
+          {...(fromBoard === null
+            ? {}
+            : {
+                initialFilter: fromBoard,
+                onBack: () => {
+                  setFromBoard(null);
+                  setTab('board');
+                },
+              })}
+        />
+      )}
       {!(tab === 'learn' && lessonActive) && (
       <nav className="tab-bar" aria-label={STRINGS.navLabel}>
         {TABS.map(({ id, label }) => (
@@ -141,7 +164,10 @@ export function App({ eventStore, notificationPlatform = DEFAULT_PLATFORM }: App
             type="button"
             className={id === tab ? 'tab-bar__tab tab-bar__tab--active' : 'tab-bar__tab'}
             aria-current={id === tab ? 'page' : undefined}
-            onClick={() => setTab(id)}
+            onClick={() => {
+              setFromBoard(null);
+              setTab(id);
+            }}
           >
             {label}
           </button>

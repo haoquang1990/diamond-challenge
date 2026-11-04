@@ -17,6 +17,10 @@ export interface PeopleScreenProps {
   readonly eventStore: EventStore;
   /** Activity types, used for the add_name XP and legacy row names; defaults to game-config.json. */
   readonly activityTypes?: readonly ActivityType[];
+  /** Filter chip selected on first render only (e.g. when opened from Bảng 30x30). */
+  readonly initialFilter?: ContactsFilter;
+  /** When provided, a "‹ Quay lại Bảng 30x30" control is shown at the top and calls this. */
+  readonly onBack?: () => void;
 }
 
 type LoadState =
@@ -33,12 +37,12 @@ const ADD_NAME_ACTIVITY_ID = 'add_name';
  * the section for activities not yet linked to a person. Re-reads the
  * event log on mount and after every write; keeps no copy of truth.
  */
-export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES }: PeopleScreenProps) {
+export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initialFilter = 'all', onBack }: PeopleScreenProps) {
   const [load, setLoad] = useState<LoadState>({ kind: 'loading' });
   const [openId, setOpenId] = useState<string | null>(null);
   const [addedXp, setAddedXp] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [filter, setFilter] = useState<ContactsFilter>('all');
+  const [filter, setFilter] = useState<ContactsFilter>(initialFilter);
   /** null = automatic: open while the list is empty, collapsed once there are people. */
   const [showAdd, setShowAdd] = useState<boolean | null>(null);
   const [restoringId, setRestoringId] = useState<string | null>(null);
@@ -160,6 +164,11 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES }: Peo
   return (
     <main className="screen screen--tabbed">
       <header className="screen__header">
+        {onBack !== undefined && (
+          <button type="button" className="back-button" onClick={onBack}>
+            ‹ {STRINGS.boardBackFromContacts}
+          </button>
+        )}
         <h1 className="screen__title">{STRINGS.peopleTitle}</h1>
         <p className="screen__prompt">{STRINGS.peoplePrompt}</p>
       </header>

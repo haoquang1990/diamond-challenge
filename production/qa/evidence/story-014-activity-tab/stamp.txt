@@ -1,0 +1,6 @@
+Reviewed-Content-Hash: src/ui/screens/log-activity-screen.tsx ef8c41561d4597522b9248e31c93f177474ed8a1
+Reviewed-Content-Hash: src/ui/screens/board-30x30-screen.tsx 98ee80cda8b74cfa7acc44faeaf5372108dacb01
+Reviewed-Content-Hash: src/ui/screens/people-screen.tsx 59f2d63d8ba83ea44890cf161f11517e1464b8e5
+Reviewed-Content-Hash: src/app.tsx d9415c583802132c22fef0cc08230d8bb0d21621
+Reviewed-Content-Hash: src/ui/strings.ts 04478048d1cf58fcf9cc5703ecc7584044a5f47e
+Reviewed-Content-Hash: src/ui/styles.css d574c6743ea7755938260eaa7e81c5dea2752cf1

@@ -57,15 +57,13 @@
 ## Files
 
 - `src/ui/screens/log-activity-screen.tsx`
-- `src/ui/activity-types.ts`
 - `src/ui/screens/board-30x30-screen.tsx`
 - `src/ui/screens/people-screen.tsx`
 - `src/app.tsx`
 - `src/ui/strings.ts`
 - `src/ui/styles.css`
+- `tests/unit/reminders/reminders.test.ts`
 - `production/qa/evidence/story-014-activity-tab/*.png`
-
----
 
 ## QA Test Cases
 

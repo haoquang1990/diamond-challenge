@@ -1,10 +1,8 @@
 /** Player-facing Vietnamese strings for the UI. No i18n framework at MVP. */
 export const STRINGS = {
-  logActivityTitle: 'Làm',
-  logActivityPrompt: 'Hôm nay bạn đã làm gì?',
-  noActivityTypes: 'Chưa có loại hoạt động nào. Hãy thêm vào file cấu hình.',
+  logActivityTitle: 'Hoạt động',
+  logActivityPrompt: 'Chọn việc bạn vừa làm.',
   noteLabel: 'Ghi chú (FORMHD)',
-  notePlaceholder: 'Vd. tên khách, nội dung trao đổi…',
   save: 'Lưu',
   saving: 'Đang lưu…',
   pickFirst: 'Chọn một hoạt động',
@@ -21,7 +19,7 @@ export const STRINGS = {
   navLabel: 'Điều hướng chính',
   tabToday: 'Hôm nay',
   tabLearn: 'Học',
-  tabDo: 'Làm',
+  tabDo: 'Hoạt động',
   tabPath: 'Con đường',
   tabPeople: 'Danh bạ',
 
@@ -31,17 +29,17 @@ export const STRINGS = {
   loadError: 'Không tải được tiến độ. Thử lại nhé.',
   retry: 'Thử lại',
   welcomeTitle: 'Chào mừng bạn!',
-  welcomeBody: 'Mỗi ngày: 1 bài Học + 1 việc Làm và đủ XP để giữ chuỗi ngày.',
+  welcomeBody: 'Mỗi ngày: 1 bài Học + 1 Hoạt động và đủ XP để giữ chuỗi ngày.',
   goalTitle: 'Mục tiêu hôm nay',
   goalMetTitle: 'Đã đạt mục tiêu hôm nay!',
   goalMetBody: 'Quay lại ngày mai để giữ chuỗi nhé.',
   stillNeeded: 'Còn thiếu',
   lessonDone: 'Đã có bài Học',
   lessonMissing: 'còn 1 bài Học',
-  activityDone: 'Đã có việc Làm',
-  activityMissing: 'còn 1 việc Làm',
+  activityDone: 'Đã có Hoạt động',
+  activityMissing: 'còn 1 Hoạt động',
   learnButton: 'Học',
-  doButton: 'Làm',
+  doButton: 'Hoạt động',
   currentStage: 'Chặng hiện tại',
   stagePending: 'Bản đồ Con đường Diamond sắp có',
 
@@ -146,6 +144,8 @@ export const STRINGS = {
   boardContacts: 'Liên hệ',
   boardCustomers: 'Khách hàng',
   boardF1: 'NPP F1',
+  boardBackFromContacts: 'Quay lại Bảng 30x30',
+  boardOpenContactsHint: 'Mở Danh bạ',
   boardAchieved: 'Đạt 30x30',
   boardContactsMet: 'Đã đạt mốc liên hệ',
   boardDisclaimer: 'Số liệu tính từ danh sách bạn tự nhập, không phải xác nhận chính thức.',
@@ -174,15 +174,14 @@ export const STRINGS = {
   legacyUnknownPerson: 'Người không rõ',
   legacyUnknownActivity: 'Hoạt động',
   legacyNoPeople: 'Hãy thêm một người trước để gắn hoạt động.',
-  // Làm chọn người
+  // Hoạt động: chọn người, chọn việc
   pickPersonPrompt: 'Bạn làm việc này với ai?',
   pickPersonEmpty: 'Chưa có ai trong danh sách. Hãy thêm người đầu tiên ngay bên dưới.',
   pickPersonAddHeading: 'Hoặc thêm người mới',
   changePerson: 'Đổi người',
   withPerson: 'Với',
-  stageMoved: 'Đã chuyển giai đoạn.',
-  stageSuggestYes: 'Có',
-  stageSuggestNo: 'Không',
+  pickTaskNone: 'Người này chưa có việc nào cần làm.',
+  pickTaskHeading: 'Chọn việc đã làm',
 
   // Placeholder screens
   comingSoon: 'Sắp có',
@@ -254,14 +253,14 @@ export interface ReminderMissingText {
 /**
  * Short reminder text with the current streak, e.g.
  * `reminderMessage(5, { xp: 0, lesson: true, activity: true })` →
- * "Giữ chuỗi 5 ngày nhé! Còn 1 bài Học và 1 việc Làm."
+ * "Giữ chuỗi 5 ngày nhé! Còn 1 bài Học và 1 Hoạt động."
  * With no streak: "Bắt đầu chuỗi ngày ngay hôm nay nhé!"
  */
 export function reminderMessage(streak: number, missing: ReminderMissingText): string {
   const head = streak > 0 ? `Giữ chuỗi ${streak} ngày nhé!` : 'Bắt đầu chuỗi ngày ngay hôm nay nhé!';
   const parts: string[] = [];
   if (missing.lesson) parts.push('1 bài Học');
-  if (missing.activity) parts.push('1 việc Làm');
+  if (missing.activity) parts.push('1 Hoạt động');
   if (missing.xp > 0) parts.push(`${missing.xp} XP`);
   if (parts.length === 0) return head;
   const list = parts.length === 1 ? parts[0] : `${parts.slice(0, -1).join(', ')} và ${parts[parts.length - 1]}`;
@@ -276,16 +275,6 @@ export function stageGroupLabel(name: string, count: number): string {
 /** Stage-change XP preview: "+10 XP" or "không có XP". */
 export function stageXpPreview(xp: number): string {
   return xp > 0 ? xpLabel(xp) : STRINGS.personStageNoXp;
-}
-
-/** Suggestion after logging, e.g. "Chuyển Lan sang Đã liên hệ? (+5 XP)". */
-export function stageSuggestionLabel(personName: string, stageName: string, xp: number): string {
-  return `Chuyển ${personName} sang ${stageName}? (${stageXpPreview(xp)})`;
-}
-
-/** Result after a stage change, e.g. "Đã chuyển sang Đã demo · +10 XP". */
-export function stageChangedLabel(stageName: string, xp: number): string {
-  return `Đã chuyển sang ${stageName} · ${stageXpPreview(xp)}`;
 }
 
 /** Confirm-archive prompt title with the person's name. */
