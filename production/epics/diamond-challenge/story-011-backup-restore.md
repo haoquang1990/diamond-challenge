@@ -1,7 +1,7 @@
 # Story 011: Sao lưu và khôi phục bằng file
 
 > **Epic**: diamond-challenge
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Feature
 > **Type**: Integration
 > **Estimate**: M
@@ -85,3 +85,10 @@
 
 - Depends on: `production/epics/diamond-challenge/story-001-event-log.md`, `production/epics/diamond-challenge/story-012-person-tasks-labels.md` (làm sau 012 để file sao lưu có kiểu sự kiện mới)
 - Unlocks: None
+
+## Completion Notes
+**Completed**: 2026-11-04
+**Criteria**: 9/9 passing (real Chromium 390×844 and 320px: export, brand-new browser, rejected files, partial and full import, second import adds 0, all screens identical to the source)
+**Deviations**: Advisory, not logged as tech debt: (1) the "bỏ qua" count shown to the user is duplicates plus corrupt events, with a separate sentence when any were corrupt; (2) restored events keep their original userId; (3) restoring the reminder settings was not verified, the test data had reminders off on both sides; (4) download and file picking not tried on a real phone; no automated UI test for the settings screen
+**Test Evidence**: tests/unit/backup/backup.test.ts (7 tests); screenshots and sample-backup.json in production/qa/evidence/story-011-backup-restore/ (stamp unchanged); full suite 226/226
+**Reviewed by**: self, no independent review
