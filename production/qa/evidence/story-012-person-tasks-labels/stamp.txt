@@ -1,0 +1,4 @@
+Reviewed-Content-Hash: src/domain/people.ts 2147d868cffb1caf3e75e89c578a15d6f0bb5389
+Reviewed-Content-Hash: src/data/event-store.ts 3521e9be1e1b2d715d3798ba3763800420ceb757
+Reviewed-Content-Hash: src/config/game-config.json 22b362537af5e333ed15b8b1bc0db8fca17b181d
+Reviewed-Content-Hash: src/ui/people-config.ts a8b414949e274ae2b4e7417e071515b8f34697e9

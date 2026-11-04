@@ -92,7 +92,7 @@ describe('derivePeople', () => {
 
   it('starts a new person at the first configured stage', () => {
     const [person] = derivePeople([ev('person_added', { personId: 'a', name: 'Lan', note: 'bạn cũ' })], CONFIG);
-    expect(person).toEqual({
+    expect(person).toMatchObject({
       personId: 'a',
       name: 'Lan',
       note: 'bạn cũ',

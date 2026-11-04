@@ -63,8 +63,7 @@
 - `src/config/game-config.json`
 - `src/ui/people-config.ts`
 - `tests/unit/people/people-tasks.test.ts`
-
----
+- `tests/unit/people/people.test.ts`
 
 ## QA Test Cases
 
