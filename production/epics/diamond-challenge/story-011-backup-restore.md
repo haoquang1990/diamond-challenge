@@ -33,7 +33,7 @@
 - [ ] File sai định dạng, không phải JSON, hoặc `formatVersion` lạ: từ chối cả file với thông báo rõ, nhật ký hiện tại không đổi.
 - [ ] Sau khi nhập, hiện kết quả "thêm N, bỏ qua M" và các màn (Hôm nay, Người, Con đường) hiển thị dữ liệu mới.
 - [ ] Có nhắc người dùng giữ file cẩn thận vì chứa tên và ghi chú về người khác.
-- [ ] Khôi phục sang trình duyệt mới (hoặc sau khi xóa dữ liệu) dựng lại đúng XP, streak, danh sách Người và giai đoạn.
+- [ ] Khôi phục sang trình duyệt mới (hoặc sau khi xóa dữ liệu) dựng lại đúng XP, streak, Danh bạ, việc đã làm và nhãn KH/NPP (kể cả dữ liệu cũ có giai đoạn); `person_restored`, `taskId` và `phone` được `parseStoredEvent` chấp nhận (cập nhật theo story 012, 2026-11-04).
 - [ ] Kiểm thử trên trình duyệt thật bằng Playwright: xuất, xóa dữ liệu, nhập lại, và dữ liệu như cũ.
 
 ---
@@ -85,5 +85,5 @@
 
 ## Dependencies
 
-- Depends on: `production/epics/diamond-challenge/story-001-event-log.md`
+- Depends on: `production/epics/diamond-challenge/story-001-event-log.md`, `production/epics/diamond-challenge/story-012-person-tasks-labels.md` (làm sau 012 để file sao lưu có kiểu sự kiện mới)
 - Unlocks: None
