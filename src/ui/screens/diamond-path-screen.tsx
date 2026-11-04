@@ -85,6 +85,8 @@ export interface DiamondPathScreenProps {
   readonly now?: () => Date;
   /** IANA time zone; defaults to the device's. */
   readonly timeZone?: string;
+  /** Opens the Bảng 30x30 screen; the entry button is shown only when provided. */
+  readonly onOpenBoard?: () => void;
 }
 
 type ScreenState =
@@ -106,6 +108,7 @@ export function DiamondPathScreen({
   stages = DEFAULT_STAGES,
   now = realNow,
   timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone,
+  onOpenBoard,
 }: DiamondPathScreenProps) {
   const [state, setState] = useState<ScreenState>({ kind: 'loading' });
   const [reloadKey, setReloadKey] = useState(0);
@@ -140,6 +143,12 @@ export function DiamondPathScreen({
       </header>
 
       <p className="path-disclaimer">{STRINGS.pathDisclaimer}</p>
+
+      {onOpenBoard !== undefined && (
+        <button type="button" className="button button--secondary" onClick={onOpenBoard}>
+          {STRINGS.boardOpen}
+        </button>
+      )}
 
       {state.kind === 'loading' && (
         <p className="message" role="status">

@@ -59,10 +59,7 @@
 - `src/app.tsx`
 - `src/ui/strings.ts`
 - `src/ui/styles.css`
-- `src/config/game-config.json`
 - `production/qa/evidence/story-010-board-30x30/*.png`
-
----
 
 ## QA Test Cases
 

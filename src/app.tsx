@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { EventStore } from './data/event-store';
 import { browserNotificationPlatform, createReminderScheduler } from './notifications/reminders';
 import type { NotificationPlatform } from './notifications/reminders';
+import { Board30x30Screen } from './ui/screens/board-30x30-screen';
 import { DiamondPathScreen } from './ui/screens/diamond-path-screen';
 import { LessonScreen } from './ui/screens/lesson-screen';
 import { PeopleScreen } from './ui/screens/people-screen';
@@ -28,9 +29,9 @@ function realNow(): Date {
 }
 
 /** Top-level destinations; `settings` (Cài đặt nhắc nhở) is opened from Hôm nay, not from the tab bar. */
-type Tab = 'today' | 'learn' | 'do' | 'path' | 'people' | 'settings';
+type Tab = 'today' | 'learn' | 'do' | 'path' | 'people' | 'settings' | 'board';
 
-const TABS: readonly { readonly id: Exclude<Tab, 'settings'>; readonly label: string }[] = [
+const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'board'>; readonly label: string }[] = [
   { id: 'today', label: STRINGS.tabToday },
   { id: 'learn', label: STRINGS.tabLearn },
   { id: 'do', label: STRINGS.tabDo },
@@ -102,6 +103,14 @@ export function App({ eventStore, notificationPlatform = DEFAULT_PLATFORM }: App
     return <LogActivityScreen eventStore={eventStore} onDone={goToday} onCancel={goToday} />;
   }
 
+  if (tab === 'board') {
+    return (
+      <div className="app-shell">
+        <Board30x30Screen eventStore={eventStore} onBack={() => setTab('path')} onOpenPeople={() => setTab('people')} />
+      </div>
+    );
+  }
+
   if (tab === 'settings') {
     return (
       <div className="app-shell">
@@ -122,7 +131,7 @@ export function App({ eventStore, notificationPlatform = DEFAULT_PLATFORM }: App
         />
       )}
       {tab === 'learn' && <LessonScreen eventStore={eventStore} onDone={goToday} onActiveChange={onLessonActive} />}
-      {tab === 'path' && <DiamondPathScreen eventStore={eventStore} />}
+      {tab === 'path' && <DiamondPathScreen eventStore={eventStore} onOpenBoard={() => setTab('board')} />}
       {tab === 'people' && <PeopleScreen eventStore={eventStore} />}
       {!(tab === 'learn' && lessonActive) && (
       <nav className="tab-bar" aria-label={STRINGS.navLabel}>

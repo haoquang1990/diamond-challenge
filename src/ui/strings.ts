@@ -112,6 +112,18 @@ export const STRINGS = {
   peopleEmptyBody: 'Hãy thêm người đầu tiên bạn quen. Bắt đầu bằng một cái tên, thế là đủ.',
   addPersonTitle: 'Thêm người',
   addPersonButton: 'Thêm người',
+  boardOpen: 'Bảng 30x30',
+  boardTitle: 'Bảng 30x30',
+  boardPrompt: 'Tiến độ danh sách của bạn.',
+  boardLoadError: 'Không tải được Bảng 30x30. Thử lại nhé.',
+  boardContacts: 'Liên hệ',
+  boardCustomers: 'Khách hàng',
+  boardF1: 'NPP F1',
+  boardAchieved: 'Đạt 30x30',
+  boardContactsMet: 'Đã đạt mốc liên hệ',
+  boardDisclaimer: 'Số liệu tính từ danh sách bạn tự nhập, không phải xác nhận chính thức.',
+  boardEmptyBody: 'Chưa có ai trong danh sách. Thêm người đầu tiên để Bảng bắt đầu chạy.',
+  boardGoPeople: 'Đến màn Người',
   personNameLabel: 'Tên',
   personNamePlaceholder: 'Vd. Lan',
   personNameRequired: 'Hãy nhập tên.',
@@ -263,4 +275,17 @@ export function archivedLabel(name: string): string {
 export function shortDateLabel(iso: string): string {
   const d = new Date(iso);
   return Number.isNaN(d.getTime()) ? '' : d.toLocaleDateString('vi-VN');
+}
+
+/** "Label x/target" progress text. */
+export function boardCountLabel(label: string, count: number, target: number): string {
+  return `${label} ${count}/${target}`;
+}
+
+/** What is still missing for 30x30, e.g. "còn 5 KH, còn 12 NPP F1". */
+export function boardMissingLabel(customersMissing: number, f1Missing: number): string {
+  const parts: string[] = [];
+  if (customersMissing > 0) parts.push(`còn ${customersMissing} KH`);
+  if (f1Missing > 0) parts.push(`còn ${f1Missing} NPP F1`);
+  return parts.join(', ');
 }
