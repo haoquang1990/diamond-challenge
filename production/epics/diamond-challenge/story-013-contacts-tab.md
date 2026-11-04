@@ -1,7 +1,7 @@
 # Story 013: Danh bạ, bộ lọc, lưu trữ/khôi phục, chi tiết người
 
 > **Epic**: diamond-challenge
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Presentation
 > **Type**: UI
 > **Estimate**: L
@@ -85,3 +85,10 @@
 
 - Depends on: `production/epics/diamond-challenge/story-012-person-tasks-labels.md`, `production/epics/diamond-challenge/story-009-people-list.md`
 - Unlocks: `story-014-activity-tab.md`
+
+## Completion Notes
+**Completed**: 2026-11-04
+**Criteria**: 10/10 passing (production build in Chromium 390×844 and 320px; not tried on a real phone)
+**Deviations**: Advisory, not logged as tech debt: (1) the "NPP disappears" bug did not reproduce on the previous build (the person was in the last group, below Người quen; repro screenshots 00/01 kept); fixed discoverability with the NPP filter and an add form that collapses once people exist; the user's real cause is not confirmed; (2) at 320px the country select truncates ("+84 Việt N") and the "Con đường" tab label wraps; (3) the shared note label also shows "(FORMHD)" on the Làm screen; (4) tapping the Danh bạ tab while on a person detail stays on the detail (existing behaviour); (5) screenshots 00, 01, 10, 11, 15, 17, 21, 23, 24 were not opened by the reviewer, their results come from the capture script
+**Test Evidence**: screenshots in production/qa/evidence/story-013-contacts-tab/ (00–25 plus stamp.txt, stamp unchanged); tests/unit/people-ui/contacts-helpers.test.ts (7 tests); full suite 219/219
+**Reviewed by**: self, no independent review
