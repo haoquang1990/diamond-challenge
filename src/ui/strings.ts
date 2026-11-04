@@ -23,6 +23,7 @@ export const STRINGS = {
   tabLearn: 'Học',
   tabDo: 'Làm',
   tabPath: 'Con đường',
+  tabPeople: 'Người',
 
   // Hôm nay
   todayTitle: 'Hôm nay',
@@ -102,6 +103,52 @@ export const STRINGS = {
   reminderDueTitle: 'Đến giờ rồi!',
   reminderNoticeOff: 'Thông báo bị tắt, app sẽ nhắc bạn ngay trong app.',
   reminderNotificationTitle: 'Diamond Challenge',
+
+  // Người (story 009)
+  peopleTitle: 'Người',
+  peoplePrompt: 'Những người trong danh sách của bạn.',
+  peopleLoadError: 'Không tải được danh sách người. Thử lại nhé.',
+  peopleEmptyTitle: 'Chưa có ai trong danh sách',
+  peopleEmptyBody: 'Hãy thêm người đầu tiên bạn quen. Bắt đầu bằng một cái tên, thế là đủ.',
+  addPersonTitle: 'Thêm người',
+  addPersonButton: 'Thêm người',
+  personNameLabel: 'Tên',
+  personNamePlaceholder: 'Vd. Lan',
+  personNameRequired: 'Hãy nhập tên.',
+  personDuplicateWarning: 'Đã có người trùng tên này. Bạn vẫn có thể thêm.',
+  personAddedXp: 'Đã thêm người',
+  personSaveError: 'Không lưu được. Thử lại nhé.',
+  personDetailTitle: 'Thông tin người',
+  personSaveChanges: 'Lưu thay đổi',
+  personSaved: 'Đã lưu.',
+  personCurrentStage: 'Giai đoạn hiện tại',
+  personChangeStage: 'Đổi giai đoạn',
+  personChangeStageConfirm: 'Chuyển giai đoạn',
+  personStageNoXp: 'không có XP',
+  personStageUndone: 'Đã hoàn tác giai đoạn.',
+  personStagePickFirst: 'Chọn giai đoạn mới',
+  personStageSame: 'Người này đang ở giai đoạn này.',
+  personArchive: 'Lưu trữ người này',
+  personArchiveConfirmTitle: 'Lưu trữ người này?',
+  personArchiveConfirmBody: 'Họ sẽ biến khỏi danh sách. XP bạn đã nhận vẫn được giữ.',
+  personArchiveConfirm: 'Lưu trữ',
+  cancel: 'Hủy',
+  legacyTitle: 'Hoạt động chưa gắn người',
+  legacyPrompt: 'Gắn mỗi hoạt động cho một người. XP không đổi.',
+  legacyAssign: 'Gắn',
+  legacyPickPerson: 'Chọn người',
+  legacyUnknownPerson: 'Người không rõ',
+  legacyUnknownActivity: 'Hoạt động',
+  legacyNoPeople: 'Hãy thêm một người trước để gắn hoạt động.',
+  // Làm chọn người
+  pickPersonPrompt: 'Bạn làm việc này với ai?',
+  pickPersonEmpty: 'Chưa có ai trong danh sách. Hãy thêm người đầu tiên ngay bên dưới.',
+  pickPersonAddHeading: 'Hoặc thêm người mới',
+  changePerson: 'Đổi người',
+  withPerson: 'Với',
+  stageMoved: 'Đã chuyển giai đoạn.',
+  stageSuggestYes: 'Có',
+  stageSuggestNo: 'Không',
 
   // Placeholder screens
   comingSoon: 'Sắp có',
@@ -185,4 +232,35 @@ export function reminderMessage(streak: number, missing: ReminderMissingText): s
   if (parts.length === 0) return head;
   const list = parts.length === 1 ? parts[0] : `${parts.slice(0, -1).join(', ')} và ${parts[parts.length - 1]}`;
   return `${head} Còn ${list}.`;
+}
+
+/** Person count in a stage group header, e.g. "Đã liên hệ (3)". */
+export function stageGroupLabel(name: string, count: number): string {
+  return `${name} (${count})`;
+}
+
+/** Stage-change XP preview: "+10 XP" or "không có XP". */
+export function stageXpPreview(xp: number): string {
+  return xp > 0 ? xpLabel(xp) : STRINGS.personStageNoXp;
+}
+
+/** Suggestion after logging, e.g. "Chuyển Lan sang Đã liên hệ? (+5 XP)". */
+export function stageSuggestionLabel(personName: string, stageName: string, xp: number): string {
+  return `Chuyển ${personName} sang ${stageName}? (${stageXpPreview(xp)})`;
+}
+
+/** Result after a stage change, e.g. "Đã chuyển sang Đã demo · +10 XP". */
+export function stageChangedLabel(stageName: string, xp: number): string {
+  return `Đã chuyển sang ${stageName} · ${stageXpPreview(xp)}`;
+}
+
+/** Confirm-archive prompt title with the person's name. */
+export function archivedLabel(name: string): string {
+  return `Đã lưu trữ ${name}.`;
+}
+
+/** Short local date for a legacy activity row. */
+export function shortDateLabel(iso: string): string {
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? '' : d.toLocaleDateString('vi-VN');
 }

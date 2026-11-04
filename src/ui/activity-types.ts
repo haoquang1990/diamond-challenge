@@ -12,13 +12,16 @@ export interface ActivityType {
   readonly name: string;
   /** XP awarded per log. */
   readonly xp: number;
+  /** Optional person stage id (from `personStages`) worth suggesting after logging this activity. */
+  readonly suggestsStage?: string;
 }
 
 /**
  * Validates the raw `activityTypes` config value. Invalid or duplicate
- * entries are skipped with a `console.warn`; never throws.
+ * entries are skipped with a `console.warn`; never throws. An invalid optional
+ * `suggestsStage` (not a string, or not in `stageIds` when given) is ignored with a warning.
  */
-export function parseActivityTypes(raw: unknown): ActivityType[] {
+export function parseActivityTypes(raw: unknown, stageIds?: readonly string[]): ActivityType[] {
   if (!Array.isArray(raw)) {
     console.warn('[config] activityTypes is not an array');
     return [];
@@ -41,10 +44,22 @@ export function parseActivityTypes(raw: unknown): ActivityType[] {
       continue;
     }
     seen.add(e.id as string);
-    result.push({ id: e.id as string, name: e.name as string, xp: e.xp as number });
+    const base: ActivityType = { id: e.id as string, name: e.name as string, xp: e.xp as number };
+    const suggested = e.suggestsStage;
+    if (suggested === undefined) {
+      result.push(base);
+    } else if (typeof suggested === 'string' && (stageIds === undefined || stageIds.includes(suggested))) {
+      result.push({ ...base, suggestsStage: suggested });
+    } else {
+      console.warn(`[config] ignoring invalid suggestsStage on activity type ${base.id}: ${JSON.stringify(suggested)}`);
+      result.push(base);
+    }
   }
   return result;
 }
 
 /** Activity types from game-config.json, validated once at load. */
-export const ACTIVITY_TYPES: readonly ActivityType[] = parseActivityTypes(gameConfig.activityTypes);
+export const ACTIVITY_TYPES: readonly ActivityType[] = parseActivityTypes(
+  gameConfig.activityTypes,
+  gameConfig.personStages.map((stage) => stage.id),
+);

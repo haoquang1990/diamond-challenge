@@ -57,16 +57,17 @@
 
 ## Files
 
+- `src/ui/people-config.ts`
+- `src/ui/people-helpers.ts`
 - `src/ui/screens/people-screen.tsx`
 - `src/ui/screens/person-form.tsx`
 - `src/ui/screens/log-activity-screen.tsx`
+- `src/ui/activity-types.ts`
 - `src/app.tsx`
 - `src/ui/strings.ts`
 - `src/ui/styles.css`
 - `src/config/game-config.json`
-- `production/qa/evidence/story-009-people-list/*.png`
-
----
+- `tests/unit/people-ui/people-helpers.test.ts`
 
 ## QA Test Cases
 

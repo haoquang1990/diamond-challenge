@@ -13,22 +13,26 @@
     {
       "id": "follow_up",
       "name": "Follow-up",
-      "xp": 10
+      "xp": 10,
+      "suggestsStage": "contacted"
     },
     {
       "id": "demo",
       "name": "Demo sản phẩm",
-      "xp": 15
+      "xp": 15,
+      "suggestsStage": "demoed"
     },
     {
       "id": "opp",
       "name": "Trình bày cơ hội (opp)",
-      "xp": 20
+      "xp": 20,
+      "suggestsStage": "heard_opp"
     },
     {
       "id": "new_customer",
       "name": "Khách hàng mới",
-      "xp": 25
+      "xp": 25,
+      "suggestsStage": "customer"
     }
   ],
   "stages": [

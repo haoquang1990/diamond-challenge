@@ -4,6 +4,7 @@ import { browserNotificationPlatform, createReminderScheduler } from './notifica
 import type { NotificationPlatform } from './notifications/reminders';
 import { DiamondPathScreen } from './ui/screens/diamond-path-screen';
 import { LessonScreen } from './ui/screens/lesson-screen';
+import { PeopleScreen } from './ui/screens/people-screen';
 import { LogActivityScreen } from './ui/screens/log-activity-screen';
 import { SettingsScreen } from './ui/screens/settings-screen';
 import { TodayScreen } from './ui/screens/today-screen';
@@ -27,13 +28,14 @@ function realNow(): Date {
 }
 
 /** Top-level destinations; `settings` (Cài đặt nhắc nhở) is opened from Hôm nay, not from the tab bar. */
-type Tab = 'today' | 'learn' | 'do' | 'path' | 'settings';
+type Tab = 'today' | 'learn' | 'do' | 'path' | 'people' | 'settings';
 
 const TABS: readonly { readonly id: Exclude<Tab, 'settings'>; readonly label: string }[] = [
   { id: 'today', label: STRINGS.tabToday },
   { id: 'learn', label: STRINGS.tabLearn },
   { id: 'do', label: STRINGS.tabDo },
   { id: 'path', label: STRINGS.tabPath },
+  { id: 'people', label: STRINGS.tabPeople },
 ];
 
 /**
@@ -121,6 +123,7 @@ export function App({ eventStore, notificationPlatform = DEFAULT_PLATFORM }: App
       )}
       {tab === 'learn' && <LessonScreen eventStore={eventStore} onDone={goToday} onActiveChange={onLessonActive} />}
       {tab === 'path' && <DiamondPathScreen eventStore={eventStore} />}
+      {tab === 'people' && <PeopleScreen eventStore={eventStore} />}
       {!(tab === 'learn' && lessonActive) && (
       <nav className="tab-bar" aria-label={STRINGS.navLabel}>
         {TABS.map(({ id, label }) => (
