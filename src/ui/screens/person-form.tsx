@@ -71,7 +71,7 @@ export interface AddPersonFormProps {
   readonly people: readonly Person[];
   /** Writes the person; a rejected promise shows a save error and keeps the input. */
   readonly onSubmit: (name: string, note: string, phone: PersonPhone | null) => Promise<void>;
-  /** Hide the note and phone fields (compact use inside the Làm flow). */
+  /** Hide the note and phone fields (compact variant; currently unused). */
   readonly compact?: boolean;
 }
 
@@ -202,10 +202,12 @@ interface TaskUndo {
 }
 
 /**
- * Detail view of one person: label, edit name/note/phone, to-do tasks
- * ("Hoạt động", completed through one activity_logged event, undo by
- * compensating event), read-only history and archive (with confirm).
- * State of record is the event log; this only holds form state.
+ * Detail view of one person, top to bottom (story 015): header (name as the
+ * title, KH/NPP badge, phone), to-do tasks ("Hoạt động", completed through
+ * one activity_logged event, undo by compensating event), a collapsed
+ * "Sửa thông tin" section with the name/phone/note form (closed by default,
+ * closes again after a successful save), read-only history and archive (with
+ * confirm). State of record is the event log; this only holds form state.
  */
 export function PersonDetail({ eventStore, person, people, events, activityTypes, config = PEOPLE_CONFIG, onChanged, onBack }: PersonDetailProps) {
   const [name, setName] = useState(person.name);
@@ -218,6 +220,7 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [taskUndo, setTaskUndo] = useState<TaskUndo | null>(null);
+  const [editOpen, setEditOpen] = useState(false);
 
   const duplicate = name.trim() !== '' && findDuplicateNames(people, name, person.personId).duplicate;
   const todo = pendingTasks(person, config);
@@ -260,6 +263,7 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
         },
       });
       await onChanged();
+      setEditOpen(false);
       setInfo(STRINGS.personSaved);
     });
 
@@ -295,8 +299,8 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
         <button type="button" className="back-button" onClick={onBack} disabled={busy}>
           ‹ {STRINGS.back}
         </button>
-        <h1 className="screen__title">
-          {STRINGS.personDetailTitle}
+        <h1 className="screen__title person-detail__name">
+          {person.name}
           {person.label != null && <LabelBadge label={person.label} />}
         </h1>
         {person.phone != null && (
@@ -305,46 +309,6 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
           </p>
         )}
       </header>
-
-      <section className="card person-section" aria-label={STRINGS.personDetailTitle}>
-        <label className="note">
-          <span className="note__label">{STRINGS.personNameLabel}</span>
-          <input
-            className="note__input"
-            type="text"
-            value={name}
-            onChange={(e) => {
-              setName(e.target.value);
-              setError(null);
-            }}
-            disabled={busy}
-            autoComplete="off"
-          />
-        </label>
-        <PhoneInput
-          country={country}
-          number={number}
-          onChange={(c, n) => {
-            setCountry(c);
-            setNumber(n);
-            setPhoneError(null);
-          }}
-          disabled={busy}
-          error={phoneError}
-        />
-        <label className="note">
-          <span className="note__label">{STRINGS.noteLabel}</span>
-          <textarea className="note__input" rows={2} value={note} onChange={(e) => setNote(e.target.value)} disabled={busy} />
-        </label>
-        {duplicate && (
-          <p className="message message--warn" role="status">
-            {STRINGS.personDuplicateWarning}
-          </p>
-        )}
-        <button type="button" className="button button--secondary" onClick={() => void saveEdits()} disabled={busy}>
-          {STRINGS.personSaveChanges}
-        </button>
-      </section>
 
       <section className="card person-section" aria-label={STRINGS.activitySectionTitle}>
         <h2 className="person-section__heading">{STRINGS.activitySectionTitle}</h2>
@@ -378,6 +342,70 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
             </button>
           </div>
         )}
+        {error !== null && !editOpen && (
+          <p className="message message--error" role="alert">
+            {error}
+          </p>
+        )}
+      </section>
+
+      <section className="card person-section" aria-label={STRINGS.personEditToggle}>
+        <button
+          type="button"
+          className="button button--secondary"
+          aria-expanded={editOpen}
+          aria-controls="person-edit-form"
+          onClick={() => setEditOpen(!editOpen)}
+          disabled={busy}
+        >
+          {editOpen ? STRINGS.personEditClose : STRINGS.personEditToggle}
+        </button>
+        {editOpen && (
+          <div id="person-edit-form" className="person-form">
+            <label className="note">
+              <span className="note__label">{STRINGS.personNameLabel}</span>
+              <input
+                className="note__input"
+                type="text"
+                value={name}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  setError(null);
+                }}
+                disabled={busy}
+                autoComplete="off"
+              />
+            </label>
+            <PhoneInput
+              country={country}
+              number={number}
+              onChange={(c, n) => {
+                setCountry(c);
+                setNumber(n);
+                setPhoneError(null);
+              }}
+              disabled={busy}
+              error={phoneError}
+            />
+            <label className="note">
+              <span className="note__label">{STRINGS.noteLabel}</span>
+              <textarea className="note__input" rows={2} value={note} onChange={(e) => setNote(e.target.value)} disabled={busy} />
+            </label>
+            {duplicate && (
+              <p className="message message--warn" role="status">
+                {STRINGS.personDuplicateWarning}
+              </p>
+            )}
+            <button type="button" className="button button--secondary" onClick={() => void saveEdits()} disabled={busy}>
+              {STRINGS.personSaveChanges}
+            </button>
+            {error !== null && (
+              <p className="message message--error" role="alert">
+                {error}
+              </p>
+            )}
+          </div>
+        )}
       </section>
 
       <section className="card person-section" aria-label={STRINGS.historyTitle}>
@@ -398,11 +426,6 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
         )}
       </section>
 
-      {error !== null && (
-        <p className="message message--error" role="alert">
-          {error}
-        </p>
-      )}
       {info !== null && (
         <p className="message" role="status">
           {info}

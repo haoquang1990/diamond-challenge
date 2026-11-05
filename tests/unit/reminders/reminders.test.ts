@@ -164,9 +164,9 @@ describe('nextReminderAt', () => {
 
 describe('reminderMessage', () => {
   it('mentions the streak and what is missing', () => {
-    expect(reminderMessage(5, { xp: 0, lesson: true, activity: true })).toBe('Giữ chuỗi 5 ngày nhé! Còn 1 bài Học và 1 Hoạt động.');
-    expect(reminderMessage(2, { xp: 12, lesson: false, activity: true })).toBe('Giữ chuỗi 2 ngày nhé! Còn 1 Hoạt động và 12 XP.');
-    expect(reminderMessage(3, { xp: 5, lesson: true, activity: true })).toBe('Giữ chuỗi 3 ngày nhé! Còn 1 bài Học, 1 Hoạt động và 5 XP.');
+    expect(reminderMessage(5, { xp: 0, lesson: true, activity: true })).toBe('Giữ chuỗi 5 ngày nhé! Còn 1 bài Học và 1 việc Làm.');
+    expect(reminderMessage(2, { xp: 12, lesson: false, activity: true })).toBe('Giữ chuỗi 2 ngày nhé! Còn 1 việc Làm và 12 XP.');
+    expect(reminderMessage(3, { xp: 5, lesson: true, activity: true })).toBe('Giữ chuỗi 3 ngày nhé! Còn 1 bài Học, 1 việc Làm và 5 XP.');
   });
   it('with no streak invites to start one', () => {
     expect(reminderMessage(0, { xp: 30, lesson: true, activity: true })).toContain('Bắt đầu chuỗi ngày');

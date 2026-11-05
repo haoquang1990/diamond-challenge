@@ -24,7 +24,7 @@ export interface TodayScreenProps {
   readonly eventStore: EventStore;
   /** Opens Học (story 005). */
   readonly onLearn: () => void;
-  /** Opens Làm (story 003). */
+  /** Opens the Làm tab: the person list where tasks are done (story 015). */
   readonly onDo: () => void;
   /** Name of the current Con đường stage (story 006); a neutral placeholder is shown when absent. */
   readonly currentStageName?: string;

@@ -5,7 +5,7 @@ import type { Person, PersonPhone } from '../../domain/people';
 import { ACTIVITY_TYPES } from '../activity-types';
 import type { ActivityType } from '../activity-types';
 import { PEOPLE_CONFIG } from '../people-config';
-import { CONTACTS_FILTERS, countContacts, filterContacts, listUnassignedActivities } from '../people-helpers';
+import { CONTACTS_FILTERS, countContacts, filterContacts, listUnassignedActivities, searchPeopleByName } from '../people-helpers';
 import type { ContactsFilter } from '../people-helpers';
 import { playTing } from '../play-ting';
 import { STRINGS, filterChipLabel, lastContactLabel, nppSinceLabel, shortDateLabel, xpLabel } from '../strings';
@@ -32,10 +32,13 @@ type LoadState =
 const ADD_NAME_ACTIVITY_ID = 'add_name';
 
 /**
- * Tab "Danh bạ": filter chips (Tất cả / Khách hàng / NPP / Đã lưu trữ) over
- * one derived list, add form, person detail, restore of archived people and
- * the section for activities not yet linked to a person. Re-reads the
- * event log on mount and after every write; keeps no copy of truth.
+ * Tab "Làm" (the person list, merged with the old Danh bạ in story 015):
+ * add form, name search, filter chips (Tất cả / Khách hàng / NPP / Đã lưu trữ)
+ * over one derived list, person detail (where tasks are completed), restore
+ * of archived people and the section for activities not yet linked to a
+ * person. The search narrows the rows of the active chip; chip counts stay
+ * the per-filter totals and ignore the search. Re-reads the event log on
+ * mount and after every write; keeps no copy of truth.
  */
 export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initialFilter = 'all', onBack }: PeopleScreenProps) {
   const [load, setLoad] = useState<LoadState>({ kind: 'loading' });
@@ -46,6 +49,8 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
   /** null = automatic: open while the list is empty, collapsed once there are people. */
   const [showAdd, setShowAdd] = useState<boolean | null>(null);
   const [restoringId, setRestoringId] = useState<string | null>(null);
+  /** Name search text; kept while a person detail is open so the list returns as it was. */
+  const [query, setQuery] = useState('');
 
   const reload = useCallback(async (): Promise<void> => {
     try {
@@ -146,7 +151,8 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
   }
 
   const counts = countContacts(allPeople);
-  const shown = filterContacts(allPeople, filter);
+  const inFilter = filterContacts(allPeople, filter);
+  const shown = searchPeopleByName(inFilter, query);
   const filterNames: Record<ContactsFilter, string> = {
     all: STRINGS.filterAll,
     kh: STRINGS.filterKh,
@@ -200,6 +206,21 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
         )}
       </section>
 
+      {allPeople.length > 0 && (
+        <div className="search-field" role="search">
+          <input
+            className="note__input search-field__input"
+            type="search"
+            enterKeyHint="search"
+            value={query}
+            placeholder={STRINGS.searchPlaceholder}
+            onChange={(e) => setQuery(e.target.value)}
+            autoComplete="off"
+            aria-label={STRINGS.searchLabel}
+          />
+        </div>
+      )}
+
       <div className="filter-bar" role="group" aria-label={STRINGS.filterBarLabel}>
         {CONTACTS_FILTERS.map((f) => (
           <button
@@ -214,7 +235,11 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
         ))}
       </div>
 
-      {shown.length === 0 ? (
+      {inFilter.length > 0 && shown.length === 0 ? (
+        <p className="message" role="status">
+          {STRINGS.searchNoMatch}
+        </p>
+      ) : shown.length === 0 ? (
         <section className="card card--welcome">
           <h2 className="person-section__heading">{emptyText[filter].title}</h2>
           <p className="message">{emptyText[filter].body}</p>

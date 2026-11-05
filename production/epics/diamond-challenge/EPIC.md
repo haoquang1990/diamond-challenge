@@ -30,5 +30,6 @@ Theo Build order của brief: nhật ký sự kiện + XP/streak → Làm + Hôm
 | 012 | Việc cần làm + nhãn KH/NPP + chuyển dữ liệu cũ | Logic | Ready | N/A |
 | 013 | Danh bạ, bộ lọc, lưu trữ/khôi phục, chi tiết người | UI | Ready | N/A |
 | 014 | Tab Hoạt động + Bảng 30x30 mở Danh bạ đã lọc | UI | Ready | N/A |
+| 015 | Gộp Làm và Danh bạ thành một tab Làm | UI | Ready | N/A |
 
 > 012–014 thay mô hình giai đoạn bằng việc cần làm + nhãn KH/NPP theo phản hồi dùng thử (2026-11-04, `design/gdd/crm.md`). Thứ tự gợi ý: 012 → 013 → 014 → 011.

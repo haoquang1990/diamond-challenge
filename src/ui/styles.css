@@ -532,17 +532,6 @@ body { margin: 0; }
 .legacy-row__title { margin: 0; }
 .legacy-row__unknown { color: var(--color-warn); font-weight: 700; }
 .person-result { display: flex; flex-direction: column; gap: 8px; }
-.chosen-person { margin: 8px 0 0; font-weight: 600; }
-.link-button {
-  min-height: var(--touch-min);
-  padding: 0 8px;
-  border: 0;
-  background: none;
-  color: var(--color-diamond-dark);
-  font: inherit;
-  font-weight: 800;
-  cursor: pointer;
-}
 
 .board-row__button {
   display: flex;
@@ -602,6 +591,12 @@ body { margin: 0; }
 .person-row__main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .person-row--static { cursor: default; }
 .person-row__action { width: auto; min-width: 110px; flex: 0 0 auto; }
+
+/* Tab Làm (story 015): name search, person detail header */
+.search-field { display: flex; flex-direction: column; }
+.search-field__input { width: 100%; min-width: 0; box-sizing: border-box; }
+.person-detail__name { overflow-wrap: anywhere; }
+.person-detail__name .badge { font-size: 0.9rem; }
 .task-row {
   display: flex;
   width: 100%;

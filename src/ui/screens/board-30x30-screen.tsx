@@ -12,9 +12,9 @@ export interface Board30x30ScreenProps {
   readonly eventStore: EventStore;
   /** Returns to the previous screen (Con đường). */
   readonly onBack: () => void;
-  /** Opens the Người screen; the empty state shows a button only when provided. */
+  /** Opens the Làm tab (person list); the empty state shows a button only when provided. */
   readonly onOpenPeople?: () => void;
-  /** Opens Danh bạ filtered to a label; the Khách hàng and NPP F1 rows are buttons only when provided. */
+  /** Opens the Làm tab filtered to a label; the Khách hàng and NPP F1 rows are buttons only when provided. */
   readonly onOpenContacts?: (filter: ContactsFilter) => void;
 }
 

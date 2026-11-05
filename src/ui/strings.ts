@@ -1,27 +1,18 @@
 /** Player-facing Vietnamese strings for the UI. No i18n framework at MVP. */
 export const STRINGS = {
-  logActivityTitle: 'Hoạt động',
-  logActivityPrompt: 'Chọn việc bạn vừa làm.',
   noteLabel: 'Ghi chú (FORMHD)',
   save: 'Lưu',
   saving: 'Đang lưu…',
   pickFirst: 'Chọn một hoạt động',
-  savedTitle: 'Tuyệt vời!',
   undo: 'Hoàn tác',
-  undoing: 'Đang hoàn tác…',
-  continue: 'Tiếp tục',
-  saveError: 'Không lưu được. Thử lại nhé.',
-  undoError: 'Không hoàn tác được. Thử lại nhé.',
-  undone: 'Đã hoàn tác. Bạn có thể chọn lại.',
   back: 'Quay lại',
 
   // Navigation (bottom tab bar)
   navLabel: 'Điều hướng chính',
   tabToday: 'Hôm nay',
   tabLearn: 'Học',
-  tabDo: 'Hoạt động',
   tabPath: 'Con đường',
-  tabPeople: 'Danh bạ',
+  tabPeople: 'Làm',
 
   // Hôm nay
   todayTitle: 'Hôm nay',
@@ -29,17 +20,17 @@ export const STRINGS = {
   loadError: 'Không tải được tiến độ. Thử lại nhé.',
   retry: 'Thử lại',
   welcomeTitle: 'Chào mừng bạn!',
-  welcomeBody: 'Mỗi ngày: 1 bài Học + 1 Hoạt động và đủ XP để giữ chuỗi ngày.',
+  welcomeBody: 'Mỗi ngày: 1 bài Học + 1 việc Làm và đủ XP để giữ chuỗi ngày.',
   goalTitle: 'Mục tiêu hôm nay',
   goalMetTitle: 'Đã đạt mục tiêu hôm nay!',
   goalMetBody: 'Quay lại ngày mai để giữ chuỗi nhé.',
   stillNeeded: 'Còn thiếu',
   lessonDone: 'Đã có bài Học',
   lessonMissing: 'còn 1 bài Học',
-  activityDone: 'Đã có Hoạt động',
-  activityMissing: 'còn 1 Hoạt động',
+  activityDone: 'Đã có việc Làm',
+  activityMissing: 'còn 1 việc Làm',
   learnButton: 'Học',
-  doButton: 'Hoạt động',
+  doButton: 'Làm',
   currentStage: 'Chặng hiện tại',
   stagePending: 'Bản đồ Con đường Diamond sắp có',
 
@@ -117,10 +108,13 @@ export const STRINGS = {
   reminderNoticeOff: 'Thông báo bị tắt, app sẽ nhắc bạn ngay trong app.',
   reminderNotificationTitle: 'Diamond Challenge',
 
-  // Danh bạ (story 009, 013)
-  peopleTitle: 'Danh bạ',
-  peoplePrompt: 'Những người trong danh bạ của bạn.',
-  peopleLoadError: 'Không tải được Danh bạ. Thử lại nhé.',
+  // Làm = danh bạ (story 009, 013, 015)
+  peopleTitle: 'Làm',
+  peoplePrompt: 'Chọn một người để làm việc tiếp theo.',
+  peopleLoadError: 'Không tải được danh sách người. Thử lại nhé.',
+  searchLabel: 'Tìm tên',
+  searchPlaceholder: 'Tìm tên…',
+  searchNoMatch: 'Không tìm thấy ai có tên này.',
   peopleEmptyTitle: 'Chưa có ai trong danh sách',
   peopleEmptyBody: 'Hãy thêm người đầu tiên bạn quen. Bắt đầu bằng một cái tên, thế là đủ.',
   filterAll: 'Tất cả',
@@ -128,7 +122,7 @@ export const STRINGS = {
   filterNpp: 'NPP',
   filterArchived: 'Đã lưu trữ',
   filterBarLabel: 'Lọc danh bạ',
-  emptyAllTitle: 'Chưa có ai trong Danh bạ',
+  emptyAllTitle: 'Chưa có ai trong danh bạ của bạn',
   emptyKhBody: 'Chưa có khách hàng nào. Mở một người và bấm "Chốt khách hàng" khi họ mua.',
   emptyNppBody: 'Chưa có NPP nào. Mở một người và bấm "Chốt NPP" khi họ tham gia đội nhóm.',
   emptyArchivedBody: 'Chưa có ai được lưu trữ.',
@@ -160,19 +154,20 @@ export const STRINGS = {
   boardCustomers: 'Khách hàng',
   boardF1: 'NPP F1',
   boardBackFromContacts: 'Quay lại Bảng 30x30',
-  boardOpenContactsHint: 'Mở Danh bạ',
+  boardOpenContactsHint: 'Mở tab Làm',
   boardAchieved: 'Đạt 30x30',
   boardContactsMet: 'Đã đạt mốc liên hệ',
   boardDisclaimer: 'Số liệu tính từ danh sách bạn tự nhập, không phải xác nhận chính thức.',
   boardEmptyBody: 'Chưa có ai trong danh sách. Thêm người đầu tiên để Bảng bắt đầu chạy.',
-  boardGoPeople: 'Đến Danh bạ',
+  boardGoPeople: 'Đến tab Làm',
   personNameLabel: 'Tên',
   personNamePlaceholder: 'Vd. Lan',
   personNameRequired: 'Hãy nhập tên.',
   personDuplicateWarning: 'Đã có người trùng tên này. Bạn vẫn có thể thêm.',
   personAddedXp: 'Đã thêm người',
   personSaveError: 'Không lưu được. Thử lại nhé.',
-  personDetailTitle: 'Thông tin người',
+  personEditToggle: 'Sửa thông tin',
+  personEditClose: 'Thu gọn',
   personSaveChanges: 'Lưu thay đổi',
   personSaved: 'Đã lưu.',
   personChangeStage: 'Đổi giai đoạn',
@@ -189,14 +184,6 @@ export const STRINGS = {
   legacyUnknownPerson: 'Người không rõ',
   legacyUnknownActivity: 'Hoạt động',
   legacyNoPeople: 'Hãy thêm một người trước để gắn hoạt động.',
-  // Hoạt động: chọn người, chọn việc
-  pickPersonPrompt: 'Bạn làm việc này với ai?',
-  pickPersonEmpty: 'Chưa có ai trong danh sách. Hãy thêm người đầu tiên ngay bên dưới.',
-  pickPersonAddHeading: 'Hoặc thêm người mới',
-  changePerson: 'Đổi người',
-  withPerson: 'Với',
-  pickTaskNone: 'Người này chưa có việc nào cần làm.',
-  pickTaskHeading: 'Chọn việc đã làm',
 
   // Placeholder screens
   comingSoon: 'Sắp có',
@@ -268,14 +255,14 @@ export interface ReminderMissingText {
 /**
  * Short reminder text with the current streak, e.g.
  * `reminderMessage(5, { xp: 0, lesson: true, activity: true })` →
- * "Giữ chuỗi 5 ngày nhé! Còn 1 bài Học và 1 Hoạt động."
+ * "Giữ chuỗi 5 ngày nhé! Còn 1 bài Học và 1 việc Làm."
  * With no streak: "Bắt đầu chuỗi ngày ngay hôm nay nhé!"
  */
 export function reminderMessage(streak: number, missing: ReminderMissingText): string {
   const head = streak > 0 ? `Giữ chuỗi ${streak} ngày nhé!` : 'Bắt đầu chuỗi ngày ngay hôm nay nhé!';
   const parts: string[] = [];
   if (missing.lesson) parts.push('1 bài Học');
-  if (missing.activity) parts.push('1 Hoạt động');
+  if (missing.activity) parts.push('1 việc Làm');
   if (missing.xp > 0) parts.push(`${missing.xp} XP`);
   if (parts.length === 0) return head;
   const list = parts.length === 1 ? parts[0] : `${parts.slice(0, -1).join(', ')} và ${parts[parts.length - 1]}`;

@@ -1,0 +1,2 @@
+Reviewed-Content-Hash: src/app.tsx c4fed90ef39262ceb1bce947d26eede48aa6a9cc
+Reviewed-Content-Hash: src/ui/strings.ts f4f3f59e64e531b8787ffdf0a2d90868a1879338

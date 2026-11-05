@@ -4,7 +4,7 @@
 
 ## Core loop
 - Mở app, vào màn **Hôm nay**: thấy streak, XP hôm nay so với mục tiêu ngày, cùng hai nút **Học** và **Làm**.
-- **Hoạt động** (tên cũ: Làm): chọn **một người** trong Danh bạ (hoặc thêm người mới), chọn một việc còn trong danh sách của người đó (liên hệ, demo, opp, follow-up, chốt khách hàng, chốt NPP), nhận XP; việc đó biến khỏi danh sách và vào lịch sử. Chốt khách hàng / Chốt NPP gắn nhãn KH / NPP.
+- **Làm** (tab chứa Danh bạ): chọn **một người** trong Danh bạ (hoặc thêm người mới), mở người đó và chọn một việc còn trong danh sách của người đó (liên hệ, demo, opp, follow-up, chốt khách hàng, chốt NPP), nhận XP; việc đó biến khỏi danh sách và vào lịch sử. Chốt khách hàng / Chốt NPP gắn nhãn KH / NPP.
 - **Học**: làm một bài kỹ năng ngắn (3–5 câu, khoảng 2 phút) để nhận XP.
 - Đạt mục tiêu ngày thì streak +1. Tổng XP đẩy bạn tiến trên bản đồ Con đường Diamond. Danh bạ cho thấy ai đang chờ bạn bước tiếp theo, đó là lý do để ngày mai quay lại.
 
