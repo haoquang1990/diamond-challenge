@@ -6,6 +6,7 @@
 - Mở app, vào màn **Hôm nay**: thấy streak, XP hôm nay so với mục tiêu ngày, cùng hai nút **Học** và **Làm**.
 - **Làm** (tab chứa Danh bạ): chọn **một người** trong Danh bạ (hoặc thêm người mới), mở người đó và chọn một việc còn trong danh sách của người đó (liên hệ, demo, opp, follow-up, chốt khách hàng, chốt NPP), nhận XP; việc đó biến khỏi danh sách và vào lịch sử. Chốt khách hàng / Chốt NPP gắn nhãn KH / NPP.
 - **Học**: làm một bài kỹ năng ngắn (3–5 câu, khoảng 2 phút) để nhận XP.
+- Mỗi lần được cộng XP có một thông báo nhỏ ở mép trên; khi đạt danh hiệu hoặc mốc (lên chặng, mục tiêu ngày, streak 7/30/100, các mốc 30x30) có popup mừng một lần, xem lại trong mục **Thành tích** trên màn Con đường (`design/quick-specs/achievements-system-2026-11-05.md`).
 - Đạt mục tiêu ngày thì streak +1. Tổng XP đẩy bạn tiến trên bản đồ Con đường Diamond. Danh bạ cho thấy ai đang chờ bạn bước tiếp theo, đó là lý do để ngày mai quay lại.
 
 ## Thực thể trung tâm: Người
@@ -28,6 +29,7 @@
 5. **Bản đồ Con đường Diamond và Bảng 30x30:** các chặng tạo động lực, mở khóa theo tổng XP và mốc hoạt động; bảng hiện tiến độ của mình (liên hệ/KH/NPP F1), số liệu tính từ danh sách, không phải xác nhận chính thức.
 6. **Lưu cục bộ, sẵn sàng đồng bộ, có sao lưu và khôi phục bằng file:** dữ liệu là nhật ký sự kiện lưu trên máy. Người dùng xuất được một file sao lưu và nhập lại file đó (ví dụ khi đổi điện thoại).
 7. **Nhắc nhở hằng ngày:** banner trong app, cộng thông báo cục bộ nếu trình duyệt hỗ trợ.
+8. **Thông báo thành tích:** toast khi cộng XP, popup một lần cho mỗi danh hiệu/mốc, mục Thành tích, tùy chọn tắt âm thanh (`design/quick-specs/achievements-system-2026-11-05.md`).
 
 ## Out of scope — not building this
 - Giải đấu tuần trong nhóm, tài khoản, server, đồng bộ (giai đoạn 2).
