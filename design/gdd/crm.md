@@ -61,8 +61,8 @@ Một Danh bạ duy nhất. Mỗi người có một danh sách **việc cần l
     - **Khách hàng:** hiện "liên hệ gần nhất"; sắp **lâu chưa chăm sóc lên đầu**.
     - **NPP:** hiện "ngày lên NPP"; mới nhất lên đầu. Nút "Tạo tài khoản" thuộc giai đoạn 2.
     - **Tất cả:** mọi người chưa lưu trữ, mỗi dòng kèm nhãn nếu có.
-12. **Tên hiển thị:** tab "Người" đổi thành **Danh bạ**; tab **Làm** giữ tên "Làm" (phản hồi 2026-11-05) và có thanh tab như các tab khác; nhãn ô ghi chú: "(FORMHD)".
-13. **Tab Làm:** chọn một người (hoặc thêm người mới), rồi chọn một việc còn trong danh sách của người đó. Cùng một hành động, cùng XP với việc hoàn thành trong trang chi tiết người.
+12. **Tab Làm = Danh bạ** (phản hồi 2026-11-05): chỉ còn 4 tab **Hôm nay · Học · Làm · Con đường**. Danh bạ (danh sách người, bộ lọc, thêm người, khôi phục, gán hoạt động cũ) nằm trong tab **Làm**, tiêu đề màn "Làm"; không còn màn chọn người riêng. Nút **Làm** trên Hôm nay mở tab này. Có ô tìm tên, không phân biệt dấu. Nhãn ô ghi chú: "(FORMHD)".
+13. **Trang chi tiết người:** danh sách việc cần làm nằm trên cùng; sửa tên, số điện thoại, ghi chú thu gọn sau nút "Sửa thông tin"; lịch sử và lưu trữ ở dưới. Hoàn thành việc chỉ diễn ra ở đây.
 14. **Sao lưu:** xuất một file JSON `diamond-challenge-backup-YYYY-MM-DD.json` gồm `format`, `formatVersion: 1`, `exportedAt`, `events[]` (toàn bộ nhật ký). **Khôi phục** là **gộp, bỏ trùng theo `id` sự kiện**: nhập hai lần không sinh trùng, không mất dữ liệu đang có. Mỗi sự kiện đi qua cùng bộ kiểm tra khi đọc (`parseStoredEvent`), gồm cả `person_restored`. Sau khi nhập, báo "thêm N, bỏ qua M". File chứa tên, số điện thoại và ghi chú về người khác, nên app nhắc người dùng giữ file cẩn thận.
 15. **Danh sách chỉ của mình.** Mọi người chưa lưu trữ trong danh sách đều là của mình. Ai có nhãn KH là KH của mình, ai có nhãn NPP là NPP F1 của mình. Không có ô chọn người bảo trợ, không dựng cây nhiều tầng trên máy.
 
@@ -77,7 +77,7 @@ Một Danh bạ duy nhất. Mỗi người có một danh sách **việc cần l
 - `computeProgress` cộng mọi `payload.xp` và đếm `activity_logged` cho mục tiêu ngày, nên XP và mục tiêu ngày tự đúng. `computeProgress` **không đổi**.
 - Mốc chặng ở `stages.ts` đếm `activity_logged` theo `activityType` (`new_customer`), không đổi.
 - Nhắc nhở không bị ảnh hưởng.
-- **Màn "Bảng 30x30"** (mở từ màn Con đường): liên hệ x/250, Khách hàng x/30, NPP F1 x/30, huy hiệu "Đạt 30x30". **Bấm dòng Khách hàng hoặc NPP F1 mở Danh bạ đã lọc sẵn theo nhãn đó.** Ghi chú luôn hiển thị: "Số liệu tính từ danh sách bạn tự nhập, không phải xác nhận chính thức."
+- **Màn "Bảng 30x30"** (mở từ màn Con đường): liên hệ x/250, Khách hàng x/30, NPP F1 x/30, huy hiệu "Đạt 30x30". **Bấm dòng Khách hàng hoặc NPP F1 mở tab Làm (Danh bạ) đã lọc sẵn theo nhãn đó.** Ghi chú luôn hiển thị: "Số liệu tính từ danh sách bạn tự nhập, không phải xác nhận chính thức."
 - **Không cộng XP:** bảng này không tạo sự kiện có `xp`.
 - Không có cách phân loại "tích cực / không tích cực" của Người.
 - **Giai đoạn 2** (`design/phase-2-notes.md`): nút "Tạo tài khoản" trên một người có nhãn NPP (ghi `linkedUserId`); app đồng bộ số tổng hợp (số KH, số NPP F1, đạt 30x30) lên server; server dựng cây hệ thống và tính Bảng 4x4.
@@ -127,7 +127,7 @@ Công thức tầng, nhánh, điểm sâu và 30x30x4x4 thuộc giai đoạn 2 v
 
 - **Phụ thuộc vào:** nhật ký sự kiện (`EventStore`, story 001), `computeProgress` (story 002), `src/config/game-config.json`.
 - **Được phụ thuộc bởi:** tab Làm (chọn người, chọn việc), màn Hôm nay (có thể hiện người cần theo dõi), bản đồ (mốc hoạt động), màn Bảng 30x30 (mở từ màn Con đường), giai đoạn 2 (tạo tài khoản cho F1, đồng bộ số tổng hợp, Bảng 4x4).
-- **Cần sửa code hiện có:** `src/domain/people.ts` (nhãn, việc cần làm, chuyển dữ liệu cũ), `src/data/event-store.ts` (thêm `person_restored`, `taskId`, `phone`), màn Người → Danh bạ, màn Làm → Hoạt động, trang chi tiết người, màn Bảng 30x30 (dòng KH/NPP bấm được), `strings.ts`, `game-config.json`.
+- **Cần sửa code hiện có:** `src/domain/people.ts` (nhãn, việc cần làm, chuyển dữ liệu cũ), `src/data/event-store.ts` (thêm `person_restored`, `taskId`, `phone`), màn Người → tab Làm (Danh bạ), bỏ màn chọn người riêng, trang chi tiết người, màn Bảng 30x30 (dòng KH/NPP bấm được), `strings.ts`, `game-config.json`.
 
 ## Tuning Knobs
 
@@ -157,7 +157,7 @@ Công thức tầng, nhánh, điểm sâu và 30x30x4x4 thuộc giai đoạn 2 v
 - **AC-8:** Given một file sao lưu, When khôi phục hai lần liên tiếp, Then lần hai thêm 0 sự kiện và dữ liệu không đổi.
 - **AC-9:** Given file có 1 sự kiện hỏng trong 10, When khôi phục, Then thêm 9, bỏ qua 1 và báo đúng số liệu.
 - **AC-10:** Given file có `formatVersion` lạ, When khôi phục, Then bị từ chối, nhật ký hiện tại không đổi.
-- **AC-11:** Given hoạt động trỏ tới người không tồn tại, When mở Danh bạ hoặc Hoạt động, Then không lỗi và hiện "Người không rõ".
+- **AC-11:** Given hoạt động trỏ tới người không tồn tại, When mở tab Làm, Then không lỗi và hiện "Người không rõ".
 - **AC-12:** Given 31 người nhãn KH và 29 người nhãn NPP, When mở Bảng 30x30, Then chưa "đạt 30x30" (còn 1 NPP F1); When một KH làm "Chốt NPP", Then KH = 30, NPP F1 = 30 và hiện "Đạt 30x30".
 - **AC-13:** Given một KH và một NPP đã lưu trữ, When tính, Then cả hai không được đếm vào KH, NPP F1 hay liên hệ.
 - **AC-14:** Given 250 người chưa lưu trữ, When mở bảng, Then liên hệ = 250 và mốc liên hệ được đánh dấu đạt; với 249 thì chưa.
@@ -169,4 +169,6 @@ Công thức tầng, nhánh, điểm sâu và 30x30x4x4 thuộc giai đoạn 2 v
 - **AC-20:** Given Bảng 30x30, When bấm dòng "Khách hàng" hoặc "NPP F1", Then mở Danh bạ đã lọc sẵn theo nhãn đó.
 - **AC-21:** Given thêm số điện thoại, When mở ô nhập, Then mã nước mặc định `+84`; số có chữ cái hoặc ngoài 6–15 chữ số bị từ chối.
 - **AC-22:** Given hoàn thành một việc, When xem Hôm nay, Then XP, mục tiêu ngày ("có ít nhất 1 Làm") và mốc Con đường tăng như hoạt động trước đây (vẫn là `activity_logged`).
+- **AC-24:** Given app mở, When xem thanh tab, Then có đúng 4 tab Hôm nay · Học · Làm · Con đường; bấm nút Làm trên Hôm nay mở tab Làm (Danh bạ).
+- **AC-25:** Given Danh bạ có "Dũng", When gõ "dung" vào ô tìm, Then chỉ còn những người khớp tên, không phân biệt dấu và hoa thường.
 - **AC-23:** Given một NPP vừa được đánh dấu, When mở Danh bạ (Tất cả hoặc lọc NPP), Then người đó hiện đúng một dòng với nhãn NPP.
