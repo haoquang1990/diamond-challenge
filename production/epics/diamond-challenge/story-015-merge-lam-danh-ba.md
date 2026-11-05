@@ -1,7 +1,7 @@
 # Story 015: Gộp Làm và Danh bạ thành một tab Làm
 
 > **Epic**: diamond-challenge
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Presentation
 > **Type**: UI
 > **Estimate**: M
@@ -85,3 +85,10 @@
 
 - Depends on: `production/epics/diamond-challenge/story-013-contacts-tab.md`, `production/epics/diamond-challenge/story-014-activity-tab.md`
 - Unlocks: None
+
+## Completion Notes
+**Completed**: 2026-11-05
+**Criteria**: 8/8 passing (production build in Chromium 390×844 and 320px; not tried on a real phone; not yet deployed)
+**Deviations**: Advisory, not logged as tech debt: (1) the full-screen "Tuyệt vời! +XP" reward after completing a task no longer exists, feedback is now the inline "<task> · +XP" line with Hoàn tác on the person page; (2) filter chip counts are totals and ignore the search text, and the search matches a contiguous substring so "an" does not match "Nam Uyên"; (3) reminders are rescheduled on every tab change instead of only when Hôm nay is shown; (4) AddPersonForm keeps a `compact` prop that nothing uses any more
+**Test Evidence**: screenshots in production/qa/evidence/story-015-merge-lam-danh-ba/ (01–08 plus stamp.txt, stamp unchanged); tests/unit/people-ui/name-search.test.ts (7 tests); full suite 233/233
+**Reviewed by**: self, no independent review
