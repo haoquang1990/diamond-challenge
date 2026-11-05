@@ -57,15 +57,14 @@
 - `src/app.tsx`
 - `src/ui/screens/people-screen.tsx`
 - `src/ui/screens/person-form.tsx`
-- `src/ui/screens/log-activity-screen.tsx` (xóa)
+- `src/ui/screens/log-activity-screen.tsx` (đã xóa)
 - `src/ui/screens/today-screen.tsx`
 - `src/ui/screens/board-30x30-screen.tsx`
 - `src/ui/people-helpers.ts`
 - `src/ui/strings.ts`
 - `src/ui/styles.css`
+- `tests/unit/people-ui/name-search.test.ts`
 - `production/qa/evidence/story-015-merge-lam-danh-ba/*.png`
-
----
 
 ## QA Test Cases
 

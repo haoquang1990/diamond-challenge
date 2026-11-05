@@ -1,4 +1,4 @@
-/** Pure helpers for the Danh bạ screens (grouping, stage suggestion, legacy activities). */
+/** Pure helpers for the Làm tab (person list): filters, name search, legacy activities, history. */
 import type { LogEvent } from '../data/event-store';
 import {
   UNKNOWN_PERSON_ID,
@@ -78,7 +78,7 @@ export function listUnassignedActivities(
   return result.sort((a, b) => (a.event.timestamp < b.event.timestamp ? 1 : a.event.timestamp > b.event.timestamp ? -1 : 0));
 }
 
-/** Filter chips of the Danh bạ tab. */
+/** Filter chips of the Làm tab (person list). */
 export type ContactsFilter = 'all' | 'kh' | 'npp' | 'archived';
 
 /** Chip order in the UI; the first is the default. */
@@ -103,6 +103,32 @@ export function filterContacts(people: readonly Person[], filter: ContactsFilter
     case 'archived':
       return newestFirst(people.filter((p) => p.archived));
   }
+}
+
+/**
+ * Folds a name for search: NFD, combining marks removed, đ/Đ mapped to d,
+ * lower case, outer whitespace trimmed. "Dũng Giang" → "dung giang".
+ */
+export function foldName(text: string): string {
+  return text
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[đĐ]/g, 'd')
+    .toLowerCase()
+    .trim();
+}
+
+/**
+ * Name search over an already filtered list (order kept). Substring match on
+ * {@link foldName} of both sides, so it ignores case and Vietnamese diacritics:
+ * "dung" and "DŨNG" match "Dũng Giang", and "an" matches it too (inside
+ * "giang"); "an" does not match "Nam Uyên" (no contiguous "an").
+ * A blank query returns every person.
+ */
+export function searchPeopleByName(people: readonly Person[], query: string): Person[] {
+  const q = foldName(query);
+  if (q === '') return [...people];
+  return people.filter((p) => foldName(p.name).includes(q));
 }
 
 /** Number of people under each filter chip. */

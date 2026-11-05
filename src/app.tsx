@@ -6,7 +6,6 @@ import { Board30x30Screen } from './ui/screens/board-30x30-screen';
 import { DiamondPathScreen } from './ui/screens/diamond-path-screen';
 import { LessonScreen } from './ui/screens/lesson-screen';
 import { PeopleScreen } from './ui/screens/people-screen';
-import { LogActivityScreen } from './ui/screens/log-activity-screen';
 import { SettingsScreen } from './ui/screens/settings-screen';
 import { TodayScreen } from './ui/screens/today-screen';
 import type { ContactsFilter } from './ui/people-helpers';
@@ -29,15 +28,19 @@ function realNow(): Date {
   return new Date();
 }
 
-/** Top-level destinations; `settings` (Cài đặt nhắc nhở) is opened from Hôm nay, not from the tab bar. */
-type Tab = 'today' | 'learn' | 'do' | 'path' | 'people' | 'settings' | 'board';
+/**
+ * Top-level destinations. The tab bar shows exactly four (story 015):
+ * Hôm nay · Học · Làm · Con đường. Làm keeps the id `people`: it is the
+ * merged person list (Danh bạ). `settings` (opened from Hôm nay) and `board`
+ * (opened from Con đường) are not in the tab bar.
+ */
+type Tab = 'today' | 'learn' | 'people' | 'path' | 'settings' | 'board';
 
 const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'board'>; readonly label: string }[] = [
   { id: 'today', label: STRINGS.tabToday },
   { id: 'learn', label: STRINGS.tabLearn },
-  { id: 'do', label: STRINGS.tabDo },
-  { id: 'path', label: STRINGS.tabPath },
   { id: 'people', label: STRINGS.tabPeople },
+  { id: 'path', label: STRINGS.tabPath },
 ];
 
 /**
@@ -45,19 +48,21 @@ const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'board'>; readonly
  * Hôm nay. Switching tabs unmounts the previous screen, so Hôm nay re-reads
  * the event log every time it is shown.
  *
- * Làm (tab id 'do') shows the tab bar like the other tabs and returns to Hôm nay via its
- * back button (`onCancel`) or after a save (`onDone`). Cài đặt has no tab bar
- * ("Quay lại" to Hôm nay).
+ * Làm (tab id 'people', story 015) is the person list: filters, name search,
+ * add person, restore and legacy activity assignment; tasks are completed on
+ * the person detail page. Hôm nay's Làm button opens it. From Bảng 30x30 it
+ * opens with a filter preselected and a back control to the board. Cài đặt
+ * has no tab bar ("Quay lại" to Hôm nay).
  *
  * Reminders (story 007): one scheduler is refreshed on app start, when the
- * app becomes visible, whenever Hôm nay is shown (i.e. after any Học/Làm
- * save) and after a settings change. A tapped reminder notification brings
- * the app to Hôm nay.
+ * app becomes visible, on every tab change (covers returning from Học and
+ * leaving Làm, which no longer routes back to Hôm nay) and after a settings
+ * change. A tapped reminder notification brings the app to Hôm nay.
  */
 export function App({ eventStore, notificationPlatform = DEFAULT_PLATFORM }: AppProps) {
   const [tab, setTab] = useState<Tab>('today');
   const [lessonActive, setLessonActive] = useState(false);
-  /** Set when Danh bạ was opened from Bảng 30x30 (preselected filter + back control); null otherwise. */
+  /** Set when Làm was opened from Bảng 30x30 (preselected filter + back control); null otherwise. */
   const [fromBoard, setFromBoard] = useState<ContactsFilter | null>(null);
   const goToday = () => setTab('today');
   const onLessonActive = useCallback((active: boolean) => setLessonActive(active), []);
@@ -85,9 +90,9 @@ export function App({ eventStore, notificationPlatform = DEFAULT_PLATFORM }: App
     };
   }, [scheduler, refreshReminders]);
 
-  // App start and every time Hôm nay is shown (covers returning after a Học/Làm save).
+  // App start and every tab change (covers returning after a Học save and leaving Làm).
   useEffect(() => {
-    if (tab === 'today') refreshReminders();
+    refreshReminders();
   }, [tab, refreshReminders]);
 
   useEffect(() => {
@@ -130,12 +135,14 @@ export function App({ eventStore, notificationPlatform = DEFAULT_PLATFORM }: App
         <TodayScreen
           eventStore={eventStore}
           onLearn={() => setTab('learn')}
-          onDo={() => setTab('do')}
+          onDo={() => {
+            setFromBoard(null);
+            setTab('people');
+          }}
           onOpenSettings={() => setTab('settings')}
           notificationPermission={notificationPlatform.permission}
         />
       )}
-      {tab === 'do' && <LogActivityScreen eventStore={eventStore} onDone={goToday} onCancel={goToday} />}
       {tab === 'learn' && <LessonScreen eventStore={eventStore} onDone={goToday} onActiveChange={onLessonActive} />}
       {tab === 'path' && <DiamondPathScreen eventStore={eventStore} onOpenBoard={() => setTab('board')} />}
       {tab === 'people' && (
