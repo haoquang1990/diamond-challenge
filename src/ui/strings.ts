@@ -1,6 +1,6 @@
 /** Player-facing Vietnamese strings for the UI. No i18n framework at MVP. */
 export const STRINGS = {
-  logActivityTitle: 'Hoạt động',
+  logActivityTitle: 'Làm',
   logActivityPrompt: 'Chọn việc bạn vừa làm.',
   noteLabel: 'Ghi chú (FORMHD)',
   save: 'Lưu',
@@ -19,7 +19,7 @@ export const STRINGS = {
   navLabel: 'Điều hướng chính',
   tabToday: 'Hôm nay',
   tabLearn: 'Học',
-  tabDo: 'Hoạt động',
+  tabDo: 'Làm',
   tabPath: 'Con đường',
   tabPeople: 'Danh bạ',
 
@@ -29,17 +29,17 @@ export const STRINGS = {
   loadError: 'Không tải được tiến độ. Thử lại nhé.',
   retry: 'Thử lại',
   welcomeTitle: 'Chào mừng bạn!',
-  welcomeBody: 'Mỗi ngày: 1 bài Học + 1 Hoạt động và đủ XP để giữ chuỗi ngày.',
+  welcomeBody: 'Mỗi ngày: 1 bài Học + 1 việc Làm và đủ XP để giữ chuỗi ngày.',
   goalTitle: 'Mục tiêu hôm nay',
   goalMetTitle: 'Đã đạt mục tiêu hôm nay!',
   goalMetBody: 'Quay lại ngày mai để giữ chuỗi nhé.',
   stillNeeded: 'Còn thiếu',
   lessonDone: 'Đã có bài Học',
   lessonMissing: 'còn 1 bài Học',
-  activityDone: 'Đã có Hoạt động',
-  activityMissing: 'còn 1 Hoạt động',
+  activityDone: 'Đã có việc Làm',
+  activityMissing: 'còn 1 việc Làm',
   learnButton: 'Học',
-  doButton: 'Hoạt động',
+  doButton: 'Làm',
   currentStage: 'Chặng hiện tại',
   stagePending: 'Bản đồ Con đường Diamond sắp có',
 
@@ -189,7 +189,7 @@ export const STRINGS = {
   legacyUnknownPerson: 'Người không rõ',
   legacyUnknownActivity: 'Hoạt động',
   legacyNoPeople: 'Hãy thêm một người trước để gắn hoạt động.',
-  // Hoạt động: chọn người, chọn việc
+  // Làm: chọn người, chọn việc
   pickPersonPrompt: 'Bạn làm việc này với ai?',
   pickPersonEmpty: 'Chưa có ai trong danh sách. Hãy thêm người đầu tiên ngay bên dưới.',
   pickPersonAddHeading: 'Hoặc thêm người mới',
@@ -268,14 +268,14 @@ export interface ReminderMissingText {
 /**
  * Short reminder text with the current streak, e.g.
  * `reminderMessage(5, { xp: 0, lesson: true, activity: true })` →
- * "Giữ chuỗi 5 ngày nhé! Còn 1 bài Học và 1 Hoạt động."
+ * "Giữ chuỗi 5 ngày nhé! Còn 1 bài Học và 1 việc Làm."
  * With no streak: "Bắt đầu chuỗi ngày ngay hôm nay nhé!"
  */
 export function reminderMessage(streak: number, missing: ReminderMissingText): string {
   const head = streak > 0 ? `Giữ chuỗi ${streak} ngày nhé!` : 'Bắt đầu chuỗi ngày ngay hôm nay nhé!';
   const parts: string[] = [];
   if (missing.lesson) parts.push('1 bài Học');
-  if (missing.activity) parts.push('1 Hoạt động');
+  if (missing.activity) parts.push('1 việc Làm');
   if (missing.xp > 0) parts.push(`${missing.xp} XP`);
   if (parts.length === 0) return head;
   const list = parts.length === 1 ? parts[0] : `${parts.slice(0, -1).join(', ')} và ${parts[parts.length - 1]}`;

@@ -45,9 +45,9 @@ const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'board'>; readonly
  * Hôm nay. Switching tabs unmounts the previous screen, so Hôm nay re-reads
  * the event log every time it is shown.
  *
- * Hoạt động (tab id 'do') is a focused flow: it hides the tab bar and returns to Hôm nay via its
- * back button (`onCancel`) or after a save (`onDone`). Cài đặt nhắc nhở
- * behaves the same way (no tab bar, "Quay lại" to Hôm nay).
+ * Làm (tab id 'do') shows the tab bar like the other tabs and returns to Hôm nay via its
+ * back button (`onCancel`) or after a save (`onDone`). Cài đặt has no tab bar
+ * ("Quay lại" to Hôm nay).
  *
  * Reminders (story 007): one scheduler is refreshed on app start, when the
  * app becomes visible, whenever Hôm nay is shown (i.e. after any Học/Làm
@@ -102,10 +102,6 @@ export function App({ eventStore, notificationPlatform = DEFAULT_PLATFORM }: App
     return () => navigator.serviceWorker.removeEventListener('message', onMessage);
   }, []);
 
-  if (tab === 'do') {
-    return <LogActivityScreen eventStore={eventStore} onDone={goToday} onCancel={goToday} />;
-  }
-
   if (tab === 'board') {
     return (
       <div className="app-shell">
@@ -139,6 +135,7 @@ export function App({ eventStore, notificationPlatform = DEFAULT_PLATFORM }: App
           notificationPermission={notificationPlatform.permission}
         />
       )}
+      {tab === 'do' && <LogActivityScreen eventStore={eventStore} onDone={goToday} onCancel={goToday} />}
       {tab === 'learn' && <LessonScreen eventStore={eventStore} onDone={goToday} onActiveChange={onLessonActive} />}
       {tab === 'path' && <DiamondPathScreen eventStore={eventStore} onOpenBoard={() => setTab('board')} />}
       {tab === 'people' && (

@@ -61,8 +61,8 @@ Một Danh bạ duy nhất. Mỗi người có một danh sách **việc cần l
     - **Khách hàng:** hiện "liên hệ gần nhất"; sắp **lâu chưa chăm sóc lên đầu**.
     - **NPP:** hiện "ngày lên NPP"; mới nhất lên đầu. Nút "Tạo tài khoản" thuộc giai đoạn 2.
     - **Tất cả:** mọi người chưa lưu trữ, mỗi dòng kèm nhãn nếu có.
-12. **Tên hiển thị:** tab "Người" đổi thành **Danh bạ**, tab "Làm" đổi thành **Hoạt động**; nhãn ô ghi chú: "(FORMHD)".
-13. **Tab Hoạt động:** chọn một người (hoặc thêm người mới), rồi chọn một việc còn trong danh sách của người đó. Cùng một hành động, cùng XP với việc hoàn thành trong trang chi tiết người.
+12. **Tên hiển thị:** tab "Người" đổi thành **Danh bạ**; tab **Làm** giữ tên "Làm" (phản hồi 2026-11-05) và có thanh tab như các tab khác; nhãn ô ghi chú: "(FORMHD)".
+13. **Tab Làm:** chọn một người (hoặc thêm người mới), rồi chọn một việc còn trong danh sách của người đó. Cùng một hành động, cùng XP với việc hoàn thành trong trang chi tiết người.
 14. **Sao lưu:** xuất một file JSON `diamond-challenge-backup-YYYY-MM-DD.json` gồm `format`, `formatVersion: 1`, `exportedAt`, `events[]` (toàn bộ nhật ký). **Khôi phục** là **gộp, bỏ trùng theo `id` sự kiện**: nhập hai lần không sinh trùng, không mất dữ liệu đang có. Mỗi sự kiện đi qua cùng bộ kiểm tra khi đọc (`parseStoredEvent`), gồm cả `person_restored`. Sau khi nhập, báo "thêm N, bỏ qua M". File chứa tên, số điện thoại và ghi chú về người khác, nên app nhắc người dùng giữ file cẩn thận.
 15. **Danh sách chỉ của mình.** Mọi người chưa lưu trữ trong danh sách đều là của mình. Ai có nhãn KH là KH của mình, ai có nhãn NPP là NPP F1 của mình. Không có ô chọn người bảo trợ, không dựng cây nhiều tầng trên máy.
 
@@ -126,7 +126,7 @@ Công thức tầng, nhánh, điểm sâu và 30x30x4x4 thuộc giai đoạn 2 v
 ## Dependencies
 
 - **Phụ thuộc vào:** nhật ký sự kiện (`EventStore`, story 001), `computeProgress` (story 002), `src/config/game-config.json`.
-- **Được phụ thuộc bởi:** tab Hoạt động (chọn người, chọn việc), màn Hôm nay (có thể hiện người cần theo dõi), bản đồ (mốc hoạt động), màn Bảng 30x30 (mở từ màn Con đường), giai đoạn 2 (tạo tài khoản cho F1, đồng bộ số tổng hợp, Bảng 4x4).
+- **Được phụ thuộc bởi:** tab Làm (chọn người, chọn việc), màn Hôm nay (có thể hiện người cần theo dõi), bản đồ (mốc hoạt động), màn Bảng 30x30 (mở từ màn Con đường), giai đoạn 2 (tạo tài khoản cho F1, đồng bộ số tổng hợp, Bảng 4x4).
 - **Cần sửa code hiện có:** `src/domain/people.ts` (nhãn, việc cần làm, chuyển dữ liệu cũ), `src/data/event-store.ts` (thêm `person_restored`, `taskId`, `phone`), màn Người → Danh bạ, màn Làm → Hoạt động, trang chi tiết người, màn Bảng 30x30 (dòng KH/NPP bấm được), `strings.ts`, `game-config.json`.
 
 ## Tuning Knobs
