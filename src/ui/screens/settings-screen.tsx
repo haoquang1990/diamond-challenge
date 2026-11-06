@@ -8,6 +8,9 @@ import { parseReminderConfig, parseReminderTime, readReminderSettings } from '..
 import type { ReminderConfig, ReminderSettings } from '../../domain/reminders';
 import { browserNotificationPlatform } from '../../notifications/reminders';
 import type { NotificationPlatform, ReminderPermission } from '../../notifications/reminders';
+import { readSoundEnabled } from '../achievements-helpers';
+import { ACHIEVEMENTS_CONFIG } from '../achievements-overlay';
+import { setSoundEnabled } from '../play-ting';
 import { STRINGS } from '../strings';
 
 /** Props for {@link SettingsScreen}. */
@@ -18,6 +21,11 @@ export interface SettingsScreenProps {
   readonly onBack: () => void;
   /** Called after a setting was saved (and any permission prompt answered); used to reschedule. */
   readonly onSaved?: () => void;
+  /**
+   * Called (and awaited) right after a successful backup import, before anything
+   * else re-checks; the app uses it to acknowledge existing milestones silently.
+   */
+  readonly onImported?: () => void | Promise<void>;
   /** Notification capabilities; defaults to the browser's. */
   readonly platform?: NotificationPlatform;
   /** Reminder defaults; defaults to game-config.json. */
@@ -104,6 +112,7 @@ export function SettingsScreen({
   eventStore,
   onBack,
   onSaved,
+  onImported,
   platform = DEFAULT_PLATFORM,
   reminderConfig = DEFAULT_REMINDER_CONFIG,
   download = downloadTextFile,
@@ -112,6 +121,8 @@ export function SettingsScreen({
   const [state, setState] = useState<ScreenState>({ kind: 'loading' });
   const [reloadKey, setReloadKey] = useState(0);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
+  const [soundOn, setSoundOn] = useState(ACHIEVEMENTS_CONFIG.soundDefault);
+  const [soundError, setSoundError] = useState(false);
   const [permission, setPermission] = useState<ReminderPermission>(() => platform.permission());
 
   useEffect(() => {
@@ -119,7 +130,9 @@ export function SettingsScreen({
     eventStore
       .list()
       .then((events) => {
-        if (!cancelled) setState({ kind: 'ready', settings: readReminderSettings(events, reminderConfig) });
+        if (cancelled) return;
+        setSoundOn(readSoundEnabled(events, ACHIEVEMENTS_CONFIG.soundDefault));
+        setState({ kind: 'ready', settings: readReminderSettings(events, reminderConfig) });
       })
       .catch((error: unknown) => {
         if (cancelled) return;
@@ -150,6 +163,22 @@ export function SettingsScreen({
     [eventStore, onSaved, platform],
   );
 
+  const onSoundToggle = async () => {
+    const previous = soundOn;
+    const enabled = !previous;
+    setSoundOn(enabled);
+    setSoundEnabled(enabled);
+    setSoundError(false);
+    try {
+      await eventStore.append({ type: 'settings_changed', payload: { sound: { enabled } } });
+    } catch (error) {
+      console.error('[settings] could not save the sound setting', error);
+      setSoundOn(previous);
+      setSoundEnabled(previous);
+      setSoundError(true);
+    }
+  };
+
   const busy = saveStatus === 'saving';
   const [backup, setBackup] = useState<BackupStatus>({ kind: 'idle' });
   const backupBusy = backup.kind === 'busy';
@@ -178,6 +207,11 @@ export function SettingsScreen({
         setBackup({ kind: 'error', text: rejectText(parsed.reason) });
       } else {
         const result = await eventStore.importEvents(parsed.events);
+        try {
+          await onImported?.();
+        } catch (error) {
+          console.error('[settings] after-import step failed', error);
+        }
         setBackup({ kind: 'imported', added: result.added, skipped: result.skipped + parsed.invalid, invalid: parsed.invalid });
         setReloadKey((k) => k + 1);
         onSaved?.();
@@ -285,6 +319,29 @@ export function SettingsScreen({
             {saveStatus === 'error' && (
               <p className="message message--error" role="alert">
                 {STRINGS.reminderSaveError}
+              </p>
+            )}
+          </section>
+
+          <section className="card">
+            <div className="setting-row">
+              <span id="sound-toggle-label" className="setting-row__label">
+                {STRINGS.soundToggle}
+              </span>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={soundOn}
+                aria-labelledby="sound-toggle-label"
+                className={soundOn ? 'switch switch--on' : 'switch'}
+                onClick={() => void onSoundToggle()}
+              >
+                <span className="switch__thumb" aria-hidden="true" />
+              </button>
+            </div>
+            {soundError && (
+              <p className="message message--error" role="alert">
+                {STRINGS.soundSaveError}
               </p>
             )}
           </section>

@@ -8,7 +8,7 @@ import { nextReminderAt, parseReminderConfig, readReminderSettings, reminderMiss
 import type { ReminderConfig, ReminderSettings } from '../../domain/reminders';
 import { browserNotificationPlatform } from '../../notifications/reminders';
 import type { ReminderPermission } from '../../notifications/reminders';
-import { DEFAULT_STAGES, StageCelebrationCard, acknowledgeStage, buildStageView } from './diamond-path-screen';
+import { DEFAULT_STAGES, buildStageView } from './diamond-path-screen';
 import {
   STRINGS,
   keepStreakLabel,
@@ -55,7 +55,7 @@ export interface TodayScreenProps {
 type ScreenState =
   | { readonly kind: 'loading' }
   | { readonly kind: 'error' }
-  | { readonly kind: 'ready'; readonly progress: Progress; readonly isNewUser: boolean; readonly stageName: string | null; readonly celebrate: StageDef | null; readonly reminder: ReminderSettings; readonly reminderDue: boolean };
+  | { readonly kind: 'ready'; readonly progress: Progress; readonly isNewUser: boolean; readonly stageName: string | null; readonly reminder: ReminderSettings; readonly reminderDue: boolean };
 
 const DEFAULT_CONFIG: ProgressConfig = { dailyXpGoal: gameConfig.dailyXpGoal };
 const DEFAULT_REMINDER_CONFIG = parseReminderConfig(gameConfig.reminder);
@@ -111,11 +111,9 @@ export function TodayScreen({
           progress,
           isNewUser: events.length === 0,
           stageName: view.progress.current?.name ?? null,
-          celebrate: view.celebrate,
           reminder,
           reminderDue: shouldShowReminder(reminder, now(), timeZone, progress.dailyGoal.met),
         });
-        if (view.celebrate !== null) void acknowledgeStage(eventStore, view.celebrate);
       })
       .catch((error: unknown) => {
         if (cancelled) return;
@@ -202,13 +200,6 @@ export function TodayScreen({
             {STRINGS.retry}
           </button>
         </div>
-      )}
-
-      {state.kind === 'ready' && state.celebrate !== null && (
-        <StageCelebrationCard
-          stage={state.celebrate}
-          onDismiss={() => setState({ ...state, celebrate: null })}
-        />
       )}
 
       {state.kind === 'ready' && state.isNewUser && (

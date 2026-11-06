@@ -4,12 +4,10 @@ import type { EventStore, LogEvent } from '../../data/event-store';
 import { computeProgress } from '../../domain/progress';
 import { computeStageProgress, lastAcknowledgedStageId, parseStageConfig, shouldCelebrate } from '../../domain/stages';
 import type { StageDef, StageProgress, StageStatus } from '../../domain/stages';
-import { playTing } from '../play-ting';
 import {
   STRINGS,
   milestoneCountLabel,
   stagePercentLabel,
-  stageReachedLabel,
   stageXpNeedLabel,
   xpRemainingLabel,
 } from '../strings';
@@ -46,35 +44,6 @@ export function buildStageView(
   return { progress, celebrate };
 }
 
-/**
- * Plays the ting and persists the acknowledgement as a `settings_changed`
- * event so the celebration never repeats after a reload. A failed append is
- * logged only (the card is still shown; it may show again next time).
- */
-export async function acknowledgeStage(eventStore: EventStore, stage: StageDef): Promise<void> {
-  playTing();
-  try {
-    await eventStore.append({ type: 'settings_changed', payload: { stageAcknowledged: stage.id } });
-  } catch (error) {
-    console.error('[stages] could not save the stage acknowledgement', error);
-  }
-}
-
-/** "Bạn đã lên chặng X!" card, shown once per new stage. */
-export function StageCelebrationCard({ stage, onDismiss }: { readonly stage: StageDef; readonly onDismiss: () => void }) {
-  return (
-    <section className="card celebration" role="status" aria-live="polite">
-      <div className="celebration__gem" aria-hidden="true">
-        ◆
-      </div>
-      <h2 className="celebration__title">{stageReachedLabel(stage.name)}</h2>
-      <button type="button" className="button button--primary" onClick={onDismiss}>
-        {STRINGS.stageContinue}
-      </button>
-    </section>
-  );
-}
-
 /** Props for {@link DiamondPathScreen}. */
 export interface DiamondPathScreenProps {
   /** Event log stages are derived from (injected). */
@@ -87,6 +56,8 @@ export interface DiamondPathScreenProps {
   readonly timeZone?: string;
   /** Opens the Bảng 30x30 screen; the entry button is shown only when provided. */
   readonly onOpenBoard?: () => void;
+  /** Opens the Thành tích screen; the entry button is shown only when provided. */
+  readonly onOpenAchievements?: () => void;
 }
 
 type ScreenState =
@@ -100,8 +71,8 @@ function realNow(): Date {
 
 /**
  * Màn Con đường: vertical path of stages (done / current / locked). Tapping a
- * stage expands its unlock conditions. Opening the screen celebrates a newly
- * reached stage once (see {@link acknowledgeStage}).
+ * stage expands its unlock conditions. A newly reached stage is celebrated by
+ * the achievements popup (story 017), not on this screen.
  */
 export function DiamondPathScreen({
   eventStore,
@@ -109,6 +80,7 @@ export function DiamondPathScreen({
   now = realNow,
   timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone,
   onOpenBoard,
+  onOpenAchievements,
 }: DiamondPathScreenProps) {
   const [state, setState] = useState<ScreenState>({ kind: 'loading' });
   const [reloadKey, setReloadKey] = useState(0);
@@ -122,8 +94,8 @@ export function DiamondPathScreen({
       .then((events) => {
         if (cancelled) return;
         const view = buildStageView(events, stages, now(), timeZone);
-        setState({ kind: 'ready', progress: view.progress, celebrate: view.celebrate });
-        if (view.celebrate !== null) void acknowledgeStage(eventStore, view.celebrate);
+        // Reaching a stage is celebrated by the achievements popup (story 017), on any screen.
+        setState({ kind: 'ready', progress: view.progress, celebrate: null });
       })
       .catch((error: unknown) => {
         if (cancelled) return;
@@ -149,6 +121,11 @@ export function DiamondPathScreen({
           {STRINGS.boardOpen}
         </button>
       )}
+      {onOpenAchievements !== undefined && (
+        <button type="button" className="button button--secondary" onClick={onOpenAchievements}>
+          {STRINGS.achievementsOpen}
+        </button>
+      )}
 
       {state.kind === 'loading' && (
         <p className="message" role="status">
@@ -164,13 +141,6 @@ export function DiamondPathScreen({
             {STRINGS.retry}
           </button>
         </div>
-      )}
-
-      {state.kind === 'ready' && state.celebrate !== null && (
-        <StageCelebrationCard
-          stage={state.celebrate}
-          onDismiss={() => setState({ kind: 'ready', progress: state.progress, celebrate: null })}
-        />
       )}
 
       {state.kind === 'ready' && state.progress.stages.length === 0 && <p className="message">{STRINGS.pathNoStages}</p>}

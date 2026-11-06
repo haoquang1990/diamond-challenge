@@ -90,6 +90,14 @@ export const STRINGS = {
   backupImportDone: (added: number, skipped: number) => `Đã thêm ${added}, bỏ qua ${skipped}.`,
   backupImportInvalid: (invalid: number) => `Trong đó ${invalid} sự kiện hỏng đã bị bỏ qua.`,
   reminderToggle: 'Nhắc mỗi ngày',
+  soundToggle: 'Âm thanh thưởng',
+  soundSaveError: 'Không lưu được cài đặt âm thanh. Thử lại nhé.',
+
+  // Achievements (toast, popup)
+  toastLesson: 'Bài Học',
+  toastActivity: 'Hoạt động',
+  popupKicker: 'Thành tích mới',
+  popupClose: 'Tuyệt vời!',
   reminderTimeLabel: 'Giờ nhắc',
   reminderSaving: 'Đang lưu…',
   reminderSaved: 'Đã lưu.',
@@ -160,6 +168,15 @@ export const STRINGS = {
   boardDisclaimer: 'Số liệu tính từ danh sách bạn tự nhập, không phải xác nhận chính thức.',
   boardEmptyBody: 'Chưa có ai trong danh sách. Thêm người đầu tiên để Bảng bắt đầu chạy.',
   boardGoPeople: 'Đến tab Làm',
+  achievementsOpen: 'Thành tích',
+  achievementsTitle: 'Thành tích',
+  achievementsPrompt: 'Các mốc bạn đã đạt và các mốc đang chờ.',
+  achievementsLoadError: 'Không tải được Thành tích. Thử lại nhé.',
+  achievementsEmpty: 'Chưa có mốc nào được cấu hình.',
+  achievementsEarnedBefore: 'Đã đạt từ trước',
+  achievementsEarned: 'Đã đạt',
+  achievementsNotEarned: 'Chưa đạt',
+  achievementsNoDailyGoal: 'Chưa đạt mục tiêu ngày nào',
   personNameLabel: 'Tên',
   personNamePlaceholder: 'Vd. Lan',
   personNameRequired: 'Hãy nhập tên.',
@@ -223,6 +240,26 @@ export function questionProgressLabel(current: number, total: number): string {
 /** Lesson score, e.g. `scoreLabel(3, 4)` → "Đúng 3/4 câu". */
 export function scoreLabel(correct: number, total: number): string {
   return `Đúng ${correct}/${total} câu`;
+}
+
+/** Popup headline of a stage item, e.g. "Chặng Silver" -> "Bạn đã lên chặng Silver!". */
+export function stageReachedTitle(itemName: string): string {
+  return `Bạn đã lên ${itemName.charAt(0).toLowerCase()}${itemName.slice(1)}!`;
+}
+
+/** Toast text, e.g. "+15 XP · Demo sản phẩm". */
+export function toastLabel(xp: number, label: string): string {
+  return `+${xp} XP · ${label}`;
+}
+
+/** Merged toast text, e.g. "+45 XP · 3 hoạt động". */
+export function toastMergedLabel(xp: number, count: number): string {
+  return `+${xp} XP · ${count} hoạt động`;
+}
+
+/** Title of the popup that folds the remaining milestones. */
+export function popupRestTitle(count: number): string {
+  return `Bạn vừa đạt thêm ${count} thành tích`;
 }
 
 /** Celebration headline, e.g. "Bạn đã lên chặng Silver!". */
@@ -326,4 +363,30 @@ export function boardMissingLabel(customersMissing: number, f1Missing: number): 
   if (customersMissing > 0) parts.push(`còn ${customersMissing} KH`);
   if (f1Missing > 0) parts.push(`còn ${f1Missing} NPP F1`);
   return parts.join(', ');
+}
+
+/** Summary line of the Thành tích screen, e.g. "Đã đạt 3/15". */
+export function achievementsSummaryLabel(earned: number, total: number): string {
+  return `Đã đạt ${earned}/${total}`;
+}
+
+/** Daily goal line, e.g. "Đã đạt mục tiêu ngày 4 lần". */
+export function achievementsDailyGoalLabel(count: number): string {
+  if (count === 0) return STRINGS.achievementsNoDailyGoal;
+  return `Đã đạt mục tiêu ngày ${count} lần`;
+}
+
+/** "Còn N XP" for a stage not yet reached. */
+export function achievementsXpLeftLabel(xp: number): string {
+  return `Còn ${xp} XP`;
+}
+
+/** "Streak a/b". */
+export function achievementsStreakLabel(current: number, days: number): string {
+  return `Streak ${current}/${days}`;
+}
+
+/** Earned date line, e.g. "Đạt ngày 10/03/2026". */
+export function achievementsEarnedOnLabel(date: string): string {
+  return `Đạt ngày ${date}`;
 }

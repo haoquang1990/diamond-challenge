@@ -113,5 +113,37 @@
     "contactsTarget": 250,
     "customersTarget": 30,
     "f1Target": 30
+  },
+  "achievements": {
+    "toastMs": 2000,
+    "maxPopupsPerAction": 3,
+    "soundDefault": true,
+    "encouragements": [
+      "Tuyệt vời, bạn đang làm rất tốt!",
+      "Mỗi bước nhỏ hôm nay là một bước gần hơn tới Diamond.",
+      "Kiên trì là chìa khóa, cứ tiếp tục nhé!",
+      "Bạn đã làm được, hãy tự hào về mình!",
+      "Thói quen tốt tạo nên kết quả lớn.",
+      "Cố lên, thành công đang ở rất gần!",
+      "Một thành tích đáng nhớ, chúc mừng bạn!",
+      "Giữ vững nhịp này, bạn sẽ bứt phá!"
+    ],
+    "items": [
+      { "id": "stage:silver", "kind": "stage", "stageId": "silver", "name": "Chặng Silver" },
+      { "id": "stage:gold", "kind": "stage", "stageId": "gold", "name": "Chặng Gold" },
+      { "id": "stage:platinum", "kind": "stage", "stageId": "platinum", "name": "Chặng Platinum" },
+      { "id": "stage:emerald", "kind": "stage", "stageId": "emerald", "name": "Chặng Emerald" },
+      { "id": "stage:diamond", "kind": "stage", "stageId": "diamond", "name": "Chặng Diamond" },
+      { "id": "daily_goal", "kind": "daily_goal", "name": "Đạt mục tiêu ngày" },
+      { "id": "streak:7", "kind": "streak", "days": 7, "name": "Streak 7 ngày" },
+      { "id": "streak:30", "kind": "streak", "days": 30, "name": "Streak 30 ngày" },
+      { "id": "streak:100", "kind": "streak", "days": 100, "name": "Streak 100 ngày" },
+      { "id": "people:first_customer", "kind": "people", "metric": "customers", "threshold": 1, "name": "Khách hàng đầu tiên" },
+      { "id": "people:first_npp", "kind": "people", "metric": "f1", "threshold": 1, "name": "NPP đầu tiên" },
+      { "id": "people:contacts_target", "kind": "people", "metric": "contacts", "threshold": "target", "name": "Đủ 250 liên hệ" },
+      { "id": "people:customers_target", "kind": "people", "metric": "customers", "threshold": "target", "name": "Đủ 30 khách hàng" },
+      { "id": "people:f1_target", "kind": "people", "metric": "f1", "threshold": "target", "name": "Đủ 30 NPP F1" },
+      { "id": "people:achieved_30x30", "kind": "people", "metric": "achieved30x30", "name": "Đạt 30x30" }
+    ]
   }
 }
