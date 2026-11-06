@@ -1,12 +1,12 @@
 # Story 018: Màn Thành tích và khôi phục sao lưu không bật popup
 
 > **Epic**: diamond-challenge
-> **Status**: Ready
+> **Status**: In Progress
 > **Layer**: Presentation
 > **Type**: UI
 > **Estimate**: M
 > **Manifest Version**: N/A (minimal — no control manifest)
-> **Last Updated**: 2026-11-05
+> **Last Updated**: 2026-11-06
 
 ## Context
 
