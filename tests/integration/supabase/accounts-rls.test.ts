@@ -1,14 +1,9 @@
 // Story 019: runs the accounts migration on an in-memory Postgres (PGlite) with a stub
 // `auth` schema and Supabase's roles, then checks the row level security rules as the
 // `authenticated` role. Rules: design/quick-specs/supabase-accounts-2026-11-06.md (7–10).
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
 import { PGlite } from '@electric-sql/pglite';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-
-const MIGRATION = fileURLToPath(
-  new URL('../../../supabase/migrations/20261106000000_accounts.sql', import.meta.url),
-);
+import MIGRATION_SQL from '../../../supabase/migrations/20261106000000_accounts.sql?raw';
 
 /** Stand-in for what Supabase provides before migrations run. */
 const SUPABASE_STUB = `
@@ -49,7 +44,7 @@ async function visible(n: number | null, table = 'profiles', column = 'id'): Pro
 beforeAll(async () => {
   db = new PGlite();
   await db.exec(SUPABASE_STUB);
-  await db.exec(readFileSync(MIGRATION, 'utf8'));
+  await db.exec(MIGRATION_SQL);
   for (const n of [1, 2, 3, 4, 5]) await db.query('insert into auth.users values ($1, $2)', [U(n), `u${n}`]);
   await db.query(
     `insert into public.profiles (id, phone, role, must_change_password) values ($1, '+84900000001', 'admin', false)`,
