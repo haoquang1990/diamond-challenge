@@ -63,6 +63,7 @@
 - `tools/ci/check-no-secrets.mjs`
 - `.github/workflows/supabase-deploy.yml`, `.github/workflows/deploy-pages.yml`
 - `tests/unit/supabase/phone.test.ts`, `tests/unit/supabase/config.test.ts`
+- `tests/integration/supabase/accounts-rls.test.ts` (PGlite, devDependency `@electric-sql/pglite`)
 
 ## QA Test Cases
 
@@ -73,7 +74,7 @@
 ## Test Evidence
 
 **Story Type**: Integration
-**Required evidence**: waived at `qa.level: minimal`; migration checked against local Postgres
+**Required evidence**: `tests/integration/supabase/accounts-rls.test.ts` (migration + RLS on PGlite); live run of `supabase-deploy.yml` after merge
 
 **Status**: [ ] Not yet created
 
