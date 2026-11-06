@@ -54,7 +54,7 @@
 #   in any other shape is reported as unsupported layout, with its number.
 
 version: 1
-last_updated: "2026-11-03"
+last_updated: "2026-11-07"
 
 # ─── ENTITIES ────────────────────────────────────────────────────────────────
 # Named game-world objects: enemies, NPCs, characters, factions, bosses.
@@ -76,8 +76,24 @@ entities:
     task_rule: "completing a task writes activity_logged with taskId; non-repeatable tasks leave the person's list; undo by compensating event"
     label_rule: "at most one label; new_npp replaces KH and never reverts; legacy person_stage_changed maps customer->KH, downline->NPP, read-only"
     linked_user_id: "null in phase 1; set in phase 2 when I create an account for an F1"
-    f1_rule: "phase 1: every non-archived person in my own list with label KH = my KH, with label NPP = my NPP F1; no sponsor field, no multi-tier tree on device"
+    # f1_rule was "phase 1: every non-archived person in my own list ... = my NPP F1" (design/gdd/crm.md, revised 2026-11-07)
+    f1_rule: "counted per household contact book: non-archived, not merged away, not transferred; label KH = household KH, label NPP = household NPP F1; no sponsor field on contacts"
+    amway_code: "optional on a contact; normalized digits; kept when KH becomes NPP; read only by household members"
+    duplicates: "certain = same amwayCode or same E.164 phone; possible = same or near name; merge never re-awards XP"
     added: 2026-11-03
+    revised: 2026-11-07
+  - name: household
+    status: active
+    source: design/gdd/accounts.md
+    referenced_by:
+      - design/gdd/crm.md
+      - design/phase-2-notes.md
+      - design/game-brief.md
+    members: "1..maxHouseholdMembers (2) people, each with own account, XP, streak, achievements"
+    sponsor: "sponsor tree, 30x30 and 4x4 are per household"
+    amway_code: "at most one active code per household; active code unique across households; cancelled codes kept with date"
+    contacts: "one shared contact book on the server; only members read or write it"
+    added: 2026-11-07
     revised: 2026-11-04   # stages replaced by tasks + labels (KH/NPP); earlier: sponsor tree moved to phase 2 server
 
 # Example (template reference):

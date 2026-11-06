@@ -13,8 +13,8 @@
 - **Một Danh bạ duy nhất.** Mỗi người có tên, ghi chú, số điện thoại (chọn mã nước, mặc định +84), danh sách việc cần làm và tối đa một **nhãn**: KH hoặc NPP (do chốt). Bộ lọc: Tất cả / Khách hàng / NPP / Đã lưu trữ.
 - Mỗi hoạt động gắn với một người. Làm xong một việc thì việc đó biến khỏi danh sách (trừ Follow-up).
 - Danh sách việc và XP của từng việc lấy từ file cấu hình. Dữ liệu giai đoạn cũ được chuyển sang mô hình này khi đọc, không mất lịch sử và XP.
-- Toàn bộ thông tin về người lưu trên máy và được tính lại từ nhật ký sự kiện, giống XP và streak.
-- Mỗi người chỉ quản lý danh sách của chính mình: KH và NPP F1 của mình.
+- Thông tin về người được tính lại từ nhật ký sự kiện, giống XP và streak. Giai đoạn 1 lưu trên máy.
+- Giai đoạn 1 mỗi người quản lý danh sách của chính mình. **Giai đoạn 2 (quyết định 2026-11-07):** Danh bạ thuộc **Hộ kinh doanh** (vợ chồng chung một mã số Amway, mỗi người một tài khoản), đồng bộ lên server và chỉ thành viên hộ đọc được; XP, streak, thành tích tính theo người; cây, 30x30 và 4x4 tính theo hộ (`design/gdd/accounts.md`, `design/gdd/crm.md`).
 - **Giai đoạn 1:** mục tiêu 30x30 (≥30 KH, ≥30 NPP F1), mốc phụ 250 liên hệ. Mục tiêu 30x30x4x4 và Bảng 4x4 ở giai đoạn 2 (`design/phase-2-notes.md`). Chi tiết ở `design/gdd/crm.md`.
 
 ## Player goal & fail state — what "working" looks like
@@ -34,7 +34,7 @@
 ## Out of scope — not building this
 - Giải đấu tuần trong nhóm, tài khoản, server, đồng bộ (giai đoạn 2).
 - **Tạo tài khoản cho NPP F1, cây hệ thống nhiều tầng, đồng bộ số tổng hợp và Bảng 4x4** (giai đoạn 2, `design/phase-2-notes.md`).
-- Đưa danh sách Người lên server hay chia sẻ cho tuyến trên.
+- Chia sẻ Danh bạ cho tuyến trên hay tuyến dưới (giai đoạn 2 chỉ chia sẻ trong hộ; tuyến trên chỉ thấy số liệu tổng hợp).
 - Nhập danh bạ điện thoại tự động.
 - Bảng xếp hạng, bạn bè, chat, chia sẻ mạng xã hội.
 - Kết nối với doanh số, PV, BV thật của Amway. Bản đồ là lộ trình thói quen, không phải xác nhận danh hiệu chính thức.
