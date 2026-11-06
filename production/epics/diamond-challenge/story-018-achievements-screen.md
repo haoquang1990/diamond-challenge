@@ -1,7 +1,7 @@
 # Story 018: Màn Thành tích và khôi phục sao lưu không bật popup
 
 > **Epic**: diamond-challenge
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Presentation
 > **Type**: UI
 > **Estimate**: M
@@ -84,3 +84,10 @@
 
 - Depends on: `production/epics/diamond-challenge/story-016-achievements-model.md`, `production/epics/diamond-challenge/story-017-achievement-toast-popup.md`, `production/epics/diamond-challenge/story-011-backup-restore.md`
 - Unlocks: None
+
+## Completion Notes
+**Completed**: 2026-11-06
+**Criteria**: 9/9 passing (Chromium 390×844 and 320px; not tried on a real phone)
+**Deviations**: Advisory, not logged as tech debt: (1) no screenshot of the "Đã đạt mục tiêu ngày N lần" state or of the sound switch after restore (covered by a unit test and the run result); (2) the daily goal count only counts days acknowledged since the feature existed; (3) not tried on a real phone
+**Test Evidence**: screenshots in production/qa/evidence/story-018-achievements-screen/ (01–05 plus stamp.txt, stamp unchanged); tests/unit/achievements-ui/achievement-rows.test.ts; full suite 310/310
+**Reviewed by**: self, no independent review
