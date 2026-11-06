@@ -1,7 +1,7 @@
 # Story 016: Mô hình thành tích (cấu hình, đánh giá, ghi nhận, hàng đợi)
 
 > **Epic**: diamond-challenge
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Foundation
 > **Type**: Logic
 > **Estimate**: L
@@ -77,3 +77,10 @@
 
 - Depends on: `production/epics/diamond-challenge/story-012-person-tasks-labels.md`, `production/epics/diamond-challenge/story-006-diamond-map.md`, `production/epics/diamond-challenge/story-002-daily-goal-streak.md`
 - Unlocks: `story-017-achievement-toast-popup.md`, `story-018-achievements-screen.md`
+
+## Completion Notes
+**Completed**: 2026-11-06
+**Criteria**: 9/9 passing (43 Vitest tests in achievements.test.ts; full suite 276/276; no screen reads the functions yet)
+**Deviations**: Advisory, not logged as tech debt: (1) some functions take extra arguments compared with the story text (readAcknowledged needs the stage defs; buildSeedEvents can take the acknowledged set and a timestamp) and AchievedItem carries an extra itemId; (2) with maxPopupsPerAction = 1 and several new milestones only one merged popup is planned; (3) a few safe defaults stay in code (DEFAULT_TOAST_MS 2000, a default encouragement sentence) as fallbacks for an invalid config; (4) the Emerald stage still needs 5 new_customer activities on top of 4000 XP (existing Con đường rule)
+**Test Evidence**: tests/unit/achievements/achievements.test.ts (43 tests)
+**Reviewed by**: self, no independent review
