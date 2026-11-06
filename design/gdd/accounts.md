@@ -11,7 +11,7 @@
 Giai đoạn 2 có tài khoản đăng nhập bằng SĐT + mật khẩu. Mỗi **người** có một tài khoản riêng; XP, streak, thành tích và bài học tính theo người. Người thuộc một **Hộ kinh doanh** (tối đa 2 thành viên, thường là vợ chồng) dùng chung một **mã số Amway** và một **Danh bạ** (xem `design/gdd/crm.md`). **Cây bảo trợ, Bảng 30x30 và Bảng 4x4 tính theo hộ.** Hộ một người chạy như trước. Tuyến trên thấy các hộ F1, tên thành viên và số liệu tổng hợp; không bao giờ thấy Danh bạ. Hai hộ vợ chồng trước đây có hai mã gộp được thành một hộ: mã bị huỷ, những người đã có mã dưới mã đó chuyển lên tuyến trên.
 
 > **Quick reference** — Layer: `Foundation` · Priority: `Phase 2` · Key deps: `Supabase (story 019)`, `crm`, `achievements`
-> *(Kiến trúc: `docs/architecture/ADR-0001-household-model.md`, `ADR-0002-household-contacts-on-server.md`, `ADR-0003-transfer-contacts-on-code-merge.md`.)*
+> *(Kiến trúc: `docs/architecture/adr-0001-household-model.md`, `adr-0002-household-contacts-on-server.md`, `adr-0003-transfer-contacts-on-code-merge.md`.)*
 
 ## Overview
 

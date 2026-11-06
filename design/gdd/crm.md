@@ -20,7 +20,7 @@ Một Danh bạ duy nhất. Mỗi người có một danh sách **việc cần l
 - **Không còn giai đoạn tuần tự.** Thay vào đó là danh sách việc cần làm trong `game-config.json` (`personTasks`) và hai nhãn: **KH** và **NPP**.
 - Hoàn thành một việc ghi một `activity_logged` (cùng loại sự kiện đã có), nên mục tiêu ngày, streak, mốc chặng Con đường và `computeProgress` **không đổi**.
 - Danh sách gồm người của **hộ mình**: KH của hộ và NPP F1 của hộ (giai đoạn 1: hộ một người). Không dựng cây nhiều tầng trên máy.
-- Giai đoạn 2: nhật ký sự kiện về người là **nhật ký của hộ**, vẫn dùng offline và đồng bộ khi có mạng (`docs/architecture/ADR-0002-household-contacts-on-server.md`).
+- Giai đoạn 2: nhật ký sự kiện về người là **nhật ký của hộ**, vẫn dùng offline và đồng bộ khi có mạng (`docs/architecture/adr-0002-household-contacts-on-server.md`).
 - Dữ liệu cũ (giai đoạn) được dẫn xuất sang mô hình mới khi đọc; tổng XP và lịch sử không đổi.
 
 ## Detailed Design

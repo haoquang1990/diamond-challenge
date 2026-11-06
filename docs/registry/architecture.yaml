@@ -40,7 +40,7 @@
 #   unsupported layout, with its number.
 
 version: 1
-last_updated: ""
+last_updated: "2026-11-07"
 
 # ─── STATE OWNERSHIP ─────────────────────────────────────────────────────────
 # Who is the authoritative owner of each piece of shared game state.
@@ -53,7 +53,37 @@ last_updated: ""
 # interface: how other systems access this state (read-only property, method call,
 #   signal, shared resource, etc.) — this is the contract other ADRs depend on.
 
-state_ownership: []
+state_ownership:
+  - state: sponsor_tree
+    status: active
+    owner_system: supabase-households
+    adr: docs/architecture/adr-0001-household-model.md
+    interface: "households.sponsor_household_id; read via can_view_household(h)"
+    write_access: server-rpc-only
+    referenced_by:
+      - docs/architecture/adr-0001-household-model.md
+    added: 2026-11-07
+    revised: ""
+  - state: household_amway_code
+    status: active
+    owner_system: supabase-households
+    adr: docs/architecture/adr-0001-household-model.md
+    interface: "household_codes (one active per household, active code unique)"
+    write_access: admin-rpc-only
+    referenced_by:
+      - docs/architecture/adr-0001-household-model.md
+    added: 2026-11-07
+    revised: ""
+  - state: household_contact_book
+    status: active
+    owner_system: supabase-contact-events
+    adr: docs/architecture/adr-0002-household-contacts-on-server.md
+    interface: "contact_events rows for household_id; members read and insert only"
+    write_access: members-insert-only
+    referenced_by:
+      - docs/architecture/adr-0002-household-contacts-on-server.md
+    added: 2026-11-07
+    revised: ""
 
 # Example:
 #
@@ -81,7 +111,31 @@ state_ownership: []
 #
 # pattern options: signal | direct_call | event_bus | shared_resource | rpc | none
 
-interfaces: []
+interfaces:
+  - contract: code_merge
+    status: active
+    pattern: rpc
+    producer: supabase-households
+    consumers:
+      - app-admin-ui
+    adr: docs/architecture/adr-0003-transfer-contacts-on-code-merge.md
+    signal_signature: "preview_code_merge(keep, drop) -> jsonb; merge_codes(keep, drop) -> merge_id; undo_code_merge(merge_id)"
+    referenced_by:
+      - docs/architecture/adr-0003-transfer-contacts-on-code-merge.md
+    added: 2026-11-07
+    revised: ""
+  - contract: contact_sync
+    status: active
+    pattern: shared_resource
+    producer: app-event-store
+    consumers:
+      - supabase-contact-events
+    adr: docs/architecture/adr-0002-household-contacts-on-server.md
+    signal_signature: "insert contact_events on conflict (id) do nothing; select where created_at > cursor"
+    referenced_by:
+      - docs/architecture/adr-0002-household-contacts-on-server.md
+    added: 2026-11-07
+    revised: ""
 
 # Example:
 #
@@ -167,7 +221,31 @@ api_decisions: []
 # Register a pattern when an ADR explicitly bans it AND other ADRs might
 # unknowingly use it (i.e., it's a tempting but wrong approach for this project).
 
-forbidden_patterns: []
+forbidden_patterns:
+  - pattern: app_writes_household_tables
+    status: active
+    description: "The app must never write households, household_members or household_codes directly; only RPCs and Edge Functions."
+    why: "Membership limits, code uniqueness and cycle checks live in server functions."
+    adr: docs/architecture/adr-0001-household-model.md
+    added: 2026-11-07
+  - pattern: push_contacts_without_consent
+    status: active
+    description: "The app must never push contact events before the user consented."
+    why: "Decision C: contacts go to the server only after consent."
+    adr: docs/architecture/adr-0002-household-contacts-on-server.md
+    added: 2026-11-07
+  - pattern: update_or_delete_contact_events_from_app
+    status: active
+    description: "Contact events are append-only for clients; edits are new events, undo is a compensating event."
+    why: "Concurrent edits merge by event id; only code-merge RPCs change household_id."
+    adr: docs/architecture/adr-0002-household-contacts-on-server.md
+    added: 2026-11-07
+  - pattern: service_role_key_in_app
+    status: active
+    description: "No secret or service_role key in src, dist, .env.production or the repository."
+    why: "The publishable key is public; RLS is the only guard."
+    adr: docs/architecture/adr-0001-household-model.md
+    added: 2026-11-07
 
 # Example:
 #

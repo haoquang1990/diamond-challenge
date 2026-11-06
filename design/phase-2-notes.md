@@ -14,7 +14,7 @@ Chưa làm trong MVP (xem Out of scope trong `design/game-brief.md`). Ghi lại 
 
 ## Đồng bộ số tổng hợp
 - Mỗi hộ gửi **số tổng hợp** lên server: **số KH**, **số NPP F1**, **số liên hệ**, **đạt 30x30**, **số cặp trùng chưa duyệt**, kèm thời điểm cập nhật. Tuyến trên chỉ đọc các số này.
-- ~~Danh sách tên, ghi chú và hoạt động không rời máy.~~ **Đã đổi 2026-11-07:** Danh bạ hộ được lưu trên server để đồng bộ trong hộ, chỉ thành viên hộ đọc được (`crm.md` luật 16, `docs/architecture/ADR-0002-household-contacts-on-server.md`).
+- ~~Danh sách tên, ghi chú và hoạt động không rời máy.~~ **Đã đổi 2026-11-07:** Danh bạ hộ được lưu trên server để đồng bộ trong hộ, chỉ thành viên hộ đọc được (`crm.md` luật 16, `docs/architecture/adr-0002-household-contacts-on-server.md`).
 - Số tổng hợp được tính bằng đúng công thức giai đoạn 1 trong `design/gdd/crm.md` (mục Formulas).
 
 ## Cây hệ thống và Bảng 4x4 (server tính)
