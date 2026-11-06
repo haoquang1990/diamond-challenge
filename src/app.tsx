@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { EventStore } from './data/event-store';
 import { browserNotificationPlatform, createReminderScheduler } from './notifications/reminders';
 import type { NotificationPlatform } from './notifications/reminders';
 import { AchievementsOverlay, ACHIEVEMENTS_CONFIG } from './ui/achievements-overlay';
 import { createObservedStore, readSoundEnabled } from './ui/achievements-helpers';
 import { setSoundEnabled } from './ui/play-ting';
+import { AchievementsScreen } from './ui/screens/achievements-screen';
 import { Board30x30Screen } from './ui/screens/board-30x30-screen';
 import { DiamondPathScreen } from './ui/screens/diamond-path-screen';
 import { LessonScreen } from './ui/screens/lesson-screen';
@@ -37,9 +38,9 @@ function realNow(): Date {
  * merged person list (Danh bạ). `settings` (opened from Hôm nay) and `board`
  * (opened from Con đường) are not in the tab bar.
  */
-type Tab = 'today' | 'learn' | 'people' | 'path' | 'settings' | 'board';
+type Tab = 'today' | 'learn' | 'people' | 'path' | 'settings' | 'board' | 'achievements';
 
-const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'board'>; readonly label: string }[] = [
+const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'board' | 'achievements'>; readonly label: string }[] = [
   { id: 'today', label: STRINGS.tabToday },
   { id: 'learn', label: STRINGS.tabLearn },
   { id: 'people', label: STRINGS.tabPeople },
@@ -114,27 +115,33 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
     return () => navigator.serviceWorker.removeEventListener('message', onMessage);
   }, []);
 
-  // Reward sound: config default, then the latest saved choice (on start and when settings change).
+  // Reward sound: config default, then the latest saved choice (on start, when settings change, after a restore).
+  const refreshSound = useCallback(async () => {
+    try {
+      setSoundEnabled(readSoundEnabled(await rawEventStore.list(), ACHIEVEMENTS_CONFIG.soundDefault));
+    } catch (error) {
+      console.error('[sound] could not read the sound setting', error);
+    }
+  }, [rawEventStore]);
+
   useEffect(() => {
-    let cancelled = false;
-    const refreshSound = () => {
-      rawEventStore
-        .list()
-        .then((events) => {
-          if (!cancelled) setSoundEnabled(readSoundEnabled(events, ACHIEVEMENTS_CONFIG.soundDefault));
-        })
-        .catch((error: unknown) => console.error('[sound] could not read the sound setting', error));
-    };
     setSoundEnabled(ACHIEVEMENTS_CONFIG.soundDefault);
-    refreshSound();
-    const unsubscribe = observed.subscribe((event) => {
-      if (event.type === 'settings_changed' && event.payload.sound !== undefined) refreshSound();
+    void refreshSound();
+    return observed.subscribe((event) => {
+      if (event.type === 'settings_changed' && event.payload.sound !== undefined) void refreshSound();
     });
-    return () => {
-      cancelled = true;
-      unsubscribe();
-    };
-  }, [rawEventStore, observed]);
+  }, [observed, refreshSound]);
+
+  // After a backup restore: acknowledge existing milestones silently (no popups), then re-read sound and reminders.
+  const silentAcknowledgeRef = useRef<(() => Promise<void>) | null>(null);
+  const onImported = useCallback(async () => {
+    try {
+      await silentAcknowledgeRef.current?.();
+    } catch (error) {
+      console.error('[achievements] silent acknowledge after restore failed', error);
+    }
+    await refreshSound();
+  }, [refreshSound]);
 
   const screen = renderScreen();
   return (
@@ -142,7 +149,7 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
       <div className="app-inert" inert={popupOpen}>
         {screen}
       </div>
-      <AchievementsOverlay observed={observed} rawStore={rawEventStore} tab={tab} onPopupOpenChange={setPopupOpen} />
+      <AchievementsOverlay observed={observed} rawStore={rawEventStore} tab={tab} onPopupOpenChange={setPopupOpen} silentAcknowledgeRef={silentAcknowledgeRef} />
     </>
   );
 
@@ -161,10 +168,18 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
     );
   }
 
+  if (tab === 'achievements') {
+    return (
+      <div className="app-shell">
+        <AchievementsScreen eventStore={eventStore} onBack={() => setTab('path')} />
+      </div>
+    );
+  }
+
   if (tab === 'settings') {
     return (
       <div className="app-shell">
-        <SettingsScreen eventStore={eventStore} onBack={goToday} onSaved={refreshReminders} platform={notificationPlatform} />
+        <SettingsScreen eventStore={eventStore} onBack={goToday} onSaved={refreshReminders} onImported={onImported} platform={notificationPlatform} />
       </div>
     );
   }
@@ -184,7 +199,7 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
         />
       )}
       {tab === 'learn' && <LessonScreen eventStore={eventStore} onDone={goToday} onActiveChange={onLessonActive} />}
-      {tab === 'path' && <DiamondPathScreen eventStore={eventStore} onOpenBoard={() => setTab('board')} />}
+      {tab === 'path' && <DiamondPathScreen eventStore={eventStore} onOpenBoard={() => setTab('board')} onOpenAchievements={() => setTab('achievements')} />}
       {tab === 'people' && (
         <PeopleScreen
           key={fromBoard ?? 'tab'}

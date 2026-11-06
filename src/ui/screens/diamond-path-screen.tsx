@@ -56,6 +56,8 @@ export interface DiamondPathScreenProps {
   readonly timeZone?: string;
   /** Opens the Bảng 30x30 screen; the entry button is shown only when provided. */
   readonly onOpenBoard?: () => void;
+  /** Opens the Thành tích screen; the entry button is shown only when provided. */
+  readonly onOpenAchievements?: () => void;
 }
 
 type ScreenState =
@@ -78,6 +80,7 @@ export function DiamondPathScreen({
   now = realNow,
   timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone,
   onOpenBoard,
+  onOpenAchievements,
 }: DiamondPathScreenProps) {
   const [state, setState] = useState<ScreenState>({ kind: 'loading' });
   const [reloadKey, setReloadKey] = useState(0);
@@ -116,6 +119,11 @@ export function DiamondPathScreen({
       {onOpenBoard !== undefined && (
         <button type="button" className="button button--secondary" onClick={onOpenBoard}>
           {STRINGS.boardOpen}
+        </button>
+      )}
+      {onOpenAchievements !== undefined && (
+        <button type="button" className="button button--secondary" onClick={onOpenAchievements}>
+          {STRINGS.achievementsOpen}
         </button>
       )}
 

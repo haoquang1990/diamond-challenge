@@ -1,0 +1,321 @@
+{
+  "format": "diamond-challenge-backup",
+  "formatVersion": 1,
+  "exportedAt": "2026-11-06T01:43:08.498Z",
+  "events": [
+    {
+      "id": "a9c089af-a82e-4d1a-93bd-0348d3928893",
+      "type": "person_added",
+      "timestamp": "2026-10-27T01:43:01.668Z",
+      "userId": "f3166ec7-7ab8-4af1-9699-84740dc9bf63",
+      "schemaVersion": 1,
+      "payload": {
+        "personId": "k",
+        "name": "Khách Một"
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "a4c88bfd-881e-4071-87a7-4052bedab119",
+      "type": "person_stage_changed",
+      "timestamp": "2026-10-27T01:43:01.678Z",
+      "userId": "f3166ec7-7ab8-4af1-9699-84740dc9bf63",
+      "schemaVersion": 1,
+      "payload": {
+        "personId": "k",
+        "from": "acquaintance",
+        "to": "customer",
+        "xp": 30
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "2d2484cb-7466-4d7e-96b6-f10dc240d91a",
+      "type": "person_added",
+      "timestamp": "2026-10-27T01:43:01.688Z",
+      "userId": "f3166ec7-7ab8-4af1-9699-84740dc9bf63",
+      "schemaVersion": 1,
+      "payload": {
+        "personId": "a",
+        "name": "An"
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "ff49bae0-d0fc-4975-93a0-c9219e2371ef",
+      "type": "lesson_completed",
+      "timestamp": "2026-10-29T01:43:01.698Z",
+      "userId": "f3166ec7-7ab8-4af1-9699-84740dc9bf63",
+      "schemaVersion": 1,
+      "payload": {
+        "lessonId": "c8",
+        "xp": 10
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "703f9939-433c-4026-83ea-297de84fe9d1",
+      "type": "activity_logged",
+      "timestamp": "2026-10-29T01:57:25.708Z",
+      "userId": "f3166ec7-7ab8-4af1-9699-84740dc9bf63",
+      "schemaVersion": 1,
+      "payload": {
+        "activityType": "follow_up",
+        "xp": 40
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "f1435f15-0deb-4931-a924-db43a81b1867",
+      "type": "lesson_completed",
+      "timestamp": "2026-10-30T01:43:01.718Z",
+      "userId": "f3166ec7-7ab8-4af1-9699-84740dc9bf63",
+      "schemaVersion": 1,
+      "payload": {
+        "lessonId": "c7",
+        "xp": 10
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "6b354c3d-7478-446e-b531-b644af053f29",
+      "type": "activity_logged",
+      "timestamp": "2026-10-30T01:57:25.728Z",
+      "userId": "f3166ec7-7ab8-4af1-9699-84740dc9bf63",
+      "schemaVersion": 1,
+      "payload": {
+        "activityType": "follow_up",
+        "xp": 40
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "09918320-92b6-404e-a2cf-ee1fb29b72f5",
+      "type": "lesson_completed",
+      "timestamp": "2026-10-31T01:43:01.738Z",
+      "userId": "f3166ec7-7ab8-4af1-9699-84740dc9bf63",
+      "schemaVersion": 1,
+      "payload": {
+        "lessonId": "c6",
+        "xp": 10
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "2a60f040-3a84-4ef5-9afd-0e452afbe96f",
+      "type": "activity_logged",
+      "timestamp": "2026-10-31T01:57:25.748Z",
+      "userId": "f3166ec7-7ab8-4af1-9699-84740dc9bf63",
+      "schemaVersion": 1,
+      "payload": {
+        "activityType": "follow_up",
+        "xp": 40
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "4eedc639-0a74-46d6-8811-25796ff8cb75",
+      "type": "lesson_completed",
+      "timestamp": "2026-11-01T01:43:01.758Z",
+      "userId": "f3166ec7-7ab8-4af1-9699-84740dc9bf63",
+      "schemaVersion": 1,
+      "payload": {
+        "lessonId": "c5",
+        "xp": 10
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "e804d101-1c79-459f-a4fb-f68c4d46b2ac",
+      "type": "activity_logged",
+      "timestamp": "2026-11-01T01:57:25.768Z",
+      "userId": "f3166ec7-7ab8-4af1-9699-84740dc9bf63",
+      "schemaVersion": 1,
+      "payload": {
+        "activityType": "follow_up",
+        "xp": 40
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "f0037f1e-30ce-4408-8f6d-81eba1c12f79",
+      "type": "lesson_completed",
+      "timestamp": "2026-11-02T01:43:01.778Z",
+      "userId": "f3166ec7-7ab8-4af1-9699-84740dc9bf63",
+      "schemaVersion": 1,
+      "payload": {
+        "lessonId": "c4",
+        "xp": 10
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "79a8d405-6d13-4496-8d5c-52572e4acbf9",
+      "type": "activity_logged",
+      "timestamp": "2026-11-02T01:57:25.788Z",
+      "userId": "f3166ec7-7ab8-4af1-9699-84740dc9bf63",
+      "schemaVersion": 1,
+      "payload": {
+        "activityType": "follow_up",
+        "xp": 40
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "b2967763-1ec3-4c1e-9467-82d506eda5f6",
+      "type": "lesson_completed",
+      "timestamp": "2026-11-03T01:43:01.798Z",
+      "userId": "f3166ec7-7ab8-4af1-9699-84740dc9bf63",
+      "schemaVersion": 1,
+      "payload": {
+        "lessonId": "c3",
+        "xp": 10
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "ff682862-c516-475a-a77e-555954a1d5f1",
+      "type": "activity_logged",
+      "timestamp": "2026-11-03T01:57:25.808Z",
+      "userId": "f3166ec7-7ab8-4af1-9699-84740dc9bf63",
+      "schemaVersion": 1,
+      "payload": {
+        "activityType": "follow_up",
+        "xp": 40
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "9c79c253-cc61-4a8f-b870-6636c512e6e9",
+      "type": "lesson_completed",
+      "timestamp": "2026-11-04T01:43:01.818Z",
+      "userId": "f3166ec7-7ab8-4af1-9699-84740dc9bf63",
+      "schemaVersion": 1,
+      "payload": {
+        "lessonId": "c2",
+        "xp": 10
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "e3614114-0047-4961-a6ef-7dbdc58182e6",
+      "type": "activity_logged",
+      "timestamp": "2026-11-04T01:57:25.828Z",
+      "userId": "f3166ec7-7ab8-4af1-9699-84740dc9bf63",
+      "schemaVersion": 1,
+      "payload": {
+        "activityType": "follow_up",
+        "xp": 40
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "09830f73-42ed-4b68-a579-c9b07225bd05",
+      "type": "lesson_completed",
+      "timestamp": "2026-11-05T01:43:01.838Z",
+      "userId": "f3166ec7-7ab8-4af1-9699-84740dc9bf63",
+      "schemaVersion": 1,
+      "payload": {
+        "lessonId": "c1",
+        "xp": 10
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "729b6569-3fc3-4f89-b453-5cc16f870b7d",
+      "type": "activity_logged",
+      "timestamp": "2026-11-05T01:57:25.848Z",
+      "userId": "f3166ec7-7ab8-4af1-9699-84740dc9bf63",
+      "schemaVersion": 1,
+      "payload": {
+        "activityType": "follow_up",
+        "xp": 40
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "0c848bb2-56e6-427b-bde7-977f4fd7e43b",
+      "type": "settings_changed",
+      "timestamp": "2026-11-06T01:43:01.718Z",
+      "userId": "f3166ec7-7ab8-4af1-9699-84740dc9bf63",
+      "schemaVersion": 1,
+      "payload": {
+        "achievementAcknowledged": "streak:7",
+        "silent": true
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "54465350-c6bb-421c-b228-b739d6e237fe",
+      "type": "settings_changed",
+      "timestamp": "2026-11-06T01:43:01.720Z",
+      "userId": "f3166ec7-7ab8-4af1-9699-84740dc9bf63",
+      "schemaVersion": 1,
+      "payload": {
+        "achievementAcknowledged": "people:first_customer",
+        "silent": true
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "243abe1a-5802-4680-978c-840d7584e311",
+      "type": "settings_changed",
+      "timestamp": "2026-11-06T01:43:01.730Z",
+      "userId": "f3166ec7-7ab8-4af1-9699-84740dc9bf63",
+      "schemaVersion": 1,
+      "payload": {
+        "achievementsSeeded": true
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "ecde4b7e-42b0-4245-b7de-19e565bdf4f0",
+      "type": "settings_changed",
+      "timestamp": "2026-11-06T01:43:01.762Z",
+      "userId": "f3166ec7-7ab8-4af1-9699-84740dc9bf63",
+      "schemaVersion": 1,
+      "payload": {
+        "stageAcknowledged": "silver"
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "8af91da8-99ae-4dda-ad28-ad359fc7e1ba",
+      "type": "activity_logged",
+      "timestamp": "2026-11-06T01:43:03.933Z",
+      "userId": "f3166ec7-7ab8-4af1-9699-84740dc9bf63",
+      "schemaVersion": 1,
+      "payload": {
+        "activityType": "new_npp",
+        "taskId": "new_npp",
+        "xp": 50,
+        "personId": "a"
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "b7744947-6963-41d5-9434-e556274dac97",
+      "type": "settings_changed",
+      "timestamp": "2026-11-06T01:43:03.946Z",
+      "userId": "f3166ec7-7ab8-4af1-9699-84740dc9bf63",
+      "schemaVersion": 1,
+      "payload": {
+        "achievementAcknowledged": "people:first_npp"
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "7387e685-7625-4ca2-b62f-2226465c28e3",
+      "type": "settings_changed",
+      "timestamp": "2026-11-06T01:43:08.066Z",
+      "userId": "f3166ec7-7ab8-4af1-9699-84740dc9bf63",
+      "schemaVersion": 1,
+      "payload": {
+        "sound": {
+          "enabled": false
+        }
+      },
+      "syncedAt": null
+    }
+  ]
+}

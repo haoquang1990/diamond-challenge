@@ -21,6 +21,11 @@ export interface SettingsScreenProps {
   readonly onBack: () => void;
   /** Called after a setting was saved (and any permission prompt answered); used to reschedule. */
   readonly onSaved?: () => void;
+  /**
+   * Called (and awaited) right after a successful backup import, before anything
+   * else re-checks; the app uses it to acknowledge existing milestones silently.
+   */
+  readonly onImported?: () => void | Promise<void>;
   /** Notification capabilities; defaults to the browser's. */
   readonly platform?: NotificationPlatform;
   /** Reminder defaults; defaults to game-config.json. */
@@ -107,6 +112,7 @@ export function SettingsScreen({
   eventStore,
   onBack,
   onSaved,
+  onImported,
   platform = DEFAULT_PLATFORM,
   reminderConfig = DEFAULT_REMINDER_CONFIG,
   download = downloadTextFile,
@@ -201,6 +207,11 @@ export function SettingsScreen({
         setBackup({ kind: 'error', text: rejectText(parsed.reason) });
       } else {
         const result = await eventStore.importEvents(parsed.events);
+        try {
+          await onImported?.();
+        } catch (error) {
+          console.error('[settings] after-import step failed', error);
+        }
         setBackup({ kind: 'imported', added: result.added, skipped: result.skipped + parsed.invalid, invalid: parsed.invalid });
         setReloadKey((k) => k + 1);
         onSaved?.();

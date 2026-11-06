@@ -168,6 +168,15 @@ export const STRINGS = {
   boardDisclaimer: 'Số liệu tính từ danh sách bạn tự nhập, không phải xác nhận chính thức.',
   boardEmptyBody: 'Chưa có ai trong danh sách. Thêm người đầu tiên để Bảng bắt đầu chạy.',
   boardGoPeople: 'Đến tab Làm',
+  achievementsOpen: 'Thành tích',
+  achievementsTitle: 'Thành tích',
+  achievementsPrompt: 'Các mốc bạn đã đạt và các mốc đang chờ.',
+  achievementsLoadError: 'Không tải được Thành tích. Thử lại nhé.',
+  achievementsEmpty: 'Chưa có mốc nào được cấu hình.',
+  achievementsEarnedBefore: 'Đã đạt từ trước',
+  achievementsEarned: 'Đã đạt',
+  achievementsNotEarned: 'Chưa đạt',
+  achievementsNoDailyGoal: 'Chưa đạt mục tiêu ngày nào',
   personNameLabel: 'Tên',
   personNamePlaceholder: 'Vd. Lan',
   personNameRequired: 'Hãy nhập tên.',
@@ -354,4 +363,30 @@ export function boardMissingLabel(customersMissing: number, f1Missing: number): 
   if (customersMissing > 0) parts.push(`còn ${customersMissing} KH`);
   if (f1Missing > 0) parts.push(`còn ${f1Missing} NPP F1`);
   return parts.join(', ');
+}
+
+/** Summary line of the Thành tích screen, e.g. "Đã đạt 3/15". */
+export function achievementsSummaryLabel(earned: number, total: number): string {
+  return `Đã đạt ${earned}/${total}`;
+}
+
+/** Daily goal line, e.g. "Đã đạt mục tiêu ngày 4 lần". */
+export function achievementsDailyGoalLabel(count: number): string {
+  if (count === 0) return STRINGS.achievementsNoDailyGoal;
+  return `Đã đạt mục tiêu ngày ${count} lần`;
+}
+
+/** "Còn N XP" for a stage not yet reached. */
+export function achievementsXpLeftLabel(xp: number): string {
+  return `Còn ${xp} XP`;
+}
+
+/** "Streak a/b". */
+export function achievementsStreakLabel(current: number, days: number): string {
+  return `Streak ${current}/${days}`;
+}
+
+/** Earned date line, e.g. "Đạt ngày 10/03/2026". */
+export function achievementsEarnedOnLabel(date: string): string {
+  return `Đạt ngày ${date}`;
 }

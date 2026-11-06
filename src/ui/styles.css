@@ -709,3 +709,25 @@ body { margin: 0; }
   .toast, .popup, .popup__gem { animation: none; }
   .confetti { display: none; }
 }
+
+/* Thành tích (story 018) */
+.achv-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.achv-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-height: var(--touch-min);
+  padding: 12px;
+  border: 2px solid var(--color-border);
+  border-radius: 12px;
+  color: var(--color-muted);
+  background: var(--color-surface);
+  opacity: 0.85;
+}
+.achv-item--earned { border-color: var(--color-success); background: var(--color-success-light); color: inherit; opacity: 1; }
+.achv-item__mark { flex: none; width: 1.5em; text-align: center; font-weight: 800; }
+.achv-item--earned .achv-item__mark { color: var(--color-success); }
+.achv-item__body { display: flex; flex-direction: column; gap: 2px; min-width: 0; overflow-wrap: anywhere; }
+.achv-item__name { font-weight: 800; }
+.achv-item__detail { font-weight: 600; font-size: 0.95rem; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }

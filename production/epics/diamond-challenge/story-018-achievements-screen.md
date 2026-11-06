@@ -55,14 +55,15 @@
 ## Files
 
 - `src/ui/screens/achievements-screen.tsx`
+- `src/ui/achievements-helpers.ts`
+- `src/ui/achievements-overlay.tsx`
 - `src/ui/screens/diamond-path-screen.tsx`
 - `src/ui/screens/settings-screen.tsx`
 - `src/app.tsx`
 - `src/ui/strings.ts`
 - `src/ui/styles.css`
-- `production/qa/evidence/story-018-achievements-screen/*.png`
-
----
+- `tests/unit/achievements-ui/achievement-rows.test.ts`
+- `production/qa/evidence/story-018-achievements-screen/`
 
 ## QA Test Cases
 

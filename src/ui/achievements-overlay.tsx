@@ -1,8 +1,10 @@
+import type { MutableRefObject } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import gameConfig from '../config/game-config.json';
 import type { EventStore, LogEvent } from '../data/event-store';
 import {
   buildSeedEvents,
+  buildSilentAcknowledgeEvents,
   evaluateAchievements,
   newAchievements,
   parseAchievementsConfig,
@@ -63,6 +65,13 @@ export interface AchievementsOverlayProps {
   readonly tab: string;
   /** Told when a popup opens or closes (the app makes the background inert). */
   readonly onPopupOpenChange: (open: boolean) => void;
+  /**
+   * Receives the silent-acknowledge entry point (story 018): acknowledges every
+   * currently-achieved item without a popup (events marked silent), adds
+   * `achievementsSeeded` if missing, and drops any queued or open popup. The app
+   * calls it after a backup restore.
+   */
+  readonly silentAcknowledgeRef?: MutableRefObject<(() => Promise<void>) | null>;
 }
 
 /**
@@ -70,7 +79,7 @@ export interface AchievementsOverlayProps {
  * one at a time at the top edge; a popup blocks the screen and toasts wait.
  * Milestones are checked after each saved event, on mount and on tab change.
  */
-export function AchievementsOverlay({ observed, rawStore, tab, onPopupOpenChange }: AchievementsOverlayProps) {
+export function AchievementsOverlay({ observed, rawStore, tab, onPopupOpenChange, silentAcknowledgeRef }: AchievementsOverlayProps) {
   const [pendingToasts, setPendingToasts] = useState<readonly QueuedToast[]>([]);
   const [toast, setToast] = useState<QueuedToast | null>(null);
   const [popup, setPopup] = useState<ActivePopup | null>(null);
@@ -164,6 +173,34 @@ export function AchievementsOverlay({ observed, rawStore, tab, onPopupOpenChange
       running.current = false;
     }
   }, [checkOnce]);
+
+  const silentAcknowledge = useCallback(async () => {
+    // Wait for an in-flight check, then hold the gate so no check queues a popup meanwhile.
+    while (running.current) await new Promise((resolve) => setTimeout(resolve, 10));
+    running.current = true;
+    try {
+      popupQueue.current = [];
+      currentPopup.current = null;
+      setPopup(null);
+      const events = await rawStore.list();
+      const deps = { stages: DEFAULT_STAGES, people: PEOPLE_CONFIG, progress: { dailyXpGoal: DAILY_XP_GOAL } };
+      const achieved = evaluateAchievements(events, ACHIEVEMENTS_CONFIG, new Date(), TIME_ZONE, deps);
+      const ack = readAcknowledged(events, DEFAULT_STAGES);
+      for (const a of achieved) seenIds.current.add(a.id);
+      for (const e of buildSilentAcknowledgeEvents(achieved, ack.ids)) await rawStore.append(e);
+      if (!ack.seeded) await rawStore.append({ type: 'settings_changed', payload: { achievementsSeeded: true, silent: true } });
+    } finally {
+      running.current = false;
+    }
+  }, [rawStore]);
+
+  useEffect(() => {
+    if (silentAcknowledgeRef === undefined) return;
+    silentAcknowledgeRef.current = silentAcknowledge;
+    return () => {
+      silentAcknowledgeRef.current = null;
+    };
+  }, [silentAcknowledgeRef, silentAcknowledge]);
 
   useEffect(
     () =>
