@@ -43,4 +43,4 @@ jobs:
       - name: Apply migrations
         run: supabase db push --remote --password "$SUPABASE_DB_PASSWORD" --include-all --yes
       - name: Deploy Edge Functions
-        run: supabase functions deploy create-f1-account reset-password --use-api --yes
+        run: supabase functions deploy create-f1-account add-household-member reset-password --use-api --yes

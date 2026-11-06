@@ -1,7 +1,7 @@
 # Story 019: Nền tài khoản Supabase (bảng, RLS, Edge Function, triển khai)
 
 > **Epic**: diamond-challenge
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Foundation
 > **Type**: Integration
 > **Estimate**: L
@@ -84,3 +84,10 @@
 
 - Depends on: None
 - Unlocks: story đăng nhập và đồng bộ (chưa viết)
+
+## Completion Notes
+**Completed**: 2026-11-06
+**Criteria**: 6/6 passing (migration and both functions deployed by supabase-deploy.yml run 42191801517; first admin created in the Dashboard)
+**Deviations**: Advisory, not logged as tech debt: (1) `package-lock.json` and the `@electric-sql/pglite` devDependency are not named in `## Files`; (2) `.env.production` holds the public publishable key, which is intended but stays in git history; (3) the app does not call Supabase yet, and a successful account creation or password reset was not tried live; (4) Site URL and Redirect URLs on the Dashboard are not confirmed
+**Test Evidence**: tests/integration/supabase/accounts-rls.test.ts (14 tests, 6 fail with RLS off); tests/unit/supabase/ (phone 17, config 4); full suite 324/324; live workflow runs 42191801517 (Supabase) and 42191801533 (Pages)
+**Reviewed by**: self, no independent review
