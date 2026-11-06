@@ -3,7 +3,6 @@ import lessonsJson from '../../content/lessons.json';
 import type { EventStore, LogEvent } from '../../data/event-store';
 import { computeLessonResult, gradeAnswer, isLessonCompletedToday, parseLessons, xpForCompletion } from '../../domain/lesson';
 import type { Lesson, LessonResult, ParsedLessons } from '../../domain/lesson';
-import { playTing } from '../play-ting';
 import { STRINGS, questionProgressLabel, scoreLabel, xpLabel } from '../strings';
 
 /** Lessons from content/lessons.json, validated once at load (never throws). */
@@ -108,7 +107,6 @@ export function LessonScreen({
         timestamp: at.toISOString(),
         payload: { lessonId: lesson.id, xp, score: result.correct },
       });
-      playTing();
       setView({ kind: 'complete', lesson, xp, result });
     } catch (error) {
       console.error('[lesson] save failed', error);

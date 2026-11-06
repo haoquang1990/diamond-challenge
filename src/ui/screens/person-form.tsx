@@ -4,7 +4,6 @@ import { buildTaskCompletionEvent, findDuplicateNames, pendingTasks, validatePer
 import type { PeopleConfig, Person, PersonPhone } from '../../domain/people';
 import { COUNTRY_CODES, PEOPLE_CONFIG, PERSON_TASKS } from '../people-config';
 import { buildPersonHistory, formatPhone } from '../people-helpers';
-import { playTing } from '../play-ting';
 import { STRINGS, historyStageLabel, shortDateLabel, taskButtonLabel, xpLabel } from '../strings';
 
 /** Maps a phone validation failure to its message. */
@@ -272,7 +271,6 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
       const built = buildTaskCompletionEvent(person, taskId, config);
       if (!built.ok) return;
       const saved = await eventStore.append(built.event);
-      playTing();
       setTaskUndo({ eventId: saved.id, taskName: config.tasks?.find((t) => t.id === taskId)?.name ?? '', xp: built.xp });
       await onChanged();
     });

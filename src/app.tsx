@@ -2,6 +2,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { EventStore } from './data/event-store';
 import { browserNotificationPlatform, createReminderScheduler } from './notifications/reminders';
 import type { NotificationPlatform } from './notifications/reminders';
+import { AchievementsOverlay, ACHIEVEMENTS_CONFIG } from './ui/achievements-overlay';
+import { createObservedStore, readSoundEnabled } from './ui/achievements-helpers';
+import { setSoundEnabled } from './ui/play-ting';
 import { Board30x30Screen } from './ui/screens/board-30x30-screen';
 import { DiamondPathScreen } from './ui/screens/diamond-path-screen';
 import { LessonScreen } from './ui/screens/lesson-screen';
@@ -59,7 +62,11 @@ const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'board'>; readonly
  * leaving Làm, which no longer routes back to Hôm nay) and after a settings
  * change. A tapped reminder notification brings the app to Hôm nay.
  */
-export function App({ eventStore, notificationPlatform = DEFAULT_PLATFORM }: AppProps) {
+export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_PLATFORM }: AppProps) {
+  // Every screen gets the observed store, so each saved event reaches the achievements overlay.
+  const observed = useMemo(() => createObservedStore(rawEventStore), [rawEventStore]);
+  const eventStore = observed.store;
+  const [popupOpen, setPopupOpen] = useState(false);
   const [tab, setTab] = useState<Tab>('today');
   const [lessonActive, setLessonActive] = useState(false);
   /** Set when Làm was opened from Bảng 30x30 (preselected filter + back control); null otherwise. */
@@ -107,6 +114,39 @@ export function App({ eventStore, notificationPlatform = DEFAULT_PLATFORM }: App
     return () => navigator.serviceWorker.removeEventListener('message', onMessage);
   }, []);
 
+  // Reward sound: config default, then the latest saved choice (on start and when settings change).
+  useEffect(() => {
+    let cancelled = false;
+    const refreshSound = () => {
+      rawEventStore
+        .list()
+        .then((events) => {
+          if (!cancelled) setSoundEnabled(readSoundEnabled(events, ACHIEVEMENTS_CONFIG.soundDefault));
+        })
+        .catch((error: unknown) => console.error('[sound] could not read the sound setting', error));
+    };
+    setSoundEnabled(ACHIEVEMENTS_CONFIG.soundDefault);
+    refreshSound();
+    const unsubscribe = observed.subscribe((event) => {
+      if (event.type === 'settings_changed' && event.payload.sound !== undefined) refreshSound();
+    });
+    return () => {
+      cancelled = true;
+      unsubscribe();
+    };
+  }, [rawEventStore, observed]);
+
+  const screen = renderScreen();
+  return (
+    <>
+      <div className="app-inert" inert={popupOpen}>
+        {screen}
+      </div>
+      <AchievementsOverlay observed={observed} rawStore={rawEventStore} tab={tab} onPopupOpenChange={setPopupOpen} />
+    </>
+  );
+
+  function renderScreen() {
   if (tab === 'board') {
     return (
       <div className="app-shell">
@@ -180,4 +220,5 @@ export function App({ eventStore, notificationPlatform = DEFAULT_PLATFORM }: App
       )}
     </div>
   );
+  }
 }

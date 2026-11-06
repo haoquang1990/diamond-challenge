@@ -57,6 +57,7 @@
 
 - `src/app.tsx`
 - `src/ui/achievements-overlay.tsx`
+- `src/ui/achievements-helpers.ts`
 - `src/ui/play-ting.ts`
 - `src/ui/screens/today-screen.tsx`
 - `src/ui/screens/person-form.tsx`
@@ -66,9 +67,8 @@
 - `src/ui/screens/settings-screen.tsx`
 - `src/ui/strings.ts`
 - `src/ui/styles.css`
+- `tests/unit/achievements-ui/achievements-helpers.test.ts`
 - `production/qa/evidence/story-017-achievement-toast-popup/*.png`
-
----
 
 ## QA Test Cases
 

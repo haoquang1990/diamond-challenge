@@ -7,7 +7,6 @@ import type { ActivityType } from '../activity-types';
 import { PEOPLE_CONFIG } from '../people-config';
 import { CONTACTS_FILTERS, countContacts, filterContacts, listUnassignedActivities, searchPeopleByName } from '../people-helpers';
 import type { ContactsFilter } from '../people-helpers';
-import { playTing } from '../play-ting';
 import { STRINGS, filterChipLabel, lastContactLabel, nppSinceLabel, shortDateLabel, xpLabel } from '../strings';
 import { AddPersonForm, LabelBadge, PersonDetail } from './person-form';
 
@@ -124,7 +123,6 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
           type: 'activity_logged',
           payload: { activityType: addNameType.id, xp: addNameType.xp, personId },
         });
-        playTing();
         setAddedXp(addNameType.xp);
       } catch (e) {
         console.error('[people] add_name activity failed', e);

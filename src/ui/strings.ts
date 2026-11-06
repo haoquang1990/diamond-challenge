@@ -90,6 +90,14 @@ export const STRINGS = {
   backupImportDone: (added: number, skipped: number) => `Đã thêm ${added}, bỏ qua ${skipped}.`,
   backupImportInvalid: (invalid: number) => `Trong đó ${invalid} sự kiện hỏng đã bị bỏ qua.`,
   reminderToggle: 'Nhắc mỗi ngày',
+  soundToggle: 'Âm thanh thưởng',
+  soundSaveError: 'Không lưu được cài đặt âm thanh. Thử lại nhé.',
+
+  // Achievements (toast, popup)
+  toastLesson: 'Bài Học',
+  toastActivity: 'Hoạt động',
+  popupKicker: 'Thành tích mới',
+  popupClose: 'Tuyệt vời!',
   reminderTimeLabel: 'Giờ nhắc',
   reminderSaving: 'Đang lưu…',
   reminderSaved: 'Đã lưu.',
@@ -223,6 +231,26 @@ export function questionProgressLabel(current: number, total: number): string {
 /** Lesson score, e.g. `scoreLabel(3, 4)` → "Đúng 3/4 câu". */
 export function scoreLabel(correct: number, total: number): string {
   return `Đúng ${correct}/${total} câu`;
+}
+
+/** Popup headline of a stage item, e.g. "Chặng Silver" -> "Bạn đã lên chặng Silver!". */
+export function stageReachedTitle(itemName: string): string {
+  return `Bạn đã lên ${itemName.charAt(0).toLowerCase()}${itemName.slice(1)}!`;
+}
+
+/** Toast text, e.g. "+15 XP · Demo sản phẩm". */
+export function toastLabel(xp: number, label: string): string {
+  return `+${xp} XP · ${label}`;
+}
+
+/** Merged toast text, e.g. "+45 XP · 3 hoạt động". */
+export function toastMergedLabel(xp: number, count: number): string {
+  return `+${xp} XP · ${count} hoạt động`;
+}
+
+/** Title of the popup that folds the remaining milestones. */
+export function popupRestTitle(count: number): string {
+  return `Bạn vừa đạt thêm ${count} thành tích`;
 }
 
 /** Celebration headline, e.g. "Bạn đã lên chặng Silver!". */

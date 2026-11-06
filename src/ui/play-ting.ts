@@ -2,6 +2,17 @@
  * Short "ting" reward sound synthesized with the Web Audio API (no audio asset).
  */
 let audioContext: AudioContext | null = null;
+let soundEnabled = true;
+
+/** Turns the reward sound on or off (the `settings_changed { sound }` choice or the config default). */
+export function setSoundEnabled(enabled: boolean): void {
+  soundEnabled = enabled;
+}
+
+/** Whether {@link playTing} currently makes sound. */
+export function isSoundEnabled(): boolean {
+  return soundEnabled;
+}
 
 /**
  * Plays a ~0.4 s bell-like ting. Must be called from a user gesture the
@@ -9,6 +20,7 @@ let audioContext: AudioContext | null = null;
  * never a reason to break the save flow.
  */
 export function playTing(): void {
+  if (!soundEnabled) return;
   try {
     audioContext ??= new AudioContext();
     const ctx = audioContext;
