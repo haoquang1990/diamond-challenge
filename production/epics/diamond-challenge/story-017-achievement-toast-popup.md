@@ -1,12 +1,12 @@
 # Story 017: Toast cộng XP, popup thành tích, âm thanh và giảm chuyển động
 
 > **Epic**: diamond-challenge
-> **Status**: Ready
+> **Status**: In Progress
 > **Layer**: Presentation
 > **Type**: UI
 > **Estimate**: L
 > **Manifest Version**: N/A (minimal — no control manifest)
-> **Last Updated**: 2026-11-05
+> **Last Updated**: 2026-11-06
 
 ## Context
 
