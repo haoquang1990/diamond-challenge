@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isValidTempPassword, normalizePhone, phoneToEmail } from '../../../supabase/functions/_shared/phone';
+import { isValidTempPassword, normalizeAmwayCode, normalizePhone, phoneToEmail } from '../../../supabase/functions/_shared/phone';
 
 describe('normalizePhone', () => {
   it.each([
@@ -35,5 +35,19 @@ describe('isValidTempPassword', () => {
     expect(isValidTempPassword('12345678')).toBe(true);
     expect(isValidTempPassword('x'.repeat(73))).toBe(false);
     expect(isValidTempPassword(12345678)).toBe(false);
+  });
+});
+
+describe('normalizeAmwayCode', () => {
+  it.each([
+    ['1234567', '1234567'],
+    ['123 4567', '1234567'],
+    ['12.34-567', '1234567'],
+  ])('%s → %s', (input, expected) => {
+    expect(normalizeAmwayCode(input)).toBe(expected);
+  });
+
+  it.each(['', '123', 'ABC1234', '1'.repeat(16)])('rejects %s', (input) => {
+    expect(normalizeAmwayCode(input)).toBeNull();
   });
 });

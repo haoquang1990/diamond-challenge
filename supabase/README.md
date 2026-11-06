@@ -5,8 +5,10 @@ Spec: `design/quick-specs/supabase-accounts-2026-11-06.md`
 
 | Đường dẫn | Nội dung |
 |---|---|
-| `migrations/20261106000000_accounts.sql` | Bảng `profiles`, `aggregates`; RLS; chặn vòng bảo trợ; RPC `mark_password_changed`, `set_sponsor` |
-| `functions/create-f1-account` | Tạo tài khoản F1, người gọi là người bảo trợ; admin `root: true` tạo người gốc |
+| `migrations/20261106000000_accounts.sql` | Story 019: `profiles`, RLS cơ bản, `mark_password_changed` (bảo trợ theo người, đã thay) |
+| `migrations/20261107000000_households.sql` | Mô hình hộ (ADR-0001..0003): `households`, `household_members`, `household_codes`, `household_aggregates`, Danh bạ hộ `contact_events` (chỉ thành viên), đồng ý, gộp mã và hoàn tác, Chờ gán tuyến trên |
+| `functions/create-f1-account` | Tạo tài khoản và hộ F1 (hộ người gọi là hộ bảo trợ, mã số lấy từ liên hệ); admin `root: true` tạo hộ gốc |
+| `functions/add-household-member` | Thêm vợ/chồng vào hộ (thành viên hộ, hộ bảo trợ hoặc admin; tối đa 2) |
 | `functions/reset-password` | Admin đặt mật khẩu tạm mới, bắt đổi lại |
 | `snippets/make-first-admin.sql` | Chạy một lần trong SQL Editor để có admin đầu tiên |
 

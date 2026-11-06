@@ -10,3 +10,6 @@ verify_jwt = false
 
 [functions.reset-password]
 verify_jwt = false
+
+[functions.add-household-member]
+verify_jwt = false

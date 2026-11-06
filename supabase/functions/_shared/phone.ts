@@ -39,3 +39,12 @@ export function phoneToEmail(e164: string): string {
 export function isValidTempPassword(password: unknown): password is string {
   return typeof password === 'string' && password.length >= MIN_PASSWORD_LENGTH && password.length <= 72;
 }
+
+/**
+ * Normalizes an Amway code the way the server does (`normalize_amway_code`): drops spaces,
+ * dots and dashes; valid codes are 4–15 digits. Returns null otherwise.
+ */
+export function normalizeAmwayCode(input: string): string | null {
+  const digits = input.replace(/[\s.\-]/g, '');
+  return /^[0-9]{4,15}$/.test(digits) ? digits : null;
+}
