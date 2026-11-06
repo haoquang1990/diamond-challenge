@@ -1,0 +1,46 @@
+# Apply database migrations and deploy Edge Functions to Supabase (story 019).
+# Runs on push to main when supabase/** changes, and on demand from the Actions tab.
+# Needs repository secrets SUPABASE_ACCESS_TOKEN, SUPABASE_DB_PASSWORD, SUPABASE_PROJECT_ID.
+# The service_role key is never needed here: Supabase gives it to functions at runtime.
+name: Deploy Supabase
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/**'
+      - '.github/workflows/supabase-deploy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: supabase-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Install Supabase CLI
+        run: npm install --global supabase@3.0.0 && supabase --version
+      - name: Check secrets are set
+        run: |
+          for name in SUPABASE_ACCESS_TOKEN SUPABASE_DB_PASSWORD SUPABASE_PROJECT_ID; do
+            if [ -z "${!name}" ]; then echo "::error::Missing repository secret $name"; exit 1; fi
+          done
+      - name: Link project
+        run: supabase link --project-ref "$SUPABASE_PROJECT_ID" --yes
+      - name: Apply migrations
+        run: supabase db push --remote --password "$SUPABASE_DB_PASSWORD" --include-all --yes
+      - name: Deploy Edge Functions
+        run: supabase functions deploy create-f1-account reset-password --use-api --yes

@@ -1,0 +1,12 @@
+# Supabase CLI config for Diamond Challenge (story 019). Only what deploys need; the CLI
+# fills the rest with defaults. Auth settings (sign-up off, Site URL, redirects) are set
+# in the Dashboard: see supabase/README.md.
+project_id = "diamond-challenge"
+
+# Both functions check the caller's token themselves (auth.getUser), so the gateway's
+# legacy JWT check is off; it rejects tokens signed with the new asymmetric keys.
+[functions.create-f1-account]
+verify_jwt = false
+
+[functions.reset-password]
+verify_jwt = false

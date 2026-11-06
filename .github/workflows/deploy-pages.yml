@@ -29,6 +29,9 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
+      # Only the public URL and publishable key may ship; fail on anything secret-shaped.
+      - name: Check no Supabase secret is in the app
+        run: node tools/ci/check-no-secrets.mjs src dist .env.production
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:
