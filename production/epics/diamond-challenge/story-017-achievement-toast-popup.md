@@ -1,7 +1,7 @@
 # Story 017: Toast cộng XP, popup thành tích, âm thanh và giảm chuyển động
 
 > **Epic**: diamond-challenge
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Presentation
 > **Type**: UI
 > **Estimate**: L
@@ -89,3 +89,10 @@
 
 - Depends on: `production/epics/diamond-challenge/story-016-achievements-model.md`
 - Unlocks: `story-018-achievements-screen.md`
+
+## Completion Notes
+**Completed**: 2026-11-06
+**Criteria**: 9/9 passing (production build in Chromium 390×844 and 320px; not tried on a real phone)
+**Deviations**: Advisory, not logged as tech debt: (1) beyond the agent's report the old stage card on Con đường was removed too (it duplicated the popup and could swallow it) and a toast hidden by an opening popup is put back in the queue; (2) an XP event that also reaches a milestone rings twice, once for the toast and once for the popup (intended); (3) confetti briefly crosses the popup text while animating; (4) unused leftovers remain: the `stageContinue` and `stageReachedLabel` strings and the `.celebration` CSS; (5) the popup/toast sound, focus and notch layout were not tried on a real phone
+**Test Evidence**: screenshots in production/qa/evidence/story-017-achievement-toast-popup/ (01–11 plus stamp.txt, stamp unchanged); tests/unit/achievements-ui/achievements-helpers.test.ts (3 tests); full suite 279/279
+**Reviewed by**: self, no independent review
