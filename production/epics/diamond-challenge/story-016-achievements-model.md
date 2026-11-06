@@ -1,12 +1,12 @@
 # Story 016: Mô hình thành tích (cấu hình, đánh giá, ghi nhận, hàng đợi)
 
 > **Epic**: diamond-challenge
-> **Status**: Ready
+> **Status**: In Progress
 > **Layer**: Foundation
 > **Type**: Logic
 > **Estimate**: L
 > **Manifest Version**: N/A (minimal — no control manifest)
-> **Last Updated**: 2026-11-05
+> **Last Updated**: 2026-11-06
 
 ## Context
 
