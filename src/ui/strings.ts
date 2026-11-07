@@ -148,6 +148,10 @@ export const STRINGS = {
   phoneUnknownCountry: 'Mã nước không hợp lệ.',
   phoneNotDigits: 'Số điện thoại chỉ gồm chữ số.',
   phoneBadLength: 'Số điện thoại cần từ 6 đến 15 chữ số.',
+  amwayCodeLabel: 'Mã số Amway (không bắt buộc)',
+  amwayCodePlaceholder: 'Vd. 1234567',
+  amwayCodeInvalid: 'Mã số Amway chỉ gồm chữ số (được cách bằng dấu cách, chấm hoặc gạch) và dài từ 4 đến 15 chữ số.',
+  personDetailAmwayCode: 'Mã số Amway',
   activitySectionTitle: 'Hoạt động',
   activityNoneLeft: 'Đã làm hết các việc. Giỏi lắm!',
   historyTitle: 'Lịch sử',
@@ -429,6 +433,11 @@ export function achievementsStreakLabel(current: number, days: number): string {
 /** Earned date line, e.g. "Đạt ngày 10/03/2026". */
 export function achievementsEarnedOnLabel(date: string): string {
   return `Đạt ngày ${date}`;
+}
+
+/** Warning shown when another person has the same Amway code, e.g. "Trùng mã số với Lan, Hà". */
+export function duplicateCodeWarning(names: string): string {
+  return `Trùng mã số với ${names}`;
 }
 
 /** Vietnamese message for a failed auth call; never says whether a phone number exists. */

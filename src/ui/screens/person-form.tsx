@@ -1,10 +1,17 @@
 import { useState } from 'react';
 import type { EventStore, LogEvent } from '../../data/event-store';
-import { buildTaskCompletionEvent, findDuplicateNames, pendingTasks, validatePersonName, validatePhone } from '../../domain/people';
+import {
+  buildTaskCompletionEvent,
+  findDuplicateNames,
+  pendingTasks,
+  validateAmwayCode,
+  validatePersonName,
+  validatePhone,
+} from '../../domain/people';
 import type { PeopleConfig, Person, PersonPhone } from '../../domain/people';
 import { COUNTRY_CODES, PEOPLE_CONFIG, PERSON_TASKS } from '../people-config';
-import { buildPersonHistory, formatPhone } from '../people-helpers';
-import { STRINGS, historyStageLabel, shortDateLabel, taskButtonLabel, xpLabel } from '../strings';
+import { buildPersonHistory, duplicateCodeNames, findDuplicateCodes, findPeopleWithCode, formatPhone } from '../people-helpers';
+import { STRINGS, duplicateCodeWarning, historyStageLabel, shortDateLabel, taskButtonLabel, xpLabel } from '../strings';
 
 /** Maps a phone validation failure to its message. */
 function phoneErrorText(reason: 'unknown_country' | 'not_digits' | 'bad_length'): string {
@@ -62,6 +69,56 @@ function PhoneInput({ country, number, onChange, disabled, error }: PhoneInputPr
   );
 }
 
+/** Props for {@link AmwayCodeInput}. */
+interface AmwayCodeInputProps {
+  readonly value: string;
+  readonly onChange: (value: string) => void;
+  readonly disabled: boolean;
+  readonly error: string | null;
+  /** Non-blocking warning (another person has this code); the form still saves. */
+  readonly warning: string | null;
+}
+
+/** Optional Amway code field with a numeric keyboard, an error and a duplicate warning. */
+function AmwayCodeInput({ value, onChange, disabled, error, warning }: AmwayCodeInputProps) {
+  return (
+    <div className="phone-field">
+      <label className="note">
+        <span className="note__label">{STRINGS.amwayCodeLabel}</span>
+        <input
+          className="note__input"
+          type="text"
+          inputMode="numeric"
+          value={value}
+          placeholder={STRINGS.amwayCodePlaceholder}
+          onChange={(e) => onChange(e.target.value)}
+          disabled={disabled}
+          autoComplete="off"
+          aria-invalid={error !== null}
+        />
+      </label>
+      {error !== null && (
+        <p className="message message--error" role="alert">
+          {error}
+        </p>
+      )}
+      {warning !== null && (
+        <p className="message message--warn" role="status">
+          {warning}
+        </p>
+      )}
+    </div>
+  );
+}
+
+/** Warning text for a typed code that other people already have, or null. */
+function typedCodeWarning(people: readonly Person[], input: string, excludePersonId?: string): string | null {
+  const checked = validateAmwayCode(input, PEOPLE_CONFIG);
+  if (!checked.ok) return null;
+  const others = findPeopleWithCode(people, checked.code, excludePersonId);
+  return others.length > 0 ? duplicateCodeWarning(duplicateCodeNames(others)) : null;
+}
+
 const DEFAULT_COUNTRY = COUNTRY_CODES[0]?.code ?? '+84';
 
 /** Props for {@link AddPersonForm}. */
@@ -69,7 +126,7 @@ export interface AddPersonFormProps {
   /** People used for the non-blocking duplicate-name warning. */
   readonly people: readonly Person[];
   /** Writes the person; a rejected promise shows a save error and keeps the input. */
-  readonly onSubmit: (name: string, note: string, phone: PersonPhone | null) => Promise<void>;
+  readonly onSubmit: (name: string, note: string, phone: PersonPhone | null, amwayCode: string | null) => Promise<void>;
   /** Hide the note and phone fields (compact variant; currently unused). */
   readonly compact?: boolean;
 }
@@ -84,6 +141,8 @@ export function AddPersonForm({ people, onSubmit, compact = false }: AddPersonFo
   const [country, setCountry] = useState(DEFAULT_COUNTRY);
   const [number, setNumber] = useState('');
   const [phoneError, setPhoneError] = useState<string | null>(null);
+  const [code, setCode] = useState('');
+  const [codeError, setCodeError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -100,12 +159,19 @@ export function AddPersonForm({ people, onSubmit, compact = false }: AddPersonFo
       setPhoneError(phoneErrorText(phone.reason));
       return;
     }
+    const amway = compact ? { ok: true as const, code: null } : validateAmwayCode(code, PEOPLE_CONFIG);
+    if (!amway.ok) {
+      setCodeError(STRINGS.amwayCodeInvalid);
+      return;
+    }
     setBusy(true);
     setError(null);
     setPhoneError(null);
+    setCodeError(null);
     try {
-      await onSubmit(checked.name, note.trim(), phone.phone);
+      await onSubmit(checked.name, note.trim(), phone.phone, amway.code);
       setName('');
+      setCode('');
       setNote('');
       setNumber('');
       setCountry(DEFAULT_COUNTRY);
@@ -152,6 +218,18 @@ export function AddPersonForm({ people, onSubmit, compact = false }: AddPersonFo
           }}
           disabled={busy}
           error={phoneError}
+        />
+      )}
+      {!compact && (
+        <AmwayCodeInput
+          value={code}
+          onChange={(v) => {
+            setCode(v);
+            setCodeError(null);
+          }}
+          disabled={busy}
+          error={codeError}
+          warning={typedCodeWarning(people, code)}
         />
       )}
       {!compact && (
@@ -214,6 +292,8 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
   const [country, setCountry] = useState(person.phone?.country ?? DEFAULT_COUNTRY);
   const [number, setNumber] = useState(person.phone?.number ?? '');
   const [phoneError, setPhoneError] = useState<string | null>(null);
+  const [code, setCode] = useState(person.amwayCode ?? '');
+  const [codeError, setCodeError] = useState<string | null>(null);
   const [confirmArchive, setConfirmArchive] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -222,6 +302,7 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
   const [editOpen, setEditOpen] = useState(false);
 
   const duplicate = name.trim() !== '' && findDuplicateNames(people, name, person.personId).duplicate;
+  const sameCode = findDuplicateCodes(people).get(person.personId);
   const todo = pendingTasks(person, config);
   const history = buildPersonHistory(events, person.personId, config, [...PERSON_TASKS, ...activityTypes]);
 
@@ -252,6 +333,12 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
         return;
       }
       setPhoneError(null);
+      const amway = validateAmwayCode(code, config);
+      if (!amway.ok) {
+        setCodeError(STRINGS.amwayCodeInvalid);
+        return;
+      }
+      setCodeError(null);
       await eventStore.append({
         type: 'person_updated',
         payload: {
@@ -259,6 +346,7 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
           name: checked.name,
           note: note.trim(),
           phone: phone.phone ?? { country, number: '' },
+          amwayCode: amway.code ?? '',
         },
       });
       await onChanged();
@@ -304,6 +392,16 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
         {person.phone != null && (
           <p className="screen__prompt">
             {STRINGS.personDetailPhone}: <strong>{formatPhone(person.phone)}</strong>
+          </p>
+        )}
+        {person.amwayCode != null && (
+          <p className="screen__prompt">
+            {STRINGS.personDetailAmwayCode}: <strong>{person.amwayCode}</strong>
+          </p>
+        )}
+        {sameCode !== undefined && (
+          <p className="message message--warn" role="status">
+            {duplicateCodeWarning(duplicateCodeNames(sameCode))}
           </p>
         )}
       </header>
@@ -384,6 +482,16 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
               }}
               disabled={busy}
               error={phoneError}
+            />
+            <AmwayCodeInput
+              value={code}
+              onChange={(v) => {
+                setCode(v);
+                setCodeError(null);
+              }}
+              disabled={busy}
+              error={codeError}
+              warning={typedCodeWarning(people, code, person.personId)}
             />
             <label className="note">
               <span className="note__label">{STRINGS.noteLabel}</span>

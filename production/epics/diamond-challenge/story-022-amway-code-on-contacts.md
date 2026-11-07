@@ -52,10 +52,12 @@
 
 ## Files
 
-- `src/domain/people.ts`, `src/data/event-store.ts`
-- `src/ui/screens/person-form.tsx`, `src/ui/screens/people-screen.tsx`, `src/ui/people-helpers.ts`
+- `src/domain/people.ts`
+- `src/data/event-store.ts` (payload docs only)
+- `src/ui/people-config.ts` (wires `amwayCodeDigits`)
+- `src/ui/people-helpers.ts`
+- `src/ui/screens/person-form.tsx`, `src/ui/screens/people-screen.tsx`
 - `src/config/game-config.json`, `src/ui/strings.ts`, `src/ui/styles.css`
-- `tests/unit/people/amway-code.test.ts`
 - `production/qa/evidence/story-022-amway-code-on-contacts/`
 
 ## QA Test Cases

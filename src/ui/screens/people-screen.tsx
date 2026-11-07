@@ -5,9 +5,17 @@ import type { Person, PersonPhone } from '../../domain/people';
 import { ACTIVITY_TYPES } from '../activity-types';
 import type { ActivityType } from '../activity-types';
 import { PEOPLE_CONFIG } from '../people-config';
-import { CONTACTS_FILTERS, countContacts, filterContacts, listUnassignedActivities, searchPeopleByName } from '../people-helpers';
+import {
+  CONTACTS_FILTERS,
+  countContacts,
+  duplicateCodeNames,
+  filterContacts,
+  findDuplicateCodes,
+  listUnassignedActivities,
+  searchPeopleByName,
+} from '../people-helpers';
 import type { ContactsFilter } from '../people-helpers';
-import { STRINGS, filterChipLabel, lastContactLabel, nppSinceLabel, shortDateLabel, xpLabel } from '../strings';
+import { STRINGS, duplicateCodeWarning, filterChipLabel, lastContactLabel, nppSinceLabel, shortDateLabel, xpLabel } from '../strings';
 import { AddPersonForm, LabelBadge, PersonDetail } from './person-form';
 
 /** Props for {@link PeopleScreen}. */
@@ -110,12 +118,17 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
   const addOpen = showAdd ?? people.length === 0;
   const addNameType = activityTypes.find((t) => t.id === ADD_NAME_ACTIVITY_ID);
 
-  async function addPerson(name: string, note: string, phone: PersonPhone | null): Promise<void> {
+  async function addPerson(name: string, note: string, phone: PersonPhone | null, amwayCode: string | null): Promise<void> {
     setError(null);
     const personId = crypto.randomUUID();
     await eventStore.append({
       type: 'person_added',
-      payload: { personId, name, ...(note === '' ? {} : { note }), ...(phone === null ? {} : { phone }) },
+      payload: {
+        personId,
+        name,
+        ...(note === '' ? {} : { note }), ...(phone === null ? {} : { phone }),
+        ...(amwayCode === null ? {} : { amwayCode }),
+      },
     });
     if (addNameType !== undefined) {
       try {
@@ -148,6 +161,7 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
     }
   }
 
+  const dupCodes = findDuplicateCodes(people);
   const counts = countContacts(allPeople);
   const inFilter = filterContacts(allPeople, filter);
   const shown = searchPeopleByName(inFilter, query);
@@ -264,6 +278,9 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
                 <button type="button" className="person-row" onClick={() => setOpenId(person.personId)}>
                   <span className="person-row__main">
                     <span className="person-row__name">{person.name}</span>
+                    {dupCodes.has(person.personId) && (
+                      <span className="person-row__warn">{duplicateCodeWarning(duplicateCodeNames(dupCodes.get(person.personId) ?? []))}</span>
+                    )}
                     {filter === 'kh' && person.lastContactAt !== undefined && (
                       <span className="person-row__stage">{lastContactLabel(person.lastContactAt)}</span>
                     )}

@@ -54,6 +54,12 @@ export interface PersonPhone {
   readonly number: string;
 }
 
+/** Inclusive digit-count bounds of a valid Amway code (config `amwayCodeDigits`). */
+export interface AmwayCodeDigits {
+  readonly min: number;
+  readonly max: number;
+}
+
 /** A validated person stage definition. */
 export interface PersonStageDef {
   readonly id: string;
@@ -79,12 +85,15 @@ export interface PeopleConfig {
   readonly tasks?: readonly PersonTaskDef[];
   /** Country calling codes, default first (additive; absent means none). */
   readonly countryCodes?: readonly CountryCodeDef[];
+  /** Amway code digit bounds (additive; absent means the fallback bounds). */
+  readonly amwayCodeDigits?: AmwayCodeDigits;
 }
 
 /** Result of {@link parsePeopleConfig}. */
 export interface PeopleConfigResult extends PeopleConfig {
   readonly tasks: readonly PersonTaskDef[];
   readonly countryCodes: readonly CountryCodeDef[];
+  readonly amwayCodeDigits: AmwayCodeDigits;
   /** Human-readable problems; empty when the config is valid. */
   readonly problems: readonly string[];
 }
@@ -103,6 +112,8 @@ export interface Person {
   readonly label?: PersonLabel | null;
   /** Latest phone, or null/absent when none. */
   readonly phone?: PersonPhone | null;
+  /** Latest valid Amway code (normalized digits), or null/absent when none. Lives on the person, never on the label. */
+  readonly amwayCode?: string | null;
   /** Ids of tasks already done (non-repeatable ones are hidden from pending). */
   readonly doneTaskIds?: readonly string[];
   /** Timestamp of the event that set the currently effective label; null when none. */
@@ -122,6 +133,9 @@ export type TaskCompletionResult =
 export type PhoneValidation =
   | { readonly ok: true; readonly phone: PersonPhone | null }
   | { readonly ok: false; readonly reason: 'unknown_country' | 'not_digits' | 'bad_length' };
+
+/** Result of {@link validateAmwayCode}. `code` is null for an empty input (no code). */
+export type AmwayCodeValidation = { readonly ok: true; readonly code: string | null } | { readonly ok: false };
 
 /** Result of {@link planStageChange}. */
 export type StageChangePlan = { readonly ok: true; readonly xp: number } | { readonly ok: false; readonly reason: 'unknown_stage' };
@@ -157,6 +171,8 @@ export interface PeopleStats {
  * stage carries no gameplay value; unreachable targets mean "never achieved".
  */
 const FALLBACK_STAGES: readonly PersonStageDef[] = [{ id: 'acquaintance', name: 'Người quen', xp: 0 }];
+/** Safe bounds used when `amwayCodeDigits` is missing or invalid. */
+const FALLBACK_AMWAY_DIGITS: AmwayCodeDigits = { min: 4, max: 15 };
 const UNREACHABLE_TARGET = Number.MAX_SAFE_INTEGER;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -255,6 +271,20 @@ export function parsePersonTasks(raw: unknown): { tasks: readonly PersonTaskDef[
   return { tasks, problems };
 }
 
+/**
+ * Validates raw `amwayCodeDigits` (`{min, max}` positive integers, min <= max).
+ * Never throws; an invalid value falls back to the default bounds and is reported.
+ */
+export function parseAmwayCodeDigits(raw: unknown): { amwayCodeDigits: AmwayCodeDigits; problems: readonly string[] } {
+  if (isRecord(raw) && isPositiveInteger(raw.min) && isPositiveInteger(raw.max) && raw.min <= raw.max) {
+    return { amwayCodeDigits: { min: raw.min, max: raw.max }, problems: [] };
+  }
+  return {
+    amwayCodeDigits: FALLBACK_AMWAY_DIGITS,
+    problems: ['amwayCodeDigits: expected {min, max} positive integers with min <= max, using fallback'],
+  };
+}
+
 /** Safe default when `countryCodes` is unusable. */
 const FALLBACK_COUNTRY_CODES: readonly CountryCodeDef[] = [{ code: '+84', name: 'Việt Nam' }];
 
@@ -322,7 +352,13 @@ export function parsePeopleConfig(raw: unknown): PeopleConfigResult {
     countryCodes = r.countryCodes;
     problems.push(...r.problems);
   }
-  return { stages, targets, tasks, countryCodes, problems };
+  let amwayCodeDigits = FALLBACK_AMWAY_DIGITS;
+  if ('amwayCodeDigits' in source) {
+    const r = parseAmwayCodeDigits(source.amwayCodeDigits);
+    amwayCodeDigits = r.amwayCodeDigits;
+    problems.push(...r.problems);
+  }
+  return { stages, targets, tasks, countryCodes, amwayCodeDigits, problems };
 }
 
 /** Ids of events that some other event compensates. */
@@ -356,6 +392,7 @@ interface MutablePerson {
   label: PersonLabel | null;
   labelledAt: string | null;
   phone: PersonPhone | null;
+  amwayCode: string | null;
   done: Set<string>;
   lastContactAt: string;
 }
@@ -363,6 +400,31 @@ interface MutablePerson {
 function readPhone(raw: unknown): PersonPhone | null | undefined {
   if (!isRecord(raw) || typeof raw.country !== 'string' || typeof raw.number !== 'string') return undefined;
   return raw.number === '' ? null : { country: raw.country, number: raw.number };
+}
+
+/**
+ * Normalizes an Amway code with the server's rule (`normalize_amway_code`): drops spaces, dots
+ * and dashes; the rest must be `digits.min`-`digits.max` digits. Returns null when invalid.
+ *
+ * @example
+ * normalizeAmwayCode('1234 567-89', { min: 4, max: 15 }); // '123456789'
+ */
+export function normalizeAmwayCode(input: string, digits: AmwayCodeDigits): string | null {
+  const compact = input.replace(/[\s.\-]/g, '');
+  return /^[0-9]+$/.test(compact) && compact.length >= digits.min && compact.length <= digits.max ? compact : null;
+}
+
+/**
+ * Validates the optional Amway code typed in a form. An empty (or blank) input is valid and
+ * yields `code: null` (no code / clear); otherwise see {@link normalizeAmwayCode}.
+ *
+ * @example
+ * validateAmwayCode('12', config); // { ok: false }
+ */
+export function validateAmwayCode(input: string, config: PeopleConfig): AmwayCodeValidation {
+  if (input.trim() === '') return { ok: true, code: null };
+  const code = normalizeAmwayCode(input, config.amwayCodeDigits ?? FALLBACK_AMWAY_DIGITS);
+  return code === null ? { ok: false } : { ok: true, code };
 }
 
 function setLabel(person: MutablePerson, next: PersonLabel | null, timestamp: string): void {
@@ -374,6 +436,8 @@ function setLabel(person: MutablePerson, next: PersonLabel | null, timestamp: st
 /**
  * Builds the people list from the event log (order of first `person_added`).
  *
+ * - Amway code: latest valid `amwayCode` wins ('' clears; an invalid one is ignored). Label
+ *   changes never touch it.
  * - Name, note, phone: latest `person_updated` wins; archived: latest of
  *   `person_archived` / `person_restored`.
  * - Stage (legacy): `to` of the latest non-compensated `person_stage_changed`.
@@ -395,6 +459,9 @@ export function derivePeople(events: readonly LogEvent[], config: PeopleConfig):
   const startStage = config.stages[0]?.id ?? '';
   const stageIds = new Set(config.stages.map((s) => s.id));
   const tasks = config.tasks ?? [];
+  const digits = config.amwayCodeDigits ?? FALLBACK_AMWAY_DIGITS;
+  const readCode = (raw: unknown): string | null | undefined =>
+    typeof raw !== 'string' ? undefined : raw.trim() === '' ? null : (normalizeAmwayCode(raw, digits) ?? undefined);
   const owners = deriveActivityOwners(events);
   const people = new Map<string, MutablePerson>();
 
@@ -430,6 +497,7 @@ export function derivePeople(events: readonly LogEvent[], config: PeopleConfig):
         label: null,
         labelledAt: null,
         phone: readPhone(p.phone) ?? null,
+        amwayCode: readCode(p.amwayCode) ?? null,
         done: new Set(),
         lastContactAt: e.timestamp,
       });
@@ -442,6 +510,8 @@ export function derivePeople(events: readonly LogEvent[], config: PeopleConfig):
       if (typeof p.note === 'string') person.note = p.note;
       const phone = readPhone(p.phone);
       if (phone !== undefined) person.phone = phone;
+      const code = readCode(p.amwayCode);
+      if (code !== undefined) person.amwayCode = code;
     } else if (e.type === 'person_archived') {
       person.archived = true;
     } else if (e.type === 'person_restored') {
@@ -467,6 +537,7 @@ export function derivePeople(events: readonly LogEvent[], config: PeopleConfig):
     stageXpAwarded: m.stageXpAwarded,
     label: m.label,
     phone: m.phone,
+    amwayCode: m.amwayCode,
     doneTaskIds: [...m.done],
     labelledAt: m.labelledAt,
     lastContactAt: m.lastContactAt,

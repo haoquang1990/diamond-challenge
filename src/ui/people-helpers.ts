@@ -187,3 +187,31 @@ export function buildPersonHistory(
   }
   return entries.reverse().sort((a, b) => (a.timestamp < b.timestamp ? 1 : a.timestamp > b.timestamp ? -1 : 0));
 }
+
+/**
+ * People (non-archived, other than `excludePersonId`) whose code equals `code`. `code` is a
+ * normalized code; null or empty matches nobody. Pure; drives the typing warning in the form.
+ */
+export function findPeopleWithCode(people: readonly Person[], code: string | null, excludePersonId?: string): Person[] {
+  if (code === null || code === '') return [];
+  return people.filter((p) => !p.archived && p.personId !== excludePersonId && p.amwayCode === code);
+}
+
+/**
+ * For each non-archived person that shares its code with others, the other people sharing it
+ * (personId -> others). People with no code or a unique code are absent. Pure, no I/O.
+ */
+export function findDuplicateCodes(people: readonly Person[]): ReadonlyMap<string, readonly Person[]> {
+  const result = new Map<string, readonly Person[]>();
+  for (const p of people) {
+    if (p.archived) continue;
+    const others = findPeopleWithCode(people, p.amwayCode ?? null, p.personId);
+    if (others.length > 0) result.set(p.personId, others);
+  }
+  return result;
+}
+
+/** Names of the people in a duplicate-code list, joined for the "Trùng mã số với …" warning. */
+export function duplicateCodeNames(others: readonly Person[]): string {
+  return others.map((o) => o.name).join(', ');
+}

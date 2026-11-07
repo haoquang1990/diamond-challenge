@@ -589,6 +589,7 @@ body { margin: 0; }
 .badge--kh { background: var(--color-success-light); color: #2b6b00; }
 .badge--npp { background: var(--color-diamond-light); color: var(--color-diamond-dark); }
 .person-row__main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.person-row__warn { color: var(--color-warn); font-weight: 700; font-size: 0.9rem; overflow-wrap: anywhere; }
 .person-row--static { cursor: default; }
 .person-row__action { width: auto; min-width: 110px; flex: 0 0 auto; }
 

@@ -18,9 +18,10 @@ export const EVENT_SCHEMA_VERSION = 1;
  * - `activity_logged`: `{ activityType, xp, personId?: string, taskId?: string }`. `personId` is the
  *   optional person (see `src/domain/people.ts`) the activity was done with; `taskId` marks the
  *   completion of a person task (activityType equals taskId then).
- * - `person_added`: `{ personId, name, note?, phone?: { country, number } }`
- * - `person_updated`: `{ personId, name?, note?, phone?: { country, number } }` (latest wins;
- *   an empty `number` clears the phone)
+ * - `person_added`: `{ personId, name, note?, phone?: { country, number }, amwayCode? }`
+ * - `person_updated`: `{ personId, name?, note?, phone?: { country, number }, amwayCode? }` (latest wins;
+ *   an empty `number` clears the phone, an empty `amwayCode` clears the code; `amwayCode` is the
+ *   normalized digits, an invalid one is ignored when deriving; never carries xp)
  * - `person_archived`: `{ personId }`
  * - `person_restored`: `{ personId }` (archived state = latest of archived / restored)
  * - `person_stage_changed`: `{ personId, from, to, xp }` (xp feeds computeProgress)

@@ -109,6 +109,7 @@
     { "code": "+66", "name": "Thái Lan" },
     { "code": "+60", "name": "Malaysia" }
   ],
+  "amwayCodeDigits": { "min": 4, "max": 15 },
   "target30x30": {
     "contactsTarget": 250,
     "customersTarget": 30,
