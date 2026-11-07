@@ -1,7 +1,7 @@
 # Story 021: Đăng nhập, đổi mật khẩu lần đầu, tên hiển thị
 
 > **Epic**: diamond-challenge
-> **Status**: Ready
+> **Status**: In Progress
 > **Layer**: Foundation
 > **Type**: UI
 > **Estimate**: L
