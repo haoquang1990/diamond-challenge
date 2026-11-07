@@ -1,7 +1,7 @@
 # ADR-0002: Đưa Danh bạ hộ lên server
 
 ## Status
-Proposed
+Accepted
 
 ## Date
 2026-11-07
@@ -151,7 +151,7 @@ Bảng và RLS nằm trong migration hộ (ADR-0001); cột `sync_seq`, sequence
 - Test domain (story 023): hai nhật ký offline gộp lại cho cùng kết quả bất kể thứ tự.
 
 ## Amendments
-- 2026-11-07: con trỏ đồng bộ đổi từ `created_at` sang `sync_seq` (xung đột ADR-0002/ADR-0003 trong `docs/architecture/architecture-review-2026-11-07.md`); thêm rủi ro giờ máy sai, commit không theo thứ tự, xoá không đồng bộ. Trả về Proposed để duyệt lại.
+- 2026-11-07: con trỏ đồng bộ đổi từ `created_at` sang `sync_seq` (xung đột ADR-0002/ADR-0003 trong `docs/architecture/architecture-review-2026-11-07.md`); thêm rủi ro giờ máy sai, commit không theo thứ tự, xoá không đồng bộ. Trả về Proposed để duyệt lại; chấp nhận lại cùng ngày sau khi người dùng đọc bản sửa.
 
 ## Related
 - ADR-0001 (mô hình hộ), ADR-0003 (chuyển liên hệ khi gộp mã)
