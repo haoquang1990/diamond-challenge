@@ -1,7 +1,7 @@
 # Story 023: Đồng ý lưu trên server và đồng bộ Danh bạ hộ
 
 > **Epic**: diamond-challenge
-> **Status**: Ready
+> **Status**: In Progress
 > **Layer**: Foundation
 > **Type**: Integration
 > **Estimate**: L
