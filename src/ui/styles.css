@@ -731,3 +731,13 @@ body { margin: 0; }
 .achv-item__name { font-weight: 800; }
 .achv-item__detail { font-weight: 600; font-size: 0.95rem; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* Tài khoản (story 021): login, change password, display name */
+.form { display: flex; flex-direction: column; gap: 12px; }
+.form__field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.form__label { font-weight: 700; color: var(--color-muted); }
+.form__input { width: 100%; min-width: 0; box-sizing: border-box; }
+.form__row { display: flex; gap: 8px; align-items: flex-end; }
+.form__row .form__field:first-child { flex: 0 0 38%; }
+.form__row .form__field:last-child { flex: 1; }
+.account-name { margin: 0; font-weight: 800; overflow-wrap: anywhere; }

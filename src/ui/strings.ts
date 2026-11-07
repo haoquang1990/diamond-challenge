@@ -1,3 +1,5 @@
+import type { AuthFailure, PasswordProblem } from '../data/auth-service';
+
 /** Player-facing Vietnamese strings for the UI. No i18n framework at MVP. */
 export const STRINGS = {
   noteLabel: 'Ghi chú (FORMHD)',
@@ -202,6 +204,44 @@ export const STRINGS = {
   legacyUnknownActivity: 'Hoạt động',
   legacyNoPeople: 'Hãy thêm một người trước để gắn hoạt động.',
 
+  // Tài khoản (story 021)
+  accountHeading: 'Tài khoản',
+  accountSignedOut: 'Chưa đăng nhập',
+  accountSignedOutHint: 'Không cần đăng nhập để dùng app. Đăng nhập chỉ để dùng các tính năng cần tài khoản.',
+  accountSignedInAs: 'Đang đăng nhập:',
+  accountLogin: 'Đăng nhập',
+  accountSignOut: 'Đăng xuất',
+  accountSignOutKeepsData: 'Đăng xuất không xoá dữ liệu trên máy này.',
+  accountSignOutError: 'Không đăng xuất được. Thử lại nhé.',
+  displayNameLabel: 'Tên hiển thị',
+  displayNameHint: 'Từ 1 đến 60 ký tự.',
+  displayNameInvalid: 'Tên cần từ 1 đến 60 ký tự.',
+  displayNameSaved: 'Đã lưu tên.',
+  displayNamePromptTitle: 'Bạn muốn được gọi là gì?',
+  displayNamePromptBody: 'Tên này hiện trong tài khoản của bạn. Bạn có thể đổi lại trong Cài đặt.',
+  displayNameSkip: 'Để sau',
+  loginTitle: 'Đăng nhập',
+  loginPrompt: 'Dùng số điện thoại và mật khẩu được cấp cho bạn.',
+  loginCountryLabel: 'Mã nước',
+  loginPhoneLabel: 'Số điện thoại',
+  loginPasswordLabel: 'Mật khẩu',
+  loginSubmit: 'Đăng nhập',
+  loginSubmitting: 'Đang đăng nhập…',
+  loginInvalidPhone: 'Số điện thoại chưa đúng. Kiểm tra mã nước và số điện thoại.',
+  loginPasswordRequired: 'Hãy nhập mật khẩu.',
+  authBadCredentials: 'Số điện thoại hoặc mật khẩu chưa đúng. Kiểm tra lại rồi thử nhé.',
+  authNetworkError: 'Không có kết nối mạng. Kiểm tra mạng rồi thử lại nhé.',
+  authServerError: 'Máy chủ đang gặp sự cố. Thử lại sau ít phút nhé.',
+  changePasswordTitle: 'Đổi mật khẩu',
+  changePasswordPrompt: 'Đây là lần đăng nhập đầu. Hãy đặt mật khẩu của riêng bạn trước khi tiếp tục.',
+  newPasswordLabel: 'Mật khẩu mới',
+  confirmPasswordLabel: 'Nhập lại mật khẩu mới',
+  changePasswordSubmit: 'Đổi mật khẩu',
+  changePasswordSubmitting: 'Đang đổi…',
+  passwordTooShort: 'Mật khẩu cần ít nhất 8 ký tự.',
+  passwordMismatch: 'Hai mật khẩu chưa giống nhau.',
+  passwordSameAsTemporary: 'Mật khẩu mới phải khác mật khẩu tạm.',
+
   // Placeholder screens
   comingSoon: 'Sắp có',
   comingSoonBody: 'Tính năng này đang được xây dựng.',
@@ -389,4 +429,32 @@ export function achievementsStreakLabel(current: number, days: number): string {
 /** Earned date line, e.g. "Đạt ngày 10/03/2026". */
 export function achievementsEarnedOnLabel(date: string): string {
   return `Đạt ngày ${date}`;
+}
+
+/** Vietnamese message for a failed auth call; never says whether a phone number exists. */
+export function authFailureText(reason: AuthFailure): string {
+  switch (reason) {
+    case 'invalid-phone':
+      return STRINGS.loginInvalidPhone;
+    case 'bad-credentials':
+      return STRINGS.authBadCredentials;
+    case 'network':
+      return STRINGS.authNetworkError;
+    case 'same-password':
+      return STRINGS.passwordSameAsTemporary;
+    case 'server':
+      return STRINGS.authServerError;
+  }
+}
+
+/** Vietnamese message for a rejected new password. */
+export function passwordProblemText(problem: PasswordProblem): string {
+  switch (problem) {
+    case 'too-short':
+      return STRINGS.passwordTooShort;
+    case 'mismatch':
+      return STRINGS.passwordMismatch;
+    case 'same-as-temporary':
+      return STRINGS.passwordSameAsTemporary;
+  }
 }

@@ -55,10 +55,13 @@
 
 ## Files
 
-- `src/data/auth-service.ts`
-- `src/ui/screens/login-screen.tsx`, `src/ui/screens/change-password-screen.tsx`
-- `src/ui/screens/settings-screen.tsx`, `src/app.tsx`, `src/ui/strings.ts`, `src/ui/styles.css`
-- `tests/unit/auth/auth-service.test.ts`
+- `src/data/auth-service.ts` (new)
+- `src/ui/screens/login-screen.tsx` (new)
+- `src/ui/screens/change-password-screen.tsx` (new: ChangePasswordScreen, DisplayNameScreen)
+- `src/ui/screens/settings-screen.tsx`
+- `src/app.tsx`
+- `src/ui/strings.ts`
+- `src/ui/styles.css`
 - `production/qa/evidence/story-021-login-change-password/`
 
 ## QA Test Cases

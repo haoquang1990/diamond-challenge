@@ -1,4 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { getSupabaseClient } from './config/supabase';
+import { ensureAccountLinked, loadAccount, saveDisplayName, signOut } from './data/auth-service';
+import type { AccountInfo, AuthResult } from './data/auth-service';
 import type { EventStore } from './data/event-store';
 import { browserNotificationPlatform, createReminderScheduler } from './notifications/reminders';
 import type { NotificationPlatform } from './notifications/reminders';
@@ -7,8 +10,10 @@ import { createObservedStore, readSoundEnabled } from './ui/achievements-helpers
 import { setSoundEnabled } from './ui/play-ting';
 import { AchievementsScreen } from './ui/screens/achievements-screen';
 import { Board30x30Screen } from './ui/screens/board-30x30-screen';
+import { ChangePasswordScreen, DisplayNameScreen } from './ui/screens/change-password-screen';
 import { DiamondPathScreen } from './ui/screens/diamond-path-screen';
 import { LessonScreen } from './ui/screens/lesson-screen';
+import { LoginScreen } from './ui/screens/login-screen';
 import { PeopleScreen } from './ui/screens/people-screen';
 import { SettingsScreen } from './ui/screens/settings-screen';
 import { TodayScreen } from './ui/screens/today-screen';
@@ -38,9 +43,9 @@ function realNow(): Date {
  * merged person list (Danh bạ). `settings` (opened from Hôm nay) and `board`
  * (opened from Con đường) are not in the tab bar.
  */
-type Tab = 'today' | 'learn' | 'people' | 'path' | 'settings' | 'board' | 'achievements';
+type Tab = 'today' | 'learn' | 'people' | 'path' | 'settings' | 'board' | 'achievements' | 'login';
 
-const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'board' | 'achievements'>; readonly label: string }[] = [
+const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'board' | 'achievements' | 'login'>; readonly label: string }[] = [
   { id: 'today', label: STRINGS.tabToday },
   { id: 'learn', label: STRINGS.tabLearn },
   { id: 'people', label: STRINGS.tabPeople },
@@ -74,6 +79,56 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
   const [fromBoard, setFromBoard] = useState<ContactsFilter | null>(null);
   const goToday = () => setTab('today');
   const onLessonActive = useCallback((active: boolean) => setLessonActive(active), []);
+
+  // Optional account (story 021): the whole feature is hidden when the build has no Supabase config.
+  const clientPromise = useMemo(() => getSupabaseClient(), []);
+  const [account, setAccount] = useState<AccountInfo | null>(null);
+  /** Temporary password typed at sign-in; memory only, cleared once the password is changed. */
+  const temporaryPasswordRef = useRef<string | null>(null);
+  const [askDisplayName, setAskDisplayName] = useState(false);
+
+  useEffect(() => {
+    if (clientPromise === null) return;
+    let cancelled = false;
+    clientPromise
+      .then(loadAccount)
+      .then((loaded) => {
+        if (!cancelled) setAccount(loaded);
+      })
+      .catch((error: unknown) => console.error('[auth] could not restore the session', error));
+    return () => {
+      cancelled = true;
+    };
+  }, [clientPromise]);
+
+  const onSignedIn = (signedIn: AccountInfo, password: string) => {
+    ensureAccountLinked(rawEventStore, signedIn.accountId).catch((error: unknown) => console.error('[auth] could not link the account', error));
+    setAccount(signedIn);
+    if (signedIn.mustChangePassword) temporaryPasswordRef.current = password;
+    setTab('settings');
+  };
+
+  const onSignOut = async (): Promise<boolean> => {
+    if (clientPromise === null) return false;
+    try {
+      const result = await signOut(await clientPromise);
+      if (!result.ok) return false;
+    } catch (error) {
+      console.error('[auth] sign-out failed', error);
+      return false;
+    }
+    temporaryPasswordRef.current = null;
+    setAskDisplayName(false);
+    setAccount(null);
+    return true;
+  };
+
+  const onSaveDisplayName = async (name: string): Promise<AuthResult> => {
+    if (clientPromise === null) return { ok: false, reason: 'server' };
+    const result = await saveDisplayName(await clientPromise, name);
+    if (result.ok) setAccount((a) => (a === null ? a : { ...a, displayName: name }));
+    return result;
+  };
 
   const scheduler = useMemo(
     () =>
@@ -154,6 +209,50 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
   );
 
   function renderScreen() {
+  if (clientPromise !== null && account?.mustChangePassword === true) {
+    return (
+      <div className="app-shell">
+        <ChangePasswordScreen
+          clientPromise={clientPromise}
+          temporaryPassword={temporaryPasswordRef.current}
+          onDone={() => {
+            temporaryPasswordRef.current = null;
+            setAccount({ ...account, mustChangePassword: false });
+            setAskDisplayName(true);
+          }}
+          onSignOut={() => void onSignOut()}
+        />
+      </div>
+    );
+  }
+
+  if (clientPromise !== null && account !== null && askDisplayName) {
+    const done = () => {
+      setAskDisplayName(false);
+      setTab('settings');
+    };
+    return (
+      <div className="app-shell">
+        <DisplayNameScreen
+          clientPromise={clientPromise}
+          onSaved={(name) => {
+            setAccount({ ...account, displayName: name });
+            done();
+          }}
+          onSkip={done}
+        />
+      </div>
+    );
+  }
+
+  if (tab === 'login' && clientPromise !== null) {
+    return (
+      <div className="app-shell">
+        <LoginScreen clientPromise={clientPromise} onBack={() => setTab('settings')} onSignedIn={onSignedIn} />
+      </div>
+    );
+  }
+
   if (tab === 'board') {
     return (
       <div className="app-shell">
@@ -179,7 +278,10 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
   if (tab === 'settings') {
     return (
       <div className="app-shell">
-        <SettingsScreen eventStore={eventStore} onBack={goToday} onSaved={refreshReminders} onImported={onImported} platform={notificationPlatform} />
+        <SettingsScreen eventStore={eventStore} onBack={goToday} onSaved={refreshReminders} onImported={onImported}
+          platform={notificationPlatform}
+          {...(clientPromise === null ? {} : { accountSection: { account, onLogin: () => setTab('login'), onSignOut, onSaveDisplayName } })}
+        />
       </div>
     );
   }
