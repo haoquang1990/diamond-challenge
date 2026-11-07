@@ -1,7 +1,7 @@
 # Story 022: Mã số Amway trên liên hệ và cảnh báo trùng mã
 
 > **Epic**: diamond-challenge
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Core
 > **Type**: UI
 > **Estimate**: M
@@ -79,3 +79,10 @@
 
 - Depends on: `production/epics/diamond-challenge/story-015-merge-lam-danh-ba.md`
 - Unlocks: story 024, 026
+
+## Completion Notes
+**Completed**: 2026-11-07
+**Criteria**: 7/7 passing (built app in Chromium 390×844 and 320px; not tried on a real phone)
+**Deviations**: Advisory, not logged as tech debt: (1) `src/ui/people-config.ts` was changed and added to `## Files` (the only place to wire `amwayCodeDigits`); (2) the 4–15 digit bounds live in `game-config.json` with a matching fallback in `people.ts` for a broken config; (3) not tried on a real phone; (4) outside this story, the add-person phone field still truncates its country label and placeholder at 320px (story 013); the compact country picker built for the login screen could be applied there
+**Test Evidence**: screenshots in production/qa/evidence/story-022-amway-code-on-contacts/ (01–09, sample-backup.json and stamp.txt, stamp unchanged); full suite 352/352
+**Reviewed by**: self, no independent review
