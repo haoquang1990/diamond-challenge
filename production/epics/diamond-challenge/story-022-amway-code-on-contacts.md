@@ -1,7 +1,7 @@
 # Story 022: Mã số Amway trên liên hệ và cảnh báo trùng mã
 
 > **Epic**: diamond-challenge
-> **Status**: Ready
+> **Status**: In Progress
 > **Layer**: Core
 > **Type**: UI
 > **Estimate**: M
