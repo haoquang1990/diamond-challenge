@@ -737,6 +737,31 @@ body { margin: 0; }
 .form__field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .form__label { font-weight: 700; color: var(--color-muted); }
 .form__input { width: 100%; min-width: 0; box-sizing: border-box; }
+/* Country-code picker: shows only the code when closed; the transparent native select on top opens the full list. */
+.select-code {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--touch-min);
+  padding: 0 10px;
+  box-sizing: border-box;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+.select-code__value { font: inherit; font-weight: 700; pointer-events: none; }
+.select-code::after { content: '▾'; margin-left: auto; color: var(--color-muted); pointer-events: none; }
+.select-code select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  font: inherit;
+  cursor: pointer;
+}
+.select-code:focus-within { outline: 3px solid var(--color-primary, #1cb0f6); outline-offset: 2px; }
 .form__row { display: flex; gap: 8px; align-items: flex-end; }
 .form__row .form__field:first-child { flex: 0 0 38%; }
 .form__row .form__field:last-child { flex: 1; }

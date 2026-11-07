@@ -70,13 +70,19 @@ export function LoginScreen({ clientPromise, onBack, onSignedIn }: LoginScreenPr
         <div className="form__row">
           <label className="form__field">
             <span className="form__label">{STRINGS.loginCountryLabel}</span>
-            <select className="select" value={country} onChange={(e) => setCountry(e.target.value)} disabled={busy}>
-              {gameConfig.countryCodes.map((c) => (
-                <option key={c.code} value={c.code}>
-                  {c.code} {c.name}
-                </option>
-              ))}
-            </select>
+            {/* Closed: only the code. Open: the native list shows code and country name. */}
+            <span className="select-code">
+              <span className="select-code__value" aria-hidden="true">
+                {country}
+              </span>
+              <select value={country} onChange={(e) => setCountry(e.target.value)} disabled={busy}>
+                {gameConfig.countryCodes.map((c) => (
+                  <option key={c.code} value={c.code}>
+                    {c.code} {c.name}
+                  </option>
+                ))}
+              </select>
+            </span>
           </label>
           <label className="form__field">
             <span className="form__label">{STRINGS.loginPhoneLabel}</span>
