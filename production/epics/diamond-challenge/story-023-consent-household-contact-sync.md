@@ -1,7 +1,7 @@
 # Story 023: Đồng ý lưu trên server và đồng bộ Danh bạ hộ
 
 > **Epic**: diamond-challenge
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Foundation
 > **Type**: Integration
 > **Estimate**: L
@@ -82,3 +82,10 @@
 
 - Depends on: `production/epics/diamond-challenge/story-021-login-change-password.md`, `production/epics/diamond-challenge/story-020-households-backend.md`, `supabase/migrations/20261107010000_contact_sync_seq.sql` (commit 307d19a; phải deploy lên server trước khi thử thật)
 - Unlocks: story 026, 027, 028
+
+## Completion Notes
+**Completed**: 2026-11-07
+**Criteria**: 9/9 passing (built app in Chromium 390×844 and 320px with two simulated devices and a third account against a fake PostgREST; the later-edit-wins rule checked on `derivePeople`; not tried on a real phone or against the live Supabase)
+**Deviations**: Advisory, not logged as tech debt: (1) never tried against the live Supabase (server RLS is covered by the PGlite tests of stories 019/020); (2) the two-device fake-server scenario is not in the repo, so no automated test re-runs the sync (waived at `qa.level: minimal`); (3) "last synced" is kept in memory only and only the Làm list refreshes right after a pull; (4) 8 files outside the planned list were touched so that "mine" applies everywhere XP is computed, all listed in `## Files`; (5) the agent's two new source files tripped the write-guard hook's subagent warning, the user reviewed the whole changeset here; (6) depends-on story 020 was still In Progress, accepted by the user; (7) three user decisions changed the ADR-0002 design (10-minute clock-skew limit, "mine" inverted, a local "Không đồng ý" wins) and are recorded in its Amendments
+**Test Evidence**: screenshots in production/qa/evidence/story-023-consent-household-contact-sync/ (01–07, a sample backup and stamp.txt, stamp unchanged); full suite 352/352
+**Reviewed by**: self, no independent review
