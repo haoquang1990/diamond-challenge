@@ -199,8 +199,8 @@ export function buildAchievementRows(
   const achievedIds = new Set(achieved.map((a) => a.id));
   const ack = readAcknowledged(events, deps.stages);
   const ackEvents = acknowledgementEvents(events, stageIds);
-  const progress = computeProgress(events, now, deps.progress, timeZone);
-  const stageProgress = computeStageProgress(events, progress.totalXp, deps.stages);
+  const progress = computeProgress(events, now, deps.progress, timeZone, deps.others);
+  const stageProgress = computeStageProgress(events, progress.totalXp, deps.stages, deps.others);
   const stats = computePeopleStats(derivePeople(events, deps.people), deps.people);
   const targets = deps.people.targets;
 

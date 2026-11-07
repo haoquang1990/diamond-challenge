@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
+import type { HouseholdMember } from '../../data/contact-sync';
 import type { EventStore, LogEvent } from '../../data/event-store';
+import { otherMemberIds } from '../../domain/progress';
 import { deriveActivityOwners, derivePeople } from '../../domain/people';
 import type { Person, PersonPhone } from '../../domain/people';
 import { ACTIVITY_TYPES } from '../activity-types';
@@ -11,6 +13,7 @@ import {
   duplicateCodeNames,
   filterContacts,
   findDuplicateCodes,
+  historyAuthorLabel,
   listUnassignedActivities,
   searchPeopleByName,
 } from '../people-helpers';
@@ -20,6 +23,8 @@ import { AddPersonForm, LabelBadge, PersonDetail } from './person-form';
 
 /** Props for {@link PeopleScreen}. */
 export interface PeopleScreenProps {
+  /** Account ids of household members persisted on the device (story 023); their events are not mine. */
+  readonly memberIds?: ReadonlySet<string>;
   /** Event log everything is derived from (injected). */
   readonly eventStore: EventStore;
   /** Activity types, used for the add_name XP and legacy row names; defaults to game-config.json. */
@@ -28,12 +33,18 @@ export interface PeopleScreenProps {
   readonly initialFilter?: ContactsFilter;
   /** When provided, a "‹ Quay lại Bảng 30x30" control is shown at the top and calls this. */
   readonly onBack?: () => void;
+  /** Household members (story 023), or null when the contact book is not synced: history then names no author. */
+  readonly members?: ReadonlyMap<string, HouseholdMember> | null;
+  /** Bumped by the app when a sync pulled new events; the log is re-read. */
+  readonly dataVersion?: number;
 }
 
 type LoadState =
   | { readonly kind: 'loading' }
   | { readonly kind: 'error' }
   | { readonly kind: 'ready'; readonly events: readonly LogEvent[] };
+
+const NO_MEMBERS: ReadonlySet<string> = new Set();
 
 /** Id of the activity type that gives XP for adding a person. */
 const ADD_NAME_ACTIVITY_ID = 'add_name';
@@ -47,7 +58,7 @@ const ADD_NAME_ACTIVITY_ID = 'add_name';
  * the per-filter totals and ignore the search. Re-reads the event log on
  * mount and after every write; keeps no copy of truth.
  */
-export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initialFilter = 'all', onBack }: PeopleScreenProps) {
+export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initialFilter = 'all', onBack, members = null, memberIds = NO_MEMBERS, dataVersion = 0 }: PeopleScreenProps) {
   const [load, setLoad] = useState<LoadState>({ kind: 'loading' });
   const [openId, setOpenId] = useState<string | null>(null);
   const [addedXp, setAddedXp] = useState<number | null>(null);
@@ -70,7 +81,7 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
 
   useEffect(() => {
     void reload();
-  }, [reload]);
+  }, [reload, dataVersion]);
 
   if (load.kind === 'loading') {
     return (
@@ -95,6 +106,7 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
   }
 
   const { events } = load;
+  const others = otherMemberIds(events, memberIds);
   const allPeople = derivePeople(events, PEOPLE_CONFIG);
   const people = allPeople.filter((p) => !p.archived);
   const opened = openId === null ? undefined : people.find((p) => p.personId === openId);
@@ -109,6 +121,7 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
         events={events}
         activityTypes={activityTypes}
         config={PEOPLE_CONFIG}
+        authorLabel={(userId) => historyAuthorLabel(userId, others, members)}
         onChanged={reload}
         onBack={() => setOpenId(null)}
       />

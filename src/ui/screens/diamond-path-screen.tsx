@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import gameConfig from '../../config/game-config.json';
 import type { EventStore, LogEvent } from '../../data/event-store';
-import { computeProgress } from '../../domain/progress';
+import { computeProgress, otherMemberIds } from '../../domain/progress';
 import { computeStageProgress, lastAcknowledgedStageId, parseStageConfig, shouldCelebrate } from '../../domain/stages';
 import type { StageDef, StageProgress, StageStatus } from '../../domain/stages';
 import {
@@ -27,16 +27,18 @@ export interface StageView {
 /**
  * Derives the stage view from the log: total XP via computeProgress, stages
  * via computeStageProgress, and whether a celebration is due given the last
- * `settings_changed { stageAcknowledged }`. Pure.
+ * `settings_changed { stageAcknowledged }`. Pure. Events by `others` add no XP and no milestone
+ * counts (story 023, `otherMemberIds`).
  */
 export function buildStageView(
   events: readonly LogEvent[],
   stages: readonly StageDef[],
   now: Date,
   timeZone: string,
+  others?: ReadonlySet<string>,
 ): StageView {
-  const { totalXp } = computeProgress(events, now, { dailyXpGoal: gameConfig.dailyXpGoal }, timeZone);
-  const progress = computeStageProgress(events, totalXp, stages);
+  const { totalXp } = computeProgress(events, now, { dailyXpGoal: gameConfig.dailyXpGoal }, timeZone, others);
+  const progress = computeStageProgress(events, totalXp, stages, others);
   const celebrate =
     progress.current !== null && shouldCelebrate(lastAcknowledgedStageId(events), progress.currentIndex, stages)
       ? progress.current
@@ -44,8 +46,12 @@ export function buildStageView(
   return { progress, celebrate };
 }
 
+const NO_MEMBERS: ReadonlySet<string> = new Set();
+
 /** Props for {@link DiamondPathScreen}. */
 export interface DiamondPathScreenProps {
+  /** Account ids of household members persisted on the device (story 023); their events are not mine. */
+  readonly memberIds?: ReadonlySet<string>;
   /** Event log stages are derived from (injected). */
   readonly eventStore: EventStore;
   /** Stages; defaults to game-config.json. */
@@ -81,6 +87,7 @@ export function DiamondPathScreen({
   timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone,
   onOpenBoard,
   onOpenAchievements,
+  memberIds = NO_MEMBERS,
 }: DiamondPathScreenProps) {
   const [state, setState] = useState<ScreenState>({ kind: 'loading' });
   const [reloadKey, setReloadKey] = useState(0);
@@ -93,7 +100,7 @@ export function DiamondPathScreen({
       .list()
       .then((events) => {
         if (cancelled) return;
-        const view = buildStageView(events, stages, now(), timeZone);
+        const view = buildStageView(events, stages, now(), timeZone, otherMemberIds(events, memberIds));
         // Reaching a stage is celebrated by the achievements popup (story 017), on any screen.
         setState({ kind: 'ready', progress: view.progress, celebrate: null });
       })
@@ -105,7 +112,7 @@ export function DiamondPathScreen({
     return () => {
       cancelled = true;
     };
-  }, [eventStore, stages, now, timeZone, reloadKey]);
+  }, [eventStore, stages, now, timeZone, reloadKey, memberIds]);
 
   return (
     <main className="screen">

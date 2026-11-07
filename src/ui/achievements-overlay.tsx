@@ -1,4 +1,5 @@
 import type { MutableRefObject } from 'react';
+import { otherMemberIds } from '../domain/progress';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import gameConfig from '../config/game-config.json';
 import type { EventStore, LogEvent } from '../data/event-store';
@@ -55,8 +56,12 @@ interface ActivePopup {
   readonly key: number;
 }
 
+const NO_MEMBERS: ReadonlySet<string> = new Set();
+
 /** Props for {@link AchievementsOverlay}. */
 export interface AchievementsOverlayProps {
+  /** Account ids of household members persisted on the device (story 023); their events are not mine. */
+  readonly memberIds?: ReadonlySet<string>;
   /** Observed store (its `subscribe` reports saved events). */
   readonly observed: ObservedStore;
   /** Raw store used for the overlay's own writes, so they never re-trigger checks. */
@@ -79,7 +84,7 @@ export interface AchievementsOverlayProps {
  * one at a time at the top edge; a popup blocks the screen and toasts wait.
  * Milestones are checked after each saved event, on mount and on tab change.
  */
-export function AchievementsOverlay({ observed, rawStore, tab, onPopupOpenChange, silentAcknowledgeRef }: AchievementsOverlayProps) {
+export function AchievementsOverlay({ observed, rawStore, tab, onPopupOpenChange, silentAcknowledgeRef, memberIds = NO_MEMBERS }: AchievementsOverlayProps) {
   const [pendingToasts, setPendingToasts] = useState<readonly QueuedToast[]>([]);
   const [toast, setToast] = useState<QueuedToast | null>(null);
   const [popup, setPopup] = useState<ActivePopup | null>(null);
@@ -135,11 +140,12 @@ export function AchievementsOverlay({ observed, rawStore, tab, onPopupOpenChange
   const checkOnce = useCallback(async () => {
     const events = await rawStore.list();
     const now = new Date();
-    const deps = { stages: DEFAULT_STAGES, people: PEOPLE_CONFIG, progress: { dailyXpGoal: DAILY_XP_GOAL } };
+    const others = otherMemberIds(events, memberIds);
+    const deps = { stages: DEFAULT_STAGES, people: PEOPLE_CONFIG, progress: { dailyXpGoal: DAILY_XP_GOAL }, others };
     const achieved = evaluateAchievements(events, ACHIEVEMENTS_CONFIG, now, TIME_ZONE, deps);
     let ack = readAcknowledged(events, DEFAULT_STAGES);
     if (!ack.seeded) {
-      const celebrate = buildStageView(events, DEFAULT_STAGES, now, TIME_ZONE).celebrate;
+      const celebrate = buildStageView(events, DEFAULT_STAGES, now, TIME_ZONE, others).celebrate;
       const pendingStage = celebrate === null ? null : stageItemId(ACHIEVEMENTS_CONFIG.items, celebrate.id);
       for (const e of buildSeedEvents(itemsToSeed(achieved, pendingStage), false, ack.ids)) await rawStore.append(e);
       ack = readAcknowledged(await rawStore.list(), DEFAULT_STAGES);
@@ -151,7 +157,7 @@ export function AchievementsOverlay({ observed, rawStore, tab, onPopupOpenChange
     const singles = plan.popups.flatMap((p) => (p.kind === 'single' ? [p.item] : []));
     const remaining = fresh.filter((a) => !singles.includes(a));
     enqueuePopups(plan.popups.map((entry) => ({ entry, items: entry.kind === 'single' ? [entry.item] : remaining })));
-  }, [rawStore, enqueuePopups]);
+  }, [rawStore, enqueuePopups, memberIds]);
 
   /** Single in-flight check; a burst of calls collapses into one extra run. */
   const checkMilestones = useCallback(async () => {
@@ -183,7 +189,7 @@ export function AchievementsOverlay({ observed, rawStore, tab, onPopupOpenChange
       currentPopup.current = null;
       setPopup(null);
       const events = await rawStore.list();
-      const deps = { stages: DEFAULT_STAGES, people: PEOPLE_CONFIG, progress: { dailyXpGoal: DAILY_XP_GOAL } };
+      const deps = { stages: DEFAULT_STAGES, people: PEOPLE_CONFIG, progress: { dailyXpGoal: DAILY_XP_GOAL }, others: otherMemberIds(events, memberIds) };
       const achieved = evaluateAchievements(events, ACHIEVEMENTS_CONFIG, new Date(), TIME_ZONE, deps);
       const ack = readAcknowledged(events, DEFAULT_STAGES);
       for (const a of achieved) seenIds.current.add(a.id);
@@ -192,7 +198,7 @@ export function AchievementsOverlay({ observed, rawStore, tab, onPopupOpenChange
     } finally {
       running.current = false;
     }
-  }, [rawStore]);
+  }, [rawStore, memberIds]);
 
   useEffect(() => {
     if (silentAcknowledgeRef === undefined) return;

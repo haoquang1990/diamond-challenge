@@ -157,8 +157,9 @@ export function parseStageConfig(raw: unknown): StageConfigResult {
  * Counts non-compensated `activity_logged` events per `payload.activityType`.
  * Same compensation rule as computeProgress: an event whose id is some event's
  * `payload.compensates` is excluded, and compensating events themselves never count.
+ * Events whose `userId` is in `others` do not count (story 023, see `otherMemberIds`).
  */
-export function countActivities(events: readonly LogEvent[]): ReadonlyMap<string, number> {
+export function countActivities(events: readonly LogEvent[], others?: ReadonlySet<string>): ReadonlyMap<string, number> {
   const compensated = new Set<string>();
   for (const e of events) {
     const target = e.payload.compensates;
@@ -168,6 +169,7 @@ export function countActivities(events: readonly LogEvent[]): ReadonlyMap<string
   for (const e of events) {
     if (e.type !== 'activity_logged') continue;
     if (compensated.has(e.id) || typeof e.payload.compensates === 'string') continue;
+    if (others?.has(e.userId) === true) continue;
     const type = e.payload.activityType;
     if (typeof type !== 'string') continue;
     counts.set(type, (counts.get(type) ?? 0) + 1);
@@ -190,13 +192,15 @@ function clampPercent(value: number): number {
  * @param events Event log (for milestone counts).
  * @param totalXp Total XP from computeProgress.
  * @param stages Validated stages from {@link parseStageConfig}.
+ * @param others Optional authors that are not me: their events do not count for milestones (story 023).
  */
 export function computeStageProgress(
   events: readonly LogEvent[],
   totalXp: number,
   stages: readonly StageDef[],
+  others?: ReadonlySet<string>,
 ): StageProgress {
-  const counts = countActivities(events);
+  const counts = countActivities(events, others);
   const details = stages.map((stage) => {
     const milestones: MilestoneStatus[] = stage.milestones.map((m) => {
       const current = counts.get(m.activityType) ?? 0;

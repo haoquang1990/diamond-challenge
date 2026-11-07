@@ -266,6 +266,8 @@ export interface PersonDetailProps {
   /** Names for legacy activity types in the history. */
   readonly activityTypes: readonly { readonly id: string; readonly name: string }[];
   readonly config?: PeopleConfig;
+  /** Who did a history row (story 023): a name, or null for me / when the book is not synced. */
+  readonly authorLabel?: (userId: string) => string | null;
   /** Re-read the log after any write. */
   readonly onChanged: () => Promise<void>;
   readonly onBack: () => void;
@@ -286,7 +288,7 @@ interface TaskUndo {
  * closes again after a successful save), read-only history and archive (with
  * confirm). State of record is the event log; this only holds form state.
  */
-export function PersonDetail({ eventStore, person, people, events, activityTypes, config = PEOPLE_CONFIG, onChanged, onBack }: PersonDetailProps) {
+export function PersonDetail({ eventStore, person, people, events, activityTypes, config = PEOPLE_CONFIG, authorLabel, onChanged, onBack }: PersonDetailProps) {
   const [name, setName] = useState(person.name);
   const [note, setNote] = useState(person.note);
   const [country, setCountry] = useState(person.phone?.country ?? DEFAULT_COUNTRY);
@@ -520,14 +522,18 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
           <p className="message">{STRINGS.historyEmpty}</p>
         ) : (
           <ul className="history-list">
-            {history.map((h) => (
+            {history.map((h) => {
+              const author = authorLabel?.(h.userId) ?? null;
+              return (
               <li key={h.id} className="history-row">
                 <span className="history-row__name">
                   {h.kind === 'stage' ? historyStageLabel(h.name) : h.name === '' ? STRINGS.legacyUnknownActivity : h.name}
+                  {author !== null && <span className="history-row__author">{author}</span>}
                 </span>
                 <span className="person-row__stage">{shortDateLabel(h.timestamp)}</span>
               </li>
-            ))}
+              );
+            })}
           </ul>
         )}
       </section>

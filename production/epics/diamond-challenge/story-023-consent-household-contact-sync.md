@@ -54,10 +54,13 @@
 
 ## Files
 
-- `src/data/contact-sync.ts`, `src/data/event-store.ts`, `src/data/indexeddb-event-store.ts`
-- `src/domain/progress.ts`, `src/domain/stages.ts`, `src/domain/achievements.ts` (lọc theo tài khoản)
-- `src/ui/screens/consent-screen.tsx`, `src/ui/screens/settings-screen.tsx`, `src/ui/screens/people-screen.tsx`, `src/app.tsx`, `src/ui/strings.ts`
-- `tests/integration/sync/contact-sync.test.ts`
+- `src/data/contact-sync.ts` (new), `src/ui/screens/consent-screen.tsx` (new)
+- `src/data/event-store.ts`, `src/data/indexeddb-event-store.ts`, `src/data/memory-event-store.ts`
+- `src/domain/progress.ts`, `src/domain/stages.ts`, `src/domain/achievements.ts`, `src/notifications/reminders.ts`
+- `src/app.tsx`, `src/config/game-config.json`
+- `src/ui/screens/settings-screen.tsx`, `src/ui/screens/people-screen.tsx`, `src/ui/screens/person-form.tsx`, `src/ui/screens/today-screen.tsx`, `src/ui/screens/diamond-path-screen.tsx`, `src/ui/screens/achievements-screen.tsx`
+- `src/ui/achievements-overlay.tsx`, `src/ui/achievements-helpers.ts`, `src/ui/people-helpers.ts`, `src/ui/strings.ts`, `src/ui/styles.css`
+- `docs/architecture/adr-0002-household-contacts-on-server.md` (amendment from user decisions)
 - `production/qa/evidence/story-023-consent-household-contact-sync/`
 
 ## QA Test Cases

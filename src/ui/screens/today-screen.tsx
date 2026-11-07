@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import gameConfig from '../../config/game-config.json';
 import type { EventStore } from '../../data/event-store';
-import { computeProgress } from '../../domain/progress';
+import { computeProgress, otherMemberIds } from '../../domain/progress';
 import type { Progress, ProgressConfig } from '../../domain/progress';
 import type { StageDef } from '../../domain/stages';
 import { nextReminderAt, parseReminderConfig, readReminderSettings, reminderMissing, shouldShowReminder } from '../../domain/reminders';
@@ -20,6 +20,8 @@ import {
 
 /** Props for {@link TodayScreen}. */
 export interface TodayScreenProps {
+  /** Account ids of household members persisted on the device (story 023); their events are not mine. */
+  readonly memberIds?: ReadonlySet<string>;
   /** Event log progress is derived from (injected; no singleton). */
   readonly eventStore: EventStore;
   /** Opens Học (story 005). */
@@ -57,6 +59,7 @@ type ScreenState =
   | { readonly kind: 'error' }
   | { readonly kind: 'ready'; readonly progress: Progress; readonly isNewUser: boolean; readonly stageName: string | null; readonly reminder: ReminderSettings; readonly reminderDue: boolean };
 
+const NO_MEMBERS: ReadonlySet<string> = new Set();
 const DEFAULT_CONFIG: ProgressConfig = { dailyXpGoal: gameConfig.dailyXpGoal };
 const DEFAULT_REMINDER_CONFIG = parseReminderConfig(gameConfig.reminder);
 const DEFAULT_PERMISSION = browserNotificationPlatform().permission;
@@ -92,6 +95,7 @@ export function TodayScreen({
   onOpenSettings,
   reminderConfig = DEFAULT_REMINDER_CONFIG,
   notificationPermission = DEFAULT_PERMISSION,
+  memberIds = NO_MEMBERS,
 }: TodayScreenProps) {
   const [state, setState] = useState<ScreenState>({ kind: 'loading' });
   const [reloadKey, setReloadKey] = useState(0);
@@ -103,8 +107,9 @@ export function TodayScreen({
       .list()
       .then((events) => {
         if (cancelled) return;
-        const progress = computeProgress(events, now(), config, timeZone);
-        const view = buildStageView(events, stages, now(), timeZone);
+        const others = otherMemberIds(events, memberIds);
+        const progress = computeProgress(events, now(), config, timeZone, others);
+        const view = buildStageView(events, stages, now(), timeZone, others);
         const reminder = readReminderSettings(events, reminderConfig);
         setState({
           kind: 'ready',
@@ -123,7 +128,7 @@ export function TodayScreen({
     return () => {
       cancelled = true;
     };
-  }, [eventStore, config, stages, now, timeZone, reminderConfig, reloadKey]);
+  }, [eventStore, config, stages, now, timeZone, reminderConfig, reloadKey, memberIds]);
 
   useEffect(() => {
     const onVisible = () => {

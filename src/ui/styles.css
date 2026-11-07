@@ -767,3 +767,7 @@ body { margin: 0; }
 .form__row .form__field:first-child { flex: 0 0 38%; }
 .form__row .form__field:last-child { flex: 1; }
 .account-name { margin: 0; font-weight: 800; overflow-wrap: anywhere; }
+
+/* Story 023: consent screen and history author */
+.consent-list { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; }
+.history-row__author { display: block; font-weight: 400; font-size: 0.875em; opacity: 0.75; }

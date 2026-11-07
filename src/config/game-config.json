@@ -146,5 +146,13 @@
       { "id": "people:f1_target", "kind": "people", "metric": "f1", "threshold": "target", "name": "Đủ 30 NPP F1" },
       { "id": "people:achieved_30x30", "kind": "people", "metric": "achieved30x30", "name": "Đạt 30x30" }
     ]
+  },
+  "contactConsentVersion": 1,
+  "contactSync": {
+    "pushBatchSize": 200,
+    "pullOverlap": 200,
+    "pullPageSize": 500,
+    "debounceMs": 2000,
+    "maxClockSkewMs": 600000
   }
 }

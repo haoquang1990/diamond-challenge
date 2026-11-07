@@ -1,4 +1,7 @@
 /** Pure helpers for the Làm tab (person list): filters, name search, legacy activities, history. */
+import type { HouseholdMember } from '../data/contact-sync';
+import { STRINGS } from './strings';
+import { FORMER_MEMBER_ID } from '../data/event-store';
 import type { LogEvent } from '../data/event-store';
 import {
   UNKNOWN_PERSON_ID,
@@ -153,6 +156,8 @@ export interface HistoryEntry {
   readonly kind: 'activity' | 'stage';
   /** Activity/task name (kind 'activity', '' when unknown) or stage name (kind 'stage'). */
   readonly name: string;
+  /** `userId` of the event (who did it). */
+  readonly userId: string;
 }
 
 /**
@@ -179,10 +184,10 @@ export function buildPersonHistory(
       if (owners.get(e.id) !== personId) continue;
       const typeId = e.payload.activityType;
       const name = namedTypes.find((t) => t.id === typeId)?.name ?? '';
-      entries.push({ id: e.id, timestamp: e.timestamp, kind: 'activity', name });
+      entries.push({ id: e.id, timestamp: e.timestamp, kind: 'activity', name, userId: e.userId });
     } else if (e.type === 'person_stage_changed' && e.payload.personId === personId) {
       const stage = config.stages.find((s) => s.id === e.payload.to);
-      if (stage !== undefined) entries.push({ id: e.id, timestamp: e.timestamp, kind: 'stage', name: stage.name });
+      if (stage !== undefined) entries.push({ id: e.id, timestamp: e.timestamp, kind: 'stage', name: stage.name, userId: e.userId });
     }
   }
   return entries.reverse().sort((a, b) => (a.timestamp < b.timestamp ? 1 : a.timestamp > b.timestamp ? -1 : 0));
@@ -214,4 +219,20 @@ export function findDuplicateCodes(people: readonly Person[]): ReadonlyMap<strin
 /** Names of the people in a duplicate-code list, joined for the "Trùng mã số với …" warning. */
 export function duplicateCodeNames(others: readonly Person[]): string {
   return others.map((o) => o.name).join(', ');
+}
+
+/**
+ * Who did a history row (story 023), or null when it was me (`userId` not in `others`, see
+ * `otherMemberIds`): the member's display name, else phone, else "Thành viên cũ" (removed
+ * author). Null for another member while their names are not loaded (`members` null).
+ *
+ * @example
+ * historyAuthorLabel(entry.userId, otherMemberIds(events, memberIds), members); // 'Lan' | null
+ */
+export function historyAuthorLabel(userId: string, others: ReadonlySet<string>, members: ReadonlyMap<string, HouseholdMember> | null): string | null {
+  if (!others.has(userId)) return null;
+  if (userId === FORMER_MEMBER_ID) return STRINGS.historyFormerMember;
+  if (members === null) return null;
+  const member = members.get(userId);
+  return member?.displayName ?? member?.phone ?? STRINGS.historyFormerMember;
 }

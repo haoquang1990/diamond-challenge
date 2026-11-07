@@ -6,6 +6,7 @@
  * Pure and deterministic: the clock (`now`) and the IANA time zone are
  * parameters, nothing reads the real clock.
  */
+import { FORMER_MEMBER_ID } from '../data/event-store';
 import type { LogEvent } from '../data/event-store';
 
 /** Tunable values read from `src/config/game-config.json`. */
@@ -74,12 +75,16 @@ function localDayNumber(formatter: Intl.DateTimeFormat, instant: Date): number {
  * @param now The current instant (injected).
  * @param config Tunable values from game-config.json.
  * @param timeZone IANA time zone (e.g. "Asia/Ho_Chi_Minh") that defines the local day.
+ * @param others When given, events whose `userId` is in it add no XP and do not count for the
+ *   day (story 023: another household member's events never add to my XP). Compensation still
+ *   reads every event. See {@link otherMemberIds}.
  */
 export function computeProgress(
   events: readonly LogEvent[],
   now: Date,
   config: ProgressConfig,
   timeZone: string,
+  others?: ReadonlySet<string>,
 ): Progress {
   const formatter = new Intl.DateTimeFormat('en-US', { timeZone, year: 'numeric', month: 'numeric', day: 'numeric' });
 
@@ -95,6 +100,7 @@ export function computeProgress(
     const xp = e.payload.xp;
     if (typeof xp !== 'number' || !Number.isFinite(xp)) continue;
     if (compensated.has(e.id) || typeof e.payload.compensates === 'string') continue;
+    if (others?.has(e.userId) === true) continue;
     totalXp += xp;
     const day = localDayNumber(formatter, new Date(e.timestamp));
     const totals = days.get(day) ?? { xp: 0, hasLesson: false, hasActivity: false };
@@ -126,4 +132,29 @@ export function computeProgress(
       hasActivity: todayTotals?.hasActivity ?? false,
     },
   };
+}
+
+/**
+ * Authors whose events are NOT mine (story 023): {@link FORMER_MEMBER_ID} plus the persisted
+ * household member account ids, minus every `localUserId` / `accountId` of this log's
+ * `settings_changed { accountLinked }` events. Every other `userId` (this device, a restored
+ * old device, a linked account) is mine. XP, streak, daily goal and stage / daily_goal /
+ * streak milestones skip events whose `userId` is in this set.
+ *
+ * @example
+ * const others = otherMemberIds(events, await store.readMemberIds());
+ * computeProgress(events, new Date(), config, timeZone, others);
+ */
+export function otherMemberIds(events: readonly LogEvent[], memberIds: ReadonlySet<string>): ReadonlySet<string> {
+  const others = new Set<string>(memberIds);
+  others.add(FORMER_MEMBER_ID);
+  for (const e of events) {
+    if (e.type !== 'settings_changed') continue;
+    const link = e.payload.accountLinked;
+    if (typeof link !== 'object' || link === null) continue;
+    const { localUserId, accountId } = link as { localUserId?: unknown; accountId?: unknown };
+    if (typeof localUserId === 'string') others.delete(localUserId);
+    if (typeof accountId === 'string') others.delete(accountId);
+  }
+  return others;
 }

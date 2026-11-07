@@ -1,4 +1,5 @@
 import type { AuthFailure, PasswordProblem } from '../data/auth-service';
+import type { SyncFailure } from '../data/contact-sync';
 
 /** Player-facing Vietnamese strings for the UI. No i18n framework at MVP. */
 export const STRINGS = {
@@ -246,6 +247,30 @@ export const STRINGS = {
   passwordMismatch: 'Hai mật khẩu chưa giống nhau.',
   passwordSameAsTemporary: 'Mật khẩu mới phải khác mật khẩu tạm.',
 
+  // Đồng bộ Danh bạ hộ (story 023)
+  consentTitle: 'Đồng bộ Danh bạ trong hộ',
+  consentIntro:
+    'Để đồng bộ với các thành viên trong hộ, Danh bạ của bạn (tên, số điện thoại, mã số Amway, ghi chú, nhãn, việc cần làm và lịch sử) sẽ được lưu trên máy chủ đặt tại Singapore.',
+  consentMembersOnly: 'Chỉ thành viên trong hộ của bạn xem được Danh bạ này qua app.',
+  consentAdmins: 'Quản trị viên của dự án có thể truy cập dữ liệu trên máy chủ.',
+  consentDeclineNote: 'Nếu không đồng ý, app vẫn dùng bình thường và Danh bạ chỉ nằm trên máy này. Bạn có thể bật lại trong Cài đặt.',
+  consentAgree: 'Đồng ý',
+  consentDecline: 'Không đồng ý',
+  contactSyncHeading: 'Đồng bộ Danh bạ hộ',
+  contactSyncSignedOut: 'Đang tắt. Đăng nhập để đồng bộ Danh bạ trong hộ.',
+  contactSyncChecking: 'Chưa kiểm tra được bạn đã đồng ý hay chưa. Cần có mạng.',
+  contactSyncOff: 'Đang tắt. Danh bạ chỉ nằm trên máy này.',
+  contactSyncNotConsented: 'Chưa đồng ý lưu Danh bạ trên máy chủ.',
+  contactSyncEnable: 'Bật đồng bộ',
+  contactSyncNow: 'Đồng bộ ngay',
+  contactSyncIdle: 'Chưa đồng bộ.',
+  contactSyncSyncing: 'Đang đồng bộ…',
+  syncNetworkError: 'Không có mạng. App sẽ thử lại khi có mạng.',
+  syncServerError: 'Máy chủ đang gặp sự cố. Thử lại sau ít phút nhé.',
+  syncDenied: 'Máy chủ từ chối đồng bộ (có thể bạn không còn trong hộ). Đã dừng đồng bộ; dữ liệu trên máy vẫn giữ nguyên.',
+  syncNoHousehold: 'Tài khoản chưa thuộc hộ nào nên chưa đồng bộ được. Dữ liệu trên máy vẫn giữ nguyên.',
+  historyFormerMember: 'Thành viên cũ',
+
   // Placeholder screens
   comingSoon: 'Sắp có',
   comingSoonBody: 'Tính năng này đang được xây dựng.',
@@ -466,4 +491,26 @@ export function passwordProblemText(problem: PasswordProblem): string {
     case 'same-as-temporary':
       return STRINGS.passwordSameAsTemporary;
   }
+}
+
+/** Vietnamese message for a failed sync or consent call. */
+export function syncFailureText(reason: SyncFailure): string {
+  switch (reason) {
+    case 'network':
+      return STRINGS.syncNetworkError;
+    case 'server':
+      return STRINGS.syncServerError;
+    case 'denied':
+      return STRINGS.syncDenied;
+    case 'no-household':
+      return STRINGS.syncNoHousehold;
+  }
+}
+
+/** "Đồng bộ lần cuối: 14:05 07/11/2026" (device time zone). */
+export function contactSyncLastSyncedLabel(iso: string): string {
+  const at = new Date(iso);
+  const time = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit' }).format(at);
+  const date = new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(at);
+  return `Đồng bộ lần cuối: ${time} ${date}`;
 }

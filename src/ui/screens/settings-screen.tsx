@@ -11,7 +11,8 @@ import type { NotificationPlatform, ReminderPermission } from '../../notificatio
 import { readSoundEnabled } from '../achievements-helpers';
 import { ACHIEVEMENTS_CONFIG } from '../achievements-overlay';
 import { setSoundEnabled } from '../play-ting';
-import { authFailureText, STRINGS } from '../strings';
+import { authFailureText, contactSyncLastSyncedLabel, STRINGS, syncFailureText } from '../strings';
+import type { ContactConsent, SyncStatus } from '../../data/contact-sync';
 import { validateDisplayName } from '../../data/auth-service';
 import type { AccountInfo, AuthResult } from '../../data/auth-service';
 
@@ -28,6 +29,67 @@ export interface SettingsAccountProps {
   readonly onSignOut: () => Promise<boolean>;
   /** Saves a validated, trimmed display name. */
   readonly onSaveDisplayName: (name: string) => Promise<AuthResult>;
+}
+
+/** "Đồng bộ Danh bạ hộ" card (story 023). Pass it only when the build has Supabase configured. */
+export interface SettingsContactSyncProps {
+  readonly signedIn: boolean;
+  readonly consent: ContactConsent;
+  /** The latest local choice on this device is "Không đồng ý" (wins over server consent). */
+  readonly declined: boolean;
+  readonly status: SyncStatus;
+  /** Shows the consent screen again. */
+  readonly onEnable: () => void;
+  /** Syncs now (re-checks consent first when it is unknown). */
+  readonly onSyncNow: () => void;
+}
+
+function syncStatusText(status: SyncStatus): string {
+  switch (status.kind) {
+    case 'idle':
+      return STRINGS.contactSyncIdle;
+    case 'syncing':
+      return STRINGS.contactSyncSyncing;
+    case 'synced':
+      return contactSyncLastSyncedLabel(status.at);
+    case 'failed':
+      return syncFailureText(status.reason);
+  }
+}
+
+/** Status of the household contact sync, "Bật đồng bộ" and "Đồng bộ ngay". */
+function ContactSyncCard({ signedIn, consent, declined, status, onEnable, onSyncNow }: SettingsContactSyncProps) {
+  const failed = !declined && consent === 'granted' && status.kind === 'failed';
+  const canEnable = signedIn && (declined || consent === 'missing');
+  const text = !signedIn
+    ? STRINGS.contactSyncSignedOut
+    : declined
+      ? STRINGS.contactSyncOff
+      : consent === 'unknown'
+        ? STRINGS.contactSyncChecking
+        : consent === 'missing'
+          ? STRINGS.contactSyncNotConsented
+          : syncStatusText(status);
+  return (
+    <section className="card form" aria-labelledby="contact-sync-title">
+      <h2 id="contact-sync-title" className="card__title">
+        {STRINGS.contactSyncHeading}
+      </h2>
+      <p className={failed ? 'message message--error' : 'card__body'} role={failed ? 'alert' : 'status'}>
+        {text}
+      </p>
+      {canEnable && (
+        <button type="button" className="button button--primary" onClick={onEnable}>
+          {STRINGS.contactSyncEnable}
+        </button>
+      )}
+      {signedIn && !canEnable && (
+        <button type="button" className="button button--secondary" onClick={onSyncNow} disabled={status.kind === 'syncing'}>
+          {STRINGS.contactSyncNow}
+        </button>
+      )}
+    </section>
+  );
 }
 
 /** Props for {@link SettingsScreen}. */
@@ -53,6 +115,8 @@ export interface SettingsScreenProps {
   readonly now?: () => Date;
   /** Account section; omitted when Supabase is not configured. */
   readonly accountSection?: SettingsAccountProps;
+  /** Household contact sync card; omitted when Supabase is not configured. */
+  readonly contactSync?: SettingsContactSyncProps;
 }
 
 /** "Tài khoản" card: login state, display name edit, sign out. */
@@ -213,6 +277,7 @@ export function SettingsScreen({
   download = downloadTextFile,
   now = () => new Date(),
   accountSection,
+  contactSync,
 }: SettingsScreenProps) {
   const [state, setState] = useState<ScreenState>({ kind: 'loading' });
   const [reloadKey, setReloadKey] = useState(0);
@@ -357,6 +422,8 @@ export function SettingsScreen({
       </header>
 
       {accountSection !== undefined && <AccountCard key={accountSection.account?.accountId ?? 'signed-out'} {...accountSection} />}
+
+      {contactSync !== undefined && <ContactSyncCard {...contactSync} />}
 
       {state.kind === 'loading' && (
         <p className="message" role="status">
