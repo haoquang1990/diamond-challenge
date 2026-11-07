@@ -1,7 +1,7 @@
 # Story 023: Đồng ý lưu trên server và đồng bộ Danh bạ hộ
 
 > **Epic**: diamond-challenge
-> **Status**: Blocked — BLOCKED: cần migration `sync_seq` và ADR-0002 đã sửa (kế hoạch sửa đồng bộ đang chờ duyệt; bản nháp `supabase/migrations/20261107010000_contact_sync_seq.sql` chưa commit)
+> **Status**: Ready
 > **Layer**: Foundation
 > **Type**: Integration
 > **Estimate**: L
@@ -77,5 +77,5 @@
 
 ## Dependencies
 
-- Depends on: `production/epics/diamond-challenge/story-021-login-change-password.md`, `production/epics/diamond-challenge/story-020-households-backend.md`, migration `sync_seq` (kế hoạch sửa ADR-0002)
+- Depends on: `production/epics/diamond-challenge/story-021-login-change-password.md`, `production/epics/diamond-challenge/story-020-households-backend.md`, `supabase/migrations/20261107010000_contact_sync_seq.sql` (commit 307d19a; phải deploy lên server trước khi thử thật)
 - Unlocks: story 026, 027, 028

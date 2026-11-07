@@ -30,7 +30,7 @@
 - [ ] Hộ tối đa `max_household_members` (2) thành viên; một người một hộ đang hoạt động; mã đang hoạt động duy nhất, mã huỷ giữ ngày; chặn vòng bảo trợ.
 - [ ] Tuyến trên đọc được hộ F1, mã, thành viên (tên, SĐT) và số tổng hợp; tuyến dưới không đọc được tuyến trên.
 - [ ] Danh bạ hộ (`contact_events`): chỉ thành viên hộ đọc/ghi; tuyến trên, tuyến dưới, admin qua API và người ngoài không đọc được; chưa đồng ý không ghi được; không ghi được dưới tên người khác; không sửa/xoá được.
-- [ ] Gộp mã: xem trước không ghi gì; sau gộp S2 đọc được liên hệ có mã được chuyển, hộ X chỉ thấy dòng "Đã chuyển lên tuyến trên", hộ F1 của Y đổi bảo trợ sang S2, mã Y huỷ; không có S2 thì vào Chờ gán tuyến trên; admin hoàn tác một lần.
+- [ ] **[2b]** Gộp mã (hàm đã có và có test; bị khoá tới 2b bởi `20261107010000_contact_sync_seq.sql`): xem trước không ghi gì; sau gộp S2 đọc được liên hệ có mã được chuyển, hộ X chỉ thấy dòng "Đã chuyển lên tuyến trên", hộ F1 của Y đổi bảo trợ sang S2, mã Y huỷ; không có S2 thì vào Chờ gán tuyến trên; admin hoàn tác một lần.
 - [ ] Rời hộ: mất quyền Danh bạ hộ, vào hộ mới cùng bảo trợ, chưa có mã; thành viên duy nhất không rời được.
 - [ ] Edge Function `create-f1-account` tạo hộ F1 với mã của liên hệ; `add-household-member` thêm vợ/chồng; cả hai deploy qua `supabase-deploy.yml`.
 

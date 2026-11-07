@@ -131,11 +131,13 @@ interfaces:
     consumers:
       - supabase-contact-events
     adr: docs/architecture/adr-0002-household-contacts-on-server.md
-    signal_signature: "insert contact_events on conflict (id) do nothing; select where created_at > cursor"
+    # was "select where created_at > cursor" (ADR-0002, revised 2026-11-07 after the architecture review)
+    signal_signature: "insert contact_events on conflict (id) do nothing; select where sync_seq > cursor minus an overlap, dedupe by id"
     referenced_by:
       - docs/architecture/adr-0002-household-contacts-on-server.md
+      - docs/architecture/adr-0003-transfer-contacts-on-code-merge.md
     added: 2026-11-07
-    revised: ""
+    revised: 2026-11-07
 
 # Example:
 #

@@ -36,7 +36,7 @@ Theo Build order của brief: nhật ký sự kiện + XP/streak → Làm + Hôm
 | 018 | Màn Thành tích và khôi phục sao lưu không bật popup | UI | Ready | N/A |
 | 021 | Đăng nhập, đổi mật khẩu lần đầu, tên hiển thị | UI | Ready | N/A |
 | 022 | Mã số Amway trên liên hệ và cảnh báo trùng mã | UI | Ready | N/A |
-| 023 | Đồng ý lưu trên server và đồng bộ Danh bạ hộ | Integration | Blocked | N/A |
+| 023 | Đồng ý lưu trên server và đồng bộ Danh bạ hộ | Integration | Ready | N/A |
 | 024 | "Tạo tài khoản" cho liên hệ NPP có mã số | UI | Ready | N/A |
 | 025 | Màn "Hộ của tôi" và "Thêm vợ/chồng vào hộ" | UI | Ready | N/A |
 | 026 | Gộp Danh bạ khi vào chung hộ (dò trùng, kiểm tra, gộp, tách) | UI | Ready | N/A |
@@ -48,4 +48,4 @@ Theo Build order của brief: nhật ký sự kiện + XP/streak → Làm + Hôm
 
 > 016–018 thêm hệ thống thông báo thành tích (`design/quick-specs/achievements-system-2026-11-05.md`). Thứ tự: 016 → 017 → 018.
 
-> 021–029 là giai đoạn 2a (tập trung 30x30, `design/gdd/accounts.md`, `design/gdd/crm.md`); 019–020 là phần server. Thứ tự: 021 → 022 → 023 → 024 → 025 → 026 → 027 → 028 → 029. 023 chờ migration `sync_seq` (sửa ADR-0002). Không có story cho Bảng 4x4, cây nhiều tầng, gộp hai mã, Web Push (2b).
+> 021–029 là giai đoạn 2a (tập trung 30x30, `design/gdd/accounts.md`, `design/gdd/crm.md`); 019–020 là phần server. Thứ tự: 021 → 022 → 023 → 024 → 025 → 026 → 027 → 028 → 029. Migration `sync_seq` (sửa ADR-0002) đã có; phải deploy trước khi thử 023 trên server. Không có story cho Bảng 4x4, cây nhiều tầng, gộp hai mã, Web Push (2b).

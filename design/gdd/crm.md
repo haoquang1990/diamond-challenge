@@ -8,7 +8,7 @@
 
 ## Summary
 
-Một Danh bạ duy nhất. Mỗi người có một danh sách **việc cần làm** (Liên hệ, Demo, Trình bày opp, Follow-up, Chốt khách hàng, Chốt NPP); hoàn thành một việc cộng XP, việc đó biến khỏi danh sách và ghi vào lịch sử. Chốt khách hàng hoặc Chốt NPP gắn **nhãn KH / NPP** cho người đó. Giai đoạn 1: dữ liệu chỉ lưu trên máy, có sao lưu/khôi phục bằng file, mỗi người quản lý danh sách của chính mình. **Giai đoạn 2 (quyết định 2026-11-07):** Danh bạ thuộc **Hộ kinh doanh** (`design/gdd/accounts.md`), đồng bộ lên server, chỉ thành viên hộ đọc/ghi; liên hệ có ô mã số Amway; khi hai Danh bạ vào chung một hộ thì dò và gộp liên hệ trùng. Bảng 30x30 tính theo hộ; cây hệ thống và Bảng 4x4 do server tính (`design/phase-2-notes.md`).
+Một Danh bạ duy nhất. Mỗi người có một danh sách **việc cần làm** (Liên hệ, Demo, Trình bày opp, Follow-up, Chốt khách hàng, Chốt NPP); hoàn thành một việc cộng XP, việc đó biến khỏi danh sách và ghi vào lịch sử. Chốt khách hàng hoặc Chốt NPP gắn **nhãn KH / NPP** cho người đó. Giai đoạn 1: dữ liệu chỉ lưu trên máy, có sao lưu/khôi phục bằng file, mỗi người quản lý danh sách của chính mình. **Giai đoạn 2 (quyết định 2026-11-07; 2a tập trung 30x30, mục đánh dấu **[2b]** để sau):** Danh bạ thuộc **Hộ kinh doanh** (`design/gdd/accounts.md`), đồng bộ lên server, chỉ thành viên hộ đọc/ghi; liên hệ có ô mã số Amway; khi hai Danh bạ vào chung một hộ thì dò và gộp liên hệ trùng. Bảng 30x30 tính theo hộ; cây hệ thống và Bảng 4x4 do server tính (`design/phase-2-notes.md`).
 
 > **Quick reference** — Layer: `Foundation` · Priority: `MVP` · Key deps: `Nhật ký sự kiện (story 001)`, `computeProgress (story 002)`
 > *(Category `Core`, Layer và Priority được suy ra từ brief, vì ở tier minimal không có systems index.)*
@@ -71,7 +71,7 @@ Một Danh bạ duy nhất. Mỗi người có một danh sách **việc cần l
 **Giai đoạn 2: Danh bạ dùng chung trong hộ** (quyết định C, D ngày 2026-11-07)
 
 16. **Danh bạ hộ trên server.** Mọi sự kiện về người (`person_*`, `activity_logged` có `personId`, `activity_reassigned`, sự kiện bù của chúng và nhóm sự kiện gộp ở luật 3) thuộc nhật ký của hộ và đồng bộ lên Supabase. Sự kiện cá nhân (bài học, hoạt động không gắn người, cài đặt, ghi nhận thành tích) ở lại trên máy. **Chỉ thành viên hộ đọc/ghi** Danh bạ hộ; tuyến trên, tuyến dưới và người dùng khác không đọc được (RLS).
-17. **Offline và gộp đồng thời.** App vẫn ghi vào nhật ký trên máy khi không có mạng; khi có mạng thì đẩy sự kiện chưa đồng bộ (`syncedAt` rỗng) và kéo sự kiện mới của hộ. Sự kiện có id do máy tạo nên hai người sửa cùng lúc không đè nhau: tất cả sự kiện được giữ, mọi giá trị suy ra tính lại từ toàn bộ nhật ký hộ. Trường hợp hai `person_updated` sửa cùng một trường: lấy sự kiện có thời điểm muộn hơn. Mỗi sự kiện ghi người làm; XP cộng cho người làm (`accounts.md` luật 4).
+17. **Offline và gộp đồng thời.** App vẫn ghi vào nhật ký trên máy khi không có mạng; khi có mạng thì đẩy sự kiện chưa đồng bộ (`syncedAt` rỗng) và kéo sự kiện mới của hộ theo **`sync_seq`** do server cấp (không theo `created_at`; ADR-0002). Sự kiện có id do máy tạo nên hai người sửa cùng lúc không đè nhau: tất cả sự kiện được giữ, mọi giá trị suy ra tính lại từ toàn bộ nhật ký hộ. Trường hợp hai `person_updated` sửa cùng một trường: lấy sự kiện có thời điểm (`occurred_at`) muộn hơn. **Rủi ro giờ máy sai:** thời điểm do máy ghi, nên máy chạy nhanh giờ có thể đè sửa thật sự mới hơn, máy chạy chậm luôn thua; app giảm rủi ro bằng cách ghi `occurred_at` lớn hơn mọi thời điểm đã thấy trong hộ, và lịch sử luôn giữ cả hai sửa. Mỗi sự kiện ghi người làm; XP cộng cho người làm (`accounts.md` luật 4).
 18. **Đồng ý trước khi lưu trên server.** Lần đăng nhập đầu, app hiện thông báo: Danh bạ (tên, SĐT, mã số, ghi chú, nhãn, việc, lịch sử) sẽ được lưu trên server ở Singapore để đồng bộ trong hộ, chỉ thành viên hộ xem được. Chỉ sau khi đồng ý app mới đẩy dữ liệu cũ trên máy lên; không đồng ý thì app vẫn dùng như giai đoạn 1 trên máy và không đồng bộ Danh bạ. Server từ chối sự kiện Danh bạ của người chưa đồng ý.
 19. **Dò liên hệ trùng** khi thành viên thứ hai vào hộ, khi đẩy dữ liệu cũ lên, khi nhận liên hệ chuyển đến từ gộp mã, và khi thêm hoặc sửa một liên hệ:
     - **Trùng chắc chắn:** cùng `amwayCode` (sau chuẩn hoá), hoặc cùng SĐT sau chuẩn hoá E.164.
@@ -89,7 +89,7 @@ Một Danh bạ duy nhất. Mỗi người có một danh sách **việc cần l
     - **Không cộng hay trừ lại XP và thành tích.** Việc đã làm ở cả hai bên không cộng điểm lần nữa.
 22. **Tách liên hệ** (hoàn tác gộp nhầm): ghi sự kiện bù cho `person_merged`; hai liên hệ trở lại như trước gộp, kể cả nhãn và việc đã làm, và cặp đó được tự đánh dấu "Không phải cùng người".
 23. **Cảnh báo đếm trùng:** khi Danh bạ hộ còn cặp trùng (chắc chắn hoặc có thể) chưa duyệt, Bảng 30x30 hiện "Có N cặp liên hệ có thể trùng, số liệu có thể bị đếm hai lần" kèm lối vào màn kiểm tra.
-24. **Liên hệ "Đã chuyển lên tuyến trên"** (từ gộp mã, `accounts.md` luật 21): chỉ hiện tên với trạng thái đó, chỉ xem, không có việc, không đếm vào KH, NPP F1 hay liên hệ. Máy xoá bản chi tiết của liên hệ đó khi nhận `person_transferred_out`.
+24. **[2b] Liên hệ "Đã chuyển lên tuyến trên"** (từ gộp mã, `accounts.md` luật 21): chỉ hiện tên với trạng thái đó, chỉ xem, không có việc, không đếm vào KH, NPP F1 hay liên hệ. Máy xoá bản chi tiết của liên hệ đó khi nhận `person_transferred_out`.
 25. **Sao lưu và khôi phục bằng file vẫn giữ.** Khôi phục một file vào Danh bạ hộ đi qua dò trùng (luật 19). Rời hộ: app mời xuất file trước khi xoá bản Danh bạ hộ trên máy.
 
 ### States and Transitions
@@ -161,9 +161,10 @@ Công thức tầng, nhánh, điểm sâu và 30x30x4x4 thuộc giai đoạn 2 v
 - **Gộp hai liên hệ liên kết hai tài khoản khác nhau:** từ chối, báo hai người này đã có hai tài khoản riêng.
 - **Gộp một liên hệ đã bị gộp vào liên hệ khác:** gộp vào liên hệ giữ cuối cùng (theo chuỗi), không tạo vòng.
 - **Tách một liên hệ đã được gộp thêm lần nữa sau đó:** chỉ tách lần gộp được chọn; các lần gộp khác giữ nguyên.
+- **Máy đặt sai giờ (nhanh hơn thật):** sửa của máy đó thắng các sửa cùng trường cho tới khi giờ thật vượt qua; sửa kế tiếp từ máy khác vẫn thắng nhờ `occurred_at` lớn hơn mọi giá trị đã thấy; lịch sử hiện cả hai.
 - **Hai thành viên cùng gộp một cặp khi offline:** hai `person_merged` trùng nội dung; lần thứ hai không đổi kết quả.
 - **Một thành viên gộp, thành viên kia đánh dấu "Không phải cùng người" khi offline:** sự kiện muộn hơn thắng; nếu `person_not_duplicate` muộn hơn thì cặp được tách.
-- **Liên hệ đang có trong Danh bạ hộ X bị chuyển lên S2 khi gộp mã:** máy của X xoá chi tiết, chỉ giữ dòng tên "Đã chuyển lên tuyến trên". File sao lưu tạo trước đó vẫn còn chi tiết; khôi phục file đó không làm liên hệ xuất hiện lại (sự kiện `person_transferred_out` vẫn ẩn nó).
+- **[2b] Liên hệ đang có trong Danh bạ hộ X bị chuyển lên S2 khi gộp mã:** máy của X xoá chi tiết, chỉ giữ dòng tên "Đã chuyển lên tuyến trên". File sao lưu tạo trước đó vẫn còn chi tiết; khôi phục file đó không làm liên hệ xuất hiện lại (sự kiện `person_transferred_out` vẫn ẩn nó).
 - **Chưa đồng ý lưu trên server:** Danh bạ chỉ ở trên máy, Bảng 30x30 tính như giai đoạn 1, tuyến trên không nhận số tổng hợp mới.
 
 ## Dependencies
@@ -226,4 +227,4 @@ Công thức tầng, nhánh, điểm sâu và 30x30x4x4 thuộc giai đoạn 2 v
 - **AC-31:** Given còn 1 cặp chưa duyệt, When mở Bảng 30x30, Then thấy cảnh báo có thể đếm trùng; When duyệt xong, Then cảnh báo mất.
 - **AC-32:** Given một cặp đã gộp, When bấm "Tách liên hệ", Then hai liên hệ trở lại như trước với nhãn và việc đã làm riêng.
 - **AC-33:** Given hai liên hệ trong Danh bạ có cùng mã, When mở Danh bạ, Then thấy cảnh báo trùng mã trên cả hai.
-- **AC-34:** Given gộp mã đã chạy (`accounts.md` AC-7), When thành viên hộ X mở Danh bạ, Then liên hệ được chuyển chỉ hiện tên với "Đã chuyển lên tuyến trên", không mở được chi tiết, không đếm 30x30.
+- **[2b] AC-34:** Given gộp mã đã chạy (`accounts.md` AC-7), When thành viên hộ X mở Danh bạ, Then liên hệ được chuyển chỉ hiện tên với "Đã chuyển lên tuyến trên", không mở được chi tiết, không đếm 30x30.

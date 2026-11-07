@@ -2,6 +2,10 @@
 
 Chưa làm trong MVP (xem Out of scope trong `design/game-brief.md`). Ghi lại để không mất quyết định.
 
+> **Phạm vi 2026-11-07: tập trung 30x30 trước.**
+> - **Giai đoạn 2a (làm ngay):** đăng nhập, đổi mật khẩu lần đầu, tạo tài khoản F1, thêm vợ/chồng, mã số Amway trên liên hệ, đồng ý lưu trên server, đồng bộ Danh bạ hộ (theo `sync_seq`), gộp liên hệ trùng, Bảng 30x30 theo hộ, màn "Nhóm của tôi" **chỉ một tầng** (hộ F1 trực tiếp, số 30x30, cảnh báo 3 ngày không hoạt động, nút cổ vũ), quản trị tối thiểu. Stories 021–029.
+> - **Giai đoạn 2b (để sau):** Bảng 4x4 và cây nhiều tầng (mục "Cây hệ thống và Bảng 4x4" dưới đây), gộp hai mã số (ADR-0003), Chờ gán tuyến trên, Web Push.
+>
 > **Cập nhật 2026-11-07:** mô hình Hộ kinh doanh thay thế phần tài khoản và đồng bộ dưới đây. Luật hiện hành ở `design/gdd/accounts.md` (người, hộ, mã số Amway, bảo trợ theo hộ, gộp mã) và `design/gdd/crm.md` luật 16–25 (Danh bạ hộ trên server, gộp liên hệ trùng). Các mục dưới giữ lại làm lịch sử; chỗ nào khác với hai GDD đó thì GDD thắng.
 
 ## Tài khoản: đăng ký và đăng nhập (đã thay bằng `accounts.md`)
@@ -17,7 +21,7 @@ Chưa làm trong MVP (xem Out of scope trong `design/game-brief.md`). Ghi lại 
 - ~~Danh sách tên, ghi chú và hoạt động không rời máy.~~ **Đã đổi 2026-11-07:** Danh bạ hộ được lưu trên server để đồng bộ trong hộ, chỉ thành viên hộ đọc được (`crm.md` luật 16, `docs/architecture/adr-0002-household-contacts-on-server.md`).
 - Số tổng hợp được tính bằng đúng công thức giai đoạn 1 trong `design/gdd/crm.md` (mục Formulas).
 
-## Cây hệ thống và Bảng 4x4 (server tính)
+## [2b] Cây hệ thống và Bảng 4x4 (server tính)
 Cây lấy từ quan hệ bảo trợ giữa các **hộ** (`accounts.md`); trong các công thức dưới, "tài khoản" đọc là "hộ". Không phân loại "tích cực / không tích cực".
 
 **Biến** (cấu hình phía server): `D` = `depthTarget` (4), `B` = `branchTarget` (4), `topBranchesShown` (4).
@@ -36,7 +40,7 @@ Cây lấy từ quan hệ bảo trợ giữa các **hộ** (`accounts.md`); tron
 
 **Bảng 4x4:** 4 nhánh có điểm sâu cao nhất (hòa thì nhiều người đạt hơn đứng trước, vẫn hòa thì theo tên), mỗi nhánh hiện tên F1, điểm sâu x/4 và các tầng đã có người đạt 30x30. Hiện cả số nhánh đạt chuẩn x/4 và ghi chú "không phải xác nhận chính thức".
 
-## Trường hợp biên của giai đoạn 2
+## Trường hợp biên của giai đoạn 2 (mục về 4x4, tầng: 2b)
 - **Admin sửa người bảo trợ:** tầng của cả tuyến dưới đổi theo, Bảng 4x4 tính lại.
 - **Vòng lặp bảo trợ:** server từ chối mọi thay đổi tạo vòng lặp.
 - **Số đồng bộ bị cũ hoặc chưa có:** vẫn dùng số gần nhất, hiện "cập nhật lúc…"; chưa đồng bộ lần nào thì coi như chưa đạt 30x30.

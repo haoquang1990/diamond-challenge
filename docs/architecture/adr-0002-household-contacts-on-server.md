@@ -54,10 +54,11 @@ Quyết định C: Danh bạ (tên, SĐT, mã, ghi chú, nhãn, việc, lịch s
 
 ## Decision
 
-- Bảng `contact_events(id uuid pk = id sự kiện do máy tạo, household_id, author_id → profiles on delete set null, type, occurred_at, schema_version, payload jsonb, created_at)`; `type` giới hạn trong nhóm sự kiện Danh bạ (`person_*`, `activity_logged`, `activity_reassigned`, `person_merged`, `person_not_duplicate`, `person_transferred_out`, và sự kiện bù).
+- Bảng `contact_events(id uuid pk = id sự kiện do máy tạo, household_id, author_id → profiles on delete set null, type, occurred_at, schema_version, payload jsonb, created_at, sync_seq bigint unique)`; `type` giới hạn trong nhóm sự kiện Danh bạ (`person_*`, `activity_logged`, `activity_reassigned`, `person_merged`, `person_not_duplicate`, `person_transferred_out`, và sự kiện bù).
 - RLS: `select` khi `is_household_member(household_id)`; `insert` khi là thành viên, `author_id = auth.uid()` và đã có `contact_consents`; **không có** `update` / `delete` cho `authenticated`.
 - Bảng `contact_consents(user_id, version, consented_at)`; RPC `record_contact_consent(version)`.
-- Đồng bộ: app đẩy sự kiện Danh bạ có `syncedAt` rỗng (`insert … on conflict (id) do nothing`), kéo sự kiện mới theo `created_at`; gộp theo id. Xung đột cùng trường: sự kiện muộn hơn thắng (hàm thuần `derivePeople`).
+- Đồng bộ: app đẩy sự kiện Danh bạ có `syncedAt` rỗng (`insert … on conflict (id) do nothing`), kéo sự kiện của hộ theo **`sync_seq > con trỏ`**; gộp theo id. Xung đột cùng trường: sự kiện muộn hơn thắng theo `occurred_at` (hàm thuần `derivePeople`).
+- **`sync_seq`** (sửa 2026-11-07, theo `docs/architecture/architecture-review-2026-11-07.md`): số lấy từ sequence `contact_events_sync_seq`, do trigger cấp khi insert **và mỗi khi `household_id` đổi** (gộp mã, hoàn tác, admin gán Chờ gán tuyến trên). Giá trị app gửi bị bỏ qua; sequence không mở cho vai trò của app. `created_at` chỉ còn để tra cứu, không dùng làm con trỏ: một dòng đổi hộ giữ `created_at` cũ nên máy đã đồng bộ sẽ bỏ sót.
 - Tác giả: `LogEvent.userId` hiện là id ngẫu nhiên của máy. Sau đăng nhập app ghi `settings_changed {accountLinked: {localUserId, accountId}}`; sự kiện có `userId` thuộc tập id đã liên kết là "của mình". Lúc đẩy, `author_id` = tài khoản; sự kiện kéo về lưu với `userId = author_id`.
 - Sự kiện cá nhân (bài học, hoạt động không gắn người, cài đặt, ghi nhận thành tích) không lên server.
 - Rời hộ / xoá tài khoản: quyền theo `household_members.left_at`; xoá profile đặt `author_id = null` ("Thành viên cũ"); hộ giải thể thì xoá `contact_events` của hộ.
@@ -71,7 +72,7 @@ derivePeople(all H events) → Danh bạ hộ;  computeProgress(events where use
 ```
 
 ### Key Interfaces
-- `contact_events` (PostgREST): `select` theo `household_id` và `created_at > cursor`; `insert` mảng sự kiện.
+- `contact_events` (PostgREST): `select` theo `household_id` và `sync_seq > cursor` (sắp tăng dần theo `sync_seq`); `insert` mảng sự kiện (không gửi `sync_seq`).
 - RPC: `record_contact_consent(p_version int)`, `has_contact_consent() → boolean`.
 - Client (story sau): `syncContacts(store, client, householdId, cursor)`; `isMine(event, linkedIds)`.
 
@@ -81,6 +82,8 @@ derivePeople(all H events) → Danh bạ hộ;  computeProgress(events where use
 - Mọi giá trị XP/streak must lọc theo `isMine`; Bảng 30x30 must dùng toàn bộ sự kiện hộ.
 - Không có đường sửa/xoá sự kiện từ app; sửa = sự kiện mới, hoàn tác = sự kiện bù.
 - Khoá service_role must never ở app hay repo.
+- Con trỏ đồng bộ must là `sync_seq` lớn nhất đã nhận; must never dùng `created_at`. Mỗi lần kéo must đọc lùi một khoảng chồng lấn (ví dụ `sync_seq > cursor - 200`) rồi gộp theo `id`, vì hai giao dịch có thể commit không theo thứ tự số (một dòng số nhỏ commit sau dòng số lớn).
+- `occurred_at` của sự kiện mới must lớn hơn mọi `occurred_at` đã thấy trong nhật ký hộ trên máy (`max(giờ máy, lớn nhất đã thấy + 1 ms)`), để máy chạy chậm giờ không làm sửa của mình thua sửa cũ hơn.
 
 ## Alternatives Considered
 
@@ -118,6 +121,9 @@ derivePeople(all H events) → Danh bạ hộ;  computeProgress(events where use
 - **Mất máy:** đổi mật khẩu (admin đặt lại) thu phiên; dữ liệu trên server không mất.
 - **Admin dự án đọc được Danh bạ:** ghi rõ trong thông báo đồng ý; giới hạn người có quyền Dashboard.
 - **Phiên bản app cũ gửi sự kiện sai dạng:** `type` giới hạn bằng check; payload kiểm khi đọc bằng `parseStoredEvent`.
+- **Giờ máy sai trong luật "sửa muộn hơn thắng":** thứ tự sửa cùng trường dựa trên `occurred_at` do máy ghi. Máy chạy **nhanh** giờ (ví dụ đặt sai năm) sẽ thắng mọi sửa thật sự mới hơn cho tới khi đồng hồ thật vượt qua; máy chạy **chậm** giờ luôn thua. Biện pháp: app ghi `occurred_at` lớn hơn mọi giá trị đã thấy trong hộ (giới hạn ảnh hưởng của máy chậm, và sau khi kéo về một sự kiện "tương lai" thì sửa kế tiếp vẫn thắng nó). Chưa làm: server chặn `occurred_at` xa hơn hiện tại quá 24 giờ; lịch sử luôn hiện cả hai sửa để người dùng sửa lại được.
+- **Commit không theo thứ tự `sync_seq`:** một dòng có số nhỏ commit sau khi máy đã kéo dòng số lớn hơn thì bị bỏ sót nếu chỉ kéo `> cursor`. Biện pháp: đọc lùi khoảng chồng lấn (Implementation Guidelines); gộp theo `id` nên kéo trùng không hại.
+- **Xoá dòng trên server không đi tới máy:** kéo theo `sync_seq` chỉ thấy dòng mới hoặc dòng đổi hộ. Ở 2a app không xoá sự kiện; hàm hoàn tác gộp mã (ADR-0003, 2b) có xoá và phải được thiết kế lại trước khi mở.
 
 ## GDD Requirements Addressed
 
@@ -134,14 +140,18 @@ derivePeople(all H events) → Danh bạ hộ;  computeProgress(events where use
 - **CPU**: `derivePeople` duyệt toàn bộ nhật ký hộ như hiện nay.
 - **Memory**: Nhật ký hộ trên máy ≈ tổng nhật ký của các thành viên.
 - **Load Time**: Lần đầu kéo toàn bộ nhật ký hộ; sau đó theo cursor.
-- **Network**: Mỗi lần đồng bộ chỉ gửi sự kiện mới.
+- **Network**: Mỗi lần đồng bộ chỉ gửi sự kiện mới; kéo thêm một khoảng chồng lấn nhỏ.
 
 ## Migration Plan
-Bảng và RLS nằm trong migration hộ (ADR-0001). Phía app (story sau): bước đồng ý, đánh dấu sự kiện Danh bạ, đẩy dữ liệu cũ, kéo sự kiện hộ, lọc XP theo `isMine`.
+Bảng và RLS nằm trong migration hộ (ADR-0001); cột `sync_seq`, sequence và trigger trong `supabase/migrations/20261107010000_contact_sync_seq.sql` (đánh số dòng sẵn có theo thứ tự `created_at`). Phía app (story sau): bước đồng ý, đánh dấu sự kiện Danh bạ, đẩy dữ liệu cũ, kéo sự kiện hộ, lọc XP theo `isMine`.
 
 ## Validation Criteria
 - Test RLS: người ngoài hộ / tuyến trên / tuyến dưới đọc 0 dòng; thành viên đọc đủ; không ghi được sự kiện đứng tên người khác; chưa đồng ý không ghi được; không `update`/`delete` được.
-- Test domain (story sau): hai nhật ký offline gộp lại cho cùng kết quả bất kể thứ tự.
+- Test đồng bộ `tests/integration/supabase/contact-sync-seq.test.ts`: đánh số dữ liệu cũ, số mới khi insert, bỏ qua số app gửi, không đổi khi không đổi hộ, dòng đổi hộ (gộp, hoàn tác, gán) tới được con trỏ `sync_seq` trong khi con trỏ `created_at` bỏ sót.
+- Test domain (story 023): hai nhật ký offline gộp lại cho cùng kết quả bất kể thứ tự.
+
+## Amendments
+- 2026-11-07: con trỏ đồng bộ đổi từ `created_at` sang `sync_seq` (xung đột ADR-0002/ADR-0003 trong `docs/architecture/architecture-review-2026-11-07.md`); thêm rủi ro giờ máy sai, commit không theo thứ tự, xoá không đồng bộ. Trả về Proposed để duyệt lại.
 
 ## Related
 - ADR-0001 (mô hình hộ), ADR-0003 (chuyển liên hệ khi gộp mã)

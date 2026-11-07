@@ -3,6 +3,8 @@
 ## Status
 Proposed
 
+> **Hoãn sang giai đoạn 2b** (quyết định 2026-11-07, tập trung 30x30). Các hàm đã có trên database nhưng bị khoá (`20261107010000_contact_sync_seq.sql` thu quyền gọi của `authenticated`). Khi làm 2b: **phải dùng `sync_seq`** (ADR-0002) để máy hộ nhận kéo được liên hệ chuyển đến (trigger đã cấp số khi `household_id` đổi), và **phải thiết kế lại việc hoàn tác xoá dòng "Đã chuyển"**: việc xoá không đi tới máy đã kéo dòng đó về (cần sự kiện bù thay vì xoá).
+
 ## Date
 2026-11-07
 
@@ -111,6 +113,7 @@ HY F1 households: sponsor := S2       code Y: cancelled      code_merges.snapsho
 ## Risks
 - **Nhận diện "có mã" sai** (mã bị xoá rồi thêm lại, liên hệ đã gộp): dùng sự kiện mới nhất; màn xem trước hiện danh sách tên để người làm kiểm tra.
 - **Hoàn tác sau nhiều thay đổi**: từ chối nếu mã Y bị dùng lại hoặc thành viên đã rời HX; ghi rõ trong thông báo.
+- **Hoàn tác xoá `person_transferred_out`** (phát hiện khi sửa ADR-0002): máy hộ X đã kéo dòng "Đã chuyển" vẫn giữ nó sau hoàn tác, vì xoá không có `sync_seq` mới. Phải đổi sang sự kiện bù trước khi mở ở 2b.
 - **Máy X offline lâu**: chi tiết còn trên máy tới lần đồng bộ; server đã thu quyền nên không đẩy ngược lên được (insert vào HX với personId đã chuyển vẫn được — app phải bỏ qua sự kiện cho liên hệ đã "Đã chuyển").
 
 ## GDD Requirements Addressed
@@ -127,7 +130,7 @@ HY F1 households: sponsor := S2       code Y: cancelled      code_merges.snapsho
 - **CPU**: Một lần quét sự kiện của HY mỗi lần gộp; hiếm.
 - **Memory**: Snapshot tỉ lệ với số sự kiện chuyển.
 - **Load Time**: Không.
-- **Network**: Máy S2 kéo các sự kiện được chuyển ở lần đồng bộ kế tiếp.
+- **Network**: Máy S2 kéo các sự kiện được chuyển ở lần đồng bộ kế tiếp, nhờ `sync_seq` mới cấp khi `household_id` đổi.
 
 ## Migration Plan
 Hàm và bảng `code_merges`, `pending_upline` nằm trong migration hộ. Màn gộp mã là story sau.
