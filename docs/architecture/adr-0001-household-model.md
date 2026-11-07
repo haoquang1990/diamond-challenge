@@ -1,7 +1,7 @@
 # ADR-0001: Mô hình Hộ kinh doanh (người, hộ, mã số Amway, bảo trợ theo hộ)
 
 ## Status
-Proposed
+Accepted
 
 ## Date
 2026-11-07
