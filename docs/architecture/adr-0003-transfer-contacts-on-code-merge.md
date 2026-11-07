@@ -1,7 +1,7 @@
 # ADR-0003: Chuyển liên hệ giữa các hộ khi gộp hai mã số
 
 ## Status
-Accepted
+Proposed
 
 ## Date
 2026-11-07

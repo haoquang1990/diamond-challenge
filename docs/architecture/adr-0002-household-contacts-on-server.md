@@ -1,7 +1,7 @@
 # ADR-0002: Đưa Danh bạ hộ lên server
 
 ## Status
-Accepted
+Proposed
 
 ## Date
 2026-11-07
