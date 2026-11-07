@@ -38,9 +38,149 @@
 #   line in any other shape is reported as unsupported layout, with its number.
 
 version: 1
-last_updated: ""
+last_updated: "2026-11-07"
 
-requirements: []
+requirements:
+- id: TR-accounts-001
+  system: accounts
+  gdd: design/gdd/accounts.md
+  requirement: "Đăng nhập bằng SĐT + mật khẩu qua email nội bộ từ SĐT; không tự đăng ký; bắt buộc đổi mật khẩu tạm lần đầu"
+  created: 2026-11-07
+  revised: ""
+  status: active
+- id: TR-accounts-002
+  system: accounts
+  gdd: design/gdd/accounts.md
+  requirement: "Hộ kinh doanh: mỗi người thuộc đúng một hộ đang hoạt động; tối đa maxHouseholdMembers thành viên; rời hộ ghi left_at"
+  created: 2026-11-07
+  revised: ""
+  status: active
+- id: TR-accounts-003
+  system: accounts
+  gdd: design/gdd/accounts.md
+  requirement: "Tạo hộ F1 và thêm vợ/chồng qua Edge Function dùng khoá service_role chỉ trên server"
+  created: 2026-11-07
+  revised: ""
+  status: active
+- id: TR-accounts-004
+  system: accounts
+  gdd: design/gdd/accounts.md
+  requirement: "Tuyến trên chỉ đọc hộ, mã của hộ, tên và SĐT thành viên, số tổng hợp; không đọc Danh bạ (RLS)"
+  created: 2026-11-07
+  revised: ""
+  status: active
+- id: TR-accounts-005
+  system: accounts
+  gdd: design/gdd/accounts.md
+  requirement: "Mã số Amway chuẩn hoá chỉ chữ số; duy nhất trong các hộ đang hoạt động; mã huỷ giữ lại kèm ngày và lý do"
+  created: 2026-11-07
+  revised: ""
+  status: active
+- id: TR-accounts-006
+  system: accounts
+  gdd: design/gdd/accounts.md
+  requirement: "Chặn vòng lặp bảo trợ giữa các hộ"
+  created: 2026-11-07
+  revised: ""
+  status: active
+- id: TR-accounts-007
+  system: accounts
+  gdd: design/gdd/accounts.md
+  requirement: "XP, streak, thành tích, bài học tính theo người và chỉ lưu trên máy; chỉ cộng sự kiện có userId của mình"
+  created: 2026-11-07
+  revised: ""
+  status: active
+- id: TR-accounts-008
+  system: accounts
+  gdd: design/gdd/accounts.md
+  requirement: "Rời hộ: mất quyền Danh bạ hộ ngay, vào hộ mới một người chưa có mã cùng hộ bảo trợ"
+  created: 2026-11-07
+  revised: ""
+  status: active
+- id: TR-accounts-009
+  system: accounts
+  gdd: design/gdd/accounts.md
+  requirement: "Xoá tài khoản và giải thể hộ: bỏ tên tác giả, xoá Danh bạ hộ, huỷ mã, hộ F1 chuyển lên hộ bảo trợ"
+  created: 2026-11-07
+  revised: ""
+  status: active
+- id: TR-accounts-010
+  system: accounts
+  gdd: design/gdd/accounts.md
+  requirement: "Gộp hai mã: xem trước, một giao dịch, chuyển liên hệ có mã và hộ F1 lên tuyến trên, Chờ gán tuyến trên, admin hoàn tác"
+  created: 2026-11-07
+  revised: ""
+  status: active
+- id: TR-accounts-011
+  system: accounts
+  gdd: design/gdd/accounts.md
+  requirement: "Server dựng cây hộ và tính Bảng 4x4 (tier, điểm sâu nhánh, số nhánh đạt chuẩn)"
+  created: 2026-11-07
+  revised: ""
+  status: active
+- id: TR-accounts-012
+  system: accounts
+  gdd: design/gdd/accounts.md
+  requirement: "Số tổng hợp của hộ đồng bộ lên server cho tuyến trên; đánh dấu cần tính lại sau gộp mã"
+  created: 2026-11-07
+  revised: ""
+  status: active
+- id: TR-crm-001
+  system: crm
+  gdd: design/gdd/crm.md
+  requirement: "Nhật ký sự kiện chỉ-thêm trên máy (IndexedDB); mọi giá trị suy ra bằng hàm thuần trên nhật ký"
+  created: 2026-11-07
+  revised: ""
+  status: active
+- id: TR-crm-002
+  system: crm
+  gdd: design/gdd/crm.md
+  requirement: "Sao lưu và khôi phục bằng file JSON, khôi phục gộp và bỏ trùng theo id sự kiện"
+  created: 2026-11-07
+  revised: ""
+  status: active
+- id: TR-crm-003
+  system: crm
+  gdd: design/gdd/crm.md
+  requirement: "Danh bạ hộ lưu trên server, chỉ thành viên hộ đọc/ghi (RLS)"
+  created: 2026-11-07
+  revised: ""
+  status: active
+- id: TR-crm-004
+  system: crm
+  gdd: design/gdd/crm.md
+  requirement: "Dùng offline và đồng bộ hai chiều theo sự kiện; id do máy tạo; sửa cùng trường thì sự kiện muộn hơn thắng"
+  created: 2026-11-07
+  revised: ""
+  status: active
+- id: TR-crm-005
+  system: crm
+  gdd: design/gdd/crm.md
+  requirement: "Chỉ đẩy Danh bạ lên server sau khi người dùng đồng ý; server từ chối khi chưa đồng ý"
+  created: 2026-11-07
+  revised: ""
+  status: active
+- id: TR-crm-006
+  system: crm
+  gdd: design/gdd/crm.md
+  requirement: "Dò, gộp và tách liên hệ trùng bằng sự kiện person_merged và person_not_duplicate"
+  created: 2026-11-07
+  revised: ""
+  status: active
+- id: TR-crm-007
+  system: crm
+  gdd: design/gdd/crm.md
+  requirement: "Dòng Đã chuyển lên tuyến trên; máy xoá chi tiết liên hệ khi nhận person_transferred_out"
+  created: 2026-11-07
+  revised: ""
+  status: active
+- id: TR-crm-008
+  system: crm
+  gdd: design/gdd/crm.md
+  requirement: "Bảng 30x30 tính theo Danh bạ hộ, cảnh báo khi còn cặp trùng chưa duyệt"
+  created: 2026-11-07
+  revised: ""
+  status: active
 
 # --- EXAMPLE ENTRIES (remove when first real entries are added) ---
 #
