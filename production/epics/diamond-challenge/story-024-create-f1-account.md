@@ -52,11 +52,10 @@
 
 ## Files
 
-- `src/data/account-service.ts`
-- `src/ui/screens/create-account-screen.tsx`, `src/ui/screens/people-screen.tsx`
+- `src/data/account-service.ts` (new), `src/ui/screens/create-account-screen.tsx` (new)
 - `src/data/event-store.ts`, `src/domain/people.ts` (`linkedUserId`)
+- `src/ui/screens/people-screen.tsx`, `src/ui/screens/person-form.tsx`, `src/app.tsx`
 - `src/ui/strings.ts`, `src/ui/styles.css`
-- `tests/unit/accounts/temp-password.test.ts`
 - `production/qa/evidence/story-024-create-f1-account/`
 
 ## QA Test Cases

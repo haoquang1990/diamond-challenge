@@ -268,6 +268,11 @@ export interface PersonDetailProps {
   readonly config?: PeopleConfig;
   /** Who did a history row (story 023): a name, or null for me / when the book is not synced. */
   readonly authorLabel?: (userId: string) => string | null;
+  /**
+   * Account creation (story 024). Absent when the build has no Supabase config or the user is
+   * signed out: the "Tạo tài khoản" button is then not shown.
+   */
+  readonly createAccount?: { readonly onOpen: () => void };
   /** Re-read the log after any write. */
   readonly onChanged: () => Promise<void>;
   readonly onBack: () => void;
@@ -288,7 +293,7 @@ interface TaskUndo {
  * closes again after a successful save), read-only history and archive (with
  * confirm). State of record is the event log; this only holds form state.
  */
-export function PersonDetail({ eventStore, person, people, events, activityTypes, config = PEOPLE_CONFIG, authorLabel, onChanged, onBack }: PersonDetailProps) {
+export function PersonDetail({ eventStore, person, people, events, activityTypes, config = PEOPLE_CONFIG, authorLabel, createAccount, onChanged, onBack }: PersonDetailProps) {
   const [name, setName] = useState(person.name);
   const [note, setNote] = useState(person.note);
   const [country, setCountry] = useState(person.phone?.country ?? DEFAULT_COUNTRY);
@@ -399,6 +404,16 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
         {person.amwayCode != null && (
           <p className="screen__prompt">
             {STRINGS.personDetailAmwayCode}: <strong>{person.amwayCode}</strong>
+          </p>
+        )}
+        {person.linkedUserId != null && (
+          <p className="screen__prompt">
+            <strong>{STRINGS.createAccountHasAccount}</strong>
+          </p>
+        )}
+        {person.linkedUserId != null && (person.archived || person.label !== 'NPP') && (
+          <p className="message message--warn" role="status">
+            {person.archived ? STRINGS.createAccountWarnArchived : STRINGS.createAccountWarnNotNpp}
           </p>
         )}
         {sameCode !== undefined && (
@@ -515,6 +530,26 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
           </div>
         )}
       </section>
+
+      {createAccount !== undefined && person.label === 'NPP' && !person.archived && person.linkedUserId == null && (
+        <section className="card person-section" aria-label={STRINGS.createAccountTitle}>
+          {(() => {
+            const reason = person.amwayCode == null ? STRINGS.createAccountNeedsCode : navigator.onLine ? null : STRINGS.createAccountNeedsNetwork;
+            return (
+              <>
+                <button type="button" className="button button--primary" onClick={createAccount.onOpen} disabled={busy || reason !== null} aria-describedby={reason === null ? undefined : 'create-account-reason'}>
+                  {STRINGS.createAccountButton}
+                </button>
+                {reason !== null && (
+                  <p id="create-account-reason" className="message">
+                    {reason}
+                  </p>
+                )}
+              </>
+            );
+          })()}
+        </section>
+      )}
 
       <section className="card person-section" aria-label={STRINGS.historyTitle}>
         <h2 className="person-section__heading">{STRINGS.historyTitle}</h2>

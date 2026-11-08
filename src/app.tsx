@@ -21,6 +21,7 @@ import { setSoundEnabled } from './ui/play-ting';
 import { AchievementsScreen } from './ui/screens/achievements-screen';
 import { Board30x30Screen } from './ui/screens/board-30x30-screen';
 import { ChangePasswordScreen, DisplayNameScreen } from './ui/screens/change-password-screen';
+import { CreateAccountScreen } from './ui/screens/create-account-screen';
 import { ConsentScreen } from './ui/screens/consent-screen';
 import { DiamondPathScreen } from './ui/screens/diamond-path-screen';
 import { LessonScreen } from './ui/screens/lesson-screen';
@@ -91,9 +92,16 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
   const eventStore = observed.store;
   const [popupOpen, setPopupOpen] = useState(false);
   const [tab, setTab] = useState<Tab>('today');
+  /** Person whose account is being created (story 024); the screen has no tab bar. */
+  const [createAccountFor, setCreateAccountFor] = useState<string | null>(null);
+  /** Person detail to reopen in Làm after the account screen. */
+  const [reopenPerson, setReopenPerson] = useState<string | null>(null);
   const [lessonActive, setLessonActive] = useState(false);
   /** Set when Làm was opened from Bảng 30x30 (preselected filter + back control); null otherwise. */
   const [fromBoard, setFromBoard] = useState<ContactsFilter | null>(null);
+  useEffect(() => {
+    if (tab !== 'people') setReopenPerson(null);
+  }, [tab]);
   const goToday = () => setTab('today');
   const onLessonActive = useCallback((active: boolean) => setLessonActive(active), []);
 
@@ -389,6 +397,22 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
     );
   }
 
+  if (createAccountFor !== null && clientPromise !== null && account !== null) {
+    return (
+      <div className="app-shell">
+        <CreateAccountScreen
+          clientPromise={clientPromise}
+          eventStore={eventStore}
+          personId={createAccountFor}
+          onBack={() => {
+            setReopenPerson(createAccountFor);
+            setCreateAccountFor(null);
+          }}
+        />
+      </div>
+    );
+  }
+
   if (tab === 'login' && clientPromise !== null) {
     return (
       <div className="app-shell">
@@ -469,6 +493,8 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
           members={members}
           memberIds={memberIds}
           dataVersion={dataVersion}
+          initialOpenId={reopenPerson}
+          {...(clientPromise === null || account === null ? {} : { onCreateAccount: setCreateAccountFor })}
           {...(fromBoard === null
             ? {}
             : {

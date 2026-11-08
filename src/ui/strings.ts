@@ -247,6 +247,47 @@ export const STRINGS = {
   passwordMismatch: 'Hai mật khẩu chưa giống nhau.',
   passwordSameAsTemporary: 'Mật khẩu mới phải khác mật khẩu tạm.',
 
+  // Tạo tài khoản cho NPP (story 024)
+  createAccountButton: 'Tạo tài khoản',
+  createAccountNeedsCode: 'Nhập mã số Amway trước',
+  createAccountNeedsNetwork: 'Cần có mạng để tạo tài khoản',
+  createAccountHasAccount: 'Đã có tài khoản',
+  createAccountWarnArchived: 'Người này đã có tài khoản và đang được lưu trữ. Tài khoản vẫn được giữ.',
+  createAccountWarnNotNpp: 'Người này đã có tài khoản nhưng không còn nhãn NPP. Tài khoản vẫn được giữ.',
+  createAccountTitle: 'Tạo tài khoản',
+  createAccountPrompt: 'Tạo tài khoản cho người này bằng số điện thoại. App sẽ sinh một mật khẩu tạm để bạn gửi cho họ.',
+  createAccountCodeLine: 'Mã số Amway',
+  createAccountSubmit: 'Tạo tài khoản',
+  createAccountSubmitting: 'Đang tạo…',
+  createAccountPhoneRequired: 'Hãy nhập số điện thoại.',
+  createAccountNameInvalid: 'Tên hiển thị cần từ 1 đến 60 ký tự.',
+  createAccountDone: 'Đã tạo tài khoản',
+  createAccountShareHint: 'Nhắc họ đổi mật khẩu khi đăng nhập lần đầu.',
+  createAccountOnce: 'Mật khẩu tạm chỉ hiện một lần. Hãy sao chép hoặc gửi ngay trước khi rời màn hình này.',
+  createAccountPhoneLine: 'Số điện thoại',
+  createAccountPasswordLine: 'Mật khẩu tạm',
+  createAccountCopy: 'Sao chép',
+  createAccountCopied: 'Đã sao chép.',
+  createAccountCopyFailed: 'Không sao chép được. Hãy chép tay.',
+  createAccountShare: 'Chia sẻ',
+  createAccountSaveWarning: 'Đã tạo tài khoản nhưng chưa lưu được vào danh bạ. Hãy ghi lại mật khẩu tạm này.',
+  createAccountFinish: 'Xong',
+  createAccountErrors: {
+    not_signed_in: 'Bạn cần đăng nhập để tạo tài khoản.',
+    change_password_first: 'Hãy đổi mật khẩu tạm của bạn trước khi tạo tài khoản cho người khác.',
+    invalid_phone: 'Số điện thoại chưa đúng. Kiểm tra mã nước và số điện thoại.',
+    invalid_password: 'Mật khẩu tạm không hợp lệ. Thử lại nhé.',
+    invalid_code: 'Mã số Amway của người này chưa hợp lệ. Hãy sửa mã trong thông tin liên hệ.',
+    phone_taken: 'Số điện thoại này đã có tài khoản.',
+    code_taken: 'Mã số Amway này đã được một hộ khác dùng.',
+    no_household: 'Bạn chưa thuộc hộ nào nên chưa tạo được tài khoản.',
+    not_allowed: 'Bạn không có quyền tạo tài khoản.',
+    household_full_or_inactive: 'Hộ của bạn đã đủ thành viên hoặc không còn hoạt động.',
+    create_failed: 'Máy chủ chưa tạo được tài khoản. Thử lại sau ít phút nhé.',
+    network: 'Không có kết nối mạng. Kiểm tra mạng rồi thử lại nhé.',
+    unknown: 'Chưa tạo được tài khoản. Thử lại sau nhé.',
+  },
+
   // Đồng bộ Danh bạ hộ (story 023)
   consentTitle: 'Đồng bộ Danh bạ trong hộ',
   consentIntro:
@@ -463,6 +504,11 @@ export function achievementsEarnedOnLabel(date: string): string {
 /** Warning shown when another person has the same Amway code, e.g. "Trùng mã số với Lan, Hà". */
 export function duplicateCodeWarning(names: string): string {
   return `Trùng mã số với ${names}`;
+}
+
+/** Shared text for Zalo: phone, temporary password and the reminder to change it (story 024). */
+export function createAccountShareText(phone: string, password: string): string {
+  return `Số điện thoại: ${phone}\nMật khẩu tạm: ${password}\nHãy đổi mật khẩu khi đăng nhập lần đầu.`;
 }
 
 /** Vietnamese message for a failed auth call; never says whether a phone number exists. */

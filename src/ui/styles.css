@@ -771,3 +771,7 @@ body { margin: 0; }
 /* Story 023: consent screen and history author */
 .consent-list { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; }
 .history-row__author { display: block; font-weight: 400; font-size: 0.875em; opacity: 0.75; }
+
+/* Tạo tài khoản (story 024) */
+.temp-password { font-family: ui-monospace, monospace; font-size: 1.25rem; letter-spacing: 0.05em; overflow-wrap: anywhere; user-select: all; }
+.button-row .button { min-height: 44px; }

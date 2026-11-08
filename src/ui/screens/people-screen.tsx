@@ -35,6 +35,10 @@ export interface PeopleScreenProps {
   readonly onBack?: () => void;
   /** Household members (story 023), or null when the contact book is not synced: history then names no author. */
   readonly members?: ReadonlyMap<string, HouseholdMember> | null;
+  /** Person detail opened on first render (returning from the account screen, story 024). */
+  readonly initialOpenId?: string | null;
+  /** Opens the account screen for a person (story 024); absent when signed out or the build has no account feature. */
+  readonly onCreateAccount?: (personId: string) => void;
   /** Bumped by the app when a sync pulled new events; the log is re-read. */
   readonly dataVersion?: number;
 }
@@ -58,9 +62,9 @@ const ADD_NAME_ACTIVITY_ID = 'add_name';
  * the per-filter totals and ignore the search. Re-reads the event log on
  * mount and after every write; keeps no copy of truth.
  */
-export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initialFilter = 'all', onBack, members = null, memberIds = NO_MEMBERS, dataVersion = 0 }: PeopleScreenProps) {
+export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initialFilter = 'all', onBack, members = null, memberIds = NO_MEMBERS, dataVersion = 0, initialOpenId = null, onCreateAccount }: PeopleScreenProps) {
   const [load, setLoad] = useState<LoadState>({ kind: 'loading' });
-  const [openId, setOpenId] = useState<string | null>(null);
+  const [openId, setOpenId] = useState<string | null>(initialOpenId);
   const [addedXp, setAddedXp] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<ContactsFilter>(initialFilter);
@@ -122,6 +126,7 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
         activityTypes={activityTypes}
         config={PEOPLE_CONFIG}
         authorLabel={(userId) => historyAuthorLabel(userId, others, members)}
+        {...(onCreateAccount === undefined ? {} : { createAccount: { onOpen: () => onCreateAccount(opened.personId) } })}
         onChanged={reload}
         onBack={() => setOpenId(null)}
       />

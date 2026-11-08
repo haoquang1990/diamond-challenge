@@ -114,6 +114,8 @@ export interface Person {
   readonly phone?: PersonPhone | null;
   /** Latest valid Amway code (normalized digits), or null/absent when none. Lives on the person, never on the label. */
   readonly amwayCode?: string | null;
+  /** Supabase user id of the account created for this person (story 024), or null/absent when none. */
+  readonly linkedUserId?: string | null;
   /** Ids of tasks already done (non-repeatable ones are hidden from pending). */
   readonly doneTaskIds?: readonly string[];
   /** Timestamp of the event that set the currently effective label; null when none. */
@@ -393,6 +395,7 @@ interface MutablePerson {
   labelledAt: string | null;
   phone: PersonPhone | null;
   amwayCode: string | null;
+  linkedUserId: string | null;
   done: Set<string>;
   lastContactAt: string;
 }
@@ -438,6 +441,8 @@ function setLabel(person: MutablePerson, next: PersonLabel | null, timestamp: st
  *
  * - Amway code: latest valid `amwayCode` wins ('' clears; an invalid one is ignored). Label
  *   changes never touch it.
+ * - `linkedUserId` (story 024): latest non-empty string on a `person_updated` wins; anything else
+ *   is ignored; null when never set. Label and archive changes never touch it.
  * - Name, note, phone: latest `person_updated` wins; archived: latest of
  *   `person_archived` / `person_restored`.
  * - Stage (legacy): `to` of the latest non-compensated `person_stage_changed`.
@@ -498,6 +503,7 @@ export function derivePeople(events: readonly LogEvent[], config: PeopleConfig):
         labelledAt: null,
         phone: readPhone(p.phone) ?? null,
         amwayCode: readCode(p.amwayCode) ?? null,
+        linkedUserId: null,
         done: new Set(),
         lastContactAt: e.timestamp,
       });
@@ -512,6 +518,7 @@ export function derivePeople(events: readonly LogEvent[], config: PeopleConfig):
       if (phone !== undefined) person.phone = phone;
       const code = readCode(p.amwayCode);
       if (code !== undefined) person.amwayCode = code;
+      if (isNonEmptyString(p.linkedUserId)) person.linkedUserId = p.linkedUserId.trim();
     } else if (e.type === 'person_archived') {
       person.archived = true;
     } else if (e.type === 'person_restored') {
@@ -538,6 +545,7 @@ export function derivePeople(events: readonly LogEvent[], config: PeopleConfig):
     label: m.label,
     phone: m.phone,
     amwayCode: m.amwayCode,
+    linkedUserId: m.linkedUserId,
     doneTaskIds: [...m.done],
     labelledAt: m.labelledAt,
     lastContactAt: m.lastContactAt,

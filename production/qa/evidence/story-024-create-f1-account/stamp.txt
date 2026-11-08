@@ -1,0 +1,9 @@
+Reviewed-Content-Hash: src/app.tsx 27946d1161d1eb210822fe7178bac81294a84849
+Reviewed-Content-Hash: src/data/event-store.ts 02c6b248fdcfcef2c7afdf7b6633a814d9a6833d
+Reviewed-Content-Hash: src/domain/people.ts f5d51ebdb4094a1f38f033eab9889bc1d3368ec8
+Reviewed-Content-Hash: src/ui/screens/people-screen.tsx bce26f09a4e12d4663c699dabe3848acb5f1123c
+Reviewed-Content-Hash: src/ui/screens/person-form.tsx c52dae2e02cf1a9860adc1371fa9f33da7fc9e2c
+Reviewed-Content-Hash: src/ui/strings.ts 23138b15d94973dea322f9bb69c3a9b96993e4af
+Reviewed-Content-Hash: src/ui/styles.css bc41e66b9929e4c8c3a1c9c0d5e0e011fb4c1558
+Reviewed-Content-Hash: src/data/account-service.ts a27ee623e2d4e1eae6c292dcf14bc9b6c68a2195
+Reviewed-Content-Hash: src/ui/screens/create-account-screen.tsx f0529d1688f15c2462c5d3c8c7aa76331c1d27b9
