@@ -1,12 +1,12 @@
 # Story 024: "Tạo tài khoản" cho liên hệ NPP có mã số
 
 > **Epic**: diamond-challenge
-> **Status**: Ready
+> **Status**: In Progress
 > **Layer**: Feature
 > **Type**: UI
 > **Estimate**: M
 > **Manifest Version**: N/A (minimal — no control manifest)
-> **Last Updated**: 2026-11-07
+> **Last Updated**: 2026-11-08
 
 ## Context
 
