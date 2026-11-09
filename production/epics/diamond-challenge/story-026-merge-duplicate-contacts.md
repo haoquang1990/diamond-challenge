@@ -1,12 +1,12 @@
 # Story 026: Gộp Danh bạ khi vào chung hộ (dò trùng, kiểm tra, gộp, tách)
 
 > **Epic**: diamond-challenge
-> **Status**: Ready
+> **Status**: In Progress
 > **Layer**: Core
 > **Type**: UI
 > **Estimate**: L
 > **Manifest Version**: N/A (minimal — no control manifest)
-> **Last Updated**: 2026-11-07
+> **Last Updated**: 2026-11-09
 
 ## Context
 
