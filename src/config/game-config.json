@@ -150,6 +150,16 @@
   },
   "contactConsentVersion": 1,
   "maxHouseholdMembers": 2,
+  "inactiveDays": 3,
+  "cheersPerDay": 1,
+  "cheerMessages": [
+    "Cố lên, mình tin bạn làm được!",
+    "Mỗi cuộc liên hệ hôm nay là một bước gần hơn tới 30x30.",
+    "Hôm nay thử liên hệ thêm một người nhé!",
+    "Cả nhóm đang đồng hành cùng bạn.",
+    "Kiên trì từng chút, kết quả sẽ đến.",
+    "Bạn đã làm rất tốt, cứ giữ nhịp này nhé!"
+  ],
   "contactSync": {
     "pushBatchSize": 200,
     "pullOverlap": 200,

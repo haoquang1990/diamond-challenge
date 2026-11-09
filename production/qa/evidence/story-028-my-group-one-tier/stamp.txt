@@ -1,0 +1,10 @@
+Reviewed-Content-Hash: supabase/migrations/20261109000000_group_activity_cheers.sql 67f72cfe57415eb5c567eaa4c81adff0d2976f62
+Reviewed-Content-Hash: src/data/group-service.ts bb84757981ab476cfc0702f0d36ff38185884132
+Reviewed-Content-Hash: src/ui/screens/my-group-screen.tsx 5d34130db73348897007f98d722d7883a0bd5a31
+Reviewed-Content-Hash: src/ui/screens/diamond-path-screen.tsx f2ed63f80b8d6a43d825a7fc36a57c71134ed50c
+Reviewed-Content-Hash: src/ui/screens/today-screen.tsx 71f0fc4aa57afb79de63fdf346eb1233f833f115
+Reviewed-Content-Hash: src/app.tsx d42d07e381ec6c14c741a602a18b752785c75659
+Reviewed-Content-Hash: src/config/game-config.json 6fe776fef118392e4a81b8bdc4d3e8a94e0eb54a
+Reviewed-Content-Hash: src/ui/strings.ts a53850e5c44f347d3b6b4c05aaf1a693ca56367c
+Reviewed-Content-Hash: src/ui/styles.css 786c5ac0eea31ae29a39a3cfb092139d44f00498
+Reviewed-Content-Hash: tests/integration/supabase/group-rls.test.ts 0dd94a03c5546cfcecc6ab2fb89d04eb05950d1d

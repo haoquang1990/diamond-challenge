@@ -52,10 +52,10 @@
 
 ## Files
 
-- `supabase/migrations/<timestamp>_group_activity_cheers.sql`
-- `src/data/group-service.ts`
-- `src/ui/screens/my-group-screen.tsx`, `src/ui/screens/diamond-path-screen.tsx`, `src/ui/screens/today-screen.tsx`, `src/app.tsx`
-- `src/config/game-config.json` (`inactiveDays`, `cheerMessages`), `src/ui/strings.ts`, `src/ui/styles.css`
+- `supabase/migrations/20261109000000_group_activity_cheers.sql` (new: `households.last_activity_at` + trigger, `cheers` + RLS + daily limit, `app_config.cheers_per_day`)
+- `src/data/group-service.ts` (new), `src/ui/screens/my-group-screen.tsx` (new)
+- `src/ui/screens/diamond-path-screen.tsx` (entry button), `src/ui/screens/today-screen.tsx` (cheer card), `src/app.tsx`
+- `src/config/game-config.json` (`inactiveDays`, `cheerMessages`, `cheersPerDay`), `src/ui/strings.ts`, `src/ui/styles.css`
 - `tests/integration/supabase/group-rls.test.ts`
 - `production/qa/evidence/story-028-my-group-one-tier/`
 

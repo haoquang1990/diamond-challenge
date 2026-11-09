@@ -799,3 +799,14 @@ body { margin: 0; }
 .dup-pair__actions > .button { flex: 1 1 150px; }
 .dup-pair__choose { display: flex; flex-direction: column; gap: 8px; }
 .dup-pair__choose .button { min-height: 44px; flex: none; }
+
+/* Nhóm của tôi (story 028) */
+.group-house { min-width: 0; }
+.group-house--inactive { border-color: var(--color-warn); }
+.group-house__code { margin: 0; color: var(--color-muted); font-weight: 700; overflow-wrap: anywhere; }
+.group-house__numbers { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 0; font-weight: 800; }
+.group-house__updated { margin: 0; color: var(--color-muted); font-size: 0.9rem; font-weight: 600; }
+.group-house__actions { display: flex; flex-direction: column; gap: 8px; }
+.group-house__actions .button { min-height: 44px; width: 100%; }
+.cheer-card { border-color: var(--color-diamond); background: var(--color-diamond-light); }
+.cheer-card .button { min-height: 44px; }

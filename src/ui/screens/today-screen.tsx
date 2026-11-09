@@ -40,6 +40,10 @@ export interface TodayScreenProps {
   readonly timeZone?: string;
   /** Opens Cài đặt nhắc nhở (story 007); the header button is hidden when absent. */
   readonly onOpenSettings?: () => void;
+  /** An unseen cheer from the sponsor household (story 028); the card is shown only when set. */
+  readonly cheer?: { readonly message: string } | null;
+  /** Closes the cheer card for good. */
+  readonly onDismissCheer?: () => void;
   /** Reminder defaults; defaults to game-config.json. */
   readonly reminderConfig?: ReminderConfig;
   /** Current notification permission; defaults to the browser's. Injected for tests and screenshots. */
@@ -96,6 +100,8 @@ export function TodayScreen({
   reminderConfig = DEFAULT_REMINDER_CONFIG,
   notificationPermission = DEFAULT_PERMISSION,
   memberIds = NO_MEMBERS,
+  cheer = null,
+  onDismissCheer,
 }: TodayScreenProps) {
   const [state, setState] = useState<ScreenState>({ kind: 'loading' });
   const [reloadKey, setReloadKey] = useState(0);
@@ -185,6 +191,20 @@ export function TodayScreen({
           <p className="reminder-banner__text">
             <strong>{STRINGS.reminderDueTitle}</strong> {reminderMessage(streak, reminderMissing(state.progress.dailyGoal))}
           </p>
+        </section>
+      )}
+
+      {cheer !== null && (
+        <section className="card cheer-card" role="status" aria-labelledby="cheer-title">
+          <h2 id="cheer-title" className="card__title">
+            {STRINGS.cheerCardTitle}
+          </h2>
+          <p className="card__body">{cheer.message}</p>
+          {onDismissCheer !== undefined && (
+            <button type="button" className="button button--secondary" onClick={onDismissCheer}>
+              {STRINGS.cheerCardDismiss}
+            </button>
+          )}
         </section>
       )}
 

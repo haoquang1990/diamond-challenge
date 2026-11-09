@@ -162,6 +162,34 @@ export const STRINGS = {
   addPersonTitle: 'Thêm người',
   addPersonButton: 'Thêm người',
   boardOpen: 'Bảng 30x30',
+  groupOpen: 'Nhóm của tôi',
+  groupOpenLockedReason: 'Đăng nhập để xem nhóm của bạn.',
+  groupTitle: 'Nhóm của tôi',
+  groupPrompt: 'Các hộ F1 trực tiếp của bạn.',
+  groupEmptyTitle: 'Chưa có hộ F1 nào',
+  groupEmptyHint: 'Mở một liên hệ NPP có mã số Amway và bấm "Tạo tài khoản" để tạo hộ F1.',
+  groupLoadError: 'Chưa tải được nhóm. Thử lại nhé.',
+  groupOfflineNoData: 'Cần có mạng để xem nhóm lần đầu.',
+  groupOfflineNote: 'Đang offline, hiện dữ liệu lần tải gần nhất.',
+  groupNoHousehold: 'Tài khoản này chưa thuộc hộ nào.',
+  groupCodeLabel: 'Mã số',
+  groupNoCode: 'Chưa có mã',
+  groupNoNumbers: 'Chưa có số liệu',
+  groupAchieved: 'Đạt 30x30',
+  groupNeverActive: 'Chưa hoạt động lần nào',
+  groupCheerButton: 'Cổ vũ',
+  groupCheeredToday: 'Đã cổ vũ hôm nay',
+  groupCheerOfflineReason: 'Cần có mạng để cổ vũ.',
+  groupCheerSent: 'Đã gửi lời cổ vũ.',
+  groupCheerErrors: {
+    already: 'Hôm nay bạn đã cổ vũ hộ này rồi.',
+    not_allowed: 'Bạn không gửi được lời cổ vũ cho hộ này.',
+    no_message: 'Chưa có lời cổ vũ nào để gửi.',
+    network: 'Chưa gửi được. Kiểm tra mạng rồi thử lại nhé.',
+  },
+  groupMemberUnnamed: 'Chưa có tên',
+  cheerCardTitle: 'Lời cổ vũ từ người bảo trợ',
+  cheerCardDismiss: 'Đóng',
   boardTitle: 'Bảng 30x30',
   boardPrompt: 'Tiến độ danh sách của bạn.',
   boardLoadError: 'Không tải được Bảng 30x30. Thử lại nhé.',
@@ -660,4 +688,32 @@ export function householdCountLabel(count: number, max: number): string {
 /** Note shown instead of the add button when the household is full. */
 export function householdFullNote(max: number): string {
   return `Hộ đã đủ ${max} thành viên`;
+}
+
+/** "KH 12/30". */
+export function groupCustomersLabel(count: number, target: number): string {
+  return `KH ${count}/${target}`;
+}
+
+/** "NPP F1 12/30". */
+export function groupF1Label(count: number, target: number): string {
+  return `NPP F1 ${count}/${target}`;
+}
+
+/** "3 ngày chưa hoạt động". */
+export function groupInactiveLabel(days: number): string {
+  return `${days} ngày chưa hoạt động`;
+}
+
+/** "Cập nhật lúc 14:05 07/11/2026" (device time zone). */
+export function groupUpdatedLabel(iso: string): string {
+  const at = new Date(iso);
+  const time = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit' }).format(at);
+  const date = new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(at);
+  return `cập nhật lúc ${time} ${date}`;
+}
+
+/** Aria label of the cheer button of one household. */
+export function groupCheerAria(name: string): string {
+  return `Cổ vũ ${name}`;
 }

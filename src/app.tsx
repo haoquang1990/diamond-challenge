@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import gameConfig from './config/game-config.json';
 import { getSupabaseClient } from './config/supabase';
+import { dismissCheers, loadUnseenCheer } from './data/group-service';
 import { ensureAccountLinked, loadAccount, saveDisplayName, signOut } from './data/auth-service';
 import type { AccountInfo, AuthResult } from './data/auth-service';
 import {
@@ -29,6 +30,7 @@ import { ConsentScreen } from './ui/screens/consent-screen';
 import { DiamondPathScreen } from './ui/screens/diamond-path-screen';
 import { LessonScreen } from './ui/screens/lesson-screen';
 import { HouseholdScreen } from './ui/screens/household-screen';
+import { MyGroupScreen } from './ui/screens/my-group-screen';
 import { LoginScreen } from './ui/screens/login-screen';
 import { DuplicatesScreen } from './ui/screens/duplicates-screen';
 import { PeopleScreen } from './ui/screens/people-screen';
@@ -60,9 +62,9 @@ function realNow(): Date {
  * merged person list (Danh bạ). `settings` (opened from Hôm nay) and `board`
  * (opened from Con đường) are not in the tab bar.
  */
-type Tab = 'today' | 'learn' | 'people' | 'path' | 'settings' | 'board' | 'achievements' | 'login' | 'household' | 'duplicates';
+type Tab = 'today' | 'learn' | 'people' | 'path' | 'settings' | 'board' | 'achievements' | 'login' | 'household' | 'duplicates' | 'group';
 
-const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'board' | 'achievements' | 'login' | 'household' | 'duplicates'>; readonly label: string }[] = [
+const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'board' | 'achievements' | 'login' | 'household' | 'duplicates' | 'group'>; readonly label: string }[] = [
   { id: 'today', label: STRINGS.tabToday },
   { id: 'learn', label: STRINGS.tabLearn },
   { id: 'people', label: STRINGS.tabPeople },
@@ -141,6 +143,28 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
   }, [rawEventStore]);
   const accountId = account?.accountId ?? null;
   const passwordPending = account?.mustChangePassword === true;
+
+  // Story 028: an unseen cheer from the sponsor household shows as a dismissible card on Hôm nay.
+  const [unseenCheer, setUnseenCheer] = useState<{ readonly message: string; readonly allIds: readonly string[] } | null>(null);
+  useEffect(() => {
+    if (clientPromise === null || accountId === null || passwordPending || tab !== 'today' || !navigator.onLine) return;
+    let cancelled = false;
+    clientPromise
+      .then((client) => loadUnseenCheer(client, accountId))
+      .then((found) => {
+        if (!cancelled) setUnseenCheer(found === null ? null : { message: found.cheer.message, allIds: found.allIds });
+      })
+      .catch((error: unknown) => console.error('[group] could not read cheers', error));
+    return () => {
+      cancelled = true;
+    };
+  }, [clientPromise, accountId, passwordPending, tab]);
+  const onDismissCheer = useCallback(() => {
+    setUnseenCheer((current) => {
+      if (current !== null) dismissCheers(current.allIds);
+      return null;
+    });
+  }, []);
 
   useEffect(() => {
     if (clientPromise === null) return;
@@ -470,6 +494,14 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
     );
   }
 
+  if (tab === 'group' && clientPromise !== null && account !== null) {
+    return (
+      <div className="app-shell">
+        <MyGroupScreen clientPromise={clientPromise} accountId={account.accountId} onBack={() => setTab('path')} />
+      </div>
+    );
+  }
+
   if (tab === 'duplicates') {
     return (
       <div className="app-shell">
@@ -544,10 +576,12 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
           }}
           onOpenSettings={() => setTab('settings')}
           notificationPermission={notificationPlatform.permission}
+          cheer={unseenCheer}
+          onDismissCheer={onDismissCheer}
         />
       )}
       {tab === 'learn' && <LessonScreen eventStore={eventStore} onDone={goToday} onActiveChange={onLessonActive} />}
-      {tab === 'path' && <DiamondPathScreen eventStore={eventStore} memberIds={memberIds} onOpenBoard={() => setTab('board')} onOpenAchievements={() => setTab('achievements')} />}
+      {tab === 'path' && <DiamondPathScreen eventStore={eventStore} memberIds={memberIds} onOpenBoard={() => setTab('board')} {...(clientPromise === null ? {} : { onOpenGroup: () => setTab('group'), groupLocked: account === null })} onOpenAchievements={() => setTab('achievements')} />}
       {tab === 'people' && (
         <PeopleScreen
           key={fromBoard ?? 'tab'}
