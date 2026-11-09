@@ -1,7 +1,7 @@
 # Story 028: Màn "Nhóm của tôi" (một tầng), cảnh báo không hoạt động, cổ vũ
 
 > **Epic**: diamond-challenge
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Feature
 > **Type**: UI
 > **Estimate**: L
@@ -78,3 +78,10 @@
 
 - Depends on: `production/epics/diamond-challenge/story-024-create-f1-account.md`, `production/epics/diamond-challenge/story-025-add-spouse.md`, `production/epics/diamond-challenge/story-027-household-board-30x30.md`
 - Unlocks: None
+
+## Completion Notes
+**Completed**: 2026-11-09
+**Criteria**: 8/8 passing (built app in Chromium 390×844 and 320px with a fake Supabase; the migration was run only on PGlite; not tried on a real phone or against the live Supabase)
+**Deviations**: Advisory, not logged as tech debt: (1) the new migration `20261109000000_group_activity_cheers.sql` reaches the live database for the first time when the user deploys; (2) the "Thêm vợ/chồng" button on an F1 household was seen, its form was not opened or submitted from there; (3) the cheer day boundary is 00:00 UTC (07:00 in Vietnam); (4) member phone numbers are shown unformatted; (5) during review the daily-limit trigger was changed so it no longer tells an outsider whether a household was cheered today, with a regression test seen failing on the unfixed migration
+**Test Evidence**: screenshots in production/qa/evidence/story-028-my-group-one-tier/ (01–08 plus stamp.txt, stamp unchanged); RLS test `tests/integration/supabase/group-rls.test.ts` (10 tests); full suite 370/370
+**Reviewed by**: self, no independent review
