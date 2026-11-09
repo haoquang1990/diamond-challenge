@@ -175,6 +175,7 @@ export const STRINGS = {
   boardDisclaimer: 'Số liệu tính từ danh sách bạn tự nhập, không phải xác nhận chính thức.',
   boardEmptyBody: 'Chưa có ai trong danh sách. Thêm người đầu tiên để Bảng bắt đầu chạy.',
   boardGoPeople: 'Đến tab Làm',
+  boardDuplicatesOpen: 'Kiểm tra liên hệ trùng',
   achievementsOpen: 'Thành tích',
   achievementsTitle: 'Thành tích',
   achievementsPrompt: 'Các mốc bạn đã đạt và các mốc đang chờ.',
@@ -530,6 +531,11 @@ export function shortDateLabel(iso: string): string {
 /** "Label x/target" progress text. */
 export function boardCountLabel(label: string, count: number, target: number): string {
   return `${label} ${count}/${target}`;
+}
+
+/** Warning above the board while `count` duplicate pairs are unresolved (crm.md rule 23). */
+export function boardDuplicatesWarning(count: number): string {
+  return `Có ${count} cặp liên hệ có thể trùng, số liệu có thể bị đếm hai lần`;
 }
 
 /** What is still missing for 30x30, e.g. "còn 5 KH, còn 12 NPP F1". */

@@ -51,9 +51,10 @@
 
 ## Files
 
-- `src/domain/people.ts`, `src/domain/achievements.ts`
-- `src/data/aggregates-sync.ts`
-- `src/ui/screens/board-30x30-screen.tsx`, `src/ui/strings.ts`, `src/ui/styles.css`
+- `src/domain/household-board.ts` (new: aggregate payload, change check)
+- `src/data/aggregates-sync.ts` (new: debounced upsert to `household_aggregates`)
+- `src/ui/screens/board-30x30-screen.tsx` (duplicate warning), `src/app.tsx` (wiring, return to the board from the review screen)
+- `src/config/game-config.json` (`aggregatesSync.debounceMs`), `src/ui/strings.ts`, `src/ui/styles.css`
 - `tests/unit/people/household-board.test.ts`
 - `production/qa/evidence/story-027-household-board-30x30/`
 

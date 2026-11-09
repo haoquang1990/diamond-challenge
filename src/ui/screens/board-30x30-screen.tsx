@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { EventStore } from '../../data/event-store';
+import { pendingDuplicates } from '../../domain/duplicates';
 import { computePeopleStats, derivePeople } from '../../domain/people';
 import type { PeopleStats } from '../../domain/people';
 import { PEOPLE_CONFIG } from '../people-config';
 import type { ContactsFilter } from '../people-helpers';
-import { STRINGS, boardCountLabel, boardMissingLabel } from '../strings';
+import { STRINGS, boardCountLabel, boardDuplicatesWarning, boardMissingLabel } from '../strings';
 
 /** Props for {@link Board30x30Screen}. */
 export interface Board30x30ScreenProps {
@@ -16,12 +17,16 @@ export interface Board30x30ScreenProps {
   readonly onOpenPeople?: () => void;
   /** Opens the Làm tab filtered to a label; the Khách hàng and NPP F1 rows are buttons only when provided. */
   readonly onOpenContacts?: (filter: ContactsFilter) => void;
+  /** Opens the duplicates screen; the warning shows its button only when provided. */
+  readonly onOpenDuplicates?: () => void;
+  /** Bumped when a sync pulled household events, so the board re-reads the log. */
+  readonly dataVersion?: number;
 }
 
 type LoadState =
   | { readonly kind: 'loading' }
   | { readonly kind: 'error' }
-  | { readonly kind: 'ready'; readonly stats: PeopleStats; readonly isEmpty: boolean };
+  | { readonly kind: 'ready'; readonly stats: PeopleStats; readonly isEmpty: boolean; readonly duplicates: number };
 
 /** Fill ratio in percent, clamped to 0..100; a non-positive target counts as 0. */
 function percentOf(count: number, target: number): number {
@@ -84,7 +89,7 @@ function ProgressRow({ label, count, target, met = false, onOpen }: RowProps) {
  * Bảng 30x30: contacts, customers and NPP F1 against the configured targets.
  * Read only: re-derives from the event log on every mount and never appends.
  */
-export function Board30x30Screen({ eventStore, onBack, onOpenPeople, onOpenContacts }: Board30x30ScreenProps) {
+export function Board30x30Screen({ eventStore, onBack, onOpenPeople, onOpenContacts, onOpenDuplicates, dataVersion = 0 }: Board30x30ScreenProps) {
   const [state, setState] = useState<LoadState>({ kind: 'loading' });
   const [reloadKey, setReloadKey] = useState(0);
   const retry = useCallback(() => {
@@ -100,7 +105,7 @@ export function Board30x30Screen({ eventStore, onBack, onOpenPeople, onOpenConta
         if (cancelled) return;
         const people = derivePeople(events, PEOPLE_CONFIG);
         const stats = computePeopleStats(people, PEOPLE_CONFIG);
-        setState({ kind: 'ready', stats, isEmpty: people.every((p) => p.archived) });
+        setState({ kind: 'ready', stats, isEmpty: people.every((p) => p.archived), duplicates: pendingDuplicates(people, events, PEOPLE_CONFIG) });
       })
       .catch((error: unknown) => {
         if (cancelled) return;
@@ -110,7 +115,7 @@ export function Board30x30Screen({ eventStore, onBack, onOpenPeople, onOpenConta
     return () => {
       cancelled = true;
     };
-  }, [eventStore, reloadKey]);
+  }, [eventStore, reloadKey, dataVersion]);
 
   const { contactsTarget, customersTarget, f1Target } = PEOPLE_CONFIG.targets;
 
@@ -148,6 +153,17 @@ export function Board30x30Screen({ eventStore, onBack, onOpenPeople, onOpenConta
               {onOpenPeople !== undefined && (
                 <button type="button" className="button button--primary" onClick={onOpenPeople}>
                   {STRINGS.boardGoPeople}
+                </button>
+              )}
+            </section>
+          )}
+
+          {state.duplicates > 0 && (
+            <section className="card board-dup" role="status">
+              <p className="message">{boardDuplicatesWarning(state.duplicates)}</p>
+              {onOpenDuplicates !== undefined && (
+                <button type="button" className="button button--secondary board-dup__button" onClick={onOpenDuplicates}>
+                  {STRINGS.boardDuplicatesOpen}
                 </button>
               )}
             </section>

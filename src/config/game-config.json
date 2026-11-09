@@ -156,5 +156,8 @@
     "pullPageSize": 500,
     "debounceMs": 2000,
     "maxClockSkewMs": 600000
+  },
+  "aggregatesSync": {
+    "debounceMs": 3000
   }
 }

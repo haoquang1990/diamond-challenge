@@ -19,6 +19,9 @@ import { AchievementsOverlay, ACHIEVEMENTS_CONFIG } from './ui/achievements-over
 import { createObservedStore, readSoundEnabled } from './ui/achievements-helpers';
 import { setSoundEnabled } from './ui/play-ting';
 import { AchievementsScreen } from './ui/screens/achievements-screen';
+import { createAggregatesSync } from './data/aggregates-sync';
+import type { AggregatesSync } from './data/aggregates-sync';
+import { PEOPLE_CONFIG } from './ui/people-config';
 import { Board30x30Screen } from './ui/screens/board-30x30-screen';
 import { ChangePasswordScreen, DisplayNameScreen } from './ui/screens/change-password-screen';
 import { CreateAccountScreen } from './ui/screens/create-account-screen';
@@ -100,6 +103,8 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
   const [reopenPerson, setReopenPerson] = useState<string | null>(null);
   const [lessonActive, setLessonActive] = useState(false);
   /** Set when Làm was opened from Bảng 30x30 (preselected filter + back control); null otherwise. */
+  /** The duplicates screen was opened from Bảng 30x30 (its back control returns there). */
+  const [duplicatesFromBoard, setDuplicatesFromBoard] = useState(false);
   const [fromBoard, setFromBoard] = useState<ContactsFilter | null>(null);
   useEffect(() => {
     if (tab !== 'people') setReopenPerson(null);
@@ -219,6 +224,40 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
     window.addEventListener('online', onOnline);
     return () => window.removeEventListener('online', onOnline);
   }, [consent, declined, checkConsent, syncController]);
+
+  // Household 30x30 numbers (story 027): sent only when signed in, consented and online, and only when they changed.
+  const [aggregates, setAggregates] = useState<AggregatesSync | null>(null);
+  useEffect(() => {
+    if (clientPromise === null || accountId === null || consent !== 'granted' || declined) return;
+    let created: AggregatesSync | null = null;
+    let cancelled = false;
+    void clientPromise.then((client) => {
+      if (cancelled) return;
+      created = createAggregatesSync({ client, list: () => rawEventStore.list(), accountId, peopleConfig: PEOPLE_CONFIG, config: gameConfig.aggregatesSync });
+      setAggregates(created);
+      created.schedule();
+    });
+    return () => {
+      cancelled = true;
+      created?.dispose();
+      setAggregates(null);
+    };
+  }, [clientPromise, accountId, consent, declined, rawEventStore]);
+  useEffect(
+    () =>
+      observed.subscribe((event) => {
+        if (CONTACT_EVENT_TYPES.includes(event.type)) aggregates?.schedule();
+      }),
+    [observed, aggregates],
+  );
+  useEffect(() => {
+    if (syncStatus.kind === 'synced') aggregates?.schedule();
+  }, [syncStatus, aggregates]);
+  useEffect(() => {
+    const onOnline = () => void aggregates?.flush();
+    window.addEventListener('online', onOnline);
+    return () => window.removeEventListener('online', onOnline);
+  }, [aggregates]);
 
   const onConsentAgree = async (): Promise<SyncFailure | null> => {
     if (clientPromise === null) return 'server';
@@ -434,7 +473,7 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
   if (tab === 'duplicates') {
     return (
       <div className="app-shell">
-        <DuplicatesScreen eventStore={eventStore} memberIds={memberIds} members={members} dataVersion={dataVersion} onBack={() => setTab('people')} />
+        <DuplicatesScreen eventStore={eventStore} memberIds={memberIds} members={members} dataVersion={dataVersion} onBack={() => setTab(duplicatesFromBoard ? 'board' : 'people')} />
       </div>
     );
   }
@@ -444,6 +483,11 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
       <div className="app-shell">
         <Board30x30Screen eventStore={eventStore} onBack={() => setTab('path')}
           onOpenPeople={() => setTab('people')}
+          onOpenDuplicates={() => {
+            setDuplicatesFromBoard(true);
+            setTab('duplicates');
+          }}
+          dataVersion={dataVersion}
           onOpenContacts={(filter) => {
             setFromBoard(filter);
             setTab('people');
@@ -511,7 +555,10 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
           members={members}
           memberIds={memberIds}
           dataVersion={dataVersion}
-          onOpenDuplicates={() => setTab('duplicates')}
+          onOpenDuplicates={() => {
+            setDuplicatesFromBoard(false);
+            setTab('duplicates');
+          }}
           initialOpenId={reopenPerson}
           {...(clientPromise === null || account === null ? {} : { onCreateAccount: setCreateAccountFor })}
           {...(fromBoard === null

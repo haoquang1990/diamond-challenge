@@ -559,6 +559,8 @@ body { margin: 0; }
 .board-row__check { color: var(--color-success); font-weight: 800; }
 .board-badge { margin: 0; padding: 12px; border-radius: 12px; font-weight: 800; text-align: center; border: 2px solid var(--color-border); }
 .board-badge--achieved { border-color: var(--color-success); background: var(--color-success-light); color: var(--color-success); }
+.board-dup { border-color: var(--color-diamond); }
+.board-dup__button { width: 100%; min-height: var(--touch-min); }
 .board-note { margin: 0; color: var(--color-muted); font-size: 0.9rem; }
 
 /* Danh bạ (story 013) */
