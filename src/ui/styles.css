@@ -775,3 +775,7 @@ body { margin: 0; }
 /* Tạo tài khoản (story 024) */
 .temp-password { font-family: ui-monospace, monospace; font-size: 1.25rem; letter-spacing: 0.05em; overflow-wrap: anywhere; user-select: all; }
 .button-row .button { min-height: 44px; }
+
+/* Hộ của tôi (story 025) */
+.member-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.member-list__item { min-width: 0; overflow-wrap: anywhere; }

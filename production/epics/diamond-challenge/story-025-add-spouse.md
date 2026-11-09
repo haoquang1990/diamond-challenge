@@ -51,9 +51,10 @@
 
 ## Files
 
-- `src/ui/screens/household-screen.tsx`, `src/ui/screens/add-member-form.tsx`
-- `src/data/account-service.ts`, `src/ui/screens/settings-screen.tsx`
-- `src/ui/strings.ts`, `src/ui/styles.css`
+- `src/ui/screens/household-screen.tsx` (new), `src/ui/screens/add-member-form.tsx` (new), `src/ui/screens/temp-password-view.tsx` (new, extracted from story 024)
+- `src/data/account-service.ts`, `src/ui/screens/create-account-screen.tsx`
+- `src/ui/screens/settings-screen.tsx`, `src/app.tsx`
+- `src/config/game-config.json`, `src/ui/strings.ts`, `src/ui/styles.css`
 - `production/qa/evidence/story-025-add-spouse/`
 
 ## QA Test Cases

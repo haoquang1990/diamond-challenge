@@ -288,6 +288,39 @@ export const STRINGS = {
     unknown: 'Chưa tạo được tài khoản. Thử lại sau nhé.',
   },
 
+  // Hộ của tôi và Thêm vợ/chồng (story 025)
+  householdEntry: 'Hộ của tôi',
+  householdTitle: 'Hộ của tôi',
+  householdPrompt: 'Mã số Amway và các thành viên trong hộ của bạn.',
+  householdCodeLabel: 'Mã số Amway',
+  householdNoCode: 'Chưa có mã',
+  householdMembersHeading: 'Thành viên',
+  householdNoHousehold: 'Tài khoản này chưa thuộc hộ nào.',
+  householdOffline: 'Cần có mạng để xem thông tin hộ. Kết nối mạng rồi thử lại nhé.',
+  householdLoadError: 'Chưa tải được thông tin hộ. Thử lại nhé.',
+  householdMemberUnnamed: 'Chưa có tên',
+  addMemberButton: 'Thêm vợ/chồng',
+  addMemberOfflineReason: 'Cần có mạng để thêm vợ/chồng.',
+  addMemberTitle: 'Thêm vợ/chồng',
+  addMemberPrompt: 'Tạo tài khoản cho vợ/chồng bằng số điện thoại. App sẽ sinh một mật khẩu tạm để bạn gửi cho họ.',
+  addMemberSubmit: 'Thêm vào hộ',
+  addMemberSubmitting: 'Đang thêm…',
+  addMemberDone: 'Đã thêm vào hộ',
+  addMemberErrors: {
+    not_signed_in: 'Bạn cần đăng nhập để thêm thành viên.',
+    change_password_first: 'Hãy đổi mật khẩu tạm của bạn trước khi thêm thành viên.',
+    invalid_phone: 'Số điện thoại chưa đúng. Kiểm tra mã nước và số điện thoại.',
+    invalid_password: 'Mật khẩu tạm không hợp lệ. Thử lại nhé.',
+    phone_taken: 'Số điện thoại này đã có tài khoản. Hãy nhờ quản trị viên hỗ trợ.',
+    no_household: 'Bạn chưa thuộc hộ nào nên chưa thêm được thành viên.',
+    household_full_or_inactive: 'Hộ đã đủ thành viên hoặc không còn hoạt động.',
+    not_allowed: 'Bạn không có quyền thêm thành viên vào hộ này.',
+    not_found: 'Không tìm thấy hộ này.',
+    create_failed: 'Máy chủ chưa thêm được thành viên. Thử lại sau ít phút nhé.',
+    network: 'Không có kết nối mạng. Kiểm tra mạng rồi thử lại nhé.',
+    unknown: 'Chưa thêm được thành viên. Thử lại sau nhé.',
+  },
+
   // Đồng bộ Danh bạ hộ (story 023)
   consentTitle: 'Đồng bộ Danh bạ trong hộ',
   consentIntro:
@@ -559,4 +592,14 @@ export function contactSyncLastSyncedLabel(iso: string): string {
   const time = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit' }).format(at);
   const date = new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(at);
   return `Đồng bộ lần cuối: ${time} ${date}`;
+}
+
+/** "x/2 thành viên". */
+export function householdCountLabel(count: number, max: number): string {
+  return `${count}/${max} thành viên`;
+}
+
+/** Note shown instead of the add button when the household is full. */
+export function householdFullNote(max: number): string {
+  return `Hộ đã đủ ${max} thành viên`;
 }

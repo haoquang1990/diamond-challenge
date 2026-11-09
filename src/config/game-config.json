@@ -148,6 +148,7 @@
     ]
   },
   "contactConsentVersion": 1,
+  "maxHouseholdMembers": 2,
   "contactSync": {
     "pushBatchSize": 200,
     "pullOverlap": 200,

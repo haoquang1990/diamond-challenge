@@ -25,6 +25,7 @@ import { CreateAccountScreen } from './ui/screens/create-account-screen';
 import { ConsentScreen } from './ui/screens/consent-screen';
 import { DiamondPathScreen } from './ui/screens/diamond-path-screen';
 import { LessonScreen } from './ui/screens/lesson-screen';
+import { HouseholdScreen } from './ui/screens/household-screen';
 import { LoginScreen } from './ui/screens/login-screen';
 import { PeopleScreen } from './ui/screens/people-screen';
 import { SettingsScreen } from './ui/screens/settings-screen';
@@ -55,9 +56,9 @@ function realNow(): Date {
  * merged person list (Danh bạ). `settings` (opened from Hôm nay) and `board`
  * (opened from Con đường) are not in the tab bar.
  */
-type Tab = 'today' | 'learn' | 'people' | 'path' | 'settings' | 'board' | 'achievements' | 'login';
+type Tab = 'today' | 'learn' | 'people' | 'path' | 'settings' | 'board' | 'achievements' | 'login' | 'household';
 
-const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'board' | 'achievements' | 'login'>; readonly label: string }[] = [
+const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'board' | 'achievements' | 'login' | 'household'>; readonly label: string }[] = [
   { id: 'today', label: STRINGS.tabToday },
   { id: 'learn', label: STRINGS.tabLearn },
   { id: 'people', label: STRINGS.tabPeople },
@@ -421,6 +422,14 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
     );
   }
 
+  if (tab === 'household' && clientPromise !== null && account !== null) {
+    return (
+      <div className="app-shell">
+        <HouseholdScreen clientPromise={clientPromise} accountId={account.accountId} onBack={() => setTab('settings')} />
+      </div>
+    );
+  }
+
   if (tab === 'board') {
     return (
       <div className="app-shell">
@@ -451,7 +460,7 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
           {...(clientPromise === null
             ? {}
             : {
-                accountSection: { account, onLogin: () => setTab('login'), onSignOut, onSaveDisplayName },
+                accountSection: { account, onLogin: () => setTab('login'), onSignOut, onSaveDisplayName, onOpenHousehold: () => setTab('household') },
                 contactSync: {
                   signedIn: account !== null,
                   consent,

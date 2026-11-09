@@ -8,7 +8,8 @@ import type { EventStore } from '../../data/event-store';
 import { derivePeople, validatePhone } from '../../domain/people';
 import type { Person } from '../../domain/people';
 import { COUNTRY_CODES, PEOPLE_CONFIG } from '../people-config';
-import { STRINGS, createAccountShareText } from '../strings';
+import { STRINGS } from '../strings';
+import { TempPasswordView } from './temp-password-view';
 
 /** Props for {@link CreateAccountScreen}. */
 export interface CreateAccountScreenProps {
@@ -48,7 +49,6 @@ export function CreateAccountScreen({ clientPromise, eventStore, personId, onBac
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [created, setCreated] = useState<Created | null>(null);
-  const [copyNote, setCopyNote] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -124,60 +124,15 @@ export function CreateAccountScreen({ clientPromise, eventStore, personId, onBac
     setBusy(false);
   };
 
-  const copy = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopyNote(STRINGS.createAccountCopied);
-    } catch {
-      setCopyNote(STRINGS.createAccountCopyFailed);
-    }
-  };
-
-  const share = (text: string) => {
-    navigator.share({ text }).catch(() => undefined);
-  };
-
   if (created !== null) {
-    const text = createAccountShareText(created.phone, created.password);
     return (
-      <main className="screen">
-        <header className="screen__header">
-          <h1 className="screen__title">{STRINGS.createAccountDone}</h1>
-          <p className="screen__prompt">{STRINGS.createAccountOnce}</p>
-        </header>
-        <section className="card form">
-          <p className="message">
-            {STRINGS.createAccountPhoneLine}: <strong>{created.phone}</strong>
-          </p>
-          <p className="message">
-            {STRINGS.createAccountPasswordLine}: <strong className="temp-password">{created.password}</strong>
-          </p>
-          <p className="message">{STRINGS.createAccountShareHint}</p>
-          {created.saveFailed && (
-            <p className="message message--warn" role="alert">
-              {STRINGS.createAccountSaveWarning}
-            </p>
-          )}
-          <div className="button-row">
-            <button type="button" className="button button--secondary" onClick={() => void copy(text)}>
-              {STRINGS.createAccountCopy}
-            </button>
-            {typeof navigator.share === 'function' && (
-              <button type="button" className="button button--secondary" onClick={() => share(text)}>
-                {STRINGS.createAccountShare}
-              </button>
-            )}
-          </div>
-          {copyNote !== null && (
-            <p className="message" role="status">
-              {copyNote}
-            </p>
-          )}
-          <button type="button" className="button button--primary" onClick={onBack}>
-            {STRINGS.createAccountFinish}
-          </button>
-        </section>
-      </main>
+      <TempPasswordView
+        title={STRINGS.createAccountDone}
+        phone={created.phone}
+        password={created.password}
+        {...(created.saveFailed ? { warning: STRINGS.createAccountSaveWarning } : {})}
+        onFinish={onBack}
+      />
     );
   }
 
