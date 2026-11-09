@@ -1,12 +1,12 @@
 # Story 024: "Tạo tài khoản" cho liên hệ NPP có mã số
 
 > **Epic**: diamond-challenge
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Feature
 > **Type**: UI
 > **Estimate**: M
 > **Manifest Version**: N/A (minimal — no control manifest)
-> **Last Updated**: 2026-11-08
+> **Last Updated**: 2026-11-09
 
 ## Context
 
@@ -77,3 +77,10 @@
 
 - Depends on: `production/epics/diamond-challenge/story-021-login-change-password.md`, `production/epics/diamond-challenge/story-022-amway-code-on-contacts.md`
 - Unlocks: story 028
+
+## Completion Notes
+**Completed**: 2026-11-09
+**Criteria**: 8/8 passing (built app in Chromium 390×844 and 320px with Supabase and the create-f1-account Edge Function faked; not tried on a real phone or against the live Supabase)
+**Deviations**: Advisory, not logged as tech debt: (1) the Edge Function was faked, so the first real account creation (also the evidence story 020 AC-7 still waits for) is still to do; (2) the Web Share button was not seen because desktop Chromium has no `navigator.share`; (3) the shared text holds the phone, the temporary password and a reminder to change it, no app link; (4) the archived-person warning exists but is hardly reachable from the UI; (5) `person-form.tsx` and `app.tsx` were changed beyond the planned list and are in `## Files`; (6) the offline lock is read at render time and does not react to the `online` event
+**Test Evidence**: screenshots in production/qa/evidence/story-024-create-f1-account/ (01–10 plus stamp.txt, stamp unchanged); full suite 352/352
+**Reviewed by**: self, no independent review
