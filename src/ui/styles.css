@@ -810,3 +810,11 @@ body { margin: 0; }
 .group-house__actions .button { min-height: 44px; width: 100%; }
 .cheer-card { border-color: var(--color-diamond); background: var(--color-diamond-light); }
 .cheer-card .button { min-height: 44px; }
+
+/* Quản trị (story 029) */
+.admin-tabs { display: flex; gap: 8px; }
+.admin-tabs .button { flex: 1; min-width: 0; min-height: 44px; }
+.admin-member { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.admin-member .button { min-height: 44px; }
+.admin-code-cancelled { color: var(--color-muted); overflow-wrap: anywhere; }
+.admin-result { min-width: 0; overflow-wrap: anywhere; }

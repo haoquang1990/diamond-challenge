@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import gameConfig from './config/game-config.json';
 import { getSupabaseClient } from './config/supabase';
+import { loadIsAdmin } from './data/admin-service';
 import { dismissCheers, loadUnseenCheer } from './data/group-service';
 import { ensureAccountLinked, loadAccount, saveDisplayName, signOut } from './data/auth-service';
 import type { AccountInfo, AuthResult } from './data/auth-service';
@@ -24,6 +25,7 @@ import { createAggregatesSync } from './data/aggregates-sync';
 import type { AggregatesSync } from './data/aggregates-sync';
 import { PEOPLE_CONFIG } from './ui/people-config';
 import { Board30x30Screen } from './ui/screens/board-30x30-screen';
+import { AdminScreen } from './ui/screens/admin-screen';
 import { ChangePasswordScreen, DisplayNameScreen } from './ui/screens/change-password-screen';
 import { CreateAccountScreen } from './ui/screens/create-account-screen';
 import { ConsentScreen } from './ui/screens/consent-screen';
@@ -62,9 +64,9 @@ function realNow(): Date {
  * merged person list (Danh bạ). `settings` (opened from Hôm nay) and `board`
  * (opened from Con đường) are not in the tab bar.
  */
-type Tab = 'today' | 'learn' | 'people' | 'path' | 'settings' | 'board' | 'achievements' | 'login' | 'household' | 'duplicates' | 'group';
+type Tab = 'today' | 'learn' | 'people' | 'path' | 'settings' | 'board' | 'achievements' | 'login' | 'household' | 'admin' | 'duplicates' | 'group';
 
-const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'board' | 'achievements' | 'login' | 'household' | 'duplicates' | 'group'>; readonly label: string }[] = [
+const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'board' | 'achievements' | 'login' | 'household' | 'admin' | 'duplicates' | 'group'>; readonly label: string }[] = [
   { id: 'today', label: STRINGS.tabToday },
   { id: 'learn', label: STRINGS.tabLearn },
   { id: 'people', label: STRINGS.tabPeople },
@@ -143,6 +145,23 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
   }, [rawEventStore]);
   const accountId = account?.accountId ?? null;
   const passwordPending = account?.mustChangePassword === true;
+
+  // Story 029: "Quản trị" is shown only to role = admin (read from the own profile; the server enforces it too).
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+    setIsAdmin(false);
+    if (clientPromise === null || accountId === null || passwordPending) return;
+    let cancelled = false;
+    clientPromise
+      .then((client) => loadIsAdmin(client, accountId))
+      .then((admin) => {
+        if (!cancelled) setIsAdmin(admin);
+      })
+      .catch((error: unknown) => console.error('[admin] could not read the role', error));
+    return () => {
+      cancelled = true;
+    };
+  }, [clientPromise, accountId, passwordPending]);
 
   // Story 028: an unseen cheer from the sponsor household shows as a dismissible card on Hôm nay.
   const [unseenCheer, setUnseenCheer] = useState<{ readonly message: string; readonly allIds: readonly string[] } | null>(null);
@@ -494,6 +513,14 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
     );
   }
 
+  if (tab === 'admin' && clientPromise !== null && account !== null && isAdmin) {
+    return (
+      <div className="app-shell">
+        <AdminScreen clientPromise={clientPromise} onBack={() => setTab('settings')} />
+      </div>
+    );
+  }
+
   if (tab === 'group' && clientPromise !== null && account !== null) {
     return (
       <div className="app-shell">
@@ -545,7 +572,7 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
           {...(clientPromise === null
             ? {}
             : {
-                accountSection: { account, onLogin: () => setTab('login'), onSignOut, onSaveDisplayName, onOpenHousehold: () => setTab('household') },
+                accountSection: { account, onLogin: () => setTab('login'), onSignOut, onSaveDisplayName, onOpenHousehold: () => setTab('household'), ...(isAdmin ? { onOpenAdmin: () => setTab('admin') } : {}) },
                 contactSync: {
                   signedIn: account !== null,
                   consent,

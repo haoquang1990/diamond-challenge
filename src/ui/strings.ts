@@ -352,6 +352,54 @@ export const STRINGS = {
     unknown: 'Chưa thêm được thành viên. Thử lại sau nhé.',
   },
 
+  // Quản trị (story 029)
+  adminEntry: 'Quản trị',
+  adminTitle: 'Quản trị',
+  adminPrompt: 'Tìm hộ theo số điện thoại hoặc mã số Amway để đặt lại mật khẩu hoặc đặt mã số.',
+  adminOffline: 'Cần có mạng để dùng màn Quản trị.',
+  adminSearchByPhone: 'SĐT',
+  adminSearchByCode: 'Mã số',
+  adminSearchCodeLabel: 'Mã số Amway',
+  adminSearchButton: 'Tìm hộ',
+  adminSearching: 'Đang tìm…',
+  adminSearchOfflineReason: 'Cần có mạng để tìm hộ.',
+  adminSearchPhoneRequired: 'Hãy nhập số điện thoại.',
+  adminSearchCodeInvalid: 'Mã số chỉ gồm chữ số (được cách bằng dấu cách, chấm hoặc gạch) và dài từ 4 đến 15 chữ số.',
+  adminNotFound: 'Không tìm thấy hộ nào.',
+  adminSearchErrors: {
+    network: 'Không có kết nối mạng. Kiểm tra mạng rồi thử lại nhé.',
+    unknown: 'Chưa tìm được. Thử lại sau nhé.',
+  },
+  adminMembersHeading: 'Thành viên',
+  adminNoMembers: 'Hộ chưa có thành viên.',
+  adminActiveCodeLabel: 'Mã đang hoạt động',
+  adminNoCode: 'Chưa có mã',
+  adminCancelledHeading: 'Mã đã huỷ',
+  adminCancelledTag: 'Đã huỷ',
+  adminResetButton: 'Đặt lại mật khẩu',
+  adminResetting: 'Đang đặt lại…',
+  adminResetOfflineReason: 'Cần có mạng để đặt lại mật khẩu.',
+  adminResetDone: 'Đã đặt lại mật khẩu',
+  adminResetErrors: {
+    not_found: 'Không tìm thấy tài khoản này.',
+    admin_only: 'Chỉ quản trị viên mới đặt lại được mật khẩu.',
+    network: 'Không có kết nối mạng. Mật khẩu chưa đổi. Kiểm tra mạng rồi thử lại nhé.',
+    other: 'Chưa đặt lại được mật khẩu. Thử lại sau nhé.',
+  },
+  adminSetCodeHeading: 'Đặt mã số',
+  adminSetCodeLabel: 'Mã số mới',
+  adminSetCodeButton: 'Đặt mã số',
+  adminSetCodeSaving: 'Đang đặt…',
+  adminSetCodeOfflineReason: 'Cần có mạng để đặt mã số.',
+  adminSetCodeDone: 'Đã đặt mã số. Mã cũ chuyển sang Đã huỷ.',
+  adminSetCodeErrors: {
+    invalid_code: 'Mã số chỉ gồm chữ số (được cách bằng dấu cách, chấm hoặc gạch) và dài từ 4 đến 15 chữ số.',
+    code_taken: 'Mã số này đang hoạt động ở một hộ khác. Chưa đổi gì.',
+    not_admin: 'Chỉ quản trị viên mới đặt được mã số.',
+    network: 'Không có kết nối mạng. Mã số chưa đổi. Kiểm tra mạng rồi thử lại nhé.',
+    other: 'Chưa đặt được mã số. Thử lại sau nhé.',
+  },
+
   // Đồng bộ Danh bạ hộ (story 023)
   consentTitle: 'Đồng bộ Danh bạ trong hộ',
   consentIntro:
@@ -718,4 +766,21 @@ export function groupUpdatedLabel(iso: string): string {
 /** Aria label of the cheer button of one household. */
 export function groupCheerAria(name: string): string {
   return `Cổ vũ ${name}`;
+}
+
+/** "Đã huỷ 07/11/2026" (device time zone). */
+export function adminCancelledLabel(iso: string): string {
+  const date = new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date(iso));
+  return `${STRINGS.adminCancelledTag} ${date}`;
+}
+
+/** Vietnamese text of a code's cancel reason; unknown reasons are shown as stored. */
+export function adminCancelReason(reason: string): string {
+  const known: Record<string, string> = { replaced: 'đã thay bằng mã mới', merged: 'gộp mã', dissolved: 'hộ giải thể' };
+  return known[reason] ?? reason;
+}
+
+/** Aria label of the reset button of one member. */
+export function adminResetAria(name: string): string {
+  return `Đặt lại mật khẩu của ${name}`;
 }

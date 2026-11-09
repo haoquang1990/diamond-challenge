@@ -50,8 +50,8 @@
 
 ## Files
 
-- `src/ui/screens/admin-screen.tsx`, `src/ui/screens/settings-screen.tsx`
-- `src/data/admin-service.ts`
+- `src/data/admin-service.ts` (new), `src/ui/screens/admin-screen.tsx` (new)
+- `src/ui/screens/settings-screen.tsx` ("Quản trị" entry, admin only), `src/app.tsx` (role read, admin route)
 - `src/ui/strings.ts`, `src/ui/styles.css`
 - `production/qa/evidence/story-029-minimal-admin/`
 
