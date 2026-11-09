@@ -1,7 +1,7 @@
 # Story 026: Gộp Danh bạ khi vào chung hộ (dò trùng, kiểm tra, gộp, tách)
 
 > **Epic**: diamond-challenge
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Core
 > **Type**: UI
 > **Estimate**: L
@@ -79,3 +79,10 @@
 
 - Depends on: `production/epics/diamond-challenge/story-022-amway-code-on-contacts.md`, `production/epics/diamond-challenge/story-023-consent-household-contact-sync.md`
 - Unlocks: story 027
+
+## Completion Notes
+**Completed**: 2026-11-09
+**Criteria**: 9/9 passing (built app in Chromium 390×844 and 320px with seeded contacts; not tried on a real phone or against the live Supabase)
+**Deviations**: Advisory, not logged as tech debt: (1) detection after a file restore is not a separate step, it follows from detection being recomputed on every read, and was not run; (2) the two-member offline case is covered by pure-function tests only, no two-device run; (3) "first KH/NPP" progress counts live contacts, so a merge can lower the count of a milestone not yet earned (earned ones stay); (4) the message that blocks merging two different linked accounts was not captured on screen; (5) `person-form.tsx`, `people-helpers.ts`, `people-config.ts` and `app.tsx` were touched beyond the planned list and are in `## Files`
+**Test Evidence**: screenshots in production/qa/evidence/story-026-merge-duplicate-contacts/ (01–10 plus stamp.txt, stamp unchanged); unit test `tests/unit/people/duplicates.test.ts`; full suite 355/355
+**Reviewed by**: self, no independent review
