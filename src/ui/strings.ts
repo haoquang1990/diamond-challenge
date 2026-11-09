@@ -73,8 +73,8 @@ export const STRINGS = {
   stageNeed: 'Còn thiếu',
 
   // Nhắc nhở (story 007)
-  reminderButton: 'Nhắc nhở',
-  reminderButtonLabel: 'Mở cài đặt nhắc nhở',
+  reminderButton: 'Cài đặt',
+  reminderButtonLabel: 'Mở Cài đặt',
   settingsTitle: 'Cài đặt',
   settingsPrompt: 'Nhắc bạn hoàn thành mục tiêu ngày, chỉ khi hôm nay chưa đạt.',
   backupHeading: 'Sao lưu và khôi phục',

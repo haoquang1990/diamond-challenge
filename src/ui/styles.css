@@ -622,7 +622,7 @@ body { margin: 0; }
 .history-row__name { font-weight: 700; overflow-wrap: anywhere; }
 .phone-field { display: flex; flex-direction: column; gap: 6px; }
 .phone-field__row { display: flex; gap: 8px; }
-.phone-field__country { flex: 0 1 45%; min-width: 0; }
+.phone-field__country { flex: 0 0 auto; min-width: 92px; }
 .phone-field__number { flex: 1 1 0; min-width: 0; }
 
 .backup-warning { margin: 0; font-weight: 700; color: var(--color-warn); overflow-wrap: anywhere; }

@@ -38,7 +38,7 @@ export interface TodayScreenProps {
   readonly now?: () => Date;
   /** IANA time zone defining the local day; defaults to the device's. */
   readonly timeZone?: string;
-  /** Opens Cài đặt nhắc nhở (story 007); the header button is hidden when absent. */
+  /** Opens Cài đặt (account, household, sync, reminders, backup); the header button is hidden when absent. */
   readonly onOpenSettings?: () => void;
   /** An unseen cheer from the sponsor household (story 028); the card is shown only when set. */
   readonly cheer?: { readonly message: string } | null;
@@ -172,7 +172,7 @@ export function TodayScreen({
         <div className="today-header__actions">
           {onOpenSettings !== undefined && (
             <button type="button" className="reminder-button" onClick={onOpenSettings} aria-label={STRINGS.reminderButtonLabel}>
-              <BellIcon />
+              <GearIcon />
               <span>{STRINGS.reminderButton}</span>
             </button>
           )}
@@ -327,7 +327,16 @@ function FlameIcon() {
   );
 }
 
-/** Flat bell glyph for the reminder entry and banner (decorative). */
+/** Flat gear glyph for the Cài đặt entry (decorative). */
+function GearIcon() {
+  return (
+    <svg className="bell-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M19.4 13a7.6 7.6 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.4 7.4 0 0 0-1.7-1L15 3.3h-4l-.4 2.6a7.4 7.4 0 0 0-1.7 1l-2.5-1-2 3.5L6.6 11a7.6 7.6 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1a7.4 7.4 0 0 0 1.7 1l.4 2.6h4l.4-2.6a7.4 7.4 0 0 0 1.7-1l2.5 1 2-3.5zM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z" fillRule="evenodd" transform="translate(-1 0)" />
+    </svg>
+  );
+}
+
+/** Flat bell glyph for the reminder banner (decorative). */
 function BellIcon() {
   return (
     <svg className="bell-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">

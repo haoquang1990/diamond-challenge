@@ -35,19 +35,19 @@ function PhoneInput({ country, number, onChange, disabled, error }: PhoneInputPr
     <div className="phone-field">
       <span className="note__label">{STRINGS.phoneNumberLabel}</span>
       <div className="phone-field__row">
-        <select
-          className="select phone-field__country"
-          value={country}
-          onChange={(e) => onChange(e.target.value, number)}
-          disabled={disabled}
-          aria-label={STRINGS.phoneCountryLabel}
-        >
-          {COUNTRY_CODES.map((c) => (
-            <option key={c.code} value={c.code}>
-              {c.code} {c.name}
-            </option>
-          ))}
-        </select>
+        {/* Closed: only the code. Open: the native list shows code and country name. */}
+        <span className="select-code phone-field__country">
+          <span className="select-code__value" aria-hidden="true">
+            {country}
+          </span>
+          <select value={country} onChange={(e) => onChange(e.target.value, number)} disabled={disabled} aria-label={STRINGS.phoneCountryLabel}>
+            {COUNTRY_CODES.map((c) => (
+              <option key={c.code} value={c.code}>
+                {c.code} {c.name}
+              </option>
+            ))}
+          </select>
+        </span>
         <input
           className="note__input phone-field__number"
           type="tel"
