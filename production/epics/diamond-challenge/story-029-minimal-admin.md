@@ -1,7 +1,7 @@
 # Story 029: Màn Quản trị tối thiểu (đặt lại mật khẩu, đặt mã số cho hộ)
 
 > **Epic**: diamond-challenge
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Feature
 > **Type**: UI
 > **Estimate**: M
@@ -74,3 +74,10 @@
 
 - Depends on: `production/epics/diamond-challenge/story-021-login-change-password.md`
 - Unlocks: None
+
+## Completion Notes
+**Completed**: 2026-11-09
+**Criteria**: 6/6 passing (built app in Chromium 390×844 and 320px with a fake Supabase; not tried on a real phone or against the live Supabase)
+**Deviations**: Advisory, not logged as tech debt: (1) never tried against the live Supabase; the first real try should use a test household and must not change the real code `7004053634`; (2) the reset-password errors `not_found`, `admin_only` and network were not run on screen, and `reset-password` has no automated test (the `set_household_code` admin check is covered by the story 020 PGlite tests); (3) searching by a cancelled code also finds the household that used it, an agent choice not in the spec; (4) member phone numbers are shown unformatted; (5) after looking at the screenshots the search-mode buttons were shortened to "SĐT" and "Mã số" (at 320px they wrapped to three lines), the code field label became "Mã số Amway", and the cancel reason "replaced" is shown as "đã thay bằng mã mới"
+**Test Evidence**: screenshots in production/qa/evidence/story-029-minimal-admin/ (01–09 plus stamp.txt, stamp unchanged); full suite 370/370 (no new test, waived at qa.level minimal)
+**Reviewed by**: self, no independent review
