@@ -1,12 +1,12 @@
 # Story 025: Màn "Hộ của tôi" và "Thêm vợ/chồng vào hộ"
 
 > **Epic**: diamond-challenge
-> **Status**: Ready
+> **Status**: In Progress
 > **Layer**: Feature
 > **Type**: UI
 > **Estimate**: M
 > **Manifest Version**: N/A (minimal — no control manifest)
-> **Last Updated**: 2026-11-07
+> **Last Updated**: 2026-11-09
 
 ## Context
 
