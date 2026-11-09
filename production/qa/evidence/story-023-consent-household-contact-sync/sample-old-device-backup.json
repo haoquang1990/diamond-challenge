@@ -1,0 +1,57 @@
+{
+  "format": "diamond-challenge-backup",
+  "formatVersion": 1,
+  "exportedAt": "2026-11-07T10:57:05.419Z",
+  "events": [
+    {
+      "id": "7dd8a2d9-9da7-46d6-b724-127601374568",
+      "type": "settings_changed",
+      "timestamp": "2026-11-07T10:57:01.953Z",
+      "userId": "7eb85da0-4ad1-4cc9-89f7-c370e306b3d7",
+      "schemaVersion": 1,
+      "payload": {
+        "achievementsSeeded": true
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "8186f6e1-0e1b-4dea-aa7e-05af24b179b1",
+      "type": "person_added",
+      "timestamp": "2026-11-07T10:57:02.681Z",
+      "userId": "7eb85da0-4ad1-4cc9-89f7-c370e306b3d7",
+      "schemaVersion": 1,
+      "payload": {
+        "personId": "c456d7e7-43cb-482f-8af3-808764f0f498",
+        "name": "Khánh"
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "9e572ae4-95d2-4029-a674-dadb893bd8f0",
+      "type": "activity_logged",
+      "timestamp": "2026-11-07T10:57:02.684Z",
+      "userId": "7eb85da0-4ad1-4cc9-89f7-c370e306b3d7",
+      "schemaVersion": 1,
+      "payload": {
+        "activityType": "add_name",
+        "xp": 5,
+        "personId": "c456d7e7-43cb-482f-8af3-808764f0f498"
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "75797e50-0291-4548-ba6a-4ea02e7268ab",
+      "type": "activity_logged",
+      "timestamp": "2026-11-07T10:57:03.880Z",
+      "userId": "7eb85da0-4ad1-4cc9-89f7-c370e306b3d7",
+      "schemaVersion": 1,
+      "payload": {
+        "activityType": "demo",
+        "taskId": "demo",
+        "xp": 10,
+        "personId": "c456d7e7-43cb-482f-8af3-808764f0f498"
+      },
+      "syncedAt": null
+    }
+  ]
+}

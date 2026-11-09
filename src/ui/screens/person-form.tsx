@@ -1,10 +1,17 @@
 import { useState } from 'react';
 import type { EventStore, LogEvent } from '../../data/event-store';
-import { buildTaskCompletionEvent, findDuplicateNames, pendingTasks, validatePersonName, validatePhone } from '../../domain/people';
+import {
+  buildTaskCompletionEvent,
+  findDuplicateNames,
+  pendingTasks,
+  validateAmwayCode,
+  validatePersonName,
+  validatePhone,
+} from '../../domain/people';
 import type { PeopleConfig, Person, PersonPhone } from '../../domain/people';
 import { COUNTRY_CODES, PEOPLE_CONFIG, PERSON_TASKS } from '../people-config';
-import { buildPersonHistory, formatPhone } from '../people-helpers';
-import { STRINGS, historyStageLabel, shortDateLabel, taskButtonLabel, xpLabel } from '../strings';
+import { buildPersonHistory, duplicateCodeNames, findDuplicateCodes, findPeopleWithCode, formatPhone } from '../people-helpers';
+import { STRINGS, duplicateCodeWarning, historyStageLabel, shortDateLabel, taskButtonLabel, xpLabel } from '../strings';
 
 /** Maps a phone validation failure to its message. */
 function phoneErrorText(reason: 'unknown_country' | 'not_digits' | 'bad_length'): string {
@@ -62,6 +69,56 @@ function PhoneInput({ country, number, onChange, disabled, error }: PhoneInputPr
   );
 }
 
+/** Props for {@link AmwayCodeInput}. */
+interface AmwayCodeInputProps {
+  readonly value: string;
+  readonly onChange: (value: string) => void;
+  readonly disabled: boolean;
+  readonly error: string | null;
+  /** Non-blocking warning (another person has this code); the form still saves. */
+  readonly warning: string | null;
+}
+
+/** Optional Amway code field with a numeric keyboard, an error and a duplicate warning. */
+function AmwayCodeInput({ value, onChange, disabled, error, warning }: AmwayCodeInputProps) {
+  return (
+    <div className="phone-field">
+      <label className="note">
+        <span className="note__label">{STRINGS.amwayCodeLabel}</span>
+        <input
+          className="note__input"
+          type="text"
+          inputMode="numeric"
+          value={value}
+          placeholder={STRINGS.amwayCodePlaceholder}
+          onChange={(e) => onChange(e.target.value)}
+          disabled={disabled}
+          autoComplete="off"
+          aria-invalid={error !== null}
+        />
+      </label>
+      {error !== null && (
+        <p className="message message--error" role="alert">
+          {error}
+        </p>
+      )}
+      {warning !== null && (
+        <p className="message message--warn" role="status">
+          {warning}
+        </p>
+      )}
+    </div>
+  );
+}
+
+/** Warning text for a typed code that other people already have, or null. */
+function typedCodeWarning(people: readonly Person[], input: string, excludePersonId?: string): string | null {
+  const checked = validateAmwayCode(input, PEOPLE_CONFIG);
+  if (!checked.ok) return null;
+  const others = findPeopleWithCode(people, checked.code, excludePersonId);
+  return others.length > 0 ? duplicateCodeWarning(duplicateCodeNames(others)) : null;
+}
+
 const DEFAULT_COUNTRY = COUNTRY_CODES[0]?.code ?? '+84';
 
 /** Props for {@link AddPersonForm}. */
@@ -69,7 +126,7 @@ export interface AddPersonFormProps {
   /** People used for the non-blocking duplicate-name warning. */
   readonly people: readonly Person[];
   /** Writes the person; a rejected promise shows a save error and keeps the input. */
-  readonly onSubmit: (name: string, note: string, phone: PersonPhone | null) => Promise<void>;
+  readonly onSubmit: (name: string, note: string, phone: PersonPhone | null, amwayCode: string | null) => Promise<void>;
   /** Hide the note and phone fields (compact variant; currently unused). */
   readonly compact?: boolean;
 }
@@ -84,6 +141,8 @@ export function AddPersonForm({ people, onSubmit, compact = false }: AddPersonFo
   const [country, setCountry] = useState(DEFAULT_COUNTRY);
   const [number, setNumber] = useState('');
   const [phoneError, setPhoneError] = useState<string | null>(null);
+  const [code, setCode] = useState('');
+  const [codeError, setCodeError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -100,12 +159,19 @@ export function AddPersonForm({ people, onSubmit, compact = false }: AddPersonFo
       setPhoneError(phoneErrorText(phone.reason));
       return;
     }
+    const amway = compact ? { ok: true as const, code: null } : validateAmwayCode(code, PEOPLE_CONFIG);
+    if (!amway.ok) {
+      setCodeError(STRINGS.amwayCodeInvalid);
+      return;
+    }
     setBusy(true);
     setError(null);
     setPhoneError(null);
+    setCodeError(null);
     try {
-      await onSubmit(checked.name, note.trim(), phone.phone);
+      await onSubmit(checked.name, note.trim(), phone.phone, amway.code);
       setName('');
+      setCode('');
       setNote('');
       setNumber('');
       setCountry(DEFAULT_COUNTRY);
@@ -155,6 +221,18 @@ export function AddPersonForm({ people, onSubmit, compact = false }: AddPersonFo
         />
       )}
       {!compact && (
+        <AmwayCodeInput
+          value={code}
+          onChange={(v) => {
+            setCode(v);
+            setCodeError(null);
+          }}
+          disabled={busy}
+          error={codeError}
+          warning={typedCodeWarning(people, code)}
+        />
+      )}
+      {!compact && (
         <label className="note">
           <span className="note__label">{STRINGS.noteLabel}</span>
           <textarea className="note__input" rows={2} value={note} onChange={(e) => setNote(e.target.value)} disabled={busy} />
@@ -188,6 +266,13 @@ export interface PersonDetailProps {
   /** Names for legacy activity types in the history. */
   readonly activityTypes: readonly { readonly id: string; readonly name: string }[];
   readonly config?: PeopleConfig;
+  /** Who did a history row (story 023): a name, or null for me / when the book is not synced. */
+  readonly authorLabel?: (userId: string) => string | null;
+  /**
+   * Account creation (story 024). Absent when the build has no Supabase config or the user is
+   * signed out: the "Tạo tài khoản" button is then not shown.
+   */
+  readonly createAccount?: { readonly onOpen: () => void };
   /** Re-read the log after any write. */
   readonly onChanged: () => Promise<void>;
   readonly onBack: () => void;
@@ -208,12 +293,14 @@ interface TaskUndo {
  * closes again after a successful save), read-only history and archive (with
  * confirm). State of record is the event log; this only holds form state.
  */
-export function PersonDetail({ eventStore, person, people, events, activityTypes, config = PEOPLE_CONFIG, onChanged, onBack }: PersonDetailProps) {
+export function PersonDetail({ eventStore, person, people, events, activityTypes, config = PEOPLE_CONFIG, authorLabel, createAccount, onChanged, onBack }: PersonDetailProps) {
   const [name, setName] = useState(person.name);
   const [note, setNote] = useState(person.note);
   const [country, setCountry] = useState(person.phone?.country ?? DEFAULT_COUNTRY);
   const [number, setNumber] = useState(person.phone?.number ?? '');
   const [phoneError, setPhoneError] = useState<string | null>(null);
+  const [code, setCode] = useState(person.amwayCode ?? '');
+  const [codeError, setCodeError] = useState<string | null>(null);
   const [confirmArchive, setConfirmArchive] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -222,6 +309,7 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
   const [editOpen, setEditOpen] = useState(false);
 
   const duplicate = name.trim() !== '' && findDuplicateNames(people, name, person.personId).duplicate;
+  const sameCode = findDuplicateCodes(people).get(person.personId);
   const todo = pendingTasks(person, config);
   const history = buildPersonHistory(events, person.personId, config, [...PERSON_TASKS, ...activityTypes]);
 
@@ -252,6 +340,12 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
         return;
       }
       setPhoneError(null);
+      const amway = validateAmwayCode(code, config);
+      if (!amway.ok) {
+        setCodeError(STRINGS.amwayCodeInvalid);
+        return;
+      }
+      setCodeError(null);
       await eventStore.append({
         type: 'person_updated',
         payload: {
@@ -259,6 +353,7 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
           name: checked.name,
           note: note.trim(),
           phone: phone.phone ?? { country, number: '' },
+          amwayCode: amway.code ?? '',
         },
       });
       await onChanged();
@@ -304,6 +399,26 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
         {person.phone != null && (
           <p className="screen__prompt">
             {STRINGS.personDetailPhone}: <strong>{formatPhone(person.phone)}</strong>
+          </p>
+        )}
+        {person.amwayCode != null && (
+          <p className="screen__prompt">
+            {STRINGS.personDetailAmwayCode}: <strong>{person.amwayCode}</strong>
+          </p>
+        )}
+        {person.linkedUserId != null && (
+          <p className="screen__prompt">
+            <strong>{STRINGS.createAccountHasAccount}</strong>
+          </p>
+        )}
+        {person.linkedUserId != null && (person.archived || person.label !== 'NPP') && (
+          <p className="message message--warn" role="status">
+            {person.archived ? STRINGS.createAccountWarnArchived : STRINGS.createAccountWarnNotNpp}
+          </p>
+        )}
+        {sameCode !== undefined && (
+          <p className="message message--warn" role="status">
+            {duplicateCodeWarning(duplicateCodeNames(sameCode))}
           </p>
         )}
       </header>
@@ -385,6 +500,16 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
               disabled={busy}
               error={phoneError}
             />
+            <AmwayCodeInput
+              value={code}
+              onChange={(v) => {
+                setCode(v);
+                setCodeError(null);
+              }}
+              disabled={busy}
+              error={codeError}
+              warning={typedCodeWarning(people, code, person.personId)}
+            />
             <label className="note">
               <span className="note__label">{STRINGS.noteLabel}</span>
               <textarea className="note__input" rows={2} value={note} onChange={(e) => setNote(e.target.value)} disabled={busy} />
@@ -406,20 +531,44 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
         )}
       </section>
 
+      {createAccount !== undefined && person.label === 'NPP' && !person.archived && person.linkedUserId == null && (
+        <section className="card person-section" aria-label={STRINGS.createAccountTitle}>
+          {(() => {
+            const reason = person.amwayCode == null ? STRINGS.createAccountNeedsCode : navigator.onLine ? null : STRINGS.createAccountNeedsNetwork;
+            return (
+              <>
+                <button type="button" className="button button--primary" onClick={createAccount.onOpen} disabled={busy || reason !== null} aria-describedby={reason === null ? undefined : 'create-account-reason'}>
+                  {STRINGS.createAccountButton}
+                </button>
+                {reason !== null && (
+                  <p id="create-account-reason" className="message">
+                    {reason}
+                  </p>
+                )}
+              </>
+            );
+          })()}
+        </section>
+      )}
+
       <section className="card person-section" aria-label={STRINGS.historyTitle}>
         <h2 className="person-section__heading">{STRINGS.historyTitle}</h2>
         {history.length === 0 ? (
           <p className="message">{STRINGS.historyEmpty}</p>
         ) : (
           <ul className="history-list">
-            {history.map((h) => (
+            {history.map((h) => {
+              const author = authorLabel?.(h.userId) ?? null;
+              return (
               <li key={h.id} className="history-row">
                 <span className="history-row__name">
                   {h.kind === 'stage' ? historyStageLabel(h.name) : h.name === '' ? STRINGS.legacyUnknownActivity : h.name}
+                  {author !== null && <span className="history-row__author">{author}</span>}
                 </span>
                 <span className="person-row__stage">{shortDateLabel(h.timestamp)}</span>
               </li>
-            ))}
+              );
+            })}
           </ul>
         )}
       </section>

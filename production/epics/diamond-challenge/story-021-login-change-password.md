@@ -1,7 +1,7 @@
 # Story 021: Đăng nhập, đổi mật khẩu lần đầu, tên hiển thị
 
 > **Epic**: diamond-challenge
-> **Status**: Ready
+> **Status**: Complete
 > **Layer**: Foundation
 > **Type**: UI
 > **Estimate**: L
@@ -55,10 +55,13 @@
 
 ## Files
 
-- `src/data/auth-service.ts`
-- `src/ui/screens/login-screen.tsx`, `src/ui/screens/change-password-screen.tsx`
-- `src/ui/screens/settings-screen.tsx`, `src/app.tsx`, `src/ui/strings.ts`, `src/ui/styles.css`
-- `tests/unit/auth/auth-service.test.ts`
+- `src/data/auth-service.ts` (new)
+- `src/ui/screens/login-screen.tsx` (new)
+- `src/ui/screens/change-password-screen.tsx` (new: ChangePasswordScreen, DisplayNameScreen)
+- `src/ui/screens/settings-screen.tsx`
+- `src/app.tsx`
+- `src/ui/strings.ts`
+- `src/ui/styles.css`
 - `production/qa/evidence/story-021-login-change-password/`
 
 ## QA Test Cases
@@ -80,3 +83,10 @@
 
 - Depends on: `production/epics/diamond-challenge/story-020-households-backend.md`
 - Unlocks: story 023, 024, 025, 027, 028, 029
+
+## Completion Notes
+**Completed**: 2026-11-07
+**Criteria**: 9/9 passing (built app in Chromium 390×844 and 320px with Supabase calls faked by request interception; not tried on a real phone or against the live Supabase)
+**Deviations**: Advisory, not logged as tech debt: (1) never tried against the live Supabase (needs a real password); (2) the display-name step shares `change-password-screen.tsx`; (3) a reload while offline before the profile loads treats `must_change_password` as false (the server still blocks the features that need it); (4) the depends-on story 020 was still In Progress, accepted by the user; (5) no auth-state listener, so a session revoked elsewhere is noticed only on reload; (6) the country-code picker is a native select laid over a label showing only the code, requested by the user after review, not tried on a real phone
+**Test Evidence**: screenshots in production/qa/evidence/story-021-login-change-password/ (01–10 plus stamp.txt, stamp unchanged); full suite 352/352
+**Reviewed by**: self, no independent review

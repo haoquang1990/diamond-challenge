@@ -81,6 +81,11 @@ export interface AchievementDeps {
   readonly stages: readonly StageDef[];
   readonly people: PeopleConfig;
   readonly progress: ProgressConfig;
+  /**
+   * Other members' ids (story 023, `otherMemberIds`): stage, daily_goal and streak items skip
+   * their events; `people` items always use every event. Omitted = every event is mine.
+   */
+  readonly others?: ReadonlySet<string>;
 }
 
 /** Result of {@link readAcknowledged}. */
@@ -284,8 +289,8 @@ export function evaluateAchievements(
   timeZone: string,
   deps: AchievementDeps,
 ): AchievedItem[] {
-  const progress = computeProgress(events, now, deps.progress, timeZone);
-  const stageProgress = computeStageProgress(events, progress.totalXp, deps.stages);
+  const progress = computeProgress(events, now, deps.progress, timeZone, deps.others);
+  const stageProgress = computeStageProgress(events, progress.totalXp, deps.stages, deps.others);
   const stats = computePeopleStats(derivePeople(events, deps.people), deps.people);
   const today = localDate(now, timeZone);
   const out: AchievedItem[] = [];

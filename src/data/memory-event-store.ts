@@ -1,5 +1,5 @@
 import { createEvent, isInRange, parseStoredEvent } from './event-store';
-import type { EventRange, EventStore, LogEvent, NewEvent } from './event-store';
+import type { EventRange, EventStore, LogEvent, NewEvent, SyncStateStore } from './event-store';
 
 /**
  * In-memory `EventStore` for tests. Nothing survives the instance.
@@ -8,8 +8,10 @@ import type { EventRange, EventStore, LogEvent, NewEvent } from './event-store';
  * const store = new MemoryEventStore('test-user');
  * await store.append({ type: 'settings_changed', payload: { dailyGoal: 30 } });
  */
-export class MemoryEventStore implements EventStore {
+export class MemoryEventStore implements EventStore, SyncStateStore {
   private readonly events: unknown[] = [];
+  private readonly cursors = new Map<string, number>();
+  private readonly memberIds = new Map<string, readonly string[]>();
 
   /** @param userId Local user id; a random UUID when omitted. */
   constructor(private readonly userId: string = crypto.randomUUID()) {}
@@ -55,5 +57,41 @@ export class MemoryEventStore implements EventStore {
       added += 1;
     }
     return Promise.resolve({ added, skipped });
+  }
+
+  /** @inheritdoc */
+  markSynced(ids: readonly string[], syncedAt: string): Promise<number> {
+    const wanted = new Set(ids);
+    let marked = 0;
+    this.events.forEach((raw, index) => {
+      const value = raw as { id?: unknown; syncedAt?: unknown } | null;
+      if (value !== null && typeof value.id === 'string' && wanted.has(value.id) && value.syncedAt === null) {
+        this.events[index] = { ...value, syncedAt };
+        marked += 1;
+      }
+    });
+    return Promise.resolve(marked);
+  }
+
+  /** @inheritdoc */
+  readSyncCursor(householdId: string): Promise<number | null> {
+    return Promise.resolve(this.cursors.get(householdId) ?? null);
+  }
+
+  /** @inheritdoc */
+  writeSyncCursor(householdId: string, seq: number): Promise<void> {
+    this.cursors.set(householdId, seq);
+    return Promise.resolve();
+  }
+
+  /** @inheritdoc */
+  writeMemberIds(householdId: string, ids: readonly string[]): Promise<void> {
+    this.memberIds.set(householdId, [...ids]);
+    return Promise.resolve();
+  }
+
+  /** @inheritdoc */
+  readMemberIds(): Promise<ReadonlySet<string>> {
+    return Promise.resolve(new Set([...this.memberIds.values()].flat()));
   }
 }

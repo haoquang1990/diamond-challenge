@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import gameConfig from '../../config/game-config.json';
 import type { EventStore } from '../../data/event-store';
 import type { AchievementsConfig } from '../../domain/achievements';
+import { otherMemberIds } from '../../domain/progress';
 import { buildAchievementRows, formatEarnedDate } from '../achievements-helpers';
 import type { AchievementRow } from '../achievements-helpers';
 import { ACHIEVEMENTS_CONFIG } from '../achievements-overlay';
@@ -11,6 +12,8 @@ import { DEFAULT_STAGES } from './diamond-path-screen';
 
 /** Props for {@link AchievementsScreen}. */
 export interface AchievementsScreenProps {
+  /** Account ids of household members persisted on the device (story 023); their events are not mine. */
+  readonly memberIds?: ReadonlySet<string>;
   /** Event log the rows are derived from (read only, injected). */
   readonly eventStore: EventStore;
   /** "Quay lại": back to Con đường. */
@@ -32,6 +35,7 @@ function realNow(): Date {
   return new Date();
 }
 
+const NO_MEMBERS: ReadonlySet<string> = new Set();
 const DEVICE_ZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 /**
@@ -45,6 +49,7 @@ export function AchievementsScreen({
   config = ACHIEVEMENTS_CONFIG,
   now = realNow,
   timeZone = DEVICE_ZONE,
+  memberIds = NO_MEMBERS,
 }: AchievementsScreenProps) {
   const [state, setState] = useState<LoadState>({ kind: 'loading' });
   const [reloadKey, setReloadKey] = useState(0);
@@ -59,7 +64,7 @@ export function AchievementsScreen({
       .list()
       .then((events) => {
         if (cancelled) return;
-        const deps = { stages: DEFAULT_STAGES, people: PEOPLE_CONFIG, progress: { dailyXpGoal: gameConfig.dailyXpGoal } };
+        const deps = { stages: DEFAULT_STAGES, people: PEOPLE_CONFIG, progress: { dailyXpGoal: gameConfig.dailyXpGoal }, others: otherMemberIds(events, memberIds) };
         setState({ kind: 'ready', rows: buildAchievementRows(events, config, now(), timeZone, deps) });
       })
       .catch((error: unknown) => {
@@ -70,7 +75,7 @@ export function AchievementsScreen({
     return () => {
       cancelled = true;
     };
-  }, [eventStore, config, now, timeZone, reloadKey]);
+  }, [eventStore, config, now, timeZone, reloadKey, memberIds]);
 
   const earnedCount = state.kind === 'ready' ? state.rows.filter((r) => r.earned).length : 0;
 

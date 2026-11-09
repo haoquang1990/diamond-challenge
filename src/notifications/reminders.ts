@@ -17,7 +17,7 @@
  */
 import gameConfig from '../config/game-config.json';
 import type { EventStore } from '../data/event-store';
-import { computeProgress } from '../domain/progress';
+import { computeProgress, otherMemberIds } from '../domain/progress';
 import type { ProgressConfig } from '../domain/progress';
 import { nextReminderAt, parseReminderConfig, readReminderSettings, reminderMissing, shouldShowReminder } from '../domain/reminders';
 import type { ReminderConfig } from '../domain/reminders';
@@ -139,6 +139,8 @@ export interface ReminderSchedulerDeps {
   readonly progressConfig?: ProgressConfig;
   /** Defaults to game-config.json. */
   readonly reminderConfig?: ReminderConfig;
+  /** Current household member ids (story 023, `otherMemberIds`); defaults to none. */
+  readonly memberIds?: () => ReadonlySet<string>;
 }
 
 /** Keeps the best-effort reminder notification in sync with the log. */
@@ -161,6 +163,7 @@ export function createReminderScheduler(deps: ReminderSchedulerDeps): ReminderSc
   const { eventStore, platform, now, timeZone } = deps;
   const progressConfig = deps.progressConfig ?? { dailyXpGoal: gameConfig.dailyXpGoal };
   const reminderConfig = deps.reminderConfig ?? parseReminderConfig(gameConfig.reminder);
+  const memberIds = deps.memberIds ?? (() => new Set<string>());
   let timer: number | null = null;
   let generation = 0;
 
@@ -179,9 +182,10 @@ export function createReminderScheduler(deps: ReminderSchedulerDeps): ReminderSc
     if (gen !== generation) return;
     try {
       const events = await eventStore.list();
+      const others = otherMemberIds(events, memberIds());
       const at = now();
       const settings = readReminderSettings(events, reminderConfig);
-      const progress = computeProgress(events, at, progressConfig, timeZone);
+      const progress = computeProgress(events, at, progressConfig, timeZone, others);
       if (platform.permission() === 'granted' && shouldShowReminder(settings, at, timeZone, progress.dailyGoal.met)) {
         await platform.show({
           title: STRINGS.reminderNotificationTitle,
@@ -199,10 +203,11 @@ export function createReminderScheduler(deps: ReminderSchedulerDeps): ReminderSc
     clearTimer();
     try {
       const events = await eventStore.list();
+      const others = otherMemberIds(events, memberIds());
       if (gen !== generation) return;
       const at = now();
       const settings = readReminderSettings(events, reminderConfig);
-      const progress = computeProgress(events, at, progressConfig, timeZone);
+      const progress = computeProgress(events, at, progressConfig, timeZone, others);
       const goalMet = progress.dailyGoal.met;
       const triggers = platform.supportsTriggers();
       // Replace whatever was shown or scheduled before; also clears a stale reminder once the goal is met.
@@ -213,7 +218,7 @@ export function createReminderScheduler(deps: ReminderSchedulerDeps): ReminderSc
       if (next === null) return;
       if (triggers) {
         // Streak as it will read at that instant if nothing else is logged.
-        const then = computeProgress(events, next, progressConfig, timeZone);
+        const then = computeProgress(events, next, progressConfig, timeZone, others);
         await platform.show({
           title: STRINGS.reminderNotificationTitle,
           body: reminderMessage(then.streak, reminderMissing(then.dailyGoal)),

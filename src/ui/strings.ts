@@ -1,3 +1,6 @@
+import type { AuthFailure, PasswordProblem } from '../data/auth-service';
+import type { SyncFailure } from '../data/contact-sync';
+
 /** Player-facing Vietnamese strings for the UI. No i18n framework at MVP. */
 export const STRINGS = {
   noteLabel: 'Ghi chú (FORMHD)',
@@ -146,6 +149,10 @@ export const STRINGS = {
   phoneUnknownCountry: 'Mã nước không hợp lệ.',
   phoneNotDigits: 'Số điện thoại chỉ gồm chữ số.',
   phoneBadLength: 'Số điện thoại cần từ 6 đến 15 chữ số.',
+  amwayCodeLabel: 'Mã số Amway (không bắt buộc)',
+  amwayCodePlaceholder: 'Vd. 1234567',
+  amwayCodeInvalid: 'Mã số Amway chỉ gồm chữ số (được cách bằng dấu cách, chấm hoặc gạch) và dài từ 4 đến 15 chữ số.',
+  personDetailAmwayCode: 'Mã số Amway',
   activitySectionTitle: 'Hoạt động',
   activityNoneLeft: 'Đã làm hết các việc. Giỏi lắm!',
   historyTitle: 'Lịch sử',
@@ -201,6 +208,109 @@ export const STRINGS = {
   legacyUnknownPerson: 'Người không rõ',
   legacyUnknownActivity: 'Hoạt động',
   legacyNoPeople: 'Hãy thêm một người trước để gắn hoạt động.',
+
+  // Tài khoản (story 021)
+  accountHeading: 'Tài khoản',
+  accountSignedOut: 'Chưa đăng nhập',
+  accountSignedOutHint: 'Không cần đăng nhập để dùng app. Đăng nhập chỉ để dùng các tính năng cần tài khoản.',
+  accountSignedInAs: 'Đang đăng nhập:',
+  accountLogin: 'Đăng nhập',
+  accountSignOut: 'Đăng xuất',
+  accountSignOutKeepsData: 'Đăng xuất không xoá dữ liệu trên máy này.',
+  accountSignOutError: 'Không đăng xuất được. Thử lại nhé.',
+  displayNameLabel: 'Tên hiển thị',
+  displayNameHint: 'Từ 1 đến 60 ký tự.',
+  displayNameInvalid: 'Tên cần từ 1 đến 60 ký tự.',
+  displayNameSaved: 'Đã lưu tên.',
+  displayNamePromptTitle: 'Bạn muốn được gọi là gì?',
+  displayNamePromptBody: 'Tên này hiện trong tài khoản của bạn. Bạn có thể đổi lại trong Cài đặt.',
+  displayNameSkip: 'Để sau',
+  loginTitle: 'Đăng nhập',
+  loginPrompt: 'Dùng số điện thoại và mật khẩu được cấp cho bạn.',
+  loginCountryLabel: 'Mã nước',
+  loginPhoneLabel: 'Số điện thoại',
+  loginPasswordLabel: 'Mật khẩu',
+  loginSubmit: 'Đăng nhập',
+  loginSubmitting: 'Đang đăng nhập…',
+  loginInvalidPhone: 'Số điện thoại chưa đúng. Kiểm tra mã nước và số điện thoại.',
+  loginPasswordRequired: 'Hãy nhập mật khẩu.',
+  authBadCredentials: 'Số điện thoại hoặc mật khẩu chưa đúng. Kiểm tra lại rồi thử nhé.',
+  authNetworkError: 'Không có kết nối mạng. Kiểm tra mạng rồi thử lại nhé.',
+  authServerError: 'Máy chủ đang gặp sự cố. Thử lại sau ít phút nhé.',
+  changePasswordTitle: 'Đổi mật khẩu',
+  changePasswordPrompt: 'Đây là lần đăng nhập đầu. Hãy đặt mật khẩu của riêng bạn trước khi tiếp tục.',
+  newPasswordLabel: 'Mật khẩu mới',
+  confirmPasswordLabel: 'Nhập lại mật khẩu mới',
+  changePasswordSubmit: 'Đổi mật khẩu',
+  changePasswordSubmitting: 'Đang đổi…',
+  passwordTooShort: 'Mật khẩu cần ít nhất 8 ký tự.',
+  passwordMismatch: 'Hai mật khẩu chưa giống nhau.',
+  passwordSameAsTemporary: 'Mật khẩu mới phải khác mật khẩu tạm.',
+
+  // Tạo tài khoản cho NPP (story 024)
+  createAccountButton: 'Tạo tài khoản',
+  createAccountNeedsCode: 'Nhập mã số Amway trước',
+  createAccountNeedsNetwork: 'Cần có mạng để tạo tài khoản',
+  createAccountHasAccount: 'Đã có tài khoản',
+  createAccountWarnArchived: 'Người này đã có tài khoản và đang được lưu trữ. Tài khoản vẫn được giữ.',
+  createAccountWarnNotNpp: 'Người này đã có tài khoản nhưng không còn nhãn NPP. Tài khoản vẫn được giữ.',
+  createAccountTitle: 'Tạo tài khoản',
+  createAccountPrompt: 'Tạo tài khoản cho người này bằng số điện thoại. App sẽ sinh một mật khẩu tạm để bạn gửi cho họ.',
+  createAccountCodeLine: 'Mã số Amway',
+  createAccountSubmit: 'Tạo tài khoản',
+  createAccountSubmitting: 'Đang tạo…',
+  createAccountPhoneRequired: 'Hãy nhập số điện thoại.',
+  createAccountNameInvalid: 'Tên hiển thị cần từ 1 đến 60 ký tự.',
+  createAccountDone: 'Đã tạo tài khoản',
+  createAccountShareHint: 'Nhắc họ đổi mật khẩu khi đăng nhập lần đầu.',
+  createAccountOnce: 'Mật khẩu tạm chỉ hiện một lần. Hãy sao chép hoặc gửi ngay trước khi rời màn hình này.',
+  createAccountPhoneLine: 'Số điện thoại',
+  createAccountPasswordLine: 'Mật khẩu tạm',
+  createAccountCopy: 'Sao chép',
+  createAccountCopied: 'Đã sao chép.',
+  createAccountCopyFailed: 'Không sao chép được. Hãy chép tay.',
+  createAccountShare: 'Chia sẻ',
+  createAccountSaveWarning: 'Đã tạo tài khoản nhưng chưa lưu được vào danh bạ. Hãy ghi lại mật khẩu tạm này.',
+  createAccountFinish: 'Xong',
+  createAccountErrors: {
+    not_signed_in: 'Bạn cần đăng nhập để tạo tài khoản.',
+    change_password_first: 'Hãy đổi mật khẩu tạm của bạn trước khi tạo tài khoản cho người khác.',
+    invalid_phone: 'Số điện thoại chưa đúng. Kiểm tra mã nước và số điện thoại.',
+    invalid_password: 'Mật khẩu tạm không hợp lệ. Thử lại nhé.',
+    invalid_code: 'Mã số Amway của người này chưa hợp lệ. Hãy sửa mã trong thông tin liên hệ.',
+    phone_taken: 'Số điện thoại này đã có tài khoản.',
+    code_taken: 'Mã số Amway này đã được một hộ khác dùng.',
+    no_household: 'Bạn chưa thuộc hộ nào nên chưa tạo được tài khoản.',
+    not_allowed: 'Bạn không có quyền tạo tài khoản.',
+    household_full_or_inactive: 'Hộ của bạn đã đủ thành viên hoặc không còn hoạt động.',
+    create_failed: 'Máy chủ chưa tạo được tài khoản. Thử lại sau ít phút nhé.',
+    network: 'Không có kết nối mạng. Kiểm tra mạng rồi thử lại nhé.',
+    unknown: 'Chưa tạo được tài khoản. Thử lại sau nhé.',
+  },
+
+  // Đồng bộ Danh bạ hộ (story 023)
+  consentTitle: 'Đồng bộ Danh bạ trong hộ',
+  consentIntro:
+    'Để đồng bộ với các thành viên trong hộ, Danh bạ của bạn (tên, số điện thoại, mã số Amway, ghi chú, nhãn, việc cần làm và lịch sử) sẽ được lưu trên máy chủ đặt tại Singapore.',
+  consentMembersOnly: 'Chỉ thành viên trong hộ của bạn xem được Danh bạ này qua app.',
+  consentAdmins: 'Quản trị viên của dự án có thể truy cập dữ liệu trên máy chủ.',
+  consentDeclineNote: 'Nếu không đồng ý, app vẫn dùng bình thường và Danh bạ chỉ nằm trên máy này. Bạn có thể bật lại trong Cài đặt.',
+  consentAgree: 'Đồng ý',
+  consentDecline: 'Không đồng ý',
+  contactSyncHeading: 'Đồng bộ Danh bạ hộ',
+  contactSyncSignedOut: 'Đang tắt. Đăng nhập để đồng bộ Danh bạ trong hộ.',
+  contactSyncChecking: 'Chưa kiểm tra được bạn đã đồng ý hay chưa. Cần có mạng.',
+  contactSyncOff: 'Đang tắt. Danh bạ chỉ nằm trên máy này.',
+  contactSyncNotConsented: 'Chưa đồng ý lưu Danh bạ trên máy chủ.',
+  contactSyncEnable: 'Bật đồng bộ',
+  contactSyncNow: 'Đồng bộ ngay',
+  contactSyncIdle: 'Chưa đồng bộ.',
+  contactSyncSyncing: 'Đang đồng bộ…',
+  syncNetworkError: 'Không có mạng. App sẽ thử lại khi có mạng.',
+  syncServerError: 'Máy chủ đang gặp sự cố. Thử lại sau ít phút nhé.',
+  syncDenied: 'Máy chủ từ chối đồng bộ (có thể bạn không còn trong hộ). Đã dừng đồng bộ; dữ liệu trên máy vẫn giữ nguyên.',
+  syncNoHousehold: 'Tài khoản chưa thuộc hộ nào nên chưa đồng bộ được. Dữ liệu trên máy vẫn giữ nguyên.',
+  historyFormerMember: 'Thành viên cũ',
 
   // Placeholder screens
   comingSoon: 'Sắp có',
@@ -389,4 +499,64 @@ export function achievementsStreakLabel(current: number, days: number): string {
 /** Earned date line, e.g. "Đạt ngày 10/03/2026". */
 export function achievementsEarnedOnLabel(date: string): string {
   return `Đạt ngày ${date}`;
+}
+
+/** Warning shown when another person has the same Amway code, e.g. "Trùng mã số với Lan, Hà". */
+export function duplicateCodeWarning(names: string): string {
+  return `Trùng mã số với ${names}`;
+}
+
+/** Shared text for Zalo: phone, temporary password and the reminder to change it (story 024). */
+export function createAccountShareText(phone: string, password: string): string {
+  return `Số điện thoại: ${phone}\nMật khẩu tạm: ${password}\nHãy đổi mật khẩu khi đăng nhập lần đầu.`;
+}
+
+/** Vietnamese message for a failed auth call; never says whether a phone number exists. */
+export function authFailureText(reason: AuthFailure): string {
+  switch (reason) {
+    case 'invalid-phone':
+      return STRINGS.loginInvalidPhone;
+    case 'bad-credentials':
+      return STRINGS.authBadCredentials;
+    case 'network':
+      return STRINGS.authNetworkError;
+    case 'same-password':
+      return STRINGS.passwordSameAsTemporary;
+    case 'server':
+      return STRINGS.authServerError;
+  }
+}
+
+/** Vietnamese message for a rejected new password. */
+export function passwordProblemText(problem: PasswordProblem): string {
+  switch (problem) {
+    case 'too-short':
+      return STRINGS.passwordTooShort;
+    case 'mismatch':
+      return STRINGS.passwordMismatch;
+    case 'same-as-temporary':
+      return STRINGS.passwordSameAsTemporary;
+  }
+}
+
+/** Vietnamese message for a failed sync or consent call. */
+export function syncFailureText(reason: SyncFailure): string {
+  switch (reason) {
+    case 'network':
+      return STRINGS.syncNetworkError;
+    case 'server':
+      return STRINGS.syncServerError;
+    case 'denied':
+      return STRINGS.syncDenied;
+    case 'no-household':
+      return STRINGS.syncNoHousehold;
+  }
+}
+
+/** "Đồng bộ lần cuối: 14:05 07/11/2026" (device time zone). */
+export function contactSyncLastSyncedLabel(iso: string): string {
+  const at = new Date(iso);
+  const time = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit' }).format(at);
+  const date = new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(at);
+  return `Đồng bộ lần cuối: ${time} ${date}`;
 }

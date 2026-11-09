@@ -1,0 +1,70 @@
+{
+  "format": "diamond-challenge-backup",
+  "formatVersion": 1,
+  "exportedAt": "2026-11-07T05:08:37.318Z",
+  "events": [
+    {
+      "id": "1683852a-41fe-4fb9-a5c6-707f00d28f89",
+      "type": "settings_changed",
+      "timestamp": "2026-11-07T05:08:34.425Z",
+      "userId": "b43adf9e-b2b7-41ec-9222-97aba6a653f7",
+      "schemaVersion": 1,
+      "payload": {
+        "achievementsSeeded": true
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "ef93416b-4871-4473-99c0-ed555dd7213d",
+      "type": "person_added",
+      "timestamp": "2026-11-07T05:08:35.236Z",
+      "userId": "b43adf9e-b2b7-41ec-9222-97aba6a653f7",
+      "schemaVersion": 1,
+      "payload": {
+        "personId": "95439842-a3cd-40c1-933a-080ae63ea2a0",
+        "name": "An",
+        "amwayCode": "7004053634"
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "32555ae0-fadf-40d1-ad8d-829b6cbe607c",
+      "type": "activity_logged",
+      "timestamp": "2026-11-07T05:08:35.248Z",
+      "userId": "b43adf9e-b2b7-41ec-9222-97aba6a653f7",
+      "schemaVersion": 1,
+      "payload": {
+        "activityType": "add_name",
+        "xp": 5,
+        "personId": "95439842-a3cd-40c1-933a-080ae63ea2a0"
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "8c4a6986-13ab-4f17-82f4-b2f8a93d53f1",
+      "type": "person_added",
+      "timestamp": "2026-11-07T05:08:35.836Z",
+      "userId": "b43adf9e-b2b7-41ec-9222-97aba6a653f7",
+      "schemaVersion": 1,
+      "payload": {
+        "personId": "53f6fbc5-d69a-4668-8347-45c395edad19",
+        "name": "Bình",
+        "amwayCode": "7004053634"
+      },
+      "syncedAt": null
+    },
+    {
+      "id": "3d0888ad-e756-4e5f-b577-29082d0da0b5",
+      "type": "activity_logged",
+      "timestamp": "2026-11-07T05:08:35.850Z",
+      "userId": "b43adf9e-b2b7-41ec-9222-97aba6a653f7",
+      "schemaVersion": 1,
+      "payload": {
+        "activityType": "add_name",
+        "xp": 5,
+        "personId": "53f6fbc5-d69a-4668-8347-45c395edad19"
+      },
+      "syncedAt": null
+    }
+  ]
+}

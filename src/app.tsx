@@ -1,5 +1,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { EventStore } from './data/event-store';
+import gameConfig from './config/game-config.json';
+import { getSupabaseClient } from './config/supabase';
+import { ensureAccountLinked, loadAccount, saveDisplayName, signOut } from './data/auth-service';
+import type { AccountInfo, AuthResult } from './data/auth-service';
+import {
+  CONTACT_EVENT_TYPES,
+  createContactSyncController,
+  readContactConsent,
+  readContactSyncDeclined,
+  recordContactConsent,
+  withHouseholdClock,
+} from './data/contact-sync';
+import type { ContactConsent, ContactSyncController, HouseholdMember, SyncFailure, SyncStatus } from './data/contact-sync';
+import type { EventStore, SyncStateStore } from './data/event-store';
 import { browserNotificationPlatform, createReminderScheduler } from './notifications/reminders';
 import type { NotificationPlatform } from './notifications/reminders';
 import { AchievementsOverlay, ACHIEVEMENTS_CONFIG } from './ui/achievements-overlay';
@@ -7,8 +20,12 @@ import { createObservedStore, readSoundEnabled } from './ui/achievements-helpers
 import { setSoundEnabled } from './ui/play-ting';
 import { AchievementsScreen } from './ui/screens/achievements-screen';
 import { Board30x30Screen } from './ui/screens/board-30x30-screen';
+import { ChangePasswordScreen, DisplayNameScreen } from './ui/screens/change-password-screen';
+import { CreateAccountScreen } from './ui/screens/create-account-screen';
+import { ConsentScreen } from './ui/screens/consent-screen';
 import { DiamondPathScreen } from './ui/screens/diamond-path-screen';
 import { LessonScreen } from './ui/screens/lesson-screen';
+import { LoginScreen } from './ui/screens/login-screen';
 import { PeopleScreen } from './ui/screens/people-screen';
 import { SettingsScreen } from './ui/screens/settings-screen';
 import { TodayScreen } from './ui/screens/today-screen';
@@ -17,8 +34,8 @@ import { STRINGS } from './ui/strings';
 
 /** Props for {@link App}. */
 export interface AppProps {
-  /** Event log shared by every screen. */
-  readonly eventStore: EventStore;
+  /** Event log shared by every screen; also keeps the contact-sync bookkeeping (story 023). */
+  readonly eventStore: EventStore & SyncStateStore;
   /** Notification capabilities for reminders (story 007); defaults to the browser's. */
   readonly notificationPlatform?: NotificationPlatform;
 }
@@ -38,9 +55,9 @@ function realNow(): Date {
  * merged person list (Danh bạ). `settings` (opened from Hôm nay) and `board`
  * (opened from Con đường) are not in the tab bar.
  */
-type Tab = 'today' | 'learn' | 'people' | 'path' | 'settings' | 'board' | 'achievements';
+type Tab = 'today' | 'learn' | 'people' | 'path' | 'settings' | 'board' | 'achievements' | 'login';
 
-const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'board' | 'achievements'>; readonly label: string }[] = [
+const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'board' | 'achievements' | 'login'>; readonly label: string }[] = [
   { id: 'today', label: STRINGS.tabToday },
   { id: 'learn', label: STRINGS.tabLearn },
   { id: 'people', label: STRINGS.tabPeople },
@@ -62,18 +79,197 @@ const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'board' | 'achieve
  * app becomes visible, on every tab change (covers returning from Học and
  * leaving Làm, which no longer routes back to Hôm nay) and after a settings
  * change. A tapped reminder notification brings the app to Hôm nay.
+ *
+ * Household contact sync (story 023): once signed in (after the password and display-name
+ * steps), the consent screen shows while `has_contact_consent()` is false and the user has
+ * not declined on this device. With consent, a sync runs on start, after consenting, ~2 s
+ * after a Danh bạ append, after a backup restore and on `online`. New Danh bạ events get the
+ * household clock (`withHouseholdClock`).
  */
 export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_PLATFORM }: AppProps) {
   // Every screen gets the observed store, so each saved event reaches the achievements overlay.
-  const observed = useMemo(() => createObservedStore(rawEventStore), [rawEventStore]);
+  const observed = useMemo(() => createObservedStore(withHouseholdClock(rawEventStore, realNow, gameConfig.contactSync.maxClockSkewMs)), [rawEventStore]);
   const eventStore = observed.store;
   const [popupOpen, setPopupOpen] = useState(false);
   const [tab, setTab] = useState<Tab>('today');
+  /** Person whose account is being created (story 024); the screen has no tab bar. */
+  const [createAccountFor, setCreateAccountFor] = useState<string | null>(null);
+  /** Person detail to reopen in Làm after the account screen. */
+  const [reopenPerson, setReopenPerson] = useState<string | null>(null);
   const [lessonActive, setLessonActive] = useState(false);
   /** Set when Làm was opened from Bảng 30x30 (preselected filter + back control); null otherwise. */
   const [fromBoard, setFromBoard] = useState<ContactsFilter | null>(null);
+  useEffect(() => {
+    if (tab !== 'people') setReopenPerson(null);
+  }, [tab]);
   const goToday = () => setTab('today');
   const onLessonActive = useCallback((active: boolean) => setLessonActive(active), []);
+
+  // Optional account (story 021): the whole feature is hidden when the build has no Supabase config.
+  const clientPromise = useMemo(() => getSupabaseClient(), []);
+  const [account, setAccount] = useState<AccountInfo | null>(null);
+  /** Temporary password typed at sign-in; memory only, cleared once the password is changed. */
+  const temporaryPasswordRef = useRef<string | null>(null);
+  const [askDisplayName, setAskDisplayName] = useState(false);
+
+  // Household contact sync (story 023).
+  const [consent, setConsent] = useState<ContactConsent>('unknown');
+  const [declined, setDeclined] = useState(false);
+  /** The consent screen was reopened from Cài đặt. */
+  const [consentOpen, setConsentOpen] = useState(false);
+  const [syncController, setSyncController] = useState<ContactSyncController | null>(null);
+  const [syncStatus, setSyncStatus] = useState<SyncStatus>({ kind: 'idle' });
+  const [members, setMembers] = useState<ReadonlyMap<string, HouseholdMember> | null>(null);
+  /** Bumped when a sync pulled new events, so the open Làm list re-reads the log. */
+  const [dataVersion, setDataVersion] = useState(0);
+  /** Persisted household member ids: their events are not mine (works offline and signed out). */
+  const [memberIds, setMemberIds] = useState<ReadonlySet<string>>(() => new Set());
+  const memberIdsRef = useRef(memberIds);
+  memberIdsRef.current = memberIds;
+  const refreshMemberIds = useCallback(() => {
+    rawEventStore
+      .readMemberIds()
+      .then(setMemberIds)
+      .catch((error: unknown) => console.error('[contact-sync] could not read the member ids', error));
+  }, [rawEventStore]);
+  const accountId = account?.accountId ?? null;
+  const passwordPending = account?.mustChangePassword === true;
+
+  useEffect(() => {
+    if (clientPromise === null) return;
+    let cancelled = false;
+    clientPromise
+      .then(loadAccount)
+      .then((loaded) => {
+        if (!cancelled) setAccount(loaded);
+      })
+      .catch((error: unknown) => console.error('[auth] could not restore the session', error));
+    return () => {
+      cancelled = true;
+    };
+  }, [clientPromise]);
+
+  useEffect(() => {
+    rawEventStore
+      .list()
+      .then((events) => setDeclined(readContactSyncDeclined(events)))
+      .catch((error: unknown) => console.error('[contact-sync] could not read the sync setting', error));
+    refreshMemberIds();
+  }, [rawEventStore, refreshMemberIds]);
+
+  const checkConsent = useCallback(async () => {
+    if (clientPromise === null || accountId === null) return;
+    try {
+      const result = await readContactConsent(await clientPromise);
+      setConsent(result.ok ? (result.consented ? 'granted' : 'missing') : 'unknown');
+    } catch (error) {
+      console.error('[contact-sync] consent check failed', error);
+      setConsent('unknown');
+    }
+  }, [clientPromise, accountId]);
+
+  useEffect(() => {
+    setConsent('unknown');
+    if (accountId !== null && !passwordPending) void checkConsent();
+  }, [accountId, passwordPending, checkConsent]);
+
+  useEffect(() => {
+    if (clientPromise === null || accountId === null || consent !== 'granted' || declined) return;
+    let controller: ContactSyncController | null = null;
+    let cancelled = false;
+    void clientPromise.then((client) => {
+      if (cancelled) return;
+      const created = createContactSyncController({ client, store: rawEventStore, accountId, config: gameConfig.contactSync, now: realNow });
+      controller = created;
+      created.subscribe(() => {
+        const status = created.status();
+        setSyncStatus(status);
+        setMembers(created.members());
+        if (status.kind === 'synced') refreshMemberIds();
+        if (status.kind === 'synced' && status.pulled > 0) setDataVersion((v) => v + 1);
+      });
+      setSyncController(created);
+      void created.sync(false);
+    });
+    return () => {
+      cancelled = true;
+      controller?.dispose();
+      setSyncController(null);
+      setSyncStatus({ kind: 'idle' });
+      setMembers(null);
+    };
+  }, [clientPromise, accountId, consent, declined, rawEventStore, refreshMemberIds]);
+
+  // Debounced push after a local Danh bạ append (the sync itself picks only Danh bạ events).
+  useEffect(
+    () =>
+      observed.subscribe((event) => {
+        if (CONTACT_EVENT_TYPES.includes(event.type)) syncController?.schedule();
+      }),
+    [observed, syncController],
+  );
+
+  useEffect(() => {
+    const onOnline = () => {
+      if (consent === 'unknown') void checkConsent();
+      else if (!declined) void syncController?.sync(false);
+    };
+    window.addEventListener('online', onOnline);
+    return () => window.removeEventListener('online', onOnline);
+  }, [consent, declined, checkConsent, syncController]);
+
+  const onConsentAgree = async (): Promise<SyncFailure | null> => {
+    if (clientPromise === null) return 'server';
+    if (consent !== 'granted') {
+      const result = await recordContactConsent(await clientPromise, gameConfig.contactConsentVersion);
+      if (!result.ok) return result.reason;
+    }
+    await eventStore.append({ type: 'settings_changed', payload: { contactSync: { enabled: true } } });
+    setDeclined(false);
+    setConsentOpen(false);
+    setConsent('granted');
+    return null;
+  };
+
+  const onConsentDecline = async () => {
+    try {
+      await eventStore.append({ type: 'settings_changed', payload: { contactSync: { enabled: false } } });
+    } catch (error) {
+      console.error('[contact-sync] could not save the choice', error);
+    }
+    setDeclined(true);
+    setConsentOpen(false);
+  };
+
+  const onSignedIn = (signedIn: AccountInfo, password: string) => {
+    ensureAccountLinked(rawEventStore, signedIn.accountId).catch((error: unknown) => console.error('[auth] could not link the account', error));
+    setAccount(signedIn);
+    if (signedIn.mustChangePassword) temporaryPasswordRef.current = password;
+    setTab('settings');
+  };
+
+  const onSignOut = async (): Promise<boolean> => {
+    if (clientPromise === null) return false;
+    try {
+      const result = await signOut(await clientPromise);
+      if (!result.ok) return false;
+    } catch (error) {
+      console.error('[auth] sign-out failed', error);
+      return false;
+    }
+    temporaryPasswordRef.current = null;
+    setAskDisplayName(false);
+    setConsentOpen(false);
+    setAccount(null);
+    return true;
+  };
+
+  const onSaveDisplayName = async (name: string): Promise<AuthResult> => {
+    if (clientPromise === null) return { ok: false, reason: 'server' };
+    const result = await saveDisplayName(await clientPromise, name);
+    if (result.ok) setAccount((a) => (a === null ? a : { ...a, displayName: name }));
+    return result;
+  };
 
   const scheduler = useMemo(
     () =>
@@ -82,6 +278,7 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
         platform: notificationPlatform,
         now: realNow,
         timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        memberIds: () => memberIdsRef.current,
       }),
     [eventStore, notificationPlatform],
   );
@@ -141,7 +338,9 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
       console.error('[achievements] silent acknowledge after restore failed', error);
     }
     await refreshSound();
-  }, [refreshSound]);
+    // Restored Danh bạ events are unsynced like any local event.
+    syncController?.schedule();
+  }, [refreshSound, syncController]);
 
   const screen = renderScreen();
   return (
@@ -149,11 +348,79 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
       <div className="app-inert" inert={popupOpen}>
         {screen}
       </div>
-      <AchievementsOverlay observed={observed} rawStore={rawEventStore} tab={tab} onPopupOpenChange={setPopupOpen} silentAcknowledgeRef={silentAcknowledgeRef} />
+      <AchievementsOverlay observed={observed} rawStore={rawEventStore} tab={tab} memberIds={memberIds} onPopupOpenChange={setPopupOpen} silentAcknowledgeRef={silentAcknowledgeRef} />
     </>
   );
 
   function renderScreen() {
+  if (clientPromise !== null && account?.mustChangePassword === true) {
+    return (
+      <div className="app-shell">
+        <ChangePasswordScreen
+          clientPromise={clientPromise}
+          temporaryPassword={temporaryPasswordRef.current}
+          onDone={() => {
+            temporaryPasswordRef.current = null;
+            setAccount({ ...account, mustChangePassword: false });
+            setAskDisplayName(true);
+          }}
+          onSignOut={() => void onSignOut()}
+        />
+      </div>
+    );
+  }
+
+  if (clientPromise !== null && account !== null && askDisplayName) {
+    const done = () => {
+      setAskDisplayName(false);
+      setTab('settings');
+    };
+    return (
+      <div className="app-shell">
+        <DisplayNameScreen
+          clientPromise={clientPromise}
+          onSaved={(name) => {
+            setAccount({ ...account, displayName: name });
+            done();
+          }}
+          onSkip={done}
+        />
+      </div>
+    );
+  }
+
+  if (clientPromise !== null && account !== null && (consentOpen || (consent === 'missing' && !declined))) {
+    return (
+      <div className="app-shell">
+        <ConsentScreen onAgree={onConsentAgree} onDecline={() => void onConsentDecline()} />
+      </div>
+    );
+  }
+
+  if (createAccountFor !== null && clientPromise !== null && account !== null) {
+    return (
+      <div className="app-shell">
+        <CreateAccountScreen
+          clientPromise={clientPromise}
+          eventStore={eventStore}
+          personId={createAccountFor}
+          onBack={() => {
+            setReopenPerson(createAccountFor);
+            setCreateAccountFor(null);
+          }}
+        />
+      </div>
+    );
+  }
+
+  if (tab === 'login' && clientPromise !== null) {
+    return (
+      <div className="app-shell">
+        <LoginScreen clientPromise={clientPromise} onBack={() => setTab('settings')} onSignedIn={onSignedIn} />
+      </div>
+    );
+  }
+
   if (tab === 'board') {
     return (
       <div className="app-shell">
@@ -171,7 +438,7 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
   if (tab === 'achievements') {
     return (
       <div className="app-shell">
-        <AchievementsScreen eventStore={eventStore} onBack={() => setTab('path')} />
+        <AchievementsScreen eventStore={eventStore} memberIds={memberIds} onBack={() => setTab('path')} />
       </div>
     );
   }
@@ -179,7 +446,25 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
   if (tab === 'settings') {
     return (
       <div className="app-shell">
-        <SettingsScreen eventStore={eventStore} onBack={goToday} onSaved={refreshReminders} onImported={onImported} platform={notificationPlatform} />
+        <SettingsScreen eventStore={eventStore} onBack={goToday} onSaved={refreshReminders} onImported={onImported}
+          platform={notificationPlatform}
+          {...(clientPromise === null
+            ? {}
+            : {
+                accountSection: { account, onLogin: () => setTab('login'), onSignOut, onSaveDisplayName },
+                contactSync: {
+                  signedIn: account !== null,
+                  consent,
+                  declined,
+                  status: syncStatus,
+                  onEnable: () => setConsentOpen(true),
+                  onSyncNow: () => {
+                    if (consent === 'granted' && !declined) void syncController?.sync(true);
+                    else void checkConsent();
+                  },
+                },
+              })}
+        />
       </div>
     );
   }
@@ -189,6 +474,7 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
       {tab === 'today' && (
         <TodayScreen
           eventStore={eventStore}
+          memberIds={memberIds}
           onLearn={() => setTab('learn')}
           onDo={() => {
             setFromBoard(null);
@@ -199,11 +485,16 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
         />
       )}
       {tab === 'learn' && <LessonScreen eventStore={eventStore} onDone={goToday} onActiveChange={onLessonActive} />}
-      {tab === 'path' && <DiamondPathScreen eventStore={eventStore} onOpenBoard={() => setTab('board')} onOpenAchievements={() => setTab('achievements')} />}
+      {tab === 'path' && <DiamondPathScreen eventStore={eventStore} memberIds={memberIds} onOpenBoard={() => setTab('board')} onOpenAchievements={() => setTab('achievements')} />}
       {tab === 'people' && (
         <PeopleScreen
           key={fromBoard ?? 'tab'}
           eventStore={eventStore}
+          members={members}
+          memberIds={memberIds}
+          dataVersion={dataVersion}
+          initialOpenId={reopenPerson}
+          {...(clientPromise === null || account === null ? {} : { onCreateAccount: setCreateAccountFor })}
           {...(fromBoard === null
             ? {}
             : {

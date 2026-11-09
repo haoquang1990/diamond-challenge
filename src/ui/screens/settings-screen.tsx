@@ -11,7 +11,86 @@ import type { NotificationPlatform, ReminderPermission } from '../../notificatio
 import { readSoundEnabled } from '../achievements-helpers';
 import { ACHIEVEMENTS_CONFIG } from '../achievements-overlay';
 import { setSoundEnabled } from '../play-ting';
-import { STRINGS } from '../strings';
+import { authFailureText, contactSyncLastSyncedLabel, STRINGS, syncFailureText } from '../strings';
+import type { ContactConsent, SyncStatus } from '../../data/contact-sync';
+import { validateDisplayName } from '../../data/auth-service';
+import type { AccountInfo, AuthResult } from '../../data/auth-service';
+
+/**
+ * Account section of Cài đặt (story 021). Pass it only when the build has Supabase
+ * configured; without it the whole login feature is hidden.
+ */
+export interface SettingsAccountProps {
+  /** Signed-in account, or null when signed out. */
+  readonly account: AccountInfo | null;
+  /** Opens the Đăng nhập screen. */
+  readonly onLogin: () => void;
+  /** Signs out (the event log is untouched); resolves to false when it failed. */
+  readonly onSignOut: () => Promise<boolean>;
+  /** Saves a validated, trimmed display name. */
+  readonly onSaveDisplayName: (name: string) => Promise<AuthResult>;
+}
+
+/** "Đồng bộ Danh bạ hộ" card (story 023). Pass it only when the build has Supabase configured. */
+export interface SettingsContactSyncProps {
+  readonly signedIn: boolean;
+  readonly consent: ContactConsent;
+  /** The latest local choice on this device is "Không đồng ý" (wins over server consent). */
+  readonly declined: boolean;
+  readonly status: SyncStatus;
+  /** Shows the consent screen again. */
+  readonly onEnable: () => void;
+  /** Syncs now (re-checks consent first when it is unknown). */
+  readonly onSyncNow: () => void;
+}
+
+function syncStatusText(status: SyncStatus): string {
+  switch (status.kind) {
+    case 'idle':
+      return STRINGS.contactSyncIdle;
+    case 'syncing':
+      return STRINGS.contactSyncSyncing;
+    case 'synced':
+      return contactSyncLastSyncedLabel(status.at);
+    case 'failed':
+      return syncFailureText(status.reason);
+  }
+}
+
+/** Status of the household contact sync, "Bật đồng bộ" and "Đồng bộ ngay". */
+function ContactSyncCard({ signedIn, consent, declined, status, onEnable, onSyncNow }: SettingsContactSyncProps) {
+  const failed = !declined && consent === 'granted' && status.kind === 'failed';
+  const canEnable = signedIn && (declined || consent === 'missing');
+  const text = !signedIn
+    ? STRINGS.contactSyncSignedOut
+    : declined
+      ? STRINGS.contactSyncOff
+      : consent === 'unknown'
+        ? STRINGS.contactSyncChecking
+        : consent === 'missing'
+          ? STRINGS.contactSyncNotConsented
+          : syncStatusText(status);
+  return (
+    <section className="card form" aria-labelledby="contact-sync-title">
+      <h2 id="contact-sync-title" className="card__title">
+        {STRINGS.contactSyncHeading}
+      </h2>
+      <p className={failed ? 'message message--error' : 'card__body'} role={failed ? 'alert' : 'status'}>
+        {text}
+      </p>
+      {canEnable && (
+        <button type="button" className="button button--primary" onClick={onEnable}>
+          {STRINGS.contactSyncEnable}
+        </button>
+      )}
+      {signedIn && !canEnable && (
+        <button type="button" className="button button--secondary" onClick={onSyncNow} disabled={status.kind === 'syncing'}>
+          {STRINGS.contactSyncNow}
+        </button>
+      )}
+    </section>
+  );
+}
 
 /** Props for {@link SettingsScreen}. */
 export interface SettingsScreenProps {
@@ -34,6 +113,86 @@ export interface SettingsScreenProps {
   readonly download?: (fileName: string, text: string) => void;
   /** Clock for the backup file name and `exportedAt`; defaults to the real time. */
   readonly now?: () => Date;
+  /** Account section; omitted when Supabase is not configured. */
+  readonly accountSection?: SettingsAccountProps;
+  /** Household contact sync card; omitted when Supabase is not configured. */
+  readonly contactSync?: SettingsContactSyncProps;
+}
+
+/** "Tài khoản" card: login state, display name edit, sign out. */
+function AccountCard({ account, onLogin, onSignOut, onSaveDisplayName }: SettingsAccountProps) {
+  const [name, setName] = useState(account?.displayName ?? '');
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState<{ readonly text: string; readonly error: boolean } | null>(null);
+
+  const onSave = async () => {
+    if (busy) return;
+    const valid = validateDisplayName(name);
+    if (valid === null) {
+      setMessage({ text: STRINGS.displayNameInvalid, error: true });
+      return;
+    }
+    setBusy(true);
+    setMessage(null);
+    try {
+      const result = await onSaveDisplayName(valid);
+      setMessage(result.ok ? { text: STRINGS.displayNameSaved, error: false } : { text: authFailureText(result.reason), error: true });
+      if (result.ok) setName(valid);
+    } catch (error) {
+      console.error('[settings] could not save the display name', error);
+      setMessage({ text: authFailureText('server'), error: true });
+    }
+    setBusy(false);
+  };
+
+  const onOut = async () => {
+    if (busy) return;
+    setBusy(true);
+    setMessage(null);
+    if (!(await onSignOut())) {
+      setMessage({ text: STRINGS.accountSignOutError, error: true });
+      setBusy(false);
+    }
+  };
+
+  return (
+    <section className="card form" aria-labelledby="account-title">
+      <h2 id="account-title" className="card__title">
+        {STRINGS.accountHeading}
+      </h2>
+      {account === null ? (
+        <>
+          <p className="account-name">{STRINGS.accountSignedOut}</p>
+          <p className="card__body">{STRINGS.accountSignedOutHint}</p>
+          <button type="button" className="button button--primary" onClick={onLogin}>
+            {STRINGS.accountLogin}
+          </button>
+        </>
+      ) : (
+        <>
+          <p className="card__body">{STRINGS.accountSignedInAs}</p>
+          <p className="account-name">{account.displayName ?? account.phone ?? ''}</p>
+          {account.displayName !== null && account.phone !== null && <p className="card__body">{account.phone}</p>}
+          <label className="form__field">
+            <span className="form__label">{STRINGS.displayNameLabel}</span>
+            <input type="text" maxLength={120} className="note__input form__input" value={name} onChange={(e) => setName(e.target.value)} disabled={busy} />
+          </label>
+          <button type="button" className="button button--secondary" onClick={() => void onSave()} disabled={busy}>
+            {STRINGS.save}
+          </button>
+          {message !== null && (
+            <p className={message.error ? 'message message--error' : 'message'} role={message.error ? 'alert' : 'status'}>
+              {message.text}
+            </p>
+          )}
+          <button type="button" className="button button--secondary" onClick={() => void onOut()} disabled={busy}>
+            {STRINGS.accountSignOut}
+          </button>
+          <p className="message">{STRINGS.accountSignOutKeepsData}</p>
+        </>
+      )}
+    </section>
+  );
 }
 
 /** Default file download: Blob + temporary <a download> (works on phones and desktop). */
@@ -117,6 +276,8 @@ export function SettingsScreen({
   reminderConfig = DEFAULT_REMINDER_CONFIG,
   download = downloadTextFile,
   now = () => new Date(),
+  accountSection,
+  contactSync,
 }: SettingsScreenProps) {
   const [state, setState] = useState<ScreenState>({ kind: 'loading' });
   const [reloadKey, setReloadKey] = useState(0);
@@ -259,6 +420,10 @@ export function SettingsScreen({
         <h1 className="screen__title">{STRINGS.settingsTitle}</h1>
         <p className="screen__prompt">{STRINGS.settingsPrompt}</p>
       </header>
+
+      {accountSection !== undefined && <AccountCard key={accountSection.account?.accountId ?? 'signed-out'} {...accountSection} />}
+
+      {contactSync !== undefined && <ContactSyncCard {...contactSync} />}
 
       {state.kind === 'loading' && (
         <p className="message" role="status">

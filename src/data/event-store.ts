@@ -8,6 +8,9 @@
  * never an edit or a delete.
  */
 
+/** `userId` of a pulled household event whose author account no longer exists (story 023). */
+export const FORMER_MEMBER_ID = 'former-member';
+
 /** Current event schema version written to every new event. */
 export const EVENT_SCHEMA_VERSION = 1;
 
@@ -18,13 +21,18 @@ export const EVENT_SCHEMA_VERSION = 1;
  * - `activity_logged`: `{ activityType, xp, personId?: string, taskId?: string }`. `personId` is the
  *   optional person (see `src/domain/people.ts`) the activity was done with; `taskId` marks the
  *   completion of a person task (activityType equals taskId then).
- * - `person_added`: `{ personId, name, note?, phone?: { country, number } }`
- * - `person_updated`: `{ personId, name?, note?, phone?: { country, number } }` (latest wins;
- *   an empty `number` clears the phone)
+ * - `person_added`: `{ personId, name, note?, phone?: { country, number }, amwayCode? }`
+ * - `person_updated`: `{ personId, name?, note?, phone?: { country, number }, amwayCode? }` (latest wins;
+ *   an empty `number` clears the phone, an empty `amwayCode` clears the code; `amwayCode` is the
+ *   normalized digits, an invalid one is ignored when deriving; never carries xp).
+ *   Story 024 adds `linkedUserId?` (Supabase user id of the account created for the person;
+ *   latest non-empty string wins, anything else is ignored; never carries xp)
  * - `person_archived`: `{ personId }`
  * - `person_restored`: `{ personId }` (archived state = latest of archived / restored)
  * - `person_stage_changed`: `{ personId, from, to, xp }` (xp feeds computeProgress)
  * - `activity_reassigned`: `{ activityId, personId }` (carries no xp)
+ * - `person_merged`, `person_not_duplicate`: household-book events (payloads owned by story 026)
+ * - `person_transferred_out`: written by the server only (pulled, never sent; story 023)
  */
 export const EVENT_TYPES = [
   'activity_logged',
@@ -36,6 +44,9 @@ export const EVENT_TYPES = [
   'person_restored',
   'person_stage_changed',
   'activity_reassigned',
+  'person_merged',
+  'person_not_duplicate',
+  'person_transferred_out',
 ] as const;
 
 /** Discriminator for an event. */
@@ -95,6 +106,29 @@ export interface EventStore {
    * `events`) are skipped. Never overwrites or deletes. Equal timestamps list in the given order.
    */
   importEvents(events: readonly LogEvent[]): Promise<{ added: number; skipped: number }>;
+}
+
+/**
+ * Sync bookkeeping kept next to the event log (story 023). Implemented by every real store.
+ *
+ * @example
+ * await store.markSynced(['id-1', 'id-2'], new Date().toISOString());
+ * await store.writeSyncCursor(householdId, 1234);
+ */
+export interface SyncStateStore {
+  /**
+   * Sets `syncedAt` on the events with these ids whose `syncedAt` is still null (the only
+   * field ever changed after storage). Returns how many were marked.
+   */
+  markSynced(ids: readonly string[], syncedAt: string): Promise<number>;
+  /** Highest `sync_seq` pulled for this household, or null before the first pull. */
+  readSyncCursor(householdId: string): Promise<number | null>;
+  /** Persists the pull cursor of this household. */
+  writeSyncCursor(householdId: string, seq: number): Promise<void>;
+  /** Replaces the persisted account ids of this household's members (last successful fetch). */
+  writeMemberIds(householdId: string, ids: readonly string[]): Promise<void>;
+  /** Union of the persisted member ids of every household this device has synced with. */
+  readMemberIds(): Promise<ReadonlySet<string>>;
 }
 
 /** Builds a complete event from caller input. Shared by all implementations. */

@@ -1,17 +1,30 @@
 import { useCallback, useEffect, useState } from 'react';
+import type { HouseholdMember } from '../../data/contact-sync';
 import type { EventStore, LogEvent } from '../../data/event-store';
+import { otherMemberIds } from '../../domain/progress';
 import { deriveActivityOwners, derivePeople } from '../../domain/people';
 import type { Person, PersonPhone } from '../../domain/people';
 import { ACTIVITY_TYPES } from '../activity-types';
 import type { ActivityType } from '../activity-types';
 import { PEOPLE_CONFIG } from '../people-config';
-import { CONTACTS_FILTERS, countContacts, filterContacts, listUnassignedActivities, searchPeopleByName } from '../people-helpers';
+import {
+  CONTACTS_FILTERS,
+  countContacts,
+  duplicateCodeNames,
+  filterContacts,
+  findDuplicateCodes,
+  historyAuthorLabel,
+  listUnassignedActivities,
+  searchPeopleByName,
+} from '../people-helpers';
 import type { ContactsFilter } from '../people-helpers';
-import { STRINGS, filterChipLabel, lastContactLabel, nppSinceLabel, shortDateLabel, xpLabel } from '../strings';
+import { STRINGS, duplicateCodeWarning, filterChipLabel, lastContactLabel, nppSinceLabel, shortDateLabel, xpLabel } from '../strings';
 import { AddPersonForm, LabelBadge, PersonDetail } from './person-form';
 
 /** Props for {@link PeopleScreen}. */
 export interface PeopleScreenProps {
+  /** Account ids of household members persisted on the device (story 023); their events are not mine. */
+  readonly memberIds?: ReadonlySet<string>;
   /** Event log everything is derived from (injected). */
   readonly eventStore: EventStore;
   /** Activity types, used for the add_name XP and legacy row names; defaults to game-config.json. */
@@ -20,12 +33,22 @@ export interface PeopleScreenProps {
   readonly initialFilter?: ContactsFilter;
   /** When provided, a "‹ Quay lại Bảng 30x30" control is shown at the top and calls this. */
   readonly onBack?: () => void;
+  /** Household members (story 023), or null when the contact book is not synced: history then names no author. */
+  readonly members?: ReadonlyMap<string, HouseholdMember> | null;
+  /** Person detail opened on first render (returning from the account screen, story 024). */
+  readonly initialOpenId?: string | null;
+  /** Opens the account screen for a person (story 024); absent when signed out or the build has no account feature. */
+  readonly onCreateAccount?: (personId: string) => void;
+  /** Bumped by the app when a sync pulled new events; the log is re-read. */
+  readonly dataVersion?: number;
 }
 
 type LoadState =
   | { readonly kind: 'loading' }
   | { readonly kind: 'error' }
   | { readonly kind: 'ready'; readonly events: readonly LogEvent[] };
+
+const NO_MEMBERS: ReadonlySet<string> = new Set();
 
 /** Id of the activity type that gives XP for adding a person. */
 const ADD_NAME_ACTIVITY_ID = 'add_name';
@@ -39,9 +62,9 @@ const ADD_NAME_ACTIVITY_ID = 'add_name';
  * the per-filter totals and ignore the search. Re-reads the event log on
  * mount and after every write; keeps no copy of truth.
  */
-export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initialFilter = 'all', onBack }: PeopleScreenProps) {
+export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initialFilter = 'all', onBack, members = null, memberIds = NO_MEMBERS, dataVersion = 0, initialOpenId = null, onCreateAccount }: PeopleScreenProps) {
   const [load, setLoad] = useState<LoadState>({ kind: 'loading' });
-  const [openId, setOpenId] = useState<string | null>(null);
+  const [openId, setOpenId] = useState<string | null>(initialOpenId);
   const [addedXp, setAddedXp] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<ContactsFilter>(initialFilter);
@@ -62,7 +85,7 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
 
   useEffect(() => {
     void reload();
-  }, [reload]);
+  }, [reload, dataVersion]);
 
   if (load.kind === 'loading') {
     return (
@@ -87,6 +110,7 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
   }
 
   const { events } = load;
+  const others = otherMemberIds(events, memberIds);
   const allPeople = derivePeople(events, PEOPLE_CONFIG);
   const people = allPeople.filter((p) => !p.archived);
   const opened = openId === null ? undefined : people.find((p) => p.personId === openId);
@@ -101,6 +125,8 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
         events={events}
         activityTypes={activityTypes}
         config={PEOPLE_CONFIG}
+        authorLabel={(userId) => historyAuthorLabel(userId, others, members)}
+        {...(onCreateAccount === undefined ? {} : { createAccount: { onOpen: () => onCreateAccount(opened.personId) } })}
         onChanged={reload}
         onBack={() => setOpenId(null)}
       />
@@ -110,12 +136,17 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
   const addOpen = showAdd ?? people.length === 0;
   const addNameType = activityTypes.find((t) => t.id === ADD_NAME_ACTIVITY_ID);
 
-  async function addPerson(name: string, note: string, phone: PersonPhone | null): Promise<void> {
+  async function addPerson(name: string, note: string, phone: PersonPhone | null, amwayCode: string | null): Promise<void> {
     setError(null);
     const personId = crypto.randomUUID();
     await eventStore.append({
       type: 'person_added',
-      payload: { personId, name, ...(note === '' ? {} : { note }), ...(phone === null ? {} : { phone }) },
+      payload: {
+        personId,
+        name,
+        ...(note === '' ? {} : { note }), ...(phone === null ? {} : { phone }),
+        ...(amwayCode === null ? {} : { amwayCode }),
+      },
     });
     if (addNameType !== undefined) {
       try {
@@ -148,6 +179,7 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
     }
   }
 
+  const dupCodes = findDuplicateCodes(people);
   const counts = countContacts(allPeople);
   const inFilter = filterContacts(allPeople, filter);
   const shown = searchPeopleByName(inFilter, query);
@@ -264,6 +296,9 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
                 <button type="button" className="person-row" onClick={() => setOpenId(person.personId)}>
                   <span className="person-row__main">
                     <span className="person-row__name">{person.name}</span>
+                    {dupCodes.has(person.personId) && (
+                      <span className="person-row__warn">{duplicateCodeWarning(duplicateCodeNames(dupCodes.get(person.personId) ?? []))}</span>
+                    )}
                     {filter === 'kh' && person.lastContactAt !== undefined && (
                       <span className="person-row__stage">{lastContactLabel(person.lastContactAt)}</span>
                     )}

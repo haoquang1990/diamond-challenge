@@ -1,0 +1,9 @@
+Reviewed-Content-Hash: src/domain/people.ts a623202765edb86693e0370b8e1866d6240716ba
+Reviewed-Content-Hash: src/data/event-store.ts 62a252f43170aa857f64843d344acc6cc73bf89b
+Reviewed-Content-Hash: src/ui/people-config.ts eb01fcecd46ff5e487b28f28723ca8e6522dc82b
+Reviewed-Content-Hash: src/ui/people-helpers.ts d3c13fdcbf67b9ef2da4da86582e602fdad07a7c
+Reviewed-Content-Hash: src/ui/screens/person-form.tsx 5d5cfdfa86e8c797e81a947cbb89ad0891a86b99
+Reviewed-Content-Hash: src/ui/screens/people-screen.tsx 8e3711a07277b1c9ff63876a523826b374a2027b
+Reviewed-Content-Hash: src/config/game-config.json fd18a38f0bb593e976bb4f144dd867454be7e339
+Reviewed-Content-Hash: src/ui/strings.ts dfca6960d82532e67e9dae56da48800c37aa5af0
+Reviewed-Content-Hash: src/ui/styles.css 0c035032247f89fe93b9815ee4fa0d585b08318a

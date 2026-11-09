@@ -7,15 +7,17 @@ const PARSED = parsePeopleConfig({
   target30x30: gameConfig.target30x30,
   personTasks: gameConfig.personTasks,
   countryCodes: gameConfig.countryCodes,
+  amwayCodeDigits: gameConfig.amwayCodeDigits,
 });
 if (PARSED.problems.length > 0) console.warn('[people] config problems', PARSED.problems);
 
-/** People stages (legacy), targets, tasks and country codes from game-config.json, validated once at load. */
+/** People stages (legacy), targets, tasks, country codes and Amway code digits from game-config.json, validated once at load. */
 export const PEOPLE_CONFIG: PeopleConfig & { readonly tasks: readonly PersonTaskDef[]; readonly countryCodes: readonly CountryCodeDef[] } = {
   stages: PARSED.stages,
   targets: PARSED.targets,
   tasks: PARSED.tasks,
   countryCodes: PARSED.countryCodes,
+  amwayCodeDigits: PARSED.amwayCodeDigits,
 };
 
 /** Person tasks in display order. */

@@ -1,11 +1,13 @@
 import { createEvent, parseStoredEvent } from './event-store';
-import type { EventRange, EventStore, LogEvent, NewEvent } from './event-store';
+import type { EventRange, EventStore, LogEvent, NewEvent, SyncStateStore } from './event-store';
 
 const DB_VERSION = 1;
 const EVENTS_STORE = 'events';
 const META_STORE = 'meta';
 const TIMESTAMP_INDEX = 'timestamp';
 const USER_ID_KEY = 'userId';
+const SYNC_CURSOR_PREFIX = 'syncCursor:';
+const MEMBERS_PREFIX = 'members:';
 
 function requestToPromise<T>(request: IDBRequest<T>): Promise<T> {
   return new Promise((resolve, reject) => {
@@ -24,7 +26,8 @@ function transactionDone(tx: IDBTransaction): Promise<void> {
 
 /**
  * IndexedDB-backed `EventStore` using the browser's native API.
- * Append-only: no method updates or deletes an event. Data survives page reloads.
+ * Append-only: no method deletes an event; only `markSynced` sets a null `syncedAt`. Data
+ * survives page reloads. Sync cursors live in the `meta` store.
  *
  * Events use an auto-increment key, so events with equal timestamps list in
  * insertion order. The local userId is generated once inside a readwrite
@@ -35,7 +38,7 @@ function transactionDone(tx: IDBTransaction): Promise<void> {
  * await store.append({ type: 'lesson_completed', payload: { lessonId: 'l1' } });
  * const all = await store.list();
  */
-export class IndexedDbEventStore implements EventStore {
+export class IndexedDbEventStore implements EventStore, SyncStateStore {
   private readonly dbPromise: Promise<IDBDatabase>;
   private userIdPromise: Promise<string> | null = null;
 
@@ -113,6 +116,60 @@ export class IndexedDbEventStore implements EventStore {
     }
     await transactionDone(tx);
     return { added, skipped };
+  }
+
+  /** @inheritdoc */
+  async markSynced(ids: readonly string[], syncedAt: string): Promise<number> {
+    const wanted = new Set(ids);
+    const db = await this.dbPromise;
+    const tx = db.transaction(EVENTS_STORE, 'readwrite');
+    const request = tx.objectStore(EVENTS_STORE).openCursor();
+    let marked = 0;
+    request.onsuccess = () => {
+      const cursor = request.result;
+      if (cursor === null) return;
+      const value = cursor.value as { id?: unknown; syncedAt?: unknown } | null;
+      if (value !== null && typeof value.id === 'string' && wanted.has(value.id) && value.syncedAt === null) {
+        cursor.update({ ...value, syncedAt });
+        marked += 1;
+      }
+      cursor.continue();
+    };
+    await transactionDone(tx);
+    return marked;
+  }
+
+  /** @inheritdoc */
+  async readSyncCursor(householdId: string): Promise<number | null> {
+    const db = await this.dbPromise;
+    const value: unknown = await requestToPromise(db.transaction(META_STORE, 'readonly').objectStore(META_STORE).get(SYNC_CURSOR_PREFIX + householdId));
+    return typeof value === 'number' && Number.isSafeInteger(value) ? value : null;
+  }
+
+  /** @inheritdoc */
+  async writeSyncCursor(householdId: string, seq: number): Promise<void> {
+    const db = await this.dbPromise;
+    const tx = db.transaction(META_STORE, 'readwrite');
+    tx.objectStore(META_STORE).put(seq, SYNC_CURSOR_PREFIX + householdId);
+    await transactionDone(tx);
+  }
+
+  /** @inheritdoc */
+  async writeMemberIds(householdId: string, ids: readonly string[]): Promise<void> {
+    const db = await this.dbPromise;
+    const tx = db.transaction(META_STORE, 'readwrite');
+    tx.objectStore(META_STORE).put([...ids], MEMBERS_PREFIX + householdId);
+    await transactionDone(tx);
+  }
+
+  /** @inheritdoc */
+  async readMemberIds(): Promise<ReadonlySet<string>> {
+    const db = await this.dbPromise;
+    const range = IDBKeyRange.bound(MEMBERS_PREFIX, `${MEMBERS_PREFIX}\uffff`);
+    const lists: unknown[] = await requestToPromise(db.transaction(META_STORE, 'readonly').objectStore(META_STORE).getAll(range));
+    const ids = new Set<string>();
+    for (const list of lists) if (Array.isArray(list)) for (const id of list as unknown[]) if (typeof id === 'string') ids.add(id);
+    return ids;
   }
 
   private async loadOrCreateUserId(): Promise<string> {
