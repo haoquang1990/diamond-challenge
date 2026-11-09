@@ -1,12 +1,12 @@
 # Story 027: Bảng 30x30 theo hộ và đồng bộ số tổng hợp
 
 > **Epic**: diamond-challenge
-> **Status**: Ready
+> **Status**: In Progress
 > **Layer**: Feature
 > **Type**: UI
 > **Estimate**: L
 > **Manifest Version**: N/A (minimal — no control manifest)
-> **Last Updated**: 2026-11-07
+> **Last Updated**: 2026-11-09
 
 ## Context
 
