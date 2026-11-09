@@ -175,3 +175,6 @@ $RECYCLE.BIN/
 # the project root. Anchored so a reports/ folder elsewhere stays tracked.
 /reports/
 /test-results/
+
+# === Training source files (copyrighted, never commit) ===
+training-sources/
