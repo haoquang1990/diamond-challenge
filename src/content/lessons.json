@@ -204,6 +204,63 @@
           "explanation": "Giữ thái độ tử tế, để cửa luôn mở."
         }
       ]
+    },
+    {
+      "id": "formhd-basics",
+      "title": "FORMHD: hiểu người qua 6 chủ đề",
+      "xp": 10,
+      "questions": [
+        {
+          "prompt": "Chữ D trong FORMHD là gì?",
+          "options": [
+            "Gia đình",
+            "Ước muốn",
+            "Thu nhập"
+          ],
+          "correctIndex": 1,
+          "explanation": "D là Dream: dự định vài năm tới của người đó."
+        },
+        {
+          "prompt": "Bạn hỏi: \"Dạo này bé nhà mình học hành sao rồi?\" Câu này thuộc chủ đề nào?",
+          "options": [
+            "Gia đình",
+            "Công việc",
+            "Thời gian rảnh"
+          ],
+          "correctIndex": 0,
+          "explanation": "Hỏi về con cái, bố mẹ, vợ chồng là chủ đề Gia đình."
+        },
+        {
+          "prompt": "Về chủ đề Tài chính, cách nào phù hợp?",
+          "options": [
+            "Hỏi thẳng lương bao nhiêu",
+            "Lắng nghe điều họ tự chia sẻ, không dò hỏi",
+            "Bỏ qua người đó"
+          ],
+          "correctIndex": 1,
+          "explanation": "Tôn trọng chuyện riêng tư giúp giữ lòng tin."
+        },
+        {
+          "prompt": "Một người kể cuối tuần hay đi học thêm kỹ năng. Điều đó cho bạn biết gì?",
+          "options": [
+            "Họ thích phát triển bản thân",
+            "Họ không có thời gian",
+            "Họ không quan tâm gì"
+          ],
+          "correctIndex": 0,
+          "explanation": "Cách dùng thời gian rảnh cho thấy mong muốn của người đó."
+        },
+        {
+          "prompt": "Tinh thần chung khi trò chuyện theo FORMHD là gì?",
+          "options": [
+            "Hỏi thật nhanh cho đủ 6 chủ đề",
+            "Quan tâm thật lòng tới người đó trước",
+            "Nói về mình trước"
+          ],
+          "correctIndex": 1,
+          "explanation": "FORMHD là để hiểu người khác, không phải để lấy thông tin."
+        }
+      ]
     }
   ]
 }
