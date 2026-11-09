@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { EventStore, LogEvent } from '../../data/event-store';
+import { buildSplitEvents } from '../../domain/duplicates';
 import {
   buildTaskCompletionEvent,
   findDuplicateNames,
@@ -11,7 +12,7 @@ import {
 import type { PeopleConfig, Person, PersonPhone } from '../../domain/people';
 import { COUNTRY_CODES, PEOPLE_CONFIG, PERSON_TASKS } from '../people-config';
 import { buildPersonHistory, duplicateCodeNames, findDuplicateCodes, findPeopleWithCode, formatPhone } from '../people-helpers';
-import { STRINGS, duplicateCodeWarning, historyStageLabel, shortDateLabel, taskButtonLabel, xpLabel } from '../strings';
+import { STRINGS, duplicateCodeWarning, historyStageLabel, shortDateLabel, splitLabel, taskButtonLabel, xpLabel } from '../strings';
 
 /** Maps a phone validation failure to its message. */
 function phoneErrorText(reason: 'unknown_country' | 'not_digits' | 'bad_length'): string {
@@ -379,6 +380,12 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
       setInfo(STRINGS.taskUndone);
     });
 
+  const split = (mergeEventId: string, otherId: string) =>
+    run(async () => {
+      for (const event of buildSplitEvents(mergeEventId, person.personId, otherId)) await eventStore.append(event);
+      await onChanged();
+    });
+
   const archive = () =>
     run(async () => {
       await eventStore.append({ type: 'person_archived', payload: { personId: person.personId } });
@@ -399,6 +406,11 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
         {person.phone != null && (
           <p className="screen__prompt">
             {STRINGS.personDetailPhone}: <strong>{formatPhone(person.phone)}</strong>
+          </p>
+        )}
+        {(person.phones ?? []).length > 0 && (
+          <p className="screen__prompt">
+            {STRINGS.dupOtherPhones}: <strong>{(person.phones ?? []).map((p) => formatPhone(p)).join(', ')}</strong>
           </p>
         )}
         {person.amwayCode != null && (
@@ -548,6 +560,30 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
               </>
             );
           })()}
+        </section>
+      )}
+
+      {(person.absorbed ?? []).length > 0 && (
+        <section className="card person-section" aria-label={STRINGS.dupMergedSection}>
+          <h2 className="person-section__heading">{STRINGS.dupMergedSection}</h2>
+          <ul className="people-list">
+            {(person.absorbed ?? []).map((a) => (
+              <li key={a.mergeEventId} className="person-row person-row--static">
+                <span className="person-row__main">
+                  <span className="person-row__name">{a.name}</span>
+                </span>
+                <button
+                  type="button"
+                  className="button button--secondary person-row__action"
+                  aria-label={splitLabel(a.name)}
+                  onClick={() => void split(a.mergeEventId, a.personId)}
+                  disabled={busy}
+                >
+                  {STRINGS.dupSplit}
+                </button>
+              </li>
+            ))}
+          </ul>
         </section>
       )}
 

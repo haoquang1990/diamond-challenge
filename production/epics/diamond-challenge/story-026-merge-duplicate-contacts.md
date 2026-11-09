@@ -53,8 +53,9 @@
 
 ## Files
 
-- `src/domain/duplicates.ts`, `src/domain/people.ts`, `src/data/event-store.ts`
-- `src/ui/screens/duplicates-screen.tsx`, `src/ui/screens/people-screen.tsx`
+- `src/domain/duplicates.ts` (new), `src/domain/people.ts` (`deriveMerges`, merge applied on read), `src/data/event-store.ts` (doc)
+- `src/ui/screens/duplicates-screen.tsx` (new), `src/ui/screens/people-screen.tsx`
+- `src/ui/screens/person-form.tsx` ("Đã gộp" + Tách, other phones), `src/ui/people-helpers.ts`, `src/ui/people-config.ts`, `src/app.tsx` (screen route)
 - `src/config/game-config.json` (`duplicateNameMaxDistance`), `src/ui/strings.ts`, `src/ui/styles.css`
 - `tests/unit/people/duplicates.test.ts`
 - `production/qa/evidence/story-026-merge-duplicate-contacts/`

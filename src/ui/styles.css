@@ -779,3 +779,21 @@ body { margin: 0; }
 /* Hộ của tôi (story 025) */
 .member-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .member-list__item { min-width: 0; overflow-wrap: anywhere; }
+
+/* Liên hệ trùng (story 026) */
+.dup-entry { flex: none; width: 100%; }
+.dup-pair { min-width: 0; }
+.dup-pair__head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: 0; }
+.dup-pair__badge { margin-left: 0; }
+.dup-pair__reasons { color: var(--color-muted); font-weight: 700; font-size: 0.9rem; overflow-wrap: anywhere; }
+.dup-pair__sides { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.dup-side { min-width: 0; padding: 8px; border: 2px solid var(--color-border); border-radius: var(--radius); }
+.dup-side__name { margin: 0 0 6px; font-weight: 800; overflow-wrap: anywhere; }
+.dup-side__facts { margin: 0; display: flex; flex-direction: column; gap: 2px; font-size: 0.9rem; }
+.dup-side__facts dt { color: var(--color-muted); font-weight: 700; }
+.dup-side__facts dd { margin: 0 0 4px; overflow-wrap: anywhere; }
+.dup-side__facts .badge { margin-left: 0; }
+.dup-pair__actions { flex-wrap: wrap; }
+.dup-pair__actions > .button { flex: 1 1 150px; }
+.dup-pair__choose { display: flex; flex-direction: column; gap: 8px; }
+.dup-pair__choose .button { min-height: 44px; flex: none; }

@@ -6,6 +6,9 @@
  * Pure and deterministic: no clock, no I/O. Undo uses the log-wide convention
  * `payload.compensates` (same rule as computeProgress). Stage-change XP lives
  * in the event's `payload.xp`, so computeProgress sums it without changes.
+ *
+ * Merges (story 026): `person_merged` / `person_not_duplicate` are resolved at read time by
+ * {@link deriveMerges}; neither carries `xp`, so merging or splitting never changes total XP.
  */
 import type { LogEvent, NewEvent } from '../data/event-store';
 
@@ -54,6 +57,14 @@ export interface PersonPhone {
   readonly number: string;
 }
 
+/** A contact absorbed into another by a merge (shown as "Đã gộp" with a "Tách" button). */
+export interface AbsorbedPerson {
+  readonly personId: string;
+  readonly name: string;
+  /** Id of the active `person_merged` event; the split compensates it. */
+  readonly mergeEventId: string;
+}
+
 /** Inclusive digit-count bounds of a valid Amway code (config `amwayCodeDigits`). */
 export interface AmwayCodeDigits {
   readonly min: number;
@@ -87,6 +98,8 @@ export interface PeopleConfig {
   readonly countryCodes?: readonly CountryCodeDef[];
   /** Amway code digit bounds (additive; absent means the fallback bounds). */
   readonly amwayCodeDigits?: AmwayCodeDigits;
+  /** Max edit distance for "same name" duplicates (additive; absent means the fallback, 0 = exact only). */
+  readonly duplicateNameMaxDistance?: number;
 }
 
 /** Result of {@link parsePeopleConfig}. */
@@ -94,6 +107,7 @@ export interface PeopleConfigResult extends PeopleConfig {
   readonly tasks: readonly PersonTaskDef[];
   readonly countryCodes: readonly CountryCodeDef[];
   readonly amwayCodeDigits: AmwayCodeDigits;
+  readonly duplicateNameMaxDistance: number;
   /** Human-readable problems; empty when the config is valid. */
   readonly problems: readonly string[];
 }
@@ -112,6 +126,10 @@ export interface Person {
   readonly label?: PersonLabel | null;
   /** Latest phone, or null/absent when none. */
   readonly phone?: PersonPhone | null;
+  /** Other phones kept by merges (different from `phone`); absent or empty when none. */
+  readonly phones?: readonly PersonPhone[];
+  /** Contacts merged into this one by an active merge (flat, also those absorbed earlier by them). */
+  readonly absorbed?: readonly AbsorbedPerson[];
   /** Latest valid Amway code (normalized digits), or null/absent when none. Lives on the person, never on the label. */
   readonly amwayCode?: string | null;
   /** Supabase user id of the account created for this person (story 024), or null/absent when none. */
@@ -175,6 +193,8 @@ export interface PeopleStats {
 const FALLBACK_STAGES: readonly PersonStageDef[] = [{ id: 'acquaintance', name: 'Người quen', xp: 0 }];
 /** Safe bounds used when `amwayCodeDigits` is missing or invalid. */
 const FALLBACK_AMWAY_DIGITS: AmwayCodeDigits = { min: 4, max: 15 };
+/** Safe max name distance used when `duplicateNameMaxDistance` is missing or invalid. */
+const FALLBACK_NAME_DISTANCE = 1;
 const UNREACHABLE_TARGET = Number.MAX_SAFE_INTEGER;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -287,6 +307,18 @@ export function parseAmwayCodeDigits(raw: unknown): { amwayCodeDigits: AmwayCode
   };
 }
 
+/**
+ * Validates raw `duplicateNameMaxDistance` (integer >= 0; 0 = exact name only). Never throws; an
+ * invalid value falls back to 1 and is reported.
+ */
+export function parseDuplicateNameMaxDistance(raw: unknown): { duplicateNameMaxDistance: number; problems: readonly string[] } {
+  if (typeof raw === 'number' && Number.isInteger(raw) && raw >= 0) return { duplicateNameMaxDistance: raw, problems: [] };
+  return {
+    duplicateNameMaxDistance: FALLBACK_NAME_DISTANCE,
+    problems: ['duplicateNameMaxDistance: expected an integer >= 0, using fallback'],
+  };
+}
+
 /** Safe default when `countryCodes` is unusable. */
 const FALLBACK_COUNTRY_CODES: readonly CountryCodeDef[] = [{ code: '+84', name: 'Việt Nam' }];
 
@@ -360,7 +392,13 @@ export function parsePeopleConfig(raw: unknown): PeopleConfigResult {
     amwayCodeDigits = r.amwayCodeDigits;
     problems.push(...r.problems);
   }
-  return { stages, targets, tasks, countryCodes, amwayCodeDigits, problems };
+  let duplicateNameMaxDistance = FALLBACK_NAME_DISTANCE;
+  if ('duplicateNameMaxDistance' in source) {
+    const r = parseDuplicateNameMaxDistance(source.duplicateNameMaxDistance);
+    duplicateNameMaxDistance = r.duplicateNameMaxDistance;
+    problems.push(...r.problems);
+  }
+  return { stages, targets, tasks, countryCodes, amwayCodeDigits, duplicateNameMaxDistance, problems };
 }
 
 /** Ids of events that some other event compensates. */
@@ -394,6 +432,8 @@ interface MutablePerson {
   label: PersonLabel | null;
   labelledAt: string | null;
   phone: PersonPhone | null;
+  phones: PersonPhone[];
+  absorbed: AbsorbedPerson[];
   amwayCode: string | null;
   linkedUserId: string | null;
   done: Set<string>;
@@ -430,6 +470,142 @@ export function validateAmwayCode(input: string, config: PeopleConfig): AmwayCod
   return code === null ? { ok: false } : { ok: true, code };
 }
 
+/**
+ * Comparison key of a phone: calling code plus the digits without leading zeros (the national
+ * trunk "0"), so "+84 0912345678" and "+84 912345678" are the same number.
+ */
+export function phoneKey(phone: PersonPhone): string {
+  return `${phone.country}${phone.number.replace(/^0+/, '')}`;
+}
+
+/** Order-independent key of a pair of person ids. */
+export function pairKey(a: string, b: string): string {
+  return a < b ? `${a}|${b}` : `${b}|${a}`;
+}
+
+/** A merge that took effect (see {@link deriveMerges}); ids are the group roots at that moment. */
+export interface EffectiveMerge {
+  /** Id of the `person_merged` event. */
+  readonly eventId: string;
+  /** Surviving contact: the one added earlier. */
+  readonly keepId: string;
+  /** Contact that disappears into `keepId`. */
+  readonly mergedId: string;
+  readonly timestamp: string;
+  /** Raw code chosen in the event (only meaningful when the two sides had different codes). */
+  readonly amwayCode?: string;
+}
+
+/** Result of {@link deriveMerges}. */
+export interface MergeResolution {
+  /** Merges that took effect, in chronological order. */
+  readonly merges: readonly EffectiveMerge[];
+  /** Every merged-away person id -> its final keeper id (persons that are not merged away are absent). */
+  readonly rootOf: ReadonlyMap<string, string>;
+}
+
+function readPair(raw: unknown): [string, string] | null {
+  return Array.isArray(raw) && raw.length === 2 && typeof raw[0] === 'string' && typeof raw[1] === 'string' && raw[0] !== raw[1]
+    ? [raw[0], raw[1]]
+    : null;
+}
+
+/**
+ * Resolves `person_merged` / `person_not_duplicate` events (crm.md rules 21-22). Pure, read-time only;
+ * nothing is rewritten. A merge takes effect unless:
+ * - it is compensated (the split);
+ * - a `person_not_duplicate` for the same pair is LATER (timestamp) than the latest merge of that pair;
+ * - it names an unknown person, or both ids already share a keeper (so the same merge twice, or two
+ *   members merging the same pair offline, equals one merge, and there are no cycles);
+ * - it would join two DIFFERENT linked accounts (`linkedUserId`).
+ * The keeper is always the contact added earlier (whatever direction the payload says); merging into
+ * an already merged person resolves to its final keeper (chains).
+ *
+ * @example
+ * const { rootOf } = deriveMerges(events);
+ * const finalId = rootOf.get(personId) ?? personId;
+ */
+export function deriveMerges(events: readonly LogEvent[]): MergeResolution {
+  const active = activeEvents(events);
+  const order = new Map<string, number>();
+  const linked = new Map<string, string>();
+  const notDuplicateAt = new Map<string, string>();
+  const latestMergeAt = new Map<string, string>();
+  const candidates: LogEvent[] = [];
+  for (const e of active) {
+    const p = e.payload;
+    if (e.type === 'person_added') {
+      if (typeof p.personId === 'string' && isNonEmptyString(p.name) && !order.has(p.personId)) order.set(p.personId, order.size);
+    } else if (e.type === 'person_updated') {
+      if (typeof p.personId === 'string' && isNonEmptyString(p.linkedUserId)) linked.set(p.personId, p.linkedUserId.trim());
+    } else if (e.type === 'person_not_duplicate') {
+      const ids = readPair(p.personIds);
+      if (ids !== null) notDuplicateAt.set(pairKey(ids[0], ids[1]), e.timestamp);
+    } else if (e.type === 'person_merged') {
+      if (typeof p.keepId === 'string' && typeof p.mergedId === 'string' && p.keepId !== p.mergedId) {
+        candidates.push(e);
+        latestMergeAt.set(pairKey(p.keepId, p.mergedId), e.timestamp);
+      }
+    }
+  }
+  const parent = new Map<string, string>();
+  const find = (id: string): string => {
+    let root = id;
+    for (let next = parent.get(root); next !== undefined; next = parent.get(root)) root = next;
+    return root;
+  };
+  const groupLinked = new Map<string, string | null>();
+  const linkedOf = (root: string): string | null => groupLinked.get(root) ?? linked.get(root) ?? null;
+  const merges: EffectiveMerge[] = [];
+  for (const e of candidates) {
+    const keepId = e.payload.keepId as string;
+    const mergedId = e.payload.mergedId as string;
+    if (!order.has(keepId) || !order.has(mergedId)) continue;
+    const undoneAt = notDuplicateAt.get(pairKey(keepId, mergedId));
+    if (undoneAt !== undefined && undoneAt > (latestMergeAt.get(pairKey(keepId, mergedId)) ?? '')) continue;
+    const ra = find(keepId);
+    const rb = find(mergedId);
+    if (ra === rb) continue;
+    const la = linkedOf(ra);
+    const lb = linkedOf(rb);
+    if (la !== null && lb !== null && la !== lb) continue;
+    const keepFirst = (order.get(ra) ?? 0) < (order.get(rb) ?? 0);
+    const keep = keepFirst ? ra : rb;
+    const gone = keepFirst ? rb : ra;
+    parent.set(gone, keep);
+    groupLinked.set(keep, la ?? lb);
+    const code = e.payload.amwayCode;
+    merges.push({ eventId: e.id, keepId: keep, mergedId: gone, timestamp: e.timestamp, ...(typeof code === 'string' ? { amwayCode: code } : {}) });
+  }
+  const rootOf = new Map<string, string>();
+  for (const id of parent.keys()) rootOf.set(id, find(id));
+  return { merges, rootOf };
+}
+
+/** Folds the profile of a merged-away contact into its keeper at the moment of the merge. */
+function foldMerged(
+  keep: MutablePerson | undefined,
+  gone: MutablePerson | undefined,
+  merge: EffectiveMerge,
+  readCode: (raw: unknown) => string | null | undefined,
+): void {
+  if (keep === undefined || gone === undefined) return;
+  if (gone.note.trim() !== '' && !keep.note.includes(gone.note)) {
+    keep.note = keep.note.trim() === '' ? gone.note : `${keep.note}\n\n${gone.note}`;
+  }
+  for (const phone of [gone.phone, ...gone.phones]) {
+    if (phone === null) continue;
+    if (keep.phone === null) keep.phone = phone;
+    else if (phoneKey(keep.phone) !== phoneKey(phone) && !keep.phones.some((x) => phoneKey(x) === phoneKey(phone))) keep.phones.push(phone);
+  }
+  if (keep.amwayCode === null) keep.amwayCode = gone.amwayCode;
+  else if (gone.amwayCode !== null && gone.amwayCode !== keep.amwayCode) {
+    keep.amwayCode = (merge.amwayCode === undefined ? undefined : readCode(merge.amwayCode)) ?? keep.amwayCode;
+  }
+  keep.linkedUserId = keep.linkedUserId ?? gone.linkedUserId;
+  keep.absorbed.push({ personId: gone.personId, name: gone.name, mergeEventId: merge.eventId }, ...gone.absorbed);
+}
+
 function setLabel(person: MutablePerson, next: PersonLabel | null, timestamp: string): void {
   if (next === person.label) return;
   person.label = next;
@@ -453,6 +629,11 @@ function setLabel(person: MutablePerson, next: PersonLabel | null, timestamp: st
  *   without `taskId` gives no label.
  * - Done tasks: activities owned by the person (honouring `activity_reassigned`)
  *   by `taskId` (or legacy `demo`/`opp`), plus legacy stages that earned XP.
+ * - Merges (story 026, see {@link deriveMerges}): a merged-away person is not listed; its activities
+ *   and stage changes count for the keeper (so label NPP > KH > none and done tasks combine); at the
+ *   moment of the merge its note is appended (blank line), its phone goes to `phones` when different
+ *   (primary stays the keeper's), codes follow the merge event when different, `linkedUserId` is kept.
+ *   XP is never touched: both sides' XP stays in the log.
  * - Compensated events are excluded; events for unknown personIds, invalid
  *   payloads and stage ids not in the config are ignored (never throws).
  *
@@ -468,10 +649,17 @@ export function derivePeople(events: readonly LogEvent[], config: PeopleConfig):
   const readCode = (raw: unknown): string | null | undefined =>
     typeof raw !== 'string' ? undefined : raw.trim() === '' ? null : (normalizeAmwayCode(raw, digits) ?? undefined);
   const owners = deriveActivityOwners(events);
+  const { merges, rootOf } = deriveMerges(events);
+  const mergeById = new Map(merges.map((m) => [m.eventId, m]));
   const people = new Map<string, MutablePerson>();
 
   for (const e of activeEvents(events)) {
     const p = e.payload;
+    if (e.type === 'person_merged') {
+      const merge = mergeById.get(e.id);
+      if (merge !== undefined) foldMerged(people.get(merge.keepId), people.get(merge.mergedId), merge, readCode);
+      continue;
+    }
     if (e.type === 'activity_logged') {
       const owner = owners.get(e.id);
       const person = typeof owner === 'string' ? people.get(owner) : undefined;
@@ -502,6 +690,8 @@ export function derivePeople(events: readonly LogEvent[], config: PeopleConfig):
         label: null,
         labelledAt: null,
         phone: readPhone(p.phone) ?? null,
+        phones: [],
+        absorbed: [],
         amwayCode: readCode(p.amwayCode) ?? null,
         linkedUserId: null,
         done: new Set(),
@@ -525,17 +715,18 @@ export function derivePeople(events: readonly LogEvent[], config: PeopleConfig):
       person.archived = false;
     } else if (e.type === 'person_stage_changed') {
       const to = p.to;
-      if (typeof to !== 'string' || !stageIds.has(to)) continue;
-      person.stageId = to;
-      person.lastContactAt = e.timestamp;
+      const target = people.get(rootOf.get(personId) ?? personId);
+      if (target === undefined || typeof to !== 'string' || !stageIds.has(to)) continue;
+      target.stageId = to;
+      target.lastContactAt = e.timestamp;
       const earned = typeof p.xp === 'number' && p.xp > 0;
-      if (earned && !person.stageXpAwarded.includes(to)) person.stageXpAwarded.push(to);
+      if (earned && !target.stageXpAwarded.includes(to)) target.stageXpAwarded.push(to);
       const doneTask = LEGACY_STAGE_TASKS[to];
-      if (earned && doneTask !== undefined) person.done.add(doneTask);
-      setLabel(person, to === CUSTOMER_STAGE_ID ? 'KH' : to === F1_STAGE_ID ? 'NPP' : null, e.timestamp);
+      if (earned && doneTask !== undefined) target.done.add(doneTask);
+      setLabel(target, to === CUSTOMER_STAGE_ID ? 'KH' : to === F1_STAGE_ID ? 'NPP' : null, e.timestamp);
     }
   }
-  return [...people.values()].map((m) => ({
+  return [...people.values()].filter((m) => !rootOf.has(m.personId)).map((m) => ({
     personId: m.personId,
     name: m.name,
     note: m.note,
@@ -544,6 +735,8 @@ export function derivePeople(events: readonly LogEvent[], config: PeopleConfig):
     stageXpAwarded: m.stageXpAwarded,
     label: m.label,
     phone: m.phone,
+    phones: m.phones,
+    absorbed: m.absorbed,
     amwayCode: m.amwayCode,
     linkedUserId: m.linkedUserId,
     doneTaskIds: [...m.done],
@@ -708,7 +901,8 @@ export function findDuplicateNames(people: readonly Person[], name: string, excl
  * Owner of every non-compensated `activity_logged` event: activityId ->
  * personId, or null when none. `payload.personId` is overridden by the latest
  * non-compensated `activity_reassigned`. An owner without a `person_added`
- * resolves to {@link UNKNOWN_PERSON_ID}. Reassignment carries no XP.
+ * resolves to {@link UNKNOWN_PERSON_ID}. An owner merged into another person resolves to
+ * the final keeper (story 026). Reassignment carries no XP.
  *
  * @example
  * const owners = deriveActivityOwners(events);
@@ -729,9 +923,10 @@ export function deriveActivityOwners(events: readonly LogEvent[]): ReadonlyMap<s
     const { activityId, personId } = e.payload;
     if (typeof activityId === 'string' && typeof personId === 'string' && raw.has(activityId)) raw.set(activityId, personId);
   }
+  const { rootOf } = deriveMerges(events);
   const owners = new Map<string, string | null>();
   for (const [activityId, personId] of raw) {
-    owners.set(activityId, personId === null || known.has(personId) ? personId : UNKNOWN_PERSON_ID);
+    owners.set(activityId, personId === null ? null : known.has(personId) ? (rootOf.get(personId) ?? personId) : UNKNOWN_PERSON_ID);
   }
   return owners;
 }

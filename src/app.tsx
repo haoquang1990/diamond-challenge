@@ -27,6 +27,7 @@ import { DiamondPathScreen } from './ui/screens/diamond-path-screen';
 import { LessonScreen } from './ui/screens/lesson-screen';
 import { HouseholdScreen } from './ui/screens/household-screen';
 import { LoginScreen } from './ui/screens/login-screen';
+import { DuplicatesScreen } from './ui/screens/duplicates-screen';
 import { PeopleScreen } from './ui/screens/people-screen';
 import { SettingsScreen } from './ui/screens/settings-screen';
 import { TodayScreen } from './ui/screens/today-screen';
@@ -56,9 +57,9 @@ function realNow(): Date {
  * merged person list (Danh bạ). `settings` (opened from Hôm nay) and `board`
  * (opened from Con đường) are not in the tab bar.
  */
-type Tab = 'today' | 'learn' | 'people' | 'path' | 'settings' | 'board' | 'achievements' | 'login' | 'household';
+type Tab = 'today' | 'learn' | 'people' | 'path' | 'settings' | 'board' | 'achievements' | 'login' | 'household' | 'duplicates';
 
-const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'board' | 'achievements' | 'login' | 'household'>; readonly label: string }[] = [
+const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'board' | 'achievements' | 'login' | 'household' | 'duplicates'>; readonly label: string }[] = [
   { id: 'today', label: STRINGS.tabToday },
   { id: 'learn', label: STRINGS.tabLearn },
   { id: 'people', label: STRINGS.tabPeople },
@@ -430,6 +431,14 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
     );
   }
 
+  if (tab === 'duplicates') {
+    return (
+      <div className="app-shell">
+        <DuplicatesScreen eventStore={eventStore} memberIds={memberIds} members={members} dataVersion={dataVersion} onBack={() => setTab('people')} />
+      </div>
+    );
+  }
+
   if (tab === 'board') {
     return (
       <div className="app-shell">
@@ -502,6 +511,7 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
           members={members}
           memberIds={memberIds}
           dataVersion={dataVersion}
+          onOpenDuplicates={() => setTab('duplicates')}
           initialOpenId={reopenPerson}
           {...(clientPromise === null || account === null ? {} : { onCreateAccount: setCreateAccountFor })}
           {...(fromBoard === null

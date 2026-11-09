@@ -345,6 +345,38 @@ export const STRINGS = {
   syncNoHousehold: 'Tài khoản chưa thuộc hộ nào nên chưa đồng bộ được. Dữ liệu trên máy vẫn giữ nguyên.',
   historyFormerMember: 'Thành viên cũ',
 
+  // Liên hệ trùng (story 026)
+  dupTitle: 'Kiểm tra liên hệ trùng',
+  dupPrompt: 'Xem từng cặp và chọn gộp hoặc giữ riêng.',
+  dupBack: 'Quay lại Làm',
+  dupNone: 'Không còn liên hệ trùng cần kiểm tra.',
+  dupMergeAll: 'Gộp tất cả',
+  dupMergeAllHint: 'Chỉ gộp các cặp trùng chắc chắn, không xung đột mã. Cặp chỉ trùng tên phải duyệt từng cặp.',
+  dupMerge: 'Gộp',
+  dupNotSame: 'Không phải cùng người',
+  dupCertain: 'Trùng chắc chắn',
+  dupPossible: 'Có thể trùng',
+  dupReasonCode: 'Cùng mã số',
+  dupReasonPhone: 'Cùng số điện thoại',
+  dupReasonName: 'Cùng tên',
+  dupReasonNearName: 'Tên gần giống',
+  dupPhone: 'SĐT',
+  dupNoPhone: 'Chưa có SĐT',
+  dupCode: 'Mã số',
+  dupNoCode: 'Chưa có mã',
+  dupLabel: 'Nhãn',
+  dupNoLabel: 'Chưa có nhãn',
+  dupTasksDone: 'Việc đã làm',
+  dupAddedBy: 'Người thêm',
+  dupAddedByMe: 'Tôi',
+  dupLinkedConflict: 'Hai liên hệ đã liên kết hai tài khoản khác nhau, không thể gộp.',
+  dupPickCodeTitle: 'Hai mã khác nhau. Giữ mã nào?',
+  dupCancel: 'Huỷ',
+  dupError: 'Chưa lưu được. Thử lại nhé.',
+  dupMergedSection: 'Đã gộp',
+  dupSplit: 'Tách',
+  dupOtherPhones: 'SĐT khác',
+
   // Placeholder screens
   comingSoon: 'Sắp có',
   comingSoonBody: 'Tính năng này đang được xây dựng.',
@@ -532,6 +564,26 @@ export function achievementsStreakLabel(current: number, days: number): string {
 /** Earned date line, e.g. "Đạt ngày 10/03/2026". */
 export function achievementsEarnedOnLabel(date: string): string {
   return `Đạt ngày ${date}`;
+}
+
+/** Entry on the Làm tab, e.g. "Kiểm tra liên hệ trùng (2)". */
+export function duplicatesEntryLabel(count: number): string {
+  return `Kiểm tra liên hệ trùng (${count})`;
+}
+
+/** Button text for keeping one code when merging, e.g. "Giữ mã 123456". */
+export function keepCodeLabel(code: string): string {
+  return `Giữ mã ${code}`;
+}
+
+/** Result line after "Gộp tất cả", e.g. "Đã gộp 3 cặp". */
+export function mergedCountLabel(count: number): string {
+  return `Đã gộp ${count} cặp`;
+}
+
+/** Button name for "Tách" of one absorbed contact. */
+export function splitLabel(name: string): string {
+  return `Tách ${name}`;
 }
 
 /** Warning shown when another person has the same Amway code, e.g. "Trùng mã số với Lan, Hà". */
