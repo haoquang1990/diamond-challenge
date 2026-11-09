@@ -1,12 +1,12 @@
 # Story 029: Màn Quản trị tối thiểu (đặt lại mật khẩu, đặt mã số cho hộ)
 
 > **Epic**: diamond-challenge
-> **Status**: Ready
+> **Status**: In Progress
 > **Layer**: Feature
 > **Type**: UI
 > **Estimate**: M
 > **Manifest Version**: N/A (minimal — no control manifest)
-> **Last Updated**: 2026-11-07
+> **Last Updated**: 2026-11-09
 
 ## Context
 
