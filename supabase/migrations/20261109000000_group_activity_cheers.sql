@@ -5,7 +5,20 @@
 -- ================================================================ last activity
 alter table public.households add column last_activity_at timestamptz;
 
--- A new `activity_logged` event in a household's contact book stamps the household. Compensations
+-- Households that already logged activities before this migration get their latest one now
+-- (never later than now, in case a device clock ran ahead).
+update public.households h
+set last_activity_at = least(a.latest, now())
+from (
+  select household_id, max(occurred_at) as latest
+  from public.contact_events
+  where type = 'activity_logged' and not (payload ? 'compensates')
+  group by household_id
+) a
+where a.household_id = h.id;
+
+-- A new `activity_logged` event in a household's contact book stamps the household with the time the
+-- activity was done (`occurred_at`, capped at now), so an offline backlog synced later is dated right. Compensations
 -- (undo of an activity) are not activity. Runs as the owner: app roles have no update grant on
 -- households. A separate AFTER INSERT trigger, so the BEFORE trigger that assigns sync_seq is untouched.
 create function public.households_stamp_activity()
@@ -15,7 +28,7 @@ as $$
 begin
   if new.type = 'activity_logged' and new.household_id is not null and not (new.payload ? 'compensates') then
     update public.households
-      set last_activity_at = greatest(coalesce(last_activity_at, '-infinity'::timestamptz), now())
+      set last_activity_at = greatest(coalesce(last_activity_at, '-infinity'::timestamptz), least(new.occurred_at, now()))
       where id = new.household_id;
   end if;
   return null;

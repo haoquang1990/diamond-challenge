@@ -1,8 +1,8 @@
 Reviewed-Content-Hash: src/domain/household-board.ts cb8ffc1275bc9d08df1ea114d4d03bb9b6b4f688
-Reviewed-Content-Hash: src/data/aggregates-sync.ts 2a31c54064d40bff6882bbcae6382e79d4cb8c18
+Reviewed-Content-Hash: src/data/aggregates-sync.ts 68d511659cced447195e30f16ce5273d21e9aa43
 Reviewed-Content-Hash: src/ui/screens/board-30x30-screen.tsx cbb92a706ee19b5843b5f716fd3ca1c9029a3d2d
-Reviewed-Content-Hash: src/app.tsx 5db8c79a474e77f9cfb881a0194bb65798724314
-Reviewed-Content-Hash: src/config/game-config.json 25c917d5ca49498fb0ac870ed68fca4170c66aa7
-Reviewed-Content-Hash: src/ui/strings.ts ec454fe1366d7b394b678521229ed99ac5d38f1f
-Reviewed-Content-Hash: src/ui/styles.css 80bca60d3967a4fcac951191a94082fa01782b33
+Reviewed-Content-Hash: src/app.tsx 36e1daabaf15b7961d36257628c1eef211f780a5
+Reviewed-Content-Hash: src/config/game-config.json cd84beae81991878c6e842525323aa13d14e112b
+Reviewed-Content-Hash: src/ui/strings.ts f93889626b2645fedc9ee708090c532d40a81a5e
+Reviewed-Content-Hash: src/ui/styles.css 5cf54d7cc05d06b66f51775591952fa9feba2ad1
 Reviewed-Content-Hash: tests/unit/people/household-board.test.ts e6fc12ca37f22782a1423768a2c5d2de7460132f

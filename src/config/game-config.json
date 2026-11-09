@@ -169,5 +169,6 @@
   },
   "aggregatesSync": {
     "debounceMs": 3000
-  }
+  },
+  "edgeFunctionTimeoutMs": 20000
 }

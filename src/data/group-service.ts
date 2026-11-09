@@ -257,6 +257,24 @@ export function writeGroupCache(accountId: string, data: GroupData, storage: Pic
   }
 }
 
+/**
+ * Removes every account's cached group (member names and phones of F1 households) from this
+ * device. Called on sign-out so a shared phone keeps nothing of the group.
+ */
+export function clearGroupCaches(given?: Pick<Storage, 'length' | 'key' | 'removeItem'>): void {
+  try {
+    const storage = given ?? localStorage;
+    const keys: string[] = [];
+    for (let i = 0; i < storage.length; i += 1) {
+      const key = storage.key(i);
+      if (key !== null && key.startsWith(`${GROUP_CACHE_KEY}:`)) keys.push(key);
+    }
+    for (const key of keys) storage.removeItem(key);
+  } catch {
+    // Storage may be blocked; nothing was cached then.
+  }
+}
+
 /** Ids of cheers the user already closed on Hôm nay (localStorage; empty when unreadable). */
 export function readDismissedCheers(storage: Pick<Storage, 'getItem'> = localStorage): ReadonlySet<string> {
   try {

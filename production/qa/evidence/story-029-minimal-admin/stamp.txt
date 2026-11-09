@@ -1,6 +1,6 @@
-Reviewed-Content-Hash: src/data/admin-service.ts f3d0374b8803118c9869de9659adfcb9495734eb
+Reviewed-Content-Hash: src/data/admin-service.ts 795084e4543d7df49f4524447f3b4807e4a23073
 Reviewed-Content-Hash: src/ui/screens/admin-screen.tsx ba75779bdb98d1fe7d15c6e0649bc9e7f8f02842
 Reviewed-Content-Hash: src/ui/screens/settings-screen.tsx 770d7b62081200ff08ca0061365ef97dfce5ebe4
-Reviewed-Content-Hash: src/app.tsx 49d00a3f8269dd9817d50f64d1a94d881189704f
+Reviewed-Content-Hash: src/app.tsx 36e1daabaf15b7961d36257628c1eef211f780a5
 Reviewed-Content-Hash: src/ui/strings.ts f93889626b2645fedc9ee708090c532d40a81a5e
 Reviewed-Content-Hash: src/ui/styles.css 5cf54d7cc05d06b66f51775591952fa9feba2ad1

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import gameConfig from './config/game-config.json';
 import { getSupabaseClient } from './config/supabase';
 import { loadIsAdmin } from './data/admin-service';
-import { dismissCheers, loadUnseenCheer } from './data/group-service';
+import { clearGroupCaches, dismissCheers, loadUnseenCheer } from './data/group-service';
 import { ensureAccountLinked, loadAccount, saveDisplayName, signOut } from './data/auth-service';
 import type { AccountInfo, AuthResult } from './data/auth-service';
 import {
@@ -106,9 +106,9 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
   /** Person detail to reopen in Làm after the account screen. */
   const [reopenPerson, setReopenPerson] = useState<string | null>(null);
   const [lessonActive, setLessonActive] = useState(false);
-  /** Set when Làm was opened from Bảng 30x30 (preselected filter + back control); null otherwise. */
   /** The duplicates screen was opened from Bảng 30x30 (its back control returns there). */
   const [duplicatesFromBoard, setDuplicatesFromBoard] = useState(false);
+  /** Set when Làm was opened from Bảng 30x30 (preselected filter + back control); null otherwise. */
   const [fromBoard, setFromBoard] = useState<ContactsFilter | null>(null);
   useEffect(() => {
     if (tab !== 'people') setReopenPerson(null);
@@ -165,6 +165,8 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
 
   // Story 028: an unseen cheer from the sponsor household shows as a dismissible card on Hôm nay.
   const [unseenCheer, setUnseenCheer] = useState<{ readonly message: string; readonly allIds: readonly string[] } | null>(null);
+  // A cheer belongs to one account's household: drop it when the account changes or signs out.
+  useEffect(() => setUnseenCheer(null), [accountId]);
   useEffect(() => {
     if (clientPromise === null || accountId === null || passwordPending || tab !== 'today' || !navigator.onLine) return;
     let cancelled = false;
@@ -179,11 +181,9 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
     };
   }, [clientPromise, accountId, passwordPending, tab]);
   const onDismissCheer = useCallback(() => {
-    setUnseenCheer((current) => {
-      if (current !== null) dismissCheers(current.allIds);
-      return null;
-    });
-  }, []);
+    if (unseenCheer !== null) dismissCheers(unseenCheer.allIds);
+    setUnseenCheer(null);
+  }, [unseenCheer]);
 
   useEffect(() => {
     if (clientPromise === null) return;
@@ -270,15 +270,28 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
 
   // Household 30x30 numbers (story 027): sent only when signed in, consented and online, and only when they changed.
   const [aggregates, setAggregates] = useState<AggregatesSync | null>(null);
+  /** True once the household contact book was pulled in this session (gates aggregate sends). */
+  const contactsPulledRef = useRef(false);
+  useEffect(() => {
+    contactsPulledRef.current = false;
+  }, [accountId]);
   useEffect(() => {
     if (clientPromise === null || accountId === null || consent !== 'granted' || declined) return;
     let created: AggregatesSync | null = null;
     let cancelled = false;
     void clientPromise.then((client) => {
       if (cancelled) return;
-      created = createAggregatesSync({ client, list: () => rawEventStore.list(), accountId, peopleConfig: PEOPLE_CONFIG, config: gameConfig.aggregatesSync });
+      created = createAggregatesSync({
+        client,
+        list: () => rawEventStore.list(),
+        accountId,
+        peopleConfig: PEOPLE_CONFIG,
+        config: gameConfig.aggregatesSync,
+        isReady: () => contactsPulledRef.current,
+      });
       setAggregates(created);
-      created.schedule();
+      // The first send waits for the first completed contact sync (below).
+      if (contactsPulledRef.current) created.schedule();
     });
     return () => {
       cancelled = true;
@@ -294,7 +307,9 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
     [observed, aggregates],
   );
   useEffect(() => {
-    if (syncStatus.kind === 'synced') aggregates?.schedule();
+    if (syncStatus.kind !== 'synced') return;
+    contactsPulledRef.current = true;
+    aggregates?.schedule();
   }, [syncStatus, aggregates]);
   useEffect(() => {
     const onOnline = () => void aggregates?.flush();
@@ -344,6 +359,8 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
     temporaryPasswordRef.current = null;
     setAskDisplayName(false);
     setConsentOpen(false);
+    setUnseenCheer(null);
+    clearGroupCaches();
     setAccount(null);
     return true;
   };

@@ -606,6 +606,29 @@ function foldMerged(
   keep.absorbed.push({ personId: gone.personId, name: gone.name, mergeEventId: merge.eventId }, ...gone.absorbed);
 }
 
+/**
+ * Applies a `person_updated` written for a contact that is already merged into `keep`: a new phone
+ * is added as another phone, a note is appended, and the code and account link are filled only when
+ * the keeper has none. The name is left as the keeper's.
+ */
+function applyLateUpdate(
+  keep: MutablePerson,
+  p: Readonly<Record<string, unknown>>,
+  readCode: (raw: unknown) => string | null | undefined,
+): void {
+  const phone = readPhone(p.phone);
+  if (phone != null) {
+    if (keep.phone === null) keep.phone = phone;
+    else if (phoneKey(keep.phone) !== phoneKey(phone) && !keep.phones.some((x) => phoneKey(x) === phoneKey(phone))) keep.phones.push(phone);
+  }
+  if (typeof p.note === 'string' && p.note.trim() !== '' && !keep.note.includes(p.note)) {
+    keep.note = keep.note.trim() === '' ? p.note : `${keep.note}\n\n${p.note}`;
+  }
+  const code = readCode(p.amwayCode);
+  if (code != null && keep.amwayCode === null) keep.amwayCode = code;
+  if (isNonEmptyString(p.linkedUserId) && keep.linkedUserId === null) keep.linkedUserId = p.linkedUserId.trim();
+}
+
 function setLabel(person: MutablePerson, next: PersonLabel | null, timestamp: string): void {
   if (next === person.label) return;
   person.label = next;
@@ -652,12 +675,17 @@ export function derivePeople(events: readonly LogEvent[], config: PeopleConfig):
   const { merges, rootOf } = deriveMerges(events);
   const mergeById = new Map(merges.map((m) => [m.eventId, m]));
   const people = new Map<string, MutablePerson>();
+  /** Contacts already folded into a keeper at this point of the log. */
+  const folded = new Set<string>();
 
   for (const e of activeEvents(events)) {
     const p = e.payload;
     if (e.type === 'person_merged') {
       const merge = mergeById.get(e.id);
-      if (merge !== undefined) foldMerged(people.get(merge.keepId), people.get(merge.mergedId), merge, readCode);
+      if (merge !== undefined && people.has(merge.keepId) && people.has(merge.mergedId)) {
+        foldMerged(people.get(merge.keepId), people.get(merge.mergedId), merge, readCode);
+        folded.add(merge.mergedId);
+      }
       continue;
     }
     if (e.type === 'activity_logged') {
@@ -697,6 +725,13 @@ export function derivePeople(events: readonly LogEvent[], config: PeopleConfig):
         done: new Set(),
         lastContactAt: e.timestamp,
       });
+      continue;
+    }
+    // An edit made to a contact after it was merged (typically by a device that had not seen the
+    // merge yet) goes to the contact that kept it, so it is not lost with the merged one.
+    if (folded.has(personId)) {
+      const keeper = people.get(rootOf.get(personId) ?? personId);
+      if (e.type === 'person_updated' && keeper !== undefined) applyLateUpdate(keeper, p, readCode);
       continue;
     }
     const person = people.get(personId);

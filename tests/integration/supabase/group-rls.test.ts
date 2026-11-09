@@ -80,7 +80,6 @@ beforeAll(async () => {
   await db.query(`insert into public.profiles (id, phone, role, must_change_password) values ($1, '+84948161365', 'admin', false)`, [U(1)]);
   await db.exec(HOUSEHOLDS_SQL);
   await db.exec(SYNC_SQL);
-  await db.exec(GROUP_SQL);
   await db.exec('grant all on all tables in schema public to service_role;');
   A = await provision(2, null, '2000002', 1);
   B = await provision(3, A, '2000003', 2);
@@ -88,6 +87,11 @@ beforeAll(async () => {
   D = await provision(5, A, '2000005', 2);
   X = await provision(6, null, '2000006', 1);
   await db.query('insert into public.contact_consents (user_id, version) select id, 1 from public.profiles');
+  // Activity logged BEFORE the story-028 migration: C on 1 Nov, X with a device clock far ahead.
+  const old = `insert into public.contact_events (id, household_id, author_id, type, occurred_at, payload) values ($1, $2, $3, 'activity_logged', $4, '{"personId":"p1","activityType":"follow_up"}')`;
+  await db.query(old, [E(901), C, U(4), '2026-11-01T08:00:00Z']);
+  await db.query(old, [E(902), X, U(6), '2099-01-01T00:00:00Z']);
+  await db.exec(GROUP_SQL);
 }, 60_000);
 
 afterAll(async () => {
@@ -95,6 +99,21 @@ afterAll(async () => {
 });
 
 describe('last_activity_at', () => {
+  it('is filled from activities logged before the migration, never later than now', async () => {
+    expect(await one<string>(`select to_char(last_activity_at at time zone 'utc', 'YYYY-MM-DD"T"HH24:MI') as v from public.households where id = $1`, [C])).toBe('2026-11-01T08:00');
+    expect(await one<boolean>('select last_activity_at <= now() as v from public.households where id = $1', [X])).toBe(true);
+  });
+
+  it('dates a synced backlog by when the activity was done, not when it arrived', async () => {
+    await as(2, () =>
+      db.query(
+        `insert into public.contact_events (id, household_id, author_id, type, occurred_at, payload) values ($1, $2, $3, 'activity_logged', $4, '{"personId":"p1","activityType":"follow_up"}')`,
+        [E(903), A, U(2), '2026-11-02T09:00:00Z'],
+      ),
+    );
+    expect(await one<string>(`select to_char(last_activity_at at time zone 'utc', 'YYYY-MM-DD') as v from public.households where id = $1`, [A])).toBe('2026-11-02');
+  });
+
   it('is empty until an activity is logged, then set by the server and visible to the sponsor', async () => {
     expect(await lastActivity(B)).toBeNull();
     await addEvent(3, B, 'person_added', { personId: 'p1', name: 'Khách' });

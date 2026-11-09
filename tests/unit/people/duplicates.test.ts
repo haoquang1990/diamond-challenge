@@ -106,3 +106,21 @@ it('code conflict requires a choice; same merge twice = once; later not-duplicat
   const l = derivePeople([...ev, mk('person_updated', '2026-11-05T00:00:00.000Z', 'lan', { personId: 'd', linkedUserId: 'u1' }), mk('person_updated', '2026-11-05T00:00:00.000Z', 'lan', { personId: 'e', linkedUserId: 'u2' })], PEOPLE_CONFIG);
   expect(planMerge(l.find((p) => p.personId === 'd')!, l.find((p) => p.personId === 'e')!)).toEqual({ ok: false, reason: 'linked_conflict' });
 });
+
+it('keeps an edit made to a merged contact after the merge (offline device that had not seen it)', () => {
+  const ev = base();
+  const people = derivePeople(ev, PEOPLE_CONFIG);
+  const plan = planMerge(people.find((p) => p.personId === 'a')!, people.find((p) => p.personId === 'b')!);
+  if (!plan.ok) throw new Error('plan');
+  const r = buildMergeEvent(plan);
+  if (!r.ok) throw new Error('merge');
+  const late = [
+    ...ev,
+    mk('person_merged', '2026-11-05T01:00:00.000Z', 'lan', r.event.payload as never),
+    mk('person_updated', '2026-11-05T02:00:00.000Z', 'minh', { personId: 'b', phone: { country: '+84', number: '987654321' }, note: 'Sửa sau khi gộp' }),
+  ];
+  const a = derivePeople(late, PEOPLE_CONFIG).find((p) => p.personId === 'a')!;
+  expect((a.phones ?? []).map((x) => x.number)).toContain('987654321');
+  expect(a.note).toContain('Sửa sau khi gộp');
+  expect(a.name).toBe('Nguyễn Văn An');
+});

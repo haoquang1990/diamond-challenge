@@ -114,6 +114,12 @@ export function DuplicatesScreen({ eventStore, memberIds = NO_MEMBERS, members =
   if (loadError) {
     return (
       <main className="screen">
+        <header className="screen__header">
+          <button type="button" className="back-button" onClick={onBack}>
+            ‹ {STRINGS.dupBack}
+          </button>
+          <h1 className="screen__title">{STRINGS.dupTitle}</h1>
+        </header>
         <p className="message message--error" role="alert">
           {STRINGS.peopleLoadError}
         </p>
@@ -126,6 +132,12 @@ export function DuplicatesScreen({ eventStore, memberIds = NO_MEMBERS, members =
   if (events === null) {
     return (
       <main className="screen">
+        <header className="screen__header">
+          <button type="button" className="back-button" onClick={onBack}>
+            ‹ {STRINGS.dupBack}
+          </button>
+          <h1 className="screen__title">{STRINGS.dupTitle}</h1>
+        </header>
         <p className="message" role="status">
           {STRINGS.loading}
         </p>

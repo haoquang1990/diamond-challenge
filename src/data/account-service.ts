@@ -1,4 +1,8 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
+import gameConfig from '../config/game-config.json';
+
+/** Longest wait for an Edge Function call (`game-config.json` `edgeFunctionTimeoutMs`); a slow network then ends as a network error instead of hanging the form. */
+export const EDGE_FUNCTION_TIMEOUT_MS: number = gameConfig.edgeFunctionTimeoutMs;
 
 /** Characters of a temporary password: no look-alikes (0/O, 1/l/I). */
 const PASSWORD_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
@@ -102,7 +106,7 @@ export async function readFunctionError(error: unknown, known: ReadonlySet<strin
  * const r = await createF1Account(client, { phone: '+84912345678', password, amwayCode: '123456' });
  */
 export async function createF1Account(client: SupabaseClient, input: CreateAccountInput): Promise<CreateAccountResult> {
-  const { data, error } = await client.functions.invoke('create-f1-account', { body: input });
+  const { data, error } = await client.functions.invoke('create-f1-account', { body: input, timeout: EDGE_FUNCTION_TIMEOUT_MS });
   if (error === null || error === undefined) {
     const ok = data as { userId?: unknown; phone?: unknown } | null;
     if (typeof ok?.userId === 'string' && typeof ok.phone === 'string') return { ok: true, userId: ok.userId, phone: ok.phone };
@@ -166,7 +170,7 @@ const KNOWN_ADD_MEMBER_ERRORS: ReadonlySet<string> = new Set([
  * const r = await addHouseholdMember(client, { phone: '+84912345678', password });
  */
 export async function addHouseholdMember(client: SupabaseClient, input: AddMemberInput): Promise<AddMemberResult> {
-  const { data, error } = await client.functions.invoke('add-household-member', { body: input });
+  const { data, error } = await client.functions.invoke('add-household-member', { body: input, timeout: EDGE_FUNCTION_TIMEOUT_MS });
   if (error === null || error === undefined) {
     const ok = data as { userId?: unknown; householdId?: unknown; phone?: unknown } | null;
     if (typeof ok?.userId === 'string' && typeof ok.householdId === 'string' && typeof ok.phone === 'string') {

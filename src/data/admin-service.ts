@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { readFunctionError } from './account-service';
+import { EDGE_FUNCTION_TIMEOUT_MS, readFunctionError } from './account-service';
 
 /**
  * Reads the signed-in account's own `profiles.role`. True only for `admin`; any read error
@@ -135,7 +135,7 @@ const KNOWN_RESET_ERRORS: ReadonlySet<string> = new Set(['admin_only', 'not_foun
  * const r = await resetPassword(client, { userId, password: generateTempPassword() });
  */
 export async function resetPassword(client: SupabaseClient, input: { readonly userId: string; readonly password: string }): Promise<ResetPasswordResult> {
-  const { error } = await client.functions.invoke('reset-password', { body: { userId: input.userId, password: input.password } });
+  const { error } = await client.functions.invoke('reset-password', { body: { userId: input.userId, password: input.password }, timeout: EDGE_FUNCTION_TIMEOUT_MS });
   if (error === null || error === undefined) return { ok: true };
   const key = await readFunctionError(error, KNOWN_RESET_ERRORS);
   return { ok: false, error: key === 'not_found' || key === 'admin_only' || key === 'network' ? key : 'other' };

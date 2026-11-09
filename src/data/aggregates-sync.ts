@@ -33,10 +33,15 @@ export interface AggregatesSyncDeps {
   readonly storage?: Pick<Storage, 'getItem' | 'setItem'> | null;
   /** Defaults to `navigator.onLine`. */
   readonly isOnline?: () => boolean;
+  /**
+   * False until the household contact book was pulled at least once on this device; nothing is
+   * sent before, so a partial local log never overwrites the household's numbers. Defaults to true.
+   */
+  readonly isReady?: () => boolean;
 }
 
 /** Result of one send attempt. */
-export type AggregatesFlushResult = 'sent' | 'unchanged' | 'offline' | 'failed' | 'disposed';
+export type AggregatesFlushResult = 'sent' | 'unchanged' | 'offline' | 'not_ready' | 'failed' | 'disposed';
 
 /** Sends the household aggregate when it changed. Main thread only. */
 export interface AggregatesSync {
@@ -80,6 +85,7 @@ export function createAggregatesSync(deps: AggregatesSyncDeps): AggregatesSync {
 
   const once = async (): Promise<AggregatesFlushResult> => {
     if (!isOnline()) return 'offline';
+    if (!(deps.isReady?.() ?? true)) return 'not_ready';
     const next = buildAggregatePayload(await deps.list(), deps.peopleConfig);
     const id = await findHousehold();
     if (id === null) return 'failed';
