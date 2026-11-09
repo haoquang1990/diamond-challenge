@@ -369,6 +369,10 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
       const saved = await eventStore.append(built.event);
       setTaskUndo({ eventId: saved.id, taskName: config.tasks?.find((t) => t.id === taskId)?.name ?? '', xp: built.xp });
       await onChanged();
+      // Chốt NPP also opens "Tạo tài khoản" (user decision 2026-11-09) when it can run now:
+      // signed in (createAccount given), online, and the person has no account yet.
+      const isNpp = config.tasks?.find((t) => t.id === taskId)?.label === 'NPP';
+      if (isNpp && createAccount !== undefined && person.linkedUserId == null && navigator.onLine) createAccount.onOpen();
     });
 
   const undoTask = () =>
@@ -546,7 +550,7 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
       {createAccount !== undefined && person.label === 'NPP' && !person.archived && person.linkedUserId == null && (
         <section className="card person-section" aria-label={STRINGS.createAccountTitle}>
           {(() => {
-            const reason = person.amwayCode == null ? STRINGS.createAccountNeedsCode : navigator.onLine ? null : STRINGS.createAccountNeedsNetwork;
+            const reason = navigator.onLine ? null : STRINGS.createAccountNeedsNetwork;
             return (
               <>
                 <button type="button" className="button button--primary" onClick={createAccount.onOpen} disabled={busy || reason !== null} aria-describedby={reason === null ? undefined : 'create-account-reason'}>

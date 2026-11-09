@@ -51,7 +51,7 @@ Mục nào thuộc 2b được đánh dấu **[2b]**. Ở 2a, server vẫn giữ
 
 6. Hộ gồm: `id`, hộ bảo trợ (`sponsor_household_id`, `null` với hộ gốc), trạng thái `active` / `merged` / `dissolved`, thời điểm tạo.
 7. Thành viên hộ: tối đa `maxHouseholdMembers` (mặc định 2) người đang hoạt động. Một người chỉ thuộc một hộ đang hoạt động tại một thời điểm. Rời hộ ghi `left_at`, không xoá dòng.
-8. **"Tạo tài khoản"** trên một liên hệ có nhãn NPP và có mã số Amway: nhập SĐT + mật khẩu tạm → server tạo người mới, **hộ F1 mới** với bảo trợ là **hộ của người bấm**, gán người mới làm thành viên đầu tiên và lấy **mã số của liên hệ làm mã đang hoạt động của hộ mới**. App ghi `linkedUserId` vào liên hệ. Liên hệ chưa có mã: nút bị khoá, kèm gợi ý "Nhập mã số Amway trước".
+8. **"Tạo tài khoản"** trên một liên hệ có nhãn NPP và có mã số Amway: nhập SĐT + mật khẩu tạm → server tạo người mới, **hộ F1 mới** với bảo trợ là **hộ của người bấm**, gán người mới làm thành viên đầu tiên và lấy **mã số của liên hệ làm mã đang hoạt động của hộ mới**. App ghi `linkedUserId` vào liên hệ. Liên hệ chưa có mã: form hỏi mã số, mã chỉ được lưu vào liên hệ khi tạo thành công. **Làm "Chốt NPP" mở ngay form này** khi đã đăng nhập, có mạng và liên hệ chưa có tài khoản (quyết định 2026-11-09); "Để sau" giữ nguyên nút trên liên hệ. Chốt NPP vẫn ghi XP như cũ dù tài khoản có được tạo hay không.
 9. **"Thêm vợ/chồng vào hộ"**: người bảo trợ (thành viên của hộ bảo trợ) hoặc một thành viên của hộ đó nhập SĐT + mật khẩu tạm → server tạo người mới và gán vào hộ. Hộ đã đủ `maxHouseholdMembers`: từ chối. SĐT đã có tài khoản: từ chối và hướng sang **gộp hai mã** (luật 19) nếu người đó có hộ riêng.
 10. **Tuyến trên của một hộ** = chuỗi hộ bảo trợ đi lên. Tuyến trên đọc được: hộ, mã đang hoạt động của hộ, tên và SĐT của thành viên, số liệu tổng hợp của hộ. Không đọc được Danh bạ, mã số của liên hệ hay hoạt động.
 11. **Rời hộ:** một thành viên của hộ hai người rời được. Trước khi rời, app mời xuất file sao lưu Danh bạ hộ. Sau khi rời, người đó mất quyền đọc/ghi Danh bạ hộ (app xoá bản trên máy), và vào một **hộ mới một người, chưa có mã**, cùng hộ bảo trợ với hộ cũ. Thành viên duy nhất của hộ không rời được (chỉ xoá tài khoản).
@@ -186,7 +186,7 @@ Mục nào thuộc 2b được đánh dấu **[2b]**. Ở 2a, server vẫn giữ
 ## Acceptance Criteria
 
 - **AC-1:** Given liên hệ An có nhãn NPP và mã `1234567`, When người dùng hộ H1 bấm "Tạo tài khoản" với SĐT mới, Then có người mới, hộ mới H2 bảo trợ bởi H1, mã đang hoạt động của H2 là `1234567`, và An có `linkedUserId`.
-- **AC-2:** Given liên hệ NPP chưa có mã, When mở An, Then nút "Tạo tài khoản" bị khoá và có gợi ý nhập mã.
+- **AC-2:** Given liên hệ An chưa có mã, When làm "Chốt NPP" khi đã đăng nhập và có mạng, Then form "Tạo tài khoản" mở ngay với SĐT điền sẵn và ô mã số; Given mã bị trùng, Then báo lỗi và liên hệ không đổi; Given bấm "Để sau" hoặc đang offline, Then chỉ chốt NPP và nút "Tạo tài khoản" vẫn ở trên liên hệ.
 - **AC-3:** Given mã `1234567` đang hoạt động ở H2, When tạo hộ khác với cùng mã, Then server từ chối và không tạo người.
 - **AC-4:** Given hộ H2 có 1 thành viên, When thành viên H1 (bảo trợ) hoặc thành viên H2 "Thêm vợ/chồng", Then H2 có 2 thành viên; When thêm người thứ ba, Then bị từ chối.
 - **AC-5:** Given người ngoài hộ, tuyến trên và tuyến dưới của H2, When đọc Danh bạ H2 (bất kỳ cách nào qua API), Then không trả về dòng nào; When tuyến trên đọc H2, Then thấy hộ, mã, tên thành viên và số tổng hợp.

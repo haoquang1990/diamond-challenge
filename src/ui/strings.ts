@@ -278,7 +278,6 @@ export const STRINGS = {
 
   // Tạo tài khoản cho NPP (story 024)
   createAccountButton: 'Tạo tài khoản',
-  createAccountNeedsCode: 'Nhập mã số Amway trước',
   createAccountNeedsNetwork: 'Cần có mạng để tạo tài khoản',
   createAccountHasAccount: 'Đã có tài khoản',
   createAccountWarnArchived: 'Người này đã có tài khoản và đang được lưu trữ. Tài khoản vẫn được giữ.',
@@ -289,6 +288,9 @@ export const STRINGS = {
   createAccountSubmit: 'Tạo tài khoản',
   createAccountSubmitting: 'Đang tạo…',
   createAccountPhoneRequired: 'Hãy nhập số điện thoại.',
+  createAccountCodeRequired: 'Hãy nhập mã số Amway của người này.',
+  createAccountPersonMissing: 'Không tìm thấy người này.',
+  createAccountLater: 'Để sau',
   createAccountNameInvalid: 'Tên hiển thị cần từ 1 đến 60 ký tự.',
   createAccountDone: 'Đã tạo tài khoản',
   createAccountShareHint: 'Nhắc họ đổi mật khẩu khi đăng nhập lần đầu.',
