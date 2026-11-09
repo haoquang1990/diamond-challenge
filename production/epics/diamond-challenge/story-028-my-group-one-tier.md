@@ -1,12 +1,12 @@
 # Story 028: Màn "Nhóm của tôi" (một tầng), cảnh báo không hoạt động, cổ vũ
 
 > **Epic**: diamond-challenge
-> **Status**: Ready
+> **Status**: In Progress
 > **Layer**: Feature
 > **Type**: UI
 > **Estimate**: L
 > **Manifest Version**: N/A (minimal — no control manifest)
-> **Last Updated**: 2026-11-07
+> **Last Updated**: 2026-11-09
 
 ## Context
 
