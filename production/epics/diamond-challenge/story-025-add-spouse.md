@@ -1,12 +1,12 @@
 # Story 025: Màn "Hộ của tôi" và "Thêm vợ/chồng vào hộ"
 
 > **Epic**: diamond-challenge
-> **Status**: Ready
+> **Status**: Complete
 > **Layer**: Feature
 > **Type**: UI
 > **Estimate**: M
 > **Manifest Version**: N/A (minimal — no control manifest)
-> **Last Updated**: 2026-11-07
+> **Last Updated**: 2026-11-09
 
 ## Context
 
@@ -51,9 +51,10 @@
 
 ## Files
 
-- `src/ui/screens/household-screen.tsx`, `src/ui/screens/add-member-form.tsx`
-- `src/data/account-service.ts`, `src/ui/screens/settings-screen.tsx`
-- `src/ui/strings.ts`, `src/ui/styles.css`
+- `src/ui/screens/household-screen.tsx` (new), `src/ui/screens/add-member-form.tsx` (new), `src/ui/screens/temp-password-view.tsx` (new, extracted from story 024)
+- `src/data/account-service.ts`, `src/ui/screens/create-account-screen.tsx`
+- `src/ui/screens/settings-screen.tsx`, `src/app.tsx`
+- `src/config/game-config.json`, `src/ui/strings.ts`, `src/ui/styles.css`
 - `production/qa/evidence/story-025-add-spouse/`
 
 ## QA Test Cases
@@ -75,3 +76,10 @@
 
 - Depends on: `production/epics/diamond-challenge/story-021-login-change-password.md`
 - Unlocks: story 026, 028
+
+## Completion Notes
+**Completed**: 2026-11-09
+**Criteria**: 7/7 passing (built app in Chromium 390×844 and 320px with Supabase and the add-household-member Edge Function faked; not tried on a real phone or against the live Supabase)
+**Deviations**: Advisory, not logged as tech debt: (1) never tried against the live Supabase (RLS on the tables it reads is covered by the PGlite tests of earlier stories); (2) `temp-password-view.tsx`, `create-account-screen.tsx`, `app.tsx` and `game-config.json` were touched beyond the planned list and are in `## Files`; (3) the country picker and phone fields are still duplicated across this form, story 024 and the login screen; (4) an account with no household shows "Tài khoản này chưa thuộc hộ nào." with no add button, a case the story does not cover; (5) the new member's first sign-in, password change and consent were not run end to end
+**Test Evidence**: screenshots in production/qa/evidence/story-025-add-spouse/ (01–09 plus stamp.txt, stamp unchanged); full suite 352/352
+**Reviewed by**: self, no independent review

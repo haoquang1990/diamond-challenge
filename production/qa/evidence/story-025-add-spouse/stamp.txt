@@ -1,0 +1,10 @@
+Reviewed-Content-Hash: src/app.tsx 4f036cf4d3298d08f90e809ea53f7cb313b1711f
+Reviewed-Content-Hash: src/config/game-config.json bbbb378c9827f9689fc0d81259f024e11976acaf
+Reviewed-Content-Hash: src/data/account-service.ts 2194cdcd755a7ff05718a18aab5622284cf4ee37
+Reviewed-Content-Hash: src/ui/screens/create-account-screen.tsx 3852ddc7127bf2219ecf92eb97355a4ffb4b5339
+Reviewed-Content-Hash: src/ui/screens/settings-screen.tsx 9a26032d9dfd2d7cd7c1726f18eb0aa13a0aeecd
+Reviewed-Content-Hash: src/ui/strings.ts bc6809eb8148054fba24ab08c1771fba7237fca4
+Reviewed-Content-Hash: src/ui/styles.css 4d909cb09c811dee240e297e16138efcd27ed316
+Reviewed-Content-Hash: src/ui/screens/add-member-form.tsx 9efeb71947c2cce411da9740139661ee329d18d6
+Reviewed-Content-Hash: src/ui/screens/household-screen.tsx ac52f6eb26c1d73cdccc1d0fa96319641577d382
+Reviewed-Content-Hash: src/ui/screens/temp-password-view.tsx 4596fb82da9b035ce5eaed7902fa8f0f324f196a

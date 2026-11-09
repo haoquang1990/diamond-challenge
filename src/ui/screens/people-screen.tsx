@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import type { HouseholdMember } from '../../data/contact-sync';
 import type { EventStore, LogEvent } from '../../data/event-store';
 import { otherMemberIds } from '../../domain/progress';
+import { pendingDuplicates } from '../../domain/duplicates';
 import { deriveActivityOwners, derivePeople } from '../../domain/people';
 import type { Person, PersonPhone } from '../../domain/people';
 import { ACTIVITY_TYPES } from '../activity-types';
@@ -18,7 +19,7 @@ import {
   searchPeopleByName,
 } from '../people-helpers';
 import type { ContactsFilter } from '../people-helpers';
-import { STRINGS, duplicateCodeWarning, filterChipLabel, lastContactLabel, nppSinceLabel, shortDateLabel, xpLabel } from '../strings';
+import { STRINGS, duplicateCodeWarning, duplicatesEntryLabel, filterChipLabel, lastContactLabel, nppSinceLabel, shortDateLabel, xpLabel } from '../strings';
 import { AddPersonForm, LabelBadge, PersonDetail } from './person-form';
 
 /** Props for {@link PeopleScreen}. */
@@ -41,6 +42,8 @@ export interface PeopleScreenProps {
   readonly onCreateAccount?: (personId: string) => void;
   /** Bumped by the app when a sync pulled new events; the log is re-read. */
   readonly dataVersion?: number;
+  /** Opens the "Kiểm tra liên hệ trùng" screen (story 026); the entry shows only when pairs are pending. */
+  readonly onOpenDuplicates?: () => void;
 }
 
 type LoadState =
@@ -62,7 +65,7 @@ const ADD_NAME_ACTIVITY_ID = 'add_name';
  * the per-filter totals and ignore the search. Re-reads the event log on
  * mount and after every write; keeps no copy of truth.
  */
-export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initialFilter = 'all', onBack, members = null, memberIds = NO_MEMBERS, dataVersion = 0, initialOpenId = null, onCreateAccount }: PeopleScreenProps) {
+export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initialFilter = 'all', onBack, members = null, memberIds = NO_MEMBERS, dataVersion = 0, initialOpenId = null, onCreateAccount, onOpenDuplicates }: PeopleScreenProps) {
   const [load, setLoad] = useState<LoadState>({ kind: 'loading' });
   const [openId, setOpenId] = useState<string | null>(initialOpenId);
   const [addedXp, setAddedXp] = useState<number | null>(null);
@@ -195,6 +198,7 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
     npp: { title: STRINGS.filterNpp, body: STRINGS.emptyNppBody },
     archived: { title: STRINGS.filterArchived, body: STRINGS.emptyArchivedBody },
   };
+  const pendingPairs = pendingDuplicates(allPeople, events, PEOPLE_CONFIG);
   const unassigned = listUnassignedActivities(events, deriveActivityOwners(events));
 
   return (
@@ -208,6 +212,12 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
         <h1 className="screen__title">{STRINGS.peopleTitle}</h1>
         <p className="screen__prompt">{STRINGS.peoplePrompt}</p>
       </header>
+
+      {pendingPairs > 0 && onOpenDuplicates !== undefined && (
+        <button type="button" className="button button--secondary dup-entry" onClick={onOpenDuplicates}>
+          {duplicatesEntryLabel(pendingPairs)}
+        </button>
+      )}
 
       <section className="card person-section" aria-label={STRINGS.addPersonTitle}>
         <button

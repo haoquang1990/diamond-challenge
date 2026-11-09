@@ -559,6 +559,8 @@ body { margin: 0; }
 .board-row__check { color: var(--color-success); font-weight: 800; }
 .board-badge { margin: 0; padding: 12px; border-radius: 12px; font-weight: 800; text-align: center; border: 2px solid var(--color-border); }
 .board-badge--achieved { border-color: var(--color-success); background: var(--color-success-light); color: var(--color-success); }
+.board-dup { border-color: var(--color-diamond); }
+.board-dup__button { width: 100%; min-height: var(--touch-min); }
 .board-note { margin: 0; color: var(--color-muted); font-size: 0.9rem; }
 
 /* Danh bạ (story 013) */
@@ -620,7 +622,7 @@ body { margin: 0; }
 .history-row__name { font-weight: 700; overflow-wrap: anywhere; }
 .phone-field { display: flex; flex-direction: column; gap: 6px; }
 .phone-field__row { display: flex; gap: 8px; }
-.phone-field__country { flex: 0 1 45%; min-width: 0; }
+.phone-field__country { flex: 0 0 auto; min-width: 92px; }
 .phone-field__number { flex: 1 1 0; min-width: 0; }
 
 .backup-warning { margin: 0; font-weight: 700; color: var(--color-warn); overflow-wrap: anywhere; }
@@ -775,3 +777,44 @@ body { margin: 0; }
 /* Tạo tài khoản (story 024) */
 .temp-password { font-family: ui-monospace, monospace; font-size: 1.25rem; letter-spacing: 0.05em; overflow-wrap: anywhere; user-select: all; }
 .button-row .button { min-height: 44px; }
+
+/* Hộ của tôi (story 025) */
+.member-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.member-list__item { min-width: 0; overflow-wrap: anywhere; }
+
+/* Liên hệ trùng (story 026) */
+.dup-entry { flex: none; width: 100%; }
+.dup-pair { min-width: 0; }
+.dup-pair__head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: 0; }
+.dup-pair__badge { margin-left: 0; }
+.dup-pair__reasons { color: var(--color-muted); font-weight: 700; font-size: 0.9rem; overflow-wrap: anywhere; }
+.dup-pair__sides { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.dup-side { min-width: 0; padding: 8px; border: 2px solid var(--color-border); border-radius: var(--radius); }
+.dup-side__name { margin: 0 0 6px; font-weight: 800; overflow-wrap: anywhere; }
+.dup-side__facts { margin: 0; display: flex; flex-direction: column; gap: 2px; font-size: 0.9rem; }
+.dup-side__facts dt { color: var(--color-muted); font-weight: 700; }
+.dup-side__facts dd { margin: 0 0 4px; overflow-wrap: anywhere; }
+.dup-side__facts .badge { margin-left: 0; }
+.dup-pair__actions { flex-wrap: wrap; }
+.dup-pair__actions > .button { flex: 1 1 150px; }
+.dup-pair__choose { display: flex; flex-direction: column; gap: 8px; }
+.dup-pair__choose .button { min-height: 44px; flex: none; }
+
+/* Nhóm của tôi (story 028) */
+.group-house { min-width: 0; }
+.group-house--inactive { border-color: var(--color-warn); }
+.group-house__code { margin: 0; color: var(--color-muted); font-weight: 700; overflow-wrap: anywhere; }
+.group-house__numbers { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 0; font-weight: 800; }
+.group-house__updated { margin: 0; color: var(--color-muted); font-size: 0.9rem; font-weight: 600; }
+.group-house__actions { display: flex; flex-direction: column; gap: 8px; }
+.group-house__actions .button { min-height: 44px; width: 100%; }
+.cheer-card { border-color: var(--color-diamond); background: var(--color-diamond-light); }
+.cheer-card .button { min-height: 44px; }
+
+/* Quản trị (story 029) */
+.admin-tabs { display: flex; gap: 8px; }
+.admin-tabs .button { flex: 1; min-width: 0; min-height: 44px; }
+.admin-member { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.admin-member .button { min-height: 44px; }
+.admin-code-cancelled { color: var(--color-muted); overflow-wrap: anywhere; }
+.admin-result { min-width: 0; overflow-wrap: anywhere; }

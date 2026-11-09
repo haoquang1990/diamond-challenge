@@ -1,12 +1,12 @@
 # Story 029: Màn Quản trị tối thiểu (đặt lại mật khẩu, đặt mã số cho hộ)
 
 > **Epic**: diamond-challenge
-> **Status**: Ready
+> **Status**: Complete
 > **Layer**: Feature
 > **Type**: UI
 > **Estimate**: M
 > **Manifest Version**: N/A (minimal — no control manifest)
-> **Last Updated**: 2026-11-07
+> **Last Updated**: 2026-11-09
 
 ## Context
 
@@ -50,8 +50,8 @@
 
 ## Files
 
-- `src/ui/screens/admin-screen.tsx`, `src/ui/screens/settings-screen.tsx`
-- `src/data/admin-service.ts`
+- `src/data/admin-service.ts` (new), `src/ui/screens/admin-screen.tsx` (new)
+- `src/ui/screens/settings-screen.tsx` ("Quản trị" entry, admin only), `src/app.tsx` (role read, admin route)
 - `src/ui/strings.ts`, `src/ui/styles.css`
 - `production/qa/evidence/story-029-minimal-admin/`
 
@@ -74,3 +74,10 @@
 
 - Depends on: `production/epics/diamond-challenge/story-021-login-change-password.md`
 - Unlocks: None
+
+## Completion Notes
+**Completed**: 2026-11-09
+**Criteria**: 6/6 passing (built app in Chromium 390×844 and 320px with a fake Supabase; not tried on a real phone or against the live Supabase)
+**Deviations**: Advisory, not logged as tech debt: (1) never tried against the live Supabase; the first real try should use a test household and must not change the real code `7004053634`; (2) the reset-password errors `not_found`, `admin_only` and network were not run on screen, and `reset-password` has no automated test (the `set_household_code` admin check is covered by the story 020 PGlite tests); (3) searching by a cancelled code also finds the household that used it, an agent choice not in the spec; (4) member phone numbers are shown unformatted; (5) after looking at the screenshots the search-mode buttons were shortened to "SĐT" and "Mã số" (at 320px they wrapped to three lines), the code field label became "Mã số Amway", and the cancel reason "replaced" is shown as "đã thay bằng mã mới"
+**Test Evidence**: screenshots in production/qa/evidence/story-029-minimal-admin/ (01–09 plus stamp.txt, stamp unchanged); full suite 370/370 (no new test, waived at qa.level minimal)
+**Reviewed by**: self, no independent review

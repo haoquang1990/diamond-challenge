@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { EventStore, LogEvent } from '../../data/event-store';
+import { buildSplitEvents } from '../../domain/duplicates';
 import {
   buildTaskCompletionEvent,
   findDuplicateNames,
@@ -11,7 +12,7 @@ import {
 import type { PeopleConfig, Person, PersonPhone } from '../../domain/people';
 import { COUNTRY_CODES, PEOPLE_CONFIG, PERSON_TASKS } from '../people-config';
 import { buildPersonHistory, duplicateCodeNames, findDuplicateCodes, findPeopleWithCode, formatPhone } from '../people-helpers';
-import { STRINGS, duplicateCodeWarning, historyStageLabel, shortDateLabel, taskButtonLabel, xpLabel } from '../strings';
+import { STRINGS, duplicateCodeWarning, historyStageLabel, shortDateLabel, splitLabel, taskButtonLabel, xpLabel } from '../strings';
 
 /** Maps a phone validation failure to its message. */
 function phoneErrorText(reason: 'unknown_country' | 'not_digits' | 'bad_length'): string {
@@ -34,19 +35,19 @@ function PhoneInput({ country, number, onChange, disabled, error }: PhoneInputPr
     <div className="phone-field">
       <span className="note__label">{STRINGS.phoneNumberLabel}</span>
       <div className="phone-field__row">
-        <select
-          className="select phone-field__country"
-          value={country}
-          onChange={(e) => onChange(e.target.value, number)}
-          disabled={disabled}
-          aria-label={STRINGS.phoneCountryLabel}
-        >
-          {COUNTRY_CODES.map((c) => (
-            <option key={c.code} value={c.code}>
-              {c.code} {c.name}
-            </option>
-          ))}
-        </select>
+        {/* Closed: only the code. Open: the native list shows code and country name. */}
+        <span className="select-code phone-field__country">
+          <span className="select-code__value" aria-hidden="true">
+            {country}
+          </span>
+          <select value={country} onChange={(e) => onChange(e.target.value, number)} disabled={disabled} aria-label={STRINGS.phoneCountryLabel}>
+            {COUNTRY_CODES.map((c) => (
+              <option key={c.code} value={c.code}>
+                {c.code} {c.name}
+              </option>
+            ))}
+          </select>
+        </span>
         <input
           className="note__input phone-field__number"
           type="tel"
@@ -368,6 +369,10 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
       const saved = await eventStore.append(built.event);
       setTaskUndo({ eventId: saved.id, taskName: config.tasks?.find((t) => t.id === taskId)?.name ?? '', xp: built.xp });
       await onChanged();
+      // Chốt NPP also opens "Tạo tài khoản" (user decision 2026-11-09) when it can run now:
+      // signed in (createAccount given), online, and the person has no account yet.
+      const isNpp = config.tasks?.find((t) => t.id === taskId)?.label === 'NPP';
+      if (isNpp && createAccount !== undefined && person.linkedUserId == null && navigator.onLine) createAccount.onOpen();
     });
 
   const undoTask = () =>
@@ -377,6 +382,12 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
       setTaskUndo(null);
       await onChanged();
       setInfo(STRINGS.taskUndone);
+    });
+
+  const split = (mergeEventId: string, otherId: string) =>
+    run(async () => {
+      for (const event of buildSplitEvents(mergeEventId, person.personId, otherId)) await eventStore.append(event);
+      await onChanged();
     });
 
   const archive = () =>
@@ -399,6 +410,11 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
         {person.phone != null && (
           <p className="screen__prompt">
             {STRINGS.personDetailPhone}: <strong>{formatPhone(person.phone)}</strong>
+          </p>
+        )}
+        {(person.phones ?? []).length > 0 && (
+          <p className="screen__prompt">
+            {STRINGS.dupOtherPhones}: <strong>{(person.phones ?? []).map((p) => formatPhone(p)).join(', ')}</strong>
           </p>
         )}
         {person.amwayCode != null && (
@@ -534,7 +550,7 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
       {createAccount !== undefined && person.label === 'NPP' && !person.archived && person.linkedUserId == null && (
         <section className="card person-section" aria-label={STRINGS.createAccountTitle}>
           {(() => {
-            const reason = person.amwayCode == null ? STRINGS.createAccountNeedsCode : navigator.onLine ? null : STRINGS.createAccountNeedsNetwork;
+            const reason = navigator.onLine ? null : STRINGS.createAccountNeedsNetwork;
             return (
               <>
                 <button type="button" className="button button--primary" onClick={createAccount.onOpen} disabled={busy || reason !== null} aria-describedby={reason === null ? undefined : 'create-account-reason'}>
@@ -548,6 +564,30 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
               </>
             );
           })()}
+        </section>
+      )}
+
+      {(person.absorbed ?? []).length > 0 && (
+        <section className="card person-section" aria-label={STRINGS.dupMergedSection}>
+          <h2 className="person-section__heading">{STRINGS.dupMergedSection}</h2>
+          <ul className="people-list">
+            {(person.absorbed ?? []).map((a) => (
+              <li key={a.mergeEventId} className="person-row person-row--static">
+                <span className="person-row__main">
+                  <span className="person-row__name">{a.name}</span>
+                </span>
+                <button
+                  type="button"
+                  className="button button--secondary person-row__action"
+                  aria-label={splitLabel(a.name)}
+                  onClick={() => void split(a.mergeEventId, a.personId)}
+                  disabled={busy}
+                >
+                  {STRINGS.dupSplit}
+                </button>
+              </li>
+            ))}
+          </ul>
         </section>
       )}
 

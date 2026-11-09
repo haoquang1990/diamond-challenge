@@ -29,6 +29,10 @@ export interface SettingsAccountProps {
   readonly onSignOut: () => Promise<boolean>;
   /** Saves a validated, trimmed display name. */
   readonly onSaveDisplayName: (name: string) => Promise<AuthResult>;
+  /** Opens "Hộ của tôi" (story 025); shown only when signed in. */
+  readonly onOpenHousehold: () => void;
+  /** Opens "Quản trị" (story 029); pass it ONLY for an account with role = admin. */
+  readonly onOpenAdmin?: () => void;
 }
 
 /** "Đồng bộ Danh bạ hộ" card (story 023). Pass it only when the build has Supabase configured. */
@@ -120,7 +124,7 @@ export interface SettingsScreenProps {
 }
 
 /** "Tài khoản" card: login state, display name edit, sign out. */
-function AccountCard({ account, onLogin, onSignOut, onSaveDisplayName }: SettingsAccountProps) {
+function AccountCard({ account, onLogin, onSignOut, onSaveDisplayName, onOpenHousehold, onOpenAdmin }: SettingsAccountProps) {
   const [name, setName] = useState(account?.displayName ?? '');
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<{ readonly text: string; readonly error: boolean } | null>(null);
@@ -184,6 +188,14 @@ function AccountCard({ account, onLogin, onSignOut, onSaveDisplayName }: Setting
             <p className={message.error ? 'message message--error' : 'message'} role={message.error ? 'alert' : 'status'}>
               {message.text}
             </p>
+          )}
+          <button type="button" className="button button--secondary" onClick={onOpenHousehold}>
+            {STRINGS.householdEntry}
+          </button>
+          {onOpenAdmin !== undefined && (
+            <button type="button" className="button button--secondary" onClick={onOpenAdmin}>
+              {STRINGS.adminEntry}
+            </button>
           )}
           <button type="button" className="button button--secondary" onClick={() => void onOut()} disabled={busy}>
             {STRINGS.accountSignOut}

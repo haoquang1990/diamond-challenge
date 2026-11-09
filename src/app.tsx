@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import gameConfig from './config/game-config.json';
 import { getSupabaseClient } from './config/supabase';
+import { loadIsAdmin } from './data/admin-service';
+import { clearGroupCaches, dismissCheers, loadUnseenCheer } from './data/group-service';
 import { ensureAccountLinked, loadAccount, saveDisplayName, signOut } from './data/auth-service';
 import type { AccountInfo, AuthResult } from './data/auth-service';
 import {
@@ -19,13 +21,20 @@ import { AchievementsOverlay, ACHIEVEMENTS_CONFIG } from './ui/achievements-over
 import { createObservedStore, readSoundEnabled } from './ui/achievements-helpers';
 import { setSoundEnabled } from './ui/play-ting';
 import { AchievementsScreen } from './ui/screens/achievements-screen';
+import { createAggregatesSync } from './data/aggregates-sync';
+import type { AggregatesSync } from './data/aggregates-sync';
+import { PEOPLE_CONFIG } from './ui/people-config';
 import { Board30x30Screen } from './ui/screens/board-30x30-screen';
+import { AdminScreen } from './ui/screens/admin-screen';
 import { ChangePasswordScreen, DisplayNameScreen } from './ui/screens/change-password-screen';
 import { CreateAccountScreen } from './ui/screens/create-account-screen';
 import { ConsentScreen } from './ui/screens/consent-screen';
 import { DiamondPathScreen } from './ui/screens/diamond-path-screen';
 import { LessonScreen } from './ui/screens/lesson-screen';
+import { HouseholdScreen } from './ui/screens/household-screen';
+import { MyGroupScreen } from './ui/screens/my-group-screen';
 import { LoginScreen } from './ui/screens/login-screen';
+import { DuplicatesScreen } from './ui/screens/duplicates-screen';
 import { PeopleScreen } from './ui/screens/people-screen';
 import { SettingsScreen } from './ui/screens/settings-screen';
 import { TodayScreen } from './ui/screens/today-screen';
@@ -55,9 +64,9 @@ function realNow(): Date {
  * merged person list (Danh bạ). `settings` (opened from Hôm nay) and `board`
  * (opened from Con đường) are not in the tab bar.
  */
-type Tab = 'today' | 'learn' | 'people' | 'path' | 'settings' | 'board' | 'achievements' | 'login';
+type Tab = 'today' | 'learn' | 'people' | 'path' | 'settings' | 'board' | 'achievements' | 'login' | 'household' | 'admin' | 'duplicates' | 'group';
 
-const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'board' | 'achievements' | 'login'>; readonly label: string }[] = [
+const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'board' | 'achievements' | 'login' | 'household' | 'admin' | 'duplicates' | 'group'>; readonly label: string }[] = [
   { id: 'today', label: STRINGS.tabToday },
   { id: 'learn', label: STRINGS.tabLearn },
   { id: 'people', label: STRINGS.tabPeople },
@@ -97,6 +106,8 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
   /** Person detail to reopen in Làm after the account screen. */
   const [reopenPerson, setReopenPerson] = useState<string | null>(null);
   const [lessonActive, setLessonActive] = useState(false);
+  /** The duplicates screen was opened from Bảng 30x30 (its back control returns there). */
+  const [duplicatesFromBoard, setDuplicatesFromBoard] = useState(false);
   /** Set when Làm was opened from Bảng 30x30 (preselected filter + back control); null otherwise. */
   const [fromBoard, setFromBoard] = useState<ContactsFilter | null>(null);
   useEffect(() => {
@@ -134,6 +145,45 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
   }, [rawEventStore]);
   const accountId = account?.accountId ?? null;
   const passwordPending = account?.mustChangePassword === true;
+
+  // Story 029: "Quản trị" is shown only to role = admin (read from the own profile; the server enforces it too).
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+    setIsAdmin(false);
+    if (clientPromise === null || accountId === null || passwordPending) return;
+    let cancelled = false;
+    clientPromise
+      .then((client) => loadIsAdmin(client, accountId))
+      .then((admin) => {
+        if (!cancelled) setIsAdmin(admin);
+      })
+      .catch((error: unknown) => console.error('[admin] could not read the role', error));
+    return () => {
+      cancelled = true;
+    };
+  }, [clientPromise, accountId, passwordPending]);
+
+  // Story 028: an unseen cheer from the sponsor household shows as a dismissible card on Hôm nay.
+  const [unseenCheer, setUnseenCheer] = useState<{ readonly message: string; readonly allIds: readonly string[] } | null>(null);
+  // A cheer belongs to one account's household: drop it when the account changes or signs out.
+  useEffect(() => setUnseenCheer(null), [accountId]);
+  useEffect(() => {
+    if (clientPromise === null || accountId === null || passwordPending || tab !== 'today' || !navigator.onLine) return;
+    let cancelled = false;
+    clientPromise
+      .then((client) => loadUnseenCheer(client, accountId))
+      .then((found) => {
+        if (!cancelled) setUnseenCheer(found === null ? null : { message: found.cheer.message, allIds: found.allIds });
+      })
+      .catch((error: unknown) => console.error('[group] could not read cheers', error));
+    return () => {
+      cancelled = true;
+    };
+  }, [clientPromise, accountId, passwordPending, tab]);
+  const onDismissCheer = useCallback(() => {
+    if (unseenCheer !== null) dismissCheers(unseenCheer.allIds);
+    setUnseenCheer(null);
+  }, [unseenCheer]);
 
   useEffect(() => {
     if (clientPromise === null) return;
@@ -218,6 +268,55 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
     return () => window.removeEventListener('online', onOnline);
   }, [consent, declined, checkConsent, syncController]);
 
+  // Household 30x30 numbers (story 027): sent only when signed in, consented and online, and only when they changed.
+  const [aggregates, setAggregates] = useState<AggregatesSync | null>(null);
+  /** True once the household contact book was pulled in this session (gates aggregate sends). */
+  const contactsPulledRef = useRef(false);
+  useEffect(() => {
+    contactsPulledRef.current = false;
+  }, [accountId]);
+  useEffect(() => {
+    if (clientPromise === null || accountId === null || consent !== 'granted' || declined) return;
+    let created: AggregatesSync | null = null;
+    let cancelled = false;
+    void clientPromise.then((client) => {
+      if (cancelled) return;
+      created = createAggregatesSync({
+        client,
+        list: () => rawEventStore.list(),
+        accountId,
+        peopleConfig: PEOPLE_CONFIG,
+        config: gameConfig.aggregatesSync,
+        isReady: () => contactsPulledRef.current,
+      });
+      setAggregates(created);
+      // The first send waits for the first completed contact sync (below).
+      if (contactsPulledRef.current) created.schedule();
+    });
+    return () => {
+      cancelled = true;
+      created?.dispose();
+      setAggregates(null);
+    };
+  }, [clientPromise, accountId, consent, declined, rawEventStore]);
+  useEffect(
+    () =>
+      observed.subscribe((event) => {
+        if (CONTACT_EVENT_TYPES.includes(event.type)) aggregates?.schedule();
+      }),
+    [observed, aggregates],
+  );
+  useEffect(() => {
+    if (syncStatus.kind !== 'synced') return;
+    contactsPulledRef.current = true;
+    aggregates?.schedule();
+  }, [syncStatus, aggregates]);
+  useEffect(() => {
+    const onOnline = () => void aggregates?.flush();
+    window.addEventListener('online', onOnline);
+    return () => window.removeEventListener('online', onOnline);
+  }, [aggregates]);
+
   const onConsentAgree = async (): Promise<SyncFailure | null> => {
     if (clientPromise === null) return 'server';
     if (consent !== 'granted') {
@@ -260,6 +359,8 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
     temporaryPasswordRef.current = null;
     setAskDisplayName(false);
     setConsentOpen(false);
+    setUnseenCheer(null);
+    clearGroupCaches();
     setAccount(null);
     return true;
   };
@@ -421,11 +522,48 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
     );
   }
 
+  if (tab === 'household' && clientPromise !== null && account !== null) {
+    return (
+      <div className="app-shell">
+        <HouseholdScreen clientPromise={clientPromise} accountId={account.accountId} onBack={() => setTab('settings')} />
+      </div>
+    );
+  }
+
+  if (tab === 'admin' && clientPromise !== null && account !== null && isAdmin) {
+    return (
+      <div className="app-shell">
+        <AdminScreen clientPromise={clientPromise} onBack={() => setTab('settings')} />
+      </div>
+    );
+  }
+
+  if (tab === 'group' && clientPromise !== null && account !== null) {
+    return (
+      <div className="app-shell">
+        <MyGroupScreen clientPromise={clientPromise} accountId={account.accountId} onBack={() => setTab('path')} />
+      </div>
+    );
+  }
+
+  if (tab === 'duplicates') {
+    return (
+      <div className="app-shell">
+        <DuplicatesScreen eventStore={eventStore} memberIds={memberIds} members={members} dataVersion={dataVersion} onBack={() => setTab(duplicatesFromBoard ? 'board' : 'people')} />
+      </div>
+    );
+  }
+
   if (tab === 'board') {
     return (
       <div className="app-shell">
         <Board30x30Screen eventStore={eventStore} onBack={() => setTab('path')}
           onOpenPeople={() => setTab('people')}
+          onOpenDuplicates={() => {
+            setDuplicatesFromBoard(true);
+            setTab('duplicates');
+          }}
+          dataVersion={dataVersion}
           onOpenContacts={(filter) => {
             setFromBoard(filter);
             setTab('people');
@@ -451,7 +589,7 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
           {...(clientPromise === null
             ? {}
             : {
-                accountSection: { account, onLogin: () => setTab('login'), onSignOut, onSaveDisplayName },
+                accountSection: { account, onLogin: () => setTab('login'), onSignOut, onSaveDisplayName, onOpenHousehold: () => setTab('household'), ...(isAdmin ? { onOpenAdmin: () => setTab('admin') } : {}) },
                 contactSync: {
                   signedIn: account !== null,
                   consent,
@@ -482,10 +620,12 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
           }}
           onOpenSettings={() => setTab('settings')}
           notificationPermission={notificationPlatform.permission}
+          cheer={unseenCheer}
+          onDismissCheer={onDismissCheer}
         />
       )}
       {tab === 'learn' && <LessonScreen eventStore={eventStore} onDone={goToday} onActiveChange={onLessonActive} />}
-      {tab === 'path' && <DiamondPathScreen eventStore={eventStore} memberIds={memberIds} onOpenBoard={() => setTab('board')} onOpenAchievements={() => setTab('achievements')} />}
+      {tab === 'path' && <DiamondPathScreen eventStore={eventStore} memberIds={memberIds} onOpenBoard={() => setTab('board')} {...(clientPromise === null ? {} : { onOpenGroup: () => setTab('group'), groupLocked: account === null })} onOpenAchievements={() => setTab('achievements')} />}
       {tab === 'people' && (
         <PeopleScreen
           key={fromBoard ?? 'tab'}
@@ -493,6 +633,10 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
           members={members}
           memberIds={memberIds}
           dataVersion={dataVersion}
+          onOpenDuplicates={() => {
+            setDuplicatesFromBoard(false);
+            setTab('duplicates');
+          }}
           initialOpenId={reopenPerson}
           {...(clientPromise === null || account === null ? {} : { onCreateAccount: setCreateAccountFor })}
           {...(fromBoard === null

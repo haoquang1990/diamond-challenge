@@ -6,6 +6,7 @@ import type { LogEvent } from '../data/event-store';
 import {
   UNKNOWN_PERSON_ID,
   deriveActivityOwners,
+  deriveMerges,
   planStageChange,
   sortCustomersByLastContact,
   sortNppByDate,
@@ -163,7 +164,7 @@ export interface HistoryEntry {
 /**
  * History of one person, newest first: non-compensated activities they own
  * (names from `namedTypes`, tasks first) and legacy non-compensated stage
- * changes to a configured stage. Pure; ties keep log order reversed.
+ * changes to a configured stage, including those of contacts merged into this one. Pure; ties keep log order reversed.
  */
 export function buildPersonHistory(
   events: readonly LogEvent[],
@@ -177,6 +178,7 @@ export function buildPersonHistory(
     if (typeof target === 'string') compensated.add(target);
   }
   const owners = deriveActivityOwners(events);
+  const { rootOf } = deriveMerges(events);
   const entries: HistoryEntry[] = [];
   for (const e of events) {
     if (compensated.has(e.id) || typeof e.payload.compensates === 'string') continue;
@@ -185,7 +187,7 @@ export function buildPersonHistory(
       const typeId = e.payload.activityType;
       const name = namedTypes.find((t) => t.id === typeId)?.name ?? '';
       entries.push({ id: e.id, timestamp: e.timestamp, kind: 'activity', name, userId: e.userId });
-    } else if (e.type === 'person_stage_changed' && e.payload.personId === personId) {
+    } else if (e.type === 'person_stage_changed' && typeof e.payload.personId === 'string' && (rootOf.get(e.payload.personId) ?? e.payload.personId) === personId) {
       const stage = config.stages.find((s) => s.id === e.payload.to);
       if (stage !== undefined) entries.push({ id: e.id, timestamp: e.timestamp, kind: 'stage', name: stage.name, userId: e.userId });
     }

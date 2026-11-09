@@ -31,7 +31,10 @@ export const EVENT_SCHEMA_VERSION = 1;
  * - `person_restored`: `{ personId }` (archived state = latest of archived / restored)
  * - `person_stage_changed`: `{ personId, from, to, xp }` (xp feeds computeProgress)
  * - `activity_reassigned`: `{ activityId, personId }` (carries no xp)
- * - `person_merged`, `person_not_duplicate`: household-book events (payloads owned by story 026)
+ * - `person_merged`: `{ keepId, mergedId, amwayCode? }` (story 026; keepId = the contact added earlier;
+ *   amwayCode only when both had different codes, the chosen one) or the undo `{ compensates: <merge event id> }`
+ * - `person_not_duplicate`: `{ personIds: [a, b] }` ("Không phải cùng người"; a later one than a merge of the pair
+ *   undoes that merge). Neither ever carries xp.
  * - `person_transferred_out`: written by the server only (pulled, never sent; story 023)
  */
 export const EVENT_TYPES = [

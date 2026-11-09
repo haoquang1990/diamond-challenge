@@ -5,10 +5,11 @@ import { normalizePhone } from '../../../supabase/functions/_shared/phone';
 import { createF1Account, generateTempPassword } from '../../data/account-service';
 import { validateDisplayName } from '../../data/auth-service';
 import type { EventStore } from '../../data/event-store';
-import { derivePeople, validatePhone } from '../../domain/people';
+import { derivePeople, validateAmwayCode, validatePhone } from '../../domain/people';
 import type { Person } from '../../domain/people';
 import { COUNTRY_CODES, PEOPLE_CONFIG } from '../people-config';
-import { STRINGS, createAccountShareText } from '../strings';
+import { STRINGS } from '../strings';
+import { TempPasswordView } from './temp-password-view';
 
 /** Props for {@link CreateAccountScreen}. */
 export interface CreateAccountScreenProps {
@@ -33,7 +34,8 @@ const DEFAULT_COUNTRY = COUNTRY_CODES[0]?.code ?? '+84';
 
 /**
  * Màn Tạo tài khoản (story 024, no tab bar): phone (country picker, prefilled from the person's
- * phone) and an optional display name. The temporary password is generated here, sent to the
+ * phone), the Amway code when the contact has none (saved on the contact only on success) and an
+ * optional display name. Also opened right after "Chốt NPP"; "Để sau" leaves without creating. The temporary password is generated here, sent to the
  * Edge Function and shown once after success; it is kept only in this component's state (never in
  * the event log, storage or console). Errors write no event; the submit is disabled in flight.
  *
@@ -45,10 +47,11 @@ export function CreateAccountScreen({ clientPromise, eventStore, personId, onBac
   const [country, setCountry] = useState(DEFAULT_COUNTRY);
   const [number, setNumber] = useState('');
   const [displayName, setDisplayName] = useState('');
+  /** Amway code typed here when the contact has none yet; saved on the contact only on success. */
+  const [codeInput, setCodeInput] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [created, setCreated] = useState<Created | null>(null);
-  const [copyNote, setCopyNote] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -74,7 +77,21 @@ export function CreateAccountScreen({ clientPromise, eventStore, personId, onBac
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (busy || person == null || person.amwayCode == null) return;
+    if (busy || person == null) return;
+    let amwayCode = person.amwayCode ?? null;
+    const typedCode = amwayCode === null;
+    if (amwayCode === null) {
+      const code = validateAmwayCode(codeInput, PEOPLE_CONFIG);
+      if (!code.ok) {
+        setError(STRINGS.amwayCodeInvalid);
+        return;
+      }
+      if (code.code === null) {
+        setError(STRINGS.createAccountCodeRequired);
+        return;
+      }
+      amwayCode = code.code;
+    }
     const checked = validatePhone(country, number, PEOPLE_CONFIG);
     if (!checked.ok) {
       setError(checked.reason === 'unknown_country' ? STRINGS.phoneUnknownCountry : checked.reason === 'not_digits' ? STRINGS.phoneNotDigits : STRINGS.phoneBadLength);
@@ -101,7 +118,7 @@ export function CreateAccountScreen({ clientPromise, eventStore, personId, onBac
       const result = await createF1Account(await clientPromise, {
         phone: e164,
         password,
-        amwayCode: person.amwayCode,
+        amwayCode,
         ...(name === undefined ? {} : { displayName: name }),
       });
       if (!result.ok) {
@@ -111,7 +128,7 @@ export function CreateAccountScreen({ clientPromise, eventStore, personId, onBac
       }
       let saveFailed = false;
       try {
-        await eventStore.append({ type: 'person_updated', payload: { personId, linkedUserId: result.userId } });
+        await eventStore.append({ type: 'person_updated', payload: { personId, linkedUserId: result.userId, ...(typedCode ? { amwayCode } : {}) } });
       } catch (err) {
         console.error('[create-account] could not save the link', err);
         saveFailed = true;
@@ -124,60 +141,15 @@ export function CreateAccountScreen({ clientPromise, eventStore, personId, onBac
     setBusy(false);
   };
 
-  const copy = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopyNote(STRINGS.createAccountCopied);
-    } catch {
-      setCopyNote(STRINGS.createAccountCopyFailed);
-    }
-  };
-
-  const share = (text: string) => {
-    navigator.share({ text }).catch(() => undefined);
-  };
-
   if (created !== null) {
-    const text = createAccountShareText(created.phone, created.password);
     return (
-      <main className="screen">
-        <header className="screen__header">
-          <h1 className="screen__title">{STRINGS.createAccountDone}</h1>
-          <p className="screen__prompt">{STRINGS.createAccountOnce}</p>
-        </header>
-        <section className="card form">
-          <p className="message">
-            {STRINGS.createAccountPhoneLine}: <strong>{created.phone}</strong>
-          </p>
-          <p className="message">
-            {STRINGS.createAccountPasswordLine}: <strong className="temp-password">{created.password}</strong>
-          </p>
-          <p className="message">{STRINGS.createAccountShareHint}</p>
-          {created.saveFailed && (
-            <p className="message message--warn" role="alert">
-              {STRINGS.createAccountSaveWarning}
-            </p>
-          )}
-          <div className="button-row">
-            <button type="button" className="button button--secondary" onClick={() => void copy(text)}>
-              {STRINGS.createAccountCopy}
-            </button>
-            {typeof navigator.share === 'function' && (
-              <button type="button" className="button button--secondary" onClick={() => share(text)}>
-                {STRINGS.createAccountShare}
-              </button>
-            )}
-          </div>
-          {copyNote !== null && (
-            <p className="message" role="status">
-              {copyNote}
-            </p>
-          )}
-          <button type="button" className="button button--primary" onClick={onBack}>
-            {STRINGS.createAccountFinish}
-          </button>
-        </section>
-      </main>
+      <TempPasswordView
+        title={STRINGS.createAccountDone}
+        phone={created.phone}
+        password={created.password}
+        {...(created.saveFailed ? { warning: STRINGS.createAccountSaveWarning } : {})}
+        onFinish={onBack}
+      />
     );
   }
 
@@ -195,15 +167,36 @@ export function CreateAccountScreen({ clientPromise, eventStore, personId, onBac
         <p className="message" role="status">
           {STRINGS.loading}
         </p>
-      ) : person === null || person.amwayCode == null ? (
+      ) : person === null ? (
         <p className="message message--error" role="alert">
-          {STRINGS.createAccountNeedsCode}
+          {STRINGS.createAccountPersonMissing}
         </p>
       ) : (
         <form className="card form" onSubmit={(e) => void onSubmit(e)} noValidate>
-          <p className="message">
-            <strong>{person.name}</strong> · {STRINGS.createAccountCodeLine}: <strong>{person.amwayCode}</strong>
-          </p>
+          {person.amwayCode != null ? (
+            <p className="message">
+              <strong>{person.name}</strong> · {STRINGS.createAccountCodeLine}: <strong>{person.amwayCode}</strong>
+            </p>
+          ) : (
+            <>
+              <p className="message">
+                <strong>{person.name}</strong>
+              </p>
+              <label className="form__field">
+                <span className="form__label">{STRINGS.createAccountCodeLine}</span>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="off"
+                  className="note__input form__input"
+                  placeholder={STRINGS.amwayCodePlaceholder}
+                  value={codeInput}
+                  onChange={(e) => setCodeInput(e.target.value)}
+                  disabled={busy}
+                />
+              </label>
+            </>
+          )}
           <div className="form__row">
             <label className="form__field">
               <span className="form__label">{STRINGS.loginCountryLabel}</span>
@@ -251,6 +244,9 @@ export function CreateAccountScreen({ clientPromise, eventStore, personId, onBac
           )}
           <button type="submit" className="button button--primary" disabled={busy}>
             {busy ? STRINGS.createAccountSubmitting : STRINGS.createAccountSubmit}
+          </button>
+          <button type="button" className="button button--secondary" onClick={onBack} disabled={busy}>
+            {STRINGS.createAccountLater}
           </button>
         </form>
       )}

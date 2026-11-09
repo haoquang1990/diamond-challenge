@@ -73,8 +73,8 @@ export const STRINGS = {
   stageNeed: 'Còn thiếu',
 
   // Nhắc nhở (story 007)
-  reminderButton: 'Nhắc nhở',
-  reminderButtonLabel: 'Mở cài đặt nhắc nhở',
+  reminderButton: 'Cài đặt',
+  reminderButtonLabel: 'Mở Cài đặt',
   settingsTitle: 'Cài đặt',
   settingsPrompt: 'Nhắc bạn hoàn thành mục tiêu ngày, chỉ khi hôm nay chưa đạt.',
   backupHeading: 'Sao lưu và khôi phục',
@@ -162,6 +162,34 @@ export const STRINGS = {
   addPersonTitle: 'Thêm người',
   addPersonButton: 'Thêm người',
   boardOpen: 'Bảng 30x30',
+  groupOpen: 'Nhóm của tôi',
+  groupOpenLockedReason: 'Đăng nhập để xem nhóm của bạn.',
+  groupTitle: 'Nhóm của tôi',
+  groupPrompt: 'Các hộ F1 trực tiếp của bạn.',
+  groupEmptyTitle: 'Chưa có hộ F1 nào',
+  groupEmptyHint: 'Mở một liên hệ NPP có mã số Amway và bấm "Tạo tài khoản" để tạo hộ F1.',
+  groupLoadError: 'Chưa tải được nhóm. Thử lại nhé.',
+  groupOfflineNoData: 'Cần có mạng để xem nhóm lần đầu.',
+  groupOfflineNote: 'Đang offline, hiện dữ liệu lần tải gần nhất.',
+  groupNoHousehold: 'Tài khoản này chưa thuộc hộ nào.',
+  groupCodeLabel: 'Mã số',
+  groupNoCode: 'Chưa có mã',
+  groupNoNumbers: 'Chưa có số liệu',
+  groupAchieved: 'Đạt 30x30',
+  groupNeverActive: 'Chưa hoạt động lần nào',
+  groupCheerButton: 'Cổ vũ',
+  groupCheeredToday: 'Đã cổ vũ hôm nay',
+  groupCheerOfflineReason: 'Cần có mạng để cổ vũ.',
+  groupCheerSent: 'Đã gửi lời cổ vũ.',
+  groupCheerErrors: {
+    already: 'Hôm nay bạn đã cổ vũ hộ này rồi.',
+    not_allowed: 'Bạn không gửi được lời cổ vũ cho hộ này.',
+    no_message: 'Chưa có lời cổ vũ nào để gửi.',
+    network: 'Chưa gửi được. Kiểm tra mạng rồi thử lại nhé.',
+  },
+  groupMemberUnnamed: 'Chưa có tên',
+  cheerCardTitle: 'Lời cổ vũ từ người bảo trợ',
+  cheerCardDismiss: 'Đóng',
   boardTitle: 'Bảng 30x30',
   boardPrompt: 'Tiến độ danh sách của bạn.',
   boardLoadError: 'Không tải được Bảng 30x30. Thử lại nhé.',
@@ -175,6 +203,7 @@ export const STRINGS = {
   boardDisclaimer: 'Số liệu tính từ danh sách bạn tự nhập, không phải xác nhận chính thức.',
   boardEmptyBody: 'Chưa có ai trong danh sách. Thêm người đầu tiên để Bảng bắt đầu chạy.',
   boardGoPeople: 'Đến tab Làm',
+  boardDuplicatesOpen: 'Kiểm tra liên hệ trùng',
   achievementsOpen: 'Thành tích',
   achievementsTitle: 'Thành tích',
   achievementsPrompt: 'Các mốc bạn đã đạt và các mốc đang chờ.',
@@ -249,7 +278,6 @@ export const STRINGS = {
 
   // Tạo tài khoản cho NPP (story 024)
   createAccountButton: 'Tạo tài khoản',
-  createAccountNeedsCode: 'Nhập mã số Amway trước',
   createAccountNeedsNetwork: 'Cần có mạng để tạo tài khoản',
   createAccountHasAccount: 'Đã có tài khoản',
   createAccountWarnArchived: 'Người này đã có tài khoản và đang được lưu trữ. Tài khoản vẫn được giữ.',
@@ -260,6 +288,9 @@ export const STRINGS = {
   createAccountSubmit: 'Tạo tài khoản',
   createAccountSubmitting: 'Đang tạo…',
   createAccountPhoneRequired: 'Hãy nhập số điện thoại.',
+  createAccountCodeRequired: 'Hãy nhập mã số Amway của người này.',
+  createAccountPersonMissing: 'Không tìm thấy người này.',
+  createAccountLater: 'Để sau',
   createAccountNameInvalid: 'Tên hiển thị cần từ 1 đến 60 ký tự.',
   createAccountDone: 'Đã tạo tài khoản',
   createAccountShareHint: 'Nhắc họ đổi mật khẩu khi đăng nhập lần đầu.',
@@ -288,6 +319,87 @@ export const STRINGS = {
     unknown: 'Chưa tạo được tài khoản. Thử lại sau nhé.',
   },
 
+  // Hộ của tôi và Thêm vợ/chồng (story 025)
+  householdEntry: 'Hộ của tôi',
+  householdTitle: 'Hộ của tôi',
+  householdPrompt: 'Mã số Amway và các thành viên trong hộ của bạn.',
+  householdCodeLabel: 'Mã số Amway',
+  householdNoCode: 'Chưa có mã',
+  householdMembersHeading: 'Thành viên',
+  householdNoHousehold: 'Tài khoản này chưa thuộc hộ nào.',
+  householdOffline: 'Cần có mạng để xem thông tin hộ. Kết nối mạng rồi thử lại nhé.',
+  householdLoadError: 'Chưa tải được thông tin hộ. Thử lại nhé.',
+  householdMemberUnnamed: 'Chưa có tên',
+  addMemberButton: 'Thêm vợ/chồng',
+  addMemberOfflineReason: 'Cần có mạng để thêm vợ/chồng.',
+  addMemberTitle: 'Thêm vợ/chồng',
+  addMemberPrompt: 'Tạo tài khoản cho vợ/chồng bằng số điện thoại. App sẽ sinh một mật khẩu tạm để bạn gửi cho họ.',
+  addMemberSubmit: 'Thêm vào hộ',
+  addMemberSubmitting: 'Đang thêm…',
+  addMemberDone: 'Đã thêm vào hộ',
+  addMemberErrors: {
+    not_signed_in: 'Bạn cần đăng nhập để thêm thành viên.',
+    change_password_first: 'Hãy đổi mật khẩu tạm của bạn trước khi thêm thành viên.',
+    invalid_phone: 'Số điện thoại chưa đúng. Kiểm tra mã nước và số điện thoại.',
+    invalid_password: 'Mật khẩu tạm không hợp lệ. Thử lại nhé.',
+    phone_taken: 'Số điện thoại này đã có tài khoản. Hãy nhờ quản trị viên hỗ trợ.',
+    no_household: 'Bạn chưa thuộc hộ nào nên chưa thêm được thành viên.',
+    household_full_or_inactive: 'Hộ đã đủ thành viên hoặc không còn hoạt động.',
+    not_allowed: 'Bạn không có quyền thêm thành viên vào hộ này.',
+    not_found: 'Không tìm thấy hộ này.',
+    create_failed: 'Máy chủ chưa thêm được thành viên. Thử lại sau ít phút nhé.',
+    network: 'Không có kết nối mạng. Kiểm tra mạng rồi thử lại nhé.',
+    unknown: 'Chưa thêm được thành viên. Thử lại sau nhé.',
+  },
+
+  // Quản trị (story 029)
+  adminEntry: 'Quản trị',
+  adminTitle: 'Quản trị',
+  adminPrompt: 'Tìm hộ theo số điện thoại hoặc mã số Amway để đặt lại mật khẩu hoặc đặt mã số.',
+  adminOffline: 'Cần có mạng để dùng màn Quản trị.',
+  adminSearchByPhone: 'SĐT',
+  adminSearchByCode: 'Mã số',
+  adminSearchCodeLabel: 'Mã số Amway',
+  adminSearchButton: 'Tìm hộ',
+  adminSearching: 'Đang tìm…',
+  adminSearchOfflineReason: 'Cần có mạng để tìm hộ.',
+  adminSearchPhoneRequired: 'Hãy nhập số điện thoại.',
+  adminSearchCodeInvalid: 'Mã số chỉ gồm chữ số (được cách bằng dấu cách, chấm hoặc gạch) và dài từ 4 đến 15 chữ số.',
+  adminNotFound: 'Không tìm thấy hộ nào.',
+  adminSearchErrors: {
+    network: 'Không có kết nối mạng. Kiểm tra mạng rồi thử lại nhé.',
+    unknown: 'Chưa tìm được. Thử lại sau nhé.',
+  },
+  adminMembersHeading: 'Thành viên',
+  adminNoMembers: 'Hộ chưa có thành viên.',
+  adminActiveCodeLabel: 'Mã đang hoạt động',
+  adminNoCode: 'Chưa có mã',
+  adminCancelledHeading: 'Mã đã huỷ',
+  adminCancelledTag: 'Đã huỷ',
+  adminResetButton: 'Đặt lại mật khẩu',
+  adminResetting: 'Đang đặt lại…',
+  adminResetOfflineReason: 'Cần có mạng để đặt lại mật khẩu.',
+  adminResetDone: 'Đã đặt lại mật khẩu',
+  adminResetErrors: {
+    not_found: 'Không tìm thấy tài khoản này.',
+    admin_only: 'Chỉ quản trị viên mới đặt lại được mật khẩu.',
+    network: 'Không có kết nối mạng. Mật khẩu chưa đổi. Kiểm tra mạng rồi thử lại nhé.',
+    other: 'Chưa đặt lại được mật khẩu. Thử lại sau nhé.',
+  },
+  adminSetCodeHeading: 'Đặt mã số',
+  adminSetCodeLabel: 'Mã số mới',
+  adminSetCodeButton: 'Đặt mã số',
+  adminSetCodeSaving: 'Đang đặt…',
+  adminSetCodeOfflineReason: 'Cần có mạng để đặt mã số.',
+  adminSetCodeDone: 'Đã đặt mã số. Mã cũ chuyển sang Đã huỷ.',
+  adminSetCodeErrors: {
+    invalid_code: 'Mã số chỉ gồm chữ số (được cách bằng dấu cách, chấm hoặc gạch) và dài từ 4 đến 15 chữ số.',
+    code_taken: 'Mã số này đang hoạt động ở một hộ khác. Chưa đổi gì.',
+    not_admin: 'Chỉ quản trị viên mới đặt được mã số.',
+    network: 'Không có kết nối mạng. Mã số chưa đổi. Kiểm tra mạng rồi thử lại nhé.',
+    other: 'Chưa đặt được mã số. Thử lại sau nhé.',
+  },
+
   // Đồng bộ Danh bạ hộ (story 023)
   consentTitle: 'Đồng bộ Danh bạ trong hộ',
   consentIntro:
@@ -311,6 +423,38 @@ export const STRINGS = {
   syncDenied: 'Máy chủ từ chối đồng bộ (có thể bạn không còn trong hộ). Đã dừng đồng bộ; dữ liệu trên máy vẫn giữ nguyên.',
   syncNoHousehold: 'Tài khoản chưa thuộc hộ nào nên chưa đồng bộ được. Dữ liệu trên máy vẫn giữ nguyên.',
   historyFormerMember: 'Thành viên cũ',
+
+  // Liên hệ trùng (story 026)
+  dupTitle: 'Kiểm tra liên hệ trùng',
+  dupPrompt: 'Xem từng cặp và chọn gộp hoặc giữ riêng.',
+  dupBack: 'Quay lại Làm',
+  dupNone: 'Không còn liên hệ trùng cần kiểm tra.',
+  dupMergeAll: 'Gộp tất cả',
+  dupMergeAllHint: 'Chỉ gộp các cặp trùng chắc chắn, không xung đột mã. Cặp chỉ trùng tên phải duyệt từng cặp.',
+  dupMerge: 'Gộp',
+  dupNotSame: 'Không phải cùng người',
+  dupCertain: 'Trùng chắc chắn',
+  dupPossible: 'Có thể trùng',
+  dupReasonCode: 'Cùng mã số',
+  dupReasonPhone: 'Cùng số điện thoại',
+  dupReasonName: 'Cùng tên',
+  dupReasonNearName: 'Tên gần giống',
+  dupPhone: 'SĐT',
+  dupNoPhone: 'Chưa có SĐT',
+  dupCode: 'Mã số',
+  dupNoCode: 'Chưa có mã',
+  dupLabel: 'Nhãn',
+  dupNoLabel: 'Chưa có nhãn',
+  dupTasksDone: 'Việc đã làm',
+  dupAddedBy: 'Người thêm',
+  dupAddedByMe: 'Tôi',
+  dupLinkedConflict: 'Hai liên hệ đã liên kết hai tài khoản khác nhau, không thể gộp.',
+  dupPickCodeTitle: 'Hai mã khác nhau. Giữ mã nào?',
+  dupCancel: 'Huỷ',
+  dupError: 'Chưa lưu được. Thử lại nhé.',
+  dupMergedSection: 'Đã gộp',
+  dupSplit: 'Tách',
+  dupOtherPhones: 'SĐT khác',
 
   // Placeholder screens
   comingSoon: 'Sắp có',
@@ -467,6 +611,11 @@ export function boardCountLabel(label: string, count: number, target: number): s
   return `${label} ${count}/${target}`;
 }
 
+/** Warning above the board while `count` duplicate pairs are unresolved (crm.md rule 23). */
+export function boardDuplicatesWarning(count: number): string {
+  return `Có ${count} cặp liên hệ có thể trùng, số liệu có thể bị đếm hai lần`;
+}
+
 /** What is still missing for 30x30, e.g. "còn 5 KH, còn 12 NPP F1". */
 export function boardMissingLabel(customersMissing: number, f1Missing: number): string {
   const parts: string[] = [];
@@ -499,6 +648,26 @@ export function achievementsStreakLabel(current: number, days: number): string {
 /** Earned date line, e.g. "Đạt ngày 10/03/2026". */
 export function achievementsEarnedOnLabel(date: string): string {
   return `Đạt ngày ${date}`;
+}
+
+/** Entry on the Làm tab, e.g. "Kiểm tra liên hệ trùng (2)". */
+export function duplicatesEntryLabel(count: number): string {
+  return `Kiểm tra liên hệ trùng (${count})`;
+}
+
+/** Button text for keeping one code when merging, e.g. "Giữ mã 123456". */
+export function keepCodeLabel(code: string): string {
+  return `Giữ mã ${code}`;
+}
+
+/** Result line after "Gộp tất cả", e.g. "Đã gộp 3 cặp". */
+export function mergedCountLabel(count: number): string {
+  return `Đã gộp ${count} cặp`;
+}
+
+/** Button name for "Tách" of one absorbed contact. */
+export function splitLabel(name: string): string {
+  return `Tách ${name}`;
 }
 
 /** Warning shown when another person has the same Amway code, e.g. "Trùng mã số với Lan, Hà". */
@@ -559,4 +728,59 @@ export function contactSyncLastSyncedLabel(iso: string): string {
   const time = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit' }).format(at);
   const date = new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(at);
   return `Đồng bộ lần cuối: ${time} ${date}`;
+}
+
+/** "x/2 thành viên". */
+export function householdCountLabel(count: number, max: number): string {
+  return `${count}/${max} thành viên`;
+}
+
+/** Note shown instead of the add button when the household is full. */
+export function householdFullNote(max: number): string {
+  return `Hộ đã đủ ${max} thành viên`;
+}
+
+/** "KH 12/30". */
+export function groupCustomersLabel(count: number, target: number): string {
+  return `KH ${count}/${target}`;
+}
+
+/** "NPP F1 12/30". */
+export function groupF1Label(count: number, target: number): string {
+  return `NPP F1 ${count}/${target}`;
+}
+
+/** "3 ngày chưa hoạt động". */
+export function groupInactiveLabel(days: number): string {
+  return `${days} ngày chưa hoạt động`;
+}
+
+/** "Cập nhật lúc 14:05 07/11/2026" (device time zone). */
+export function groupUpdatedLabel(iso: string): string {
+  const at = new Date(iso);
+  const time = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit' }).format(at);
+  const date = new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(at);
+  return `cập nhật lúc ${time} ${date}`;
+}
+
+/** Aria label of the cheer button of one household. */
+export function groupCheerAria(name: string): string {
+  return `Cổ vũ ${name}`;
+}
+
+/** "Đã huỷ 07/11/2026" (device time zone). */
+export function adminCancelledLabel(iso: string): string {
+  const date = new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date(iso));
+  return `${STRINGS.adminCancelledTag} ${date}`;
+}
+
+/** Vietnamese text of a code's cancel reason; unknown reasons are shown as stored. */
+export function adminCancelReason(reason: string): string {
+  const known: Record<string, string> = { replaced: 'đã thay bằng mã mới', merged: 'gộp mã', dissolved: 'hộ giải thể' };
+  return known[reason] ?? reason;
+}
+
+/** Aria label of the reset button of one member. */
+export function adminResetAria(name: string): string {
+  return `Đặt lại mật khẩu của ${name}`;
 }

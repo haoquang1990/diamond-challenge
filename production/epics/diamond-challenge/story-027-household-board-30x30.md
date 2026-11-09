@@ -1,12 +1,12 @@
 # Story 027: Bảng 30x30 theo hộ và đồng bộ số tổng hợp
 
 > **Epic**: diamond-challenge
-> **Status**: Ready
+> **Status**: Complete
 > **Layer**: Feature
 > **Type**: UI
 > **Estimate**: L
 > **Manifest Version**: N/A (minimal — no control manifest)
-> **Last Updated**: 2026-11-07
+> **Last Updated**: 2026-11-09
 
 ## Context
 
@@ -51,9 +51,10 @@
 
 ## Files
 
-- `src/domain/people.ts`, `src/domain/achievements.ts`
-- `src/data/aggregates-sync.ts`
-- `src/ui/screens/board-30x30-screen.tsx`, `src/ui/strings.ts`, `src/ui/styles.css`
+- `src/domain/household-board.ts` (new: aggregate payload, change check)
+- `src/data/aggregates-sync.ts` (new: debounced upsert to `household_aggregates`)
+- `src/ui/screens/board-30x30-screen.tsx` (duplicate warning), `src/app.tsx` (wiring, return to the board from the review screen)
+- `src/config/game-config.json` (`aggregatesSync.debounceMs`), `src/ui/strings.ts`, `src/ui/styles.css`
 - `tests/unit/people/household-board.test.ts`
 - `production/qa/evidence/story-027-household-board-30x30/`
 
@@ -76,3 +77,10 @@
 
 - Depends on: `production/epics/diamond-challenge/story-023-consent-household-contact-sync.md`, `production/epics/diamond-challenge/story-026-merge-duplicate-contacts.md`
 - Unlocks: story 028
+
+## Completion Notes
+**Completed**: 2026-11-09
+**Criteria**: 7/7 passing (built app in Chromium 390×844 and 320px with a fake Supabase and two members; not tried on a real phone or against the live Supabase)
+**Deviations**: Advisory, not logged as tech debt: (1) the per-member "people" popup (AC-6) was checked by reading code only: milestones count the synced household log and acknowledgements are personal events that are never pushed; (2) the offline catch-up send was not run, it rests on `flush()` on the `online` event; (3) `aggregates-sync.ts` and its wiring in `app.tsx` have no automated test, only the fake-server run; (4) `src/app.tsx` and `src/config/game-config.json` were touched beyond the planned list and are in `## Files`
+**Test Evidence**: screenshots in production/qa/evidence/story-027-household-board-30x30/ (01–05 plus stamp.txt, stamp unchanged); unit test `tests/unit/people/household-board.test.ts`; full suite 360/360
+**Reviewed by**: self, no independent review
