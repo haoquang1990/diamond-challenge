@@ -1,9 +1,19 @@
 import { useEffect, useState } from 'react';
 import lessonsJson from '../../content/lessons.json';
 import type { EventStore, LogEvent } from '../../data/event-store';
-import { computeLessonResult, gradeAnswer, isLessonCompletedToday, parseLessons, xpForCompletion } from '../../domain/lesson';
-import type { Lesson, LessonResult, ParsedLessons } from '../../domain/lesson';
+import {
+  computeLessonResult,
+  gradeAnswer,
+  isLessonCompletedToday,
+  isOrderQuestion,
+  parseLessons,
+  shuffledStepOrder,
+  xpForCompletion,
+} from '../../domain/lesson';
+import type { Lesson, LessonAnswer, LessonResult, ParsedLessons } from '../../domain/lesson';
+import { LESSON_STRINGS } from '../lesson-strings';
 import { STRINGS, questionProgressLabel, scoreLabel, xpLabel } from '../strings';
+import { OrderQuestionView } from './order-question';
 
 /** Lessons from content/lessons.json, validated once at load (never throws). */
 const LOADED_LESSONS: ParsedLessons = parseLessons(lessonsJson);
@@ -22,6 +32,8 @@ export interface LessonScreenProps {
   readonly now?: () => Date;
   /** IANA time zone defining the local day; defaults to the device's. */
   readonly timeZone?: string;
+  /** Random source in [0, 1) for shuffling order steps; defaults to Math.random. */
+  readonly random?: () => number;
 }
 
 type ViewState =
@@ -30,9 +42,13 @@ type ViewState =
       readonly kind: 'question';
       readonly lesson: Lesson;
       readonly index: number;
-      readonly answers: readonly number[];
-      /** Chosen option for the current question, or null before answering. */
-      readonly selected: number | null;
+      readonly answers: readonly LessonAnswer[];
+      /** Answer to the current question, or null before answering/checking. */
+      readonly selected: LessonAnswer | null;
+      /** Order questions: display order of the step pool (empty otherwise). */
+      readonly shuffled: readonly number[];
+      /** Order questions: step indices placed so far (empty otherwise). */
+      readonly placed: readonly number[];
       readonly saving: boolean;
       readonly error: string | null;
     }
@@ -50,6 +66,7 @@ export function LessonScreen({
   parsed = LOADED_LESSONS,
   now = () => new Date(),
   timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone,
+  random = Math.random,
 }: LessonScreenProps) {
   const [view, setView] = useState<ViewState>({ kind: 'list' });
   const [events, setEvents] = useState<readonly LogEvent[]>([]);
@@ -88,12 +105,19 @@ export function LessonScreen({
     );
   }
 
+  /** Fresh view state for question `index` of `lesson` (shuffles order steps). */
+  function questionView(lesson: Lesson, index: number, answers: readonly LessonAnswer[]): ViewState {
+    const question = lesson.questions[index];
+    const shuffled = question !== undefined && isOrderQuestion(question) ? shuffledStepOrder(question.steps.length, random) : [];
+    return { kind: 'question', lesson, index, answers, selected: null, shuffled, placed: [], saving: false, error: null };
+  }
+
   async function advance(): Promise<void> {
     if (view.kind !== 'question' || view.selected === null || view.saving) return;
     const { lesson, index } = view;
     const answers = [...view.answers, view.selected];
     if (index + 1 < lesson.questions.length) {
-      setView({ kind: 'question', lesson, index: index + 1, answers, selected: null, saving: false, error: null });
+      setView(questionView(lesson, index + 1, answers));
       return;
     }
     setView({ ...view, saving: true, error: null });
@@ -121,6 +145,11 @@ export function LessonScreen({
     const answered = selected !== null;
     const correct = answered && gradeAnswer(question, selected);
     const last = index + 1 === lesson.questions.length;
+    const order = isOrderQuestion(question);
+    const readyToCheck = order && !answered && view.placed.length === question.steps.length;
+    let buttonLabel: string = !answered ? STRINGS.lessonCheckAnswer : last ? STRINGS.lessonFinish : STRINGS.lessonNext;
+    if (order && !answered) buttonLabel = readyToCheck ? LESSON_STRINGS.orderCheck : LESSON_STRINGS.orderPlaceAll;
+    if (saving) buttonLabel = STRINGS.lessonFinishing;
     return (
       <main className="screen">
         <header className="screen__header">
@@ -130,24 +159,35 @@ export function LessonScreen({
           <p className="lesson-progress">{questionProgressLabel(index + 1, lesson.questions.length)}</p>
           <h1 className="screen__prompt">{question.prompt}</h1>
         </header>
-        <div className="lesson-options">
-          {question.options.map((option, optionIndex) => {
-            let modifier = '';
-            if (answered && optionIndex === question.correctIndex) modifier = ' lesson-option--correct';
-            else if (answered && optionIndex === selected) modifier = ' lesson-option--wrong';
-            return (
-              <button
-                key={option}
-                type="button"
-                className={`lesson-option${modifier}`}
-                disabled={answered}
-                onClick={() => setView({ ...view, selected: optionIndex })}
-              >
-                {option}
-              </button>
-            );
-          })}
-        </div>
+        {order ? (
+          <OrderQuestionView
+            question={question}
+            shuffled={view.shuffled}
+            placed={view.placed}
+            checked={answered}
+            onPlace={(stepIndex) => setView({ ...view, placed: [...view.placed, stepIndex] })}
+            onRemove={(slot) => setView({ ...view, placed: view.placed.filter((_, i) => i !== slot) })}
+          />
+        ) : (
+          <div className="lesson-options">
+            {question.options.map((option, optionIndex) => {
+              let modifier = '';
+              if (answered && optionIndex === question.correctIndex) modifier = ' lesson-option--correct';
+              else if (answered && optionIndex === selected) modifier = ' lesson-option--wrong';
+              return (
+                <button
+                  key={option}
+                  type="button"
+                  className={`lesson-option${modifier}`}
+                  disabled={answered}
+                  onClick={() => setView({ ...view, selected: optionIndex })}
+                >
+                  {option}
+                </button>
+              );
+            })}
+          </div>
+        )}
         {answered && (
           <div className={correct ? 'lesson-feedback lesson-feedback--correct' : 'lesson-feedback lesson-feedback--wrong'} role="status" aria-live="polite">
             <p className="lesson-feedback__title">{correct ? STRINGS.lessonCorrect : STRINGS.lessonWrong}</p>
@@ -160,8 +200,13 @@ export function LessonScreen({
           </p>
         )}
         <div className="action-bar">
-          <button type="button" className="button button--primary" disabled={!answered || saving} onClick={() => void advance()}>
-            {saving ? STRINGS.lessonFinishing : !answered ? STRINGS.lessonCheckAnswer : last ? STRINGS.lessonFinish : STRINGS.lessonNext}
+          <button
+            type="button"
+            className="button button--primary"
+            disabled={(!answered && !readyToCheck) || saving}
+            onClick={() => (readyToCheck ? setView({ ...view, selected: view.placed }) : void advance())}
+          >
+            {buttonLabel}
           </button>
         </div>
       </main>
@@ -211,9 +256,7 @@ export function LessonScreen({
               key={lesson.id}
               type="button"
               className={done ? 'activity-option lesson-item--done' : 'activity-option'}
-              onClick={() =>
-                setView({ kind: 'question', lesson, index: 0, answers: [], selected: null, saving: false, error: null })
-              }
+              onClick={() => setView(questionView(lesson, 0, []))}
             >
               <span className="activity-option__name">
                 {done && '✓ '}

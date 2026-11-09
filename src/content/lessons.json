@@ -261,6 +261,57 @@
           "explanation": "FORMHD là để hiểu người khác, không phải để lấy thông tin."
         }
       ]
+    },
+    {
+      "id": "meeting-new-people",
+      "title": "Làm quen người mới",
+      "xp": 10,
+      "questions": [
+        {
+          "type": "order",
+          "prompt": "Xếp 5 bước làm quen người mới theo đúng thứ tự.",
+          "steps": [
+            "Để ý một điểm đặc biệt",
+            "Khen thật lòng",
+            "Trò chuyện ngắn",
+            "Xin liên lạc kèm lý do chung",
+            "Nhắn lại sau 24–48 giờ"
+          ],
+          "explanation": "Để ý, khen, trò chuyện, xin liên lạc, rồi giữ kết nối bằng một tin nhắn lại."
+        },
+        {
+          "prompt": "Mới gặp ai đó, cách mở lời tự nhiên nhất là gì?",
+          "options": [
+            "Giới thiệu ngay việc mình đang làm",
+            "Khen thật lòng một điểm bạn để ý thấy",
+            "Xin số điện thoại luôn"
+          ],
+          "correctIndex": 1,
+          "explanation": "Một lời khen chân thành giúp người đối diện thấy thoải mái."
+        },
+        {
+          "prompt": "Sau khi xin được liên lạc, nên nhắn lại khi nào?",
+          "options": [
+            "Trong 24–48 giờ",
+            "Một tháng sau",
+            "Chờ họ nhắn trước"
+          ],
+          "correctIndex": 0,
+          "explanation": "Nhắn lại sớm khi cả hai còn nhớ cuộc trò chuyện."
+        },
+        {
+          "type": "order",
+          "prompt": "Xếp các nấc của mối quan hệ từ mới gặp đến gắn bó.",
+          "steps": [
+            "Quen biết",
+            "Thân thuộc",
+            "Quý mến",
+            "Tin tưởng",
+            "Thân thiết"
+          ],
+          "explanation": "Mối quan hệ lớn dần từng bước; lòng tin cần thời gian."
+        }
+      ]
     }
   ]
 }

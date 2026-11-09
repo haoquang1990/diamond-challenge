@@ -160,3 +160,12 @@ Ba chặng cuối chờ thêm tài liệu.
 - **Không dùng** đoạn hỏi–đáp "sản phẩm gì, hãng nào" *(B2 tr.21)*.
 - Tài chính *(B2 tr.13)* và làm quen người mới *(B2 tr.17–18)*: viết theo hướng tôn trọng, không dò hỏi.
 - Không dùng tên chương trình/chỉ tiêu nội bộ (pv, tên khoá học, tên sản phẩm) *(B2 tr.6, 25)*.
+
+---
+
+## Cách soạn bài trong `src/content/lessons.json`
+
+- Mỗi bài: `id` (không đổi sau khi dùng), `title`, `xp`, `questions` (3–5 câu). Một bài trộn được nhiều dạng câu.
+- **Trắc nghiệm** (mặc định, không ghi `type`): `prompt`, `options` (2–4), `correctIndex`, `explanation`.
+- **Xếp đúng thứ tự** (`"type": "order"`): `prompt`, `steps` (3–6 bước, viết THEO ĐÚNG THỨ TỰ, không trùng nhau), `explanation`. App tự xáo trộn khi hiển thị.
+- Bài đang có từ dàn ý này: `formhd-basics` (trắc nghiệm), `meeting-new-people` (trộn xếp thứ tự + trắc nghiệm).
