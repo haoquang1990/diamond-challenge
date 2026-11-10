@@ -10,6 +10,11 @@ export const LESSON_STRINGS = {
   orderCheck: 'Kiểm tra',
   orderPlaceAll: 'Xếp hết các bước',
   orderCorrectOrderTitle: 'Thứ tự đúng:',
+  matchHint: 'Chạm một thẻ ở trên, rồi chạm thẻ ở dưới để ghép thành cặp. Muốn gỡ, chạm vào thẻ ở dưới đã ghép.',
+  matchLeftLabel: 'Vế cần ghép',
+  matchRightLabel: 'Vế để chọn',
+  matchLinkAll: 'Ghép hết các cặp',
+  matchCorrectPairsTitle: 'Cặp đúng:',
 } as const;
 
 /** Accessible label of an empty slot, e.g. "Ô 2, còn trống". */

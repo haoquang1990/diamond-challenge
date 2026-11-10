@@ -36,18 +36,44 @@ export interface OrderQuestion {
   readonly explanation: string;
 }
 
-/** Any lesson question. */
-export type LessonQuestion = ChoiceQuestion | OrderQuestion;
+/** One pair of a match question. */
+export interface MatchPair {
+  readonly left: string;
+  readonly right: string;
+}
 
 /**
- * A player's answer: the chosen option index for a choice question, or, for
- * an order question, the original step indices in the order they were placed.
+ * "Ghép cặp" question: `pairs` are written already matched; the screen
+ * shuffles the right-hand items and the player links each left item to one.
+ */
+export interface MatchQuestion {
+  readonly type: 'match';
+  readonly prompt: string;
+  /** Correct pairs (left items unique, right items unique, non-empty). */
+  readonly pairs: readonly MatchPair[];
+  /** Short explanation shown after checking. */
+  readonly explanation: string;
+}
+
+/** Any lesson question. */
+export type LessonQuestion = ChoiceQuestion | OrderQuestion | MatchQuestion;
+
+/**
+ * A player's answer: the chosen option index for a choice question; for an
+ * order question, the original step indices in the order they were placed;
+ * for a match question, per left item (pair index), the pair index of the
+ * right item linked to it.
  */
 export type LessonAnswer = number | readonly number[];
 
 /** True when `question` is a "Xếp đúng thứ tự" question. */
 export function isOrderQuestion(question: LessonQuestion): question is OrderQuestion {
   return question.type === 'order';
+}
+
+/** True when `question` is a "Ghép cặp" question. */
+export function isMatchQuestion(question: LessonQuestion): question is MatchQuestion {
+  return question.type === 'match';
 }
 
 /** One lesson. */
@@ -76,6 +102,9 @@ export const MAX_OPTIONS = 4;
 /** Bounds of the step count of an order question. */
 export const MIN_STEPS = 3;
 export const MAX_STEPS = 6;
+/** Bounds of the pair count of a match question. */
+export const MIN_PAIRS = 3;
+export const MAX_PAIRS = 6;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -96,12 +125,29 @@ function orderQuestionProblem(raw: Record<string, unknown>): string | null {
   return null;
 }
 
+/** Returns a problem description for a match question, or null when it is valid. */
+function matchQuestionProblem(raw: Record<string, unknown>): string | null {
+  const pairs = raw.pairs;
+  if (!Array.isArray(pairs) || pairs.length < MIN_PAIRS || pairs.length > MAX_PAIRS) {
+    return `câu ghép cặp cần ${MIN_PAIRS}–${MAX_PAIRS} cặp (pairs)`;
+  }
+  const list = pairs as unknown[];
+  if (!list.every((p) => isRecord(p) && isNonEmptyString(p.left) && isNonEmptyString(p.right))) {
+    return 'mỗi cặp (pairs) cần đủ left và right';
+  }
+  const typed = list as MatchPair[];
+  if (new Set(typed.map((p) => p.left)).size !== typed.length) return 'vế trái (left) bị trùng nhau';
+  if (new Set(typed.map((p) => p.right)).size !== typed.length) return 'vế phải (right) bị trùng nhau';
+  return null;
+}
+
 /** Returns a problem description for a question, or null when it is valid. */
 function questionProblem(raw: unknown): string | null {
   if (!isRecord(raw)) return 'câu hỏi không hợp lệ';
   if (!isNonEmptyString(raw.prompt)) return 'câu hỏi thiếu nội dung (prompt)';
   if (!isNonEmptyString(raw.explanation)) return 'câu hỏi thiếu giải thích (explanation)';
   if (raw.type === 'order') return orderQuestionProblem(raw);
+  if (raw.type === 'match') return matchQuestionProblem(raw);
   if (raw.type !== undefined && raw.type !== 'choice') return `dạng câu hỏi "${String(raw.type)}" chưa được hỗ trợ`;
   const options = raw.options;
   if (!Array.isArray(options) || options.length < MIN_OPTIONS || options.length > MAX_OPTIONS) {
@@ -163,13 +209,36 @@ export function orderSlotResults(placed: readonly number[]): boolean[] {
 }
 
 /**
+ * Per-pair result of a match answer: left item i is right when it is linked
+ * to the right item of its own pair.
+ */
+export function matchPairResults(links: readonly number[]): boolean[] {
+  return links.map((rightIndex, leftIndex) => rightIndex === leftIndex);
+}
+
+/**
+ * Links left item `left` to right item `right` (both pair indices) and
+ * returns the new links (per left item, the linked right item or null).
+ * A right item linked elsewhere moves here; a left item's old link is
+ * replaced; tapping the existing pair again unlinks it.
+ */
+export function toggleMatchLink(links: readonly (number | null)[], left: number, right: number): (number | null)[] {
+  if (links[left] === right) return links.map((r, i) => (i === left ? null : r));
+  return links.map((r, i) => (i === left ? right : r === right ? null : r));
+}
+
+/**
  * True when `answer` is the question's right answer. A choice question needs
  * the right option index; an order question needs every step placed in its
- * original position. A mismatched answer shape is wrong.
+ * original position; a match question needs every pair linked correctly.
+ * A mismatched answer shape is wrong.
  */
 export function gradeAnswer(question: LessonQuestion, answer: LessonAnswer): boolean {
   if (isOrderQuestion(question)) {
     return Array.isArray(answer) && answer.length === question.steps.length && orderSlotResults(answer).every(Boolean);
+  }
+  if (isMatchQuestion(question)) {
+    return Array.isArray(answer) && answer.length === question.pairs.length && matchPairResults(answer).every(Boolean);
   }
   return answer === question.correctIndex;
 }

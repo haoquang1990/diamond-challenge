@@ -312,6 +312,81 @@
           "explanation": "Mối quan hệ lớn dần từng bước; lòng tin cần thời gian."
         }
       ]
+    },
+    {
+      "id": "formhd-match",
+      "title": "FORMHD: ghép cặp",
+      "xp": 10,
+      "questions": [
+        {
+          "type": "match",
+          "prompt": "Ghép mỗi chữ cái với chủ đề của nó.",
+          "pairs": [
+            {
+              "left": "F",
+              "right": "Gia đình"
+            },
+            {
+              "left": "O",
+              "right": "Công việc"
+            },
+            {
+              "left": "R",
+              "right": "Thời gian rảnh"
+            },
+            {
+              "left": "M",
+              "right": "Tài chính"
+            },
+            {
+              "left": "H",
+              "right": "Sức khoẻ"
+            },
+            {
+              "left": "D",
+              "right": "Ước muốn"
+            }
+          ],
+          "explanation": "FORMHD là 6 chủ đề giúp bạn hiểu và quan tâm một người."
+        },
+        {
+          "type": "match",
+          "prompt": "Ghép mỗi câu hỏi thăm với chủ đề phù hợp.",
+          "pairs": [
+            {
+              "left": "\"Bố mẹ dạo này khoẻ không?\"",
+              "right": "Gia đình"
+            },
+            {
+              "left": "\"Công việc dạo này có vui không?\"",
+              "right": "Công việc"
+            },
+            {
+              "left": "\"Cuối tuần thường làm gì?\"",
+              "right": "Thời gian rảnh"
+            },
+            {
+              "left": "\"Hay tập thể dục môn gì?\"",
+              "right": "Sức khoẻ"
+            },
+            {
+              "left": "\"Vài năm tới có dự định gì?\"",
+              "right": "Ước muốn"
+            }
+          ],
+          "explanation": "Mỗi câu hỏi thăm mở ra một chủ đề để hiểu người đối diện hơn."
+        },
+        {
+          "prompt": "Vì sao chủ đề Tài chính chỉ nên lắng nghe, không hỏi thẳng?",
+          "options": [
+            "Để tôn trọng chuyện riêng tư và giữ lòng tin",
+            "Vì chủ đề này không quan trọng",
+            "Để họ tự nói ra số tiền cụ thể"
+          ],
+          "correctIndex": 0,
+          "explanation": "Chuyện tiền bạc là riêng tư; lắng nghe điều họ tự chia sẻ là đủ."
+        }
+      ]
     }
   ]
 }

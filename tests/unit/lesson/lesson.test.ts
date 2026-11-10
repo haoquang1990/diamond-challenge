@@ -9,6 +9,7 @@ import {
   computeLessonResult,
   gradeAnswer,
   isLessonCompletedToday,
+  isMatchQuestion,
   isOrderQuestion,
   parseLessons,
   xpForCompletion,
@@ -53,7 +54,7 @@ describe('lessons.json content', () => {
       expect(lesson.questions.length).toBeGreaterThanOrEqual(3);
       expect(lesson.questions.length).toBeLessThanOrEqual(5);
       for (const q of lesson.questions) {
-        if (isOrderQuestion(q)) continue; // validated in lesson-order.test.ts
+        if (isOrderQuestion(q) || isMatchQuestion(q)) continue; // validated in lesson-order/lesson-match tests
         expect(q.correctIndex).toBeGreaterThanOrEqual(0);
         expect(q.correctIndex).toBeLessThan(q.options.length);
       }
