@@ -170,3 +170,5 @@ Ba chặng cuối chờ thêm tài liệu.
 - **Xếp đúng thứ tự** (`"type": "order"`): `prompt`, `steps` (3–6 bước, viết THEO ĐÚNG THỨ TỰ, không trùng nhau), `explanation`. App tự xáo trộn khi hiển thị.
 - **Ghép cặp** (`"type": "match"`): `prompt`, `pairs` (3–6 cặp `{"left": ..., "right": ...}`, viết ĐÃ GHÉP ĐÚNG; vế trái không trùng nhau, vế phải không trùng nhau), `explanation`. App tự xáo trộn vế phải. Dùng được cho "lời từ chối ↔ cách đáp".
 - Bài đang có từ dàn ý này: `formhd-basics` (trắc nghiệm), `meeting-new-people` (trộn xếp thứ tự + trắc nghiệm), `formhd-match` (ghép cặp + trắc nghiệm).
+- Chặng Mời hẹn: `weekly-schedule`, `invitation-basics`, `invite-by-person` (B2 tr.18–21). Chặng Demo/Opp (ABC): `abc-roles`, `abc-meeting` (B2 tr.23–24).
+- Đã duyệt 2026-11-10: lời mời người nhiều kinh nghiệm phải nói thật mục đích ("đang bắt đầu kinh doanh thêm"), không dùng "xin ý kiến" làm cái cớ.

@@ -387,6 +387,263 @@
           "explanation": "Chuyện tiền bạc là riêng tư; lắng nghe điều họ tự chia sẻ là đủ."
         }
       ]
+    },
+    {
+      "id": "weekly-schedule",
+      "title": "Sắp lịch tuần 3 bước",
+      "xp": 10,
+      "questions": [
+        {
+          "type": "order",
+          "prompt": "Xếp 3 bước sắp lịch hẹn theo đúng thứ tự.",
+          "steps": [
+            "Điền lịch tuần của mình",
+            "So lịch với tuyến trên, tuyến dưới",
+            "Chủ động đặt hẹn vào khung đã chọn"
+          ],
+          "explanation": "Biết mình rảnh lúc nào, tìm giờ chung, rồi chủ động đặt hẹn."
+        },
+        {
+          "prompt": "Khi điền lịch tuần, nên đánh dấu \"không tự quyết được\" cho giờ nào?",
+          "options": [
+            "Giờ đi làm và việc gia đình quan trọng",
+            "Mọi buổi tối",
+            "Cả cuối tuần"
+          ],
+          "correctIndex": 0,
+          "explanation": "Những ô còn lại là thời gian bạn tự quyết, dùng để đặt hẹn."
+        },
+        {
+          "prompt": "Bạn có khung giờ trống nhưng chưa ai nhắc. Bạn nên làm gì?",
+          "options": [
+            "Chủ động đặt hẹn vào khung đó",
+            "Chờ tuyến trên sắp xếp",
+            "Để tuần sau"
+          ],
+          "correctIndex": 0,
+          "explanation": "Lịch đã sắp thì cứ chủ động, không chờ đợi ai."
+        }
+      ]
+    },
+    {
+      "id": "invitation-basics",
+      "title": "Cách mời hẹn",
+      "xp": 10,
+      "questions": [
+        {
+          "type": "match",
+          "prompt": "Ghép mỗi yếu tố của lời mời với cách làm đúng.",
+          "pairs": [
+            {
+              "left": "Kênh liên lạc",
+              "right": "Gọi điện ngắn, hoặc kênh quen thuộc với người đó"
+            },
+            {
+              "left": "Lý do hẹn",
+              "right": "Rõ ràng và trung thực"
+            },
+            {
+              "left": "Địa điểm",
+              "right": "Ưu tiên văn phòng"
+            },
+            {
+              "left": "Thời gian",
+              "right": "Đưa 2 lựa chọn theo lịch tuần"
+            }
+          ],
+          "explanation": "Một lời mời tốt: kênh quen thuộc, lý do thật, chỗ gặp rõ ràng, giờ dễ chọn."
+        },
+        {
+          "prompt": "Cách hỏi giờ nào giúp người kia dễ trả lời?",
+          "options": [
+            "\"Mai bạn rảnh sáng hay chiều?\"",
+            "\"Khi nào rảnh thì báo mình nhé\"",
+            "\"Hôm nay phải gặp nhé\""
+          ],
+          "correctIndex": 0,
+          "explanation": "Hai lựa chọn cụ thể giúp người kia quyết định nhanh và thoải mái."
+        },
+        {
+          "prompt": "Lý do hẹn mập mờ cho người kia tò mò thì có ổn không?",
+          "options": [
+            "Ổn, càng bí ẩn càng tốt",
+            "Không ổn, lý do phải rõ ràng và không nói dối",
+            "Tuỳ người"
+          ],
+          "correctIndex": 1,
+          "explanation": "Trung thực ngay từ lời mời là nền móng của lòng tin."
+        },
+        {
+          "prompt": "Sau cuộc gọi mời, người được mời nên cảm thấy thế nào?",
+          "options": [
+            "Thoải mái và thấy có lợi khi gặp",
+            "Bị ép phải đồng ý",
+            "Tò mò nhưng lo lắng"
+          ],
+          "correctIndex": 0,
+          "explanation": "Người được mời nên thấy buổi gặp có ích cho chính họ."
+        }
+      ]
+    },
+    {
+      "id": "invite-by-person",
+      "title": "Mời theo từng kiểu người",
+      "xp": 10,
+      "questions": [
+        {
+          "type": "match",
+          "prompt": "Ghép mỗi kiểu người với cách mở lời phù hợp.",
+          "pairs": [
+            {
+              "left": "Người nhiều kinh nghiệm hơn",
+              "right": "\"Mình đang bắt đầu kinh doanh thêm, muốn xin góc nhìn của anh/chị\""
+            },
+            {
+              "left": "Bạn ngang tuổi",
+              "right": "\"Mình đang tìm hiểu một việc, muốn rủ bạn cùng xem thử\""
+            },
+            {
+              "left": "Người mới quen",
+              "right": "\"Hôm trước nói chuyện vui quá, hẹn cà phê tiếp nhé\""
+            }
+          ],
+          "explanation": "Mỗi người một cách mở lời, nhưng lúc nào cũng nói thật mục đích."
+        },
+        {
+          "prompt": "Người ngang tuổi nghe xong thấy không hợp. Bạn nên làm gì?",
+          "options": [
+            "Cảm ơn, và hỏi họ có biết ai có thể phù hợp không",
+            "Thuyết phục thêm",
+            "Thôi không liên lạc nữa"
+          ],
+          "correctIndex": 0,
+          "explanation": "Tôn trọng lựa chọn của họ và giữ mối quan hệ tốt."
+        },
+        {
+          "prompt": "Dù mời ai, điều gì tuyệt đối không làm?",
+          "options": [
+            "Nói dối về lý do hẹn",
+            "Gọi điện trước",
+            "Đưa ra 2 lựa chọn giờ"
+          ],
+          "correctIndex": 0,
+          "explanation": "Không nói dối là nguyên tắc số một khi mời hẹn."
+        }
+      ]
+    },
+    {
+      "id": "abc-roles",
+      "title": "ABC là ai?",
+      "xp": 10,
+      "questions": [
+        {
+          "type": "match",
+          "prompt": "Ghép mỗi vai trong ABC với ý nghĩa của nó.",
+          "pairs": [
+            {
+              "left": "A",
+              "right": "Người hoặc nguồn hỗ trợ (tuyến trên, đào tạo, hội thảo)"
+            },
+            {
+              "left": "B",
+              "right": "Bạn, người làm cầu nối"
+            },
+            {
+              "left": "C",
+              "right": "Khách hàng hoặc ứng viên"
+            }
+          ],
+          "explanation": "B kết nối C với A để C được hỗ trợ tốt nhất."
+        },
+        {
+          "prompt": "Để C muốn gặp A, B nên làm gì?",
+          "options": [
+            "Nói đúng điều C đang quan tâm",
+            "Kể thật nhiều về A",
+            "Giữ bí mật cho tới lúc gặp"
+          ],
+          "correctIndex": 0,
+          "explanation": "Khi chạm đúng nhu cầu, C sẽ tự thấy muốn gặp."
+        },
+        {
+          "prompt": "Thứ nào cũng là một \"A\" của chính bạn?",
+          "options": [
+            "Câu chuyện vì sao bạn tham gia",
+            "Số điện thoại của bạn",
+            "Lịch tuần của bạn"
+          ],
+          "correctIndex": 0,
+          "explanation": "Câu chuyện thật của bạn là một nguồn hỗ trợ mạnh."
+        },
+        {
+          "prompt": "Phối hợp với tuyến trên thế nào cho đúng?",
+          "options": [
+            "Cùng làm, mỗi người một phần",
+            "Để tuyến trên lo hết",
+            "Tự làm, không cần ai"
+          ],
+          "correctIndex": 0,
+          "explanation": "Phối hợp ngang bằng, không ỷ lại."
+        }
+      ]
+    },
+    {
+      "id": "abc-meeting",
+      "title": "Buổi gặp có tuyến trên hỗ trợ",
+      "xp": 10,
+      "questions": [
+        {
+          "type": "order",
+          "prompt": "Xếp các việc trong một buổi gặp có tuyến trên theo đúng thứ tự.",
+          "steps": [
+            "Báo trước cho tuyến trên về ứng viên",
+            "Giới thiệu tuyến trên với ứng viên",
+            "Giới thiệu ứng viên, khen thật lòng điểm mạnh của họ",
+            "Lắng nghe và ghi chép trong buổi",
+            "Hỏi thăm ứng viên sau buổi"
+          ],
+          "explanation": "Chuẩn bị trước, giới thiệu đúng, tập trung trong buổi và theo sát sau buổi."
+        },
+        {
+          "type": "match",
+          "prompt": "Ghép mỗi thời điểm với việc cần làm.",
+          "pairs": [
+            {
+              "left": "Trước buổi",
+              "right": "Báo trước cho tuyến trên, hẹn đúng giờ"
+            },
+            {
+              "left": "Trong buổi",
+              "right": "Tắt điện thoại, lắng nghe, ghi chép"
+            },
+            {
+              "left": "Sau buổi",
+              "right": "Hỏi thăm ứng viên, cùng tuyến trên rút kinh nghiệm"
+            }
+          ],
+          "explanation": "Trước, trong và sau buổi đều có việc của người làm cầu nối."
+        },
+        {
+          "prompt": "Khi giới thiệu hai bên, giới thiệu ai trước?",
+          "options": [
+            "Người quan trọng hơn (tuyến trên)",
+            "Ứng viên",
+            "Ai cũng được"
+          ],
+          "correctIndex": 0,
+          "explanation": "Giới thiệu người quan trọng trước, rồi giới thiệu ứng viên kèm lời khen thật lòng."
+        },
+        {
+          "prompt": "Đang trong buổi thì có tin nhắn đến. Bạn làm gì?",
+          "options": [
+            "Để sau, tập trung vào buổi gặp",
+            "Trả lời nhanh",
+            "Ra ngoài gọi lại"
+          ],
+          "correctIndex": 0,
+          "explanation": "Sự tập trung của bạn cho thấy bạn tôn trọng cả tuyến trên và ứng viên."
+        }
+      ]
     }
   ]
 }
