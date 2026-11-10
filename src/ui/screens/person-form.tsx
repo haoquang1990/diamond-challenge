@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import type { EventStore, LogEvent } from '../../data/event-store';
 import { buildSplitEvents } from '../../domain/duplicates';
 import {
@@ -27,6 +27,18 @@ interface PhoneInputProps {
   readonly onChange: (country: string, number: string) => void;
   readonly disabled: boolean;
   readonly error: string | null;
+}
+
+/** Note field that grows with its text so the whole note is visible (no inner scrolling). */
+function NoteTextarea({ value, onChange, disabled }: { readonly value: string; readonly onChange: (value: string) => void; readonly disabled: boolean }) {
+  const ref = useRef<HTMLTextAreaElement>(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (el === null) return;
+    el.style.height = 'auto';
+    el.style.height = `${el.scrollHeight + el.offsetHeight - el.clientHeight}px`;
+  }, [value]);
+  return <textarea ref={ref} className="note__input note__input--grow" rows={2} value={value} onChange={(e) => onChange(e.target.value)} disabled={disabled} />;
 }
 
 /** Country-code select (default first) plus a tel input. */
@@ -236,7 +248,7 @@ export function AddPersonForm({ people, onSubmit, compact = false }: AddPersonFo
       {!compact && (
         <label className="note">
           <span className="note__label">{STRINGS.noteLabel}</span>
-          <textarea className="note__input" rows={2} value={note} onChange={(e) => setNote(e.target.value)} disabled={busy} />
+          <NoteTextarea value={note} onChange={setNote} disabled={busy} />
         </label>
       )}
       {duplicate && (
@@ -528,7 +540,7 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
             />
             <label className="note">
               <span className="note__label">{STRINGS.noteLabel}</span>
-              <textarea className="note__input" rows={2} value={note} onChange={(e) => setNote(e.target.value)} disabled={busy} />
+              <NoteTextarea value={note} onChange={setNote} disabled={busy} />
             </label>
             {duplicate && (
               <p className="message message--warn" role="status">

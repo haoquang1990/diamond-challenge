@@ -70,6 +70,7 @@ body { margin: 0; }
   resize: vertical;
 }
 .note__input:focus { outline: none; border-color: var(--color-diamond); }
+.note__input--grow { resize: none; overflow: hidden; box-sizing: border-box; }
 
 .message { margin: 0; color: var(--color-muted); font-weight: 600; }
 .message--error { color: var(--color-error); }
@@ -319,15 +320,6 @@ body { margin: 0; }
 .lesson-item--done { background: var(--color-success-light); }
 
 /* Con đường Diamond (story 006) */
-.path-disclaimer {
-  margin: 0;
-  padding: 10px 14px;
-  border: 2px solid var(--color-border);
-  border-radius: var(--radius);
-  background: #fff8e1;
-  font-size: 0.95rem;
-  font-weight: 700;
-}
 .path-list { list-style: none; margin: 0; padding: 0 0 16px; display: flex; flex-direction: column; }
 .path-item { position: relative; padding-left: 44px; padding-bottom: 12px; }
 .path-item::before {

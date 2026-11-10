@@ -127,8 +127,6 @@ export function DiamondPathScreen({
         <p className="screen__prompt">{STRINGS.pathPrompt}</p>
       </header>
 
-      <p className="path-disclaimer">{STRINGS.pathDisclaimer}</p>
-
       {onOpenBoard !== undefined && (
         <button type="button" className="button button--secondary" onClick={onOpenBoard}>
           {STRINGS.boardOpen}

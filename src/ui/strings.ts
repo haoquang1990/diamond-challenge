@@ -59,7 +59,6 @@ export const STRINGS = {
   // Con đường (story 006)
   pathTitle: 'Con đường',
   pathPrompt: 'Từng chặng trên hành trình của bạn.',
-  pathDisclaimer: 'Đây là lộ trình thói quen, không phải xác nhận danh hiệu chính thức của Amway.',
   pathLoadError: 'Không tải được Con đường. Thử lại nhé.',
   pathNoStages: 'Chưa có chặng nào. Hãy kiểm tra src/config/game-config.json.',
   stageDone: 'Đã qua',
