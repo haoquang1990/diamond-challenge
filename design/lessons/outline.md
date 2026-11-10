@@ -9,6 +9,8 @@
 | Mã | File | Nội dung |
 |---|---|---|
 | **B2** | `B2-lap-danh-sach-ten-ABC-BTC.pptx` (25 trang) | Bài 2 BTC: Lập danh sách, Đặt hẹn, Kỹ năng ABC |
+| **LKK** | `loc-khong-khi-5-ver1.pptx` (5 trang) | Máy lọc không khí: bụi mịn, cấu tạo lõi lọc, tờ giới thiệu, bảng giá |
+| **MH** | `minh-hoa-may-loc-khong-khi-atmosphere-mini.docx` (1 trang) | Kịch bản demo máy lọc không khí |
 
 Ký hiệu nguồn: `B2 tr.N` = file B2, trang N.
 
@@ -107,6 +109,25 @@ Các khoá học (trực tuyến) của công ty, sự kiện lớn, câu chuy�
 
 ---
 
+## D. Demo máy lọc không khí
+
+### Các bước demo *(MH)*
+1. Mở đầu bằng câu hỏi: nhà mình có máy lọc nước không, có máy lọc không khí không, vì sao lại dùng máy lọc nước.
+2. So sánh: mỗi ngày uống khoảng 2 lít nước nhưng hít khoảng 11.000 lít không khí. *(MH; LKK tr.1)*
+3. Giải thích bụi mịn PM2.5 (hạt nhỏ hơn 2,5 micromet) bằng cách so với sợi tóc. *(MH; LKK tr.3)*
+4. Đo chất lượng không khí bằng máy đo cho mọi người cùng xem.
+5. Giới thiệu máy: gọn, nhẹ, nút bấm dễ dùng, lõi lọc 3 lớp, đèn báo khi cần thay lõi. *(MH)*
+6. Minh hoạ trước/sau: tạo khói (ví dụ đốt hương), xem chỉ số, bật máy, xem chỉ số thay đổi. *(MH)*
+7. Nói về chi phí tính theo ngày. *(MH; LKK tr.5. App không đưa con số)*
+
+### Cấu tạo lõi lọc 3 lớp *(LKK tr.4, tờ giới thiệu chính thức)*
+- Lọc sơ cấp: giữ bụi lớn, xơ vải.
+- Lọc HEPA: giữ hạt siêu mịn.
+- Lọc carbon: khử mùi khó chịu.
+
+### Bối cảnh (chỉ dùng ở mức chung)
+- Mỗi ngày ở trong phòng ngủ khoảng 8 tiếng; không khí trong nhà cũng cần quan tâm như ngoài trời. *(LKK tr.2)*
+
 ## Tình huống thường gặp
 - Mời người giỏi hơn mình, hoặc người ngang tuổi. *(B2 tr.21)*
 - Khách dùng thử xong muốn tìm hiểu kinh doanh. *(B2 tr.6)*
@@ -131,8 +152,8 @@ Các khoá học (trực tuyến) của công ty, sự kiện lớn, câu chuy�
 |---|---|---|---|
 | Danh sách | `prospect-list` | Nguyên tắc lập DS · Lọc 30 × 30 · Tiêu chí 1-2-3 · FORMHD · Thang mối quan hệ · Làm quen người mới | B2 tr.5–18 |
 | Mời hẹn | `friendly-invitation` | Sắp lịch tuần · Cách mời · Mời theo kiểu người | B2 tr.19–21 |
-| Demo | — | ABC trước/trong/sau buổi | B2 tr.24 (một phần) |
-| Opp | `simple-presentation` | Vai trò A-B-C · Giới thiệu A và C | B2 tr.23–24 (một phần) |
+| Demo | `air-purifier-demo` | — | MH; LKK tr.1–4 |
+| Opp | `simple-presentation`, `abc-roles`, `abc-meeting` | — | B2 tr.23–24 |
 | Follow-up | `follow-up`, `handling-no` | Nhắn lại sau 24–48 giờ · 100 lời từ chối | B2 tr.3, 18 (ít) |
 | Chăm sóc KH | — | Cùng hài lòng, cùng tin tưởng | B2 tr.16 (ít) |
 | Hỗ trợ NPP | — | Nguồn hỗ trợ cho NPP mới | B2 tr.25 (ít) |
@@ -159,13 +180,19 @@ Ba chặng cuối chờ thêm tài liệu.
 - **Không đưa** con số thu nhập, lời hứa thu nhập, cấp bậc. Bỏ thông tin cá nhân người đào tạo *(B2 tr.1)*.
 - **Không dùng** đoạn hỏi–đáp "sản phẩm gì, hãng nào" *(B2 tr.21)*.
 - Tài chính *(B2 tr.13)* và làm quen người mới *(B2 tr.17–18)*: viết theo hướng tôn trọng, không dò hỏi.
+- **Máy lọc không khí (LKK, MH), đã duyệt 2026-11-10:** KHÔNG đưa tác hại bệnh tật, số người tử vong (hai file lệch nhau), "vào máu", "đột quỵ khi ngủ"; KHÔNG đưa khả năng lọc virus/vi khuẩn, "300 tác nhân", "99,99%", "nhỏ hơn 125 lần", "như rừng nguyên sinh", "bền 15 năm"; KHÔNG đưa giá, chi phí cụ thể, bảng so sánh với hãng khác; dùng tên chung "máy lọc không khí". Chỉ dùng kỹ năng demo và cấu tạo 3 lớp lọc (mô tả chức năng, không nói tác dụng sức khoẻ).
 - Không dùng tên chương trình/chỉ tiêu nội bộ (pv, tên khoá học, tên sản phẩm) *(B2 tr.6, 25)*.
 
 ---
 
 ## Cách soạn bài trong `src/content/lessons.json`
 
-- Mỗi bài: `id` (không đổi sau khi dùng), `title`, `xp`, `questions` (3–5 câu). Một bài trộn được nhiều dạng câu.
+- Đầu file có `stages`: danh sách nhóm bài theo thứ tự hiển thị (`id`, `title`): `list` Danh sách · `invite` Mời hẹn · `demo` Demo · `opp` Opp · `followup` Follow-up · `care` Chăm sóc KH · `support` Hỗ trợ NPP. Nhóm chưa có bài hiện mờ "Sắp có bài".
+- Mỗi bài: `id` (không đổi sau khi dùng), `title`, `xp`, `stage` (id nhóm; thiếu hoặc sai thì bài nằm ở mục "Khác" cuối danh sách), `questions` (3–5 câu). Một bài trộn được nhiều dạng câu.
 - **Trắc nghiệm** (mặc định, không ghi `type`): `prompt`, `options` (2–4), `correctIndex`, `explanation`.
 - **Xếp đúng thứ tự** (`"type": "order"`): `prompt`, `steps` (3–6 bước, viết THEO ĐÚNG THỨ TỰ, không trùng nhau), `explanation`. App tự xáo trộn khi hiển thị.
-- Bài đang có từ dàn ý này: `formhd-basics` (trắc nghiệm), `meeting-new-people` (trộn xếp thứ tự + trắc nghiệm).
+- **Ghép cặp** (`"type": "match"`): `prompt`, `pairs` (3–6 cặp `{"left": ..., "right": ...}`, viết ĐÃ GHÉP ĐÚNG; vế trái không trùng nhau, vế phải không trùng nhau), `explanation`. App tự xáo trộn vế phải. Dùng được cho "lời từ chối ↔ cách đáp".
+- Bài đang có từ dàn ý này: `formhd-basics` (trắc nghiệm), `meeting-new-people` (trộn xếp thứ tự + trắc nghiệm), `formhd-match` (ghép cặp + trắc nghiệm).
+- Chặng Mời hẹn: `weekly-schedule`, `invitation-basics`, `invite-by-person` (B2 tr.18–21). Chặng Demo/Opp (ABC): `abc-roles`, `abc-meeting` (B2 tr.23–24).
+- Nhóm Demo: `air-purifier-demo` (MH; LKK tr.1–4), gộp các bước demo + cấu tạo lõi lọc thành 1 bài theo yêu cầu người dùng.
+- Đã duyệt 2026-11-10: lời mời người nhiều kinh nghiệm phải nói thật mục đích ("đang bắt đầu kinh doanh thêm"), không dùng "xin ý kiến" làm cái cớ.

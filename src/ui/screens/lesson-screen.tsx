@@ -5,18 +5,26 @@ import {
   computeLessonResult,
   gradeAnswer,
   isLessonCompletedToday,
+  isMatchQuestion,
   isOrderQuestion,
   parseLessons,
   shuffledStepOrder,
+  toggleMatchLink,
   xpForCompletion,
 } from '../../domain/lesson';
 import type { Lesson, LessonAnswer, LessonResult, ParsedLessons } from '../../domain/lesson';
-import { LESSON_STRINGS } from '../lesson-strings';
+import { groupLessonsByStage, parseLessonStages } from '../../domain/lesson-stages';
+import type { LessonStage } from '../../domain/lesson-stages';
+import { LESSON_STRINGS, stageHeading, stageProgressLabel } from '../lesson-strings';
 import { STRINGS, questionProgressLabel, scoreLabel, xpLabel } from '../strings';
+import { MatchQuestionView } from './match-question';
 import { OrderQuestionView } from './order-question';
 
 /** Lessons from content/lessons.json, validated once at load (never throws). */
 const LOADED_LESSONS: ParsedLessons = parseLessons(lessonsJson);
+
+/** Lesson groups from content/lessons.json, in display order. */
+const LOADED_STAGES: readonly LessonStage[] = parseLessonStages(lessonsJson).stages;
 
 /** Props for {@link LessonScreen}. */
 export interface LessonScreenProps {
@@ -28,11 +36,13 @@ export interface LessonScreenProps {
   readonly onActiveChange?: (active: boolean) => void;
   /** Lessons to offer; defaults to the validated content file. */
   readonly parsed?: ParsedLessons;
+  /** Lesson groups in display order; defaults to the content file's. */
+  readonly stages?: readonly LessonStage[];
   /** Injected clock; defaults to the real one. */
   readonly now?: () => Date;
   /** IANA time zone defining the local day; defaults to the device's. */
   readonly timeZone?: string;
-  /** Random source in [0, 1) for shuffling order steps; defaults to Math.random. */
+  /** Random source in [0, 1) for shuffling order steps and match items; defaults to Math.random. */
   readonly random?: () => number;
 }
 
@@ -45,8 +55,12 @@ type ViewState =
       readonly answers: readonly LessonAnswer[];
       /** Answer to the current question, or null before answering/checking. */
       readonly selected: LessonAnswer | null;
-      /** Order questions: display order of the step pool (empty otherwise). */
+      /** Order/match questions: display order of the step pool or right items (empty otherwise). */
       readonly shuffled: readonly number[];
+      /** Match questions: per left item, the linked right item or null (empty otherwise). */
+      readonly links: readonly (number | null)[];
+      /** Match questions: left item waiting for a right item, or null. */
+      readonly pendingLeft: number | null;
       /** Order questions: step indices placed so far (empty otherwise). */
       readonly placed: readonly number[];
       readonly saving: boolean;
@@ -64,6 +78,7 @@ export function LessonScreen({
   onDone,
   onActiveChange,
   parsed = LOADED_LESSONS,
+  stages = LOADED_STAGES,
   now = () => new Date(),
   timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone,
   random = Math.random,
@@ -105,11 +120,17 @@ export function LessonScreen({
     );
   }
 
-  /** Fresh view state for question `index` of `lesson` (shuffles order steps). */
+  /** Fresh view state for question `index` of `lesson` (shuffles order steps and match items). */
   function questionView(lesson: Lesson, index: number, answers: readonly LessonAnswer[]): ViewState {
     const question = lesson.questions[index];
-    const shuffled = question !== undefined && isOrderQuestion(question) ? shuffledStepOrder(question.steps.length, random) : [];
-    return { kind: 'question', lesson, index, answers, selected: null, shuffled, placed: [], saving: false, error: null };
+    let shuffled: number[] = [];
+    let links: (number | null)[] = [];
+    if (question !== undefined && isOrderQuestion(question)) shuffled = shuffledStepOrder(question.steps.length, random);
+    if (question !== undefined && isMatchQuestion(question)) {
+      shuffled = shuffledStepOrder(question.pairs.length, random);
+      links = question.pairs.map(() => null);
+    }
+    return { kind: 'question', lesson, index, answers, selected: null, shuffled, placed: [], links, pendingLeft: null, saving: false, error: null };
   }
 
   async function advance(): Promise<void> {
@@ -146,9 +167,14 @@ export function LessonScreen({
     const correct = answered && gradeAnswer(question, selected);
     const last = index + 1 === lesson.questions.length;
     const order = isOrderQuestion(question);
-    const readyToCheck = order && !answered && view.placed.length === question.steps.length;
+    const match = isMatchQuestion(question);
+    const readyToCheck =
+      !answered &&
+      ((order && view.placed.length === question.steps.length) || (match && view.links.every((r) => r !== null)));
     let buttonLabel: string = !answered ? STRINGS.lessonCheckAnswer : last ? STRINGS.lessonFinish : STRINGS.lessonNext;
     if (order && !answered) buttonLabel = readyToCheck ? LESSON_STRINGS.orderCheck : LESSON_STRINGS.orderPlaceAll;
+    if (match && !answered) buttonLabel = readyToCheck ? LESSON_STRINGS.orderCheck : LESSON_STRINGS.matchLinkAll;
+    const answerToCheck: LessonAnswer = order ? view.placed : view.links.map((r) => r ?? -1);
     if (saving) buttonLabel = STRINGS.lessonFinishing;
     return (
       <main className="screen">
@@ -159,7 +185,23 @@ export function LessonScreen({
           <p className="lesson-progress">{questionProgressLabel(index + 1, lesson.questions.length)}</p>
           <h1 className="screen__prompt">{question.prompt}</h1>
         </header>
-        {order ? (
+        {match ? (
+          <MatchQuestionView
+            question={question}
+            shuffled={view.shuffled}
+            links={view.links}
+            pendingLeft={view.pendingLeft}
+            checked={answered}
+            onTapLeft={(left) => setView({ ...view, pendingLeft: view.pendingLeft === left ? null : left })}
+            onTapRight={(right) => {
+              if (view.pendingLeft !== null) {
+                setView({ ...view, links: toggleMatchLink(view.links, view.pendingLeft, right), pendingLeft: null });
+              } else if (view.links.includes(right)) {
+                setView({ ...view, links: view.links.map((r) => (r === right ? null : r)) });
+              }
+            }}
+          />
+        ) : order ? (
           <OrderQuestionView
             question={question}
             shuffled={view.shuffled}
@@ -204,7 +246,7 @@ export function LessonScreen({
             type="button"
             className="button button--primary"
             disabled={(!answered && !readyToCheck) || saving}
-            onClick={() => (readyToCheck ? setView({ ...view, selected: view.placed }) : void advance())}
+            onClick={() => (readyToCheck ? setView({ ...view, selected: answerToCheck }) : void advance())}
           >
             {buttonLabel}
           </button>
@@ -248,25 +290,42 @@ export function LessonScreen({
         <p className="screen__prompt">{STRINGS.lessonListPrompt}</p>
       </header>
       {parsed.problems.length > 0 && <p className="message">{STRINGS.lessonSkippedNote}</p>}
-      <div className="activity-list">
-        {parsed.lessons.map((lesson) => {
-          const done = isLessonCompletedToday(events, lesson.id, at, timeZone);
-          return (
-            <button
-              key={lesson.id}
-              type="button"
-              className={done ? 'activity-option lesson-item--done' : 'activity-option'}
-              onClick={() => setView(questionView(lesson, 0, []))}
-            >
-              <span className="activity-option__name">
-                {done && '✓ '}
-                {lesson.title}
+      {groupLessonsByStage(parsed.lessons, stages).map((group, groupIndex) => {
+        const heading = group.stage === null ? LESSON_STRINGS.stageOther : stageHeading(groupIndex + 1, group.stage.title);
+        const doneCount = group.lessons.filter((l) => isLessonCompletedToday(events, l.id, at, timeZone)).length;
+        const empty = group.lessons.length === 0;
+        return (
+          <section key={group.stage?.id ?? 'other'} className={empty ? 'lesson-group lesson-group--empty' : 'lesson-group'}>
+            <h2 className="lesson-group__header">
+              <span className="lesson-group__title">{heading}</span>
+              <span className="lesson-group__meta">
+                {empty ? LESSON_STRINGS.stageComingSoon : stageProgressLabel(doneCount, group.lessons.length)}
               </span>
-              <span className="activity-option__xp">{done ? STRINGS.lessonDoneToday : xpLabel(lesson.xp)}</span>
-            </button>
-          );
-        })}
-      </div>
+            </h2>
+            {!empty && (
+              <div className="activity-list">
+                {group.lessons.map((lesson) => {
+                  const done = isLessonCompletedToday(events, lesson.id, at, timeZone);
+                  return (
+                    <button
+                      key={lesson.id}
+                      type="button"
+                      className={done ? 'activity-option lesson-item--done' : 'activity-option'}
+                      onClick={() => setView(questionView(lesson, 0, []))}
+                    >
+                      <span className="activity-option__name">
+                        {done && '✓ '}
+                        {lesson.title}
+                      </span>
+                      <span className="activity-option__xp">{done ? STRINGS.lessonDoneToday : xpLabel(lesson.xp)}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+        );
+      })}
     </main>
   );
 }
