@@ -152,7 +152,7 @@ Các khoá học (trực tuyến) của công ty, sự kiện lớn, câu chuy�
 |---|---|---|---|
 | Danh sách | `prospect-list` | Nguyên tắc lập DS · Lọc 30 × 30 · Tiêu chí 1-2-3 · FORMHD · Thang mối quan hệ · Làm quen người mới | B2 tr.5–18 |
 | Mời hẹn | `friendly-invitation` | Sắp lịch tuần · Cách mời · Mời theo kiểu người | B2 tr.19–21 |
-| Demo | — | Các bước demo máy lọc không khí · Cấu tạo máy lọc không khí | MH; LKK tr.1–4 |
+| Demo | `air-purifier-demo` | — | MH; LKK tr.1–4 |
 | Opp | `simple-presentation`, `abc-roles`, `abc-meeting` | — | B2 tr.23–24 |
 | Follow-up | `follow-up`, `handling-no` | Nhắn lại sau 24–48 giờ · 100 lời từ chối | B2 tr.3, 18 (ít) |
 | Chăm sóc KH | — | Cùng hài lòng, cùng tin tưởng | B2 tr.16 (ít) |
@@ -194,4 +194,5 @@ Ba chặng cuối chờ thêm tài liệu.
 - **Ghép cặp** (`"type": "match"`): `prompt`, `pairs` (3–6 cặp `{"left": ..., "right": ...}`, viết ĐÃ GHÉP ĐÚNG; vế trái không trùng nhau, vế phải không trùng nhau), `explanation`. App tự xáo trộn vế phải. Dùng được cho "lời từ chối ↔ cách đáp".
 - Bài đang có từ dàn ý này: `formhd-basics` (trắc nghiệm), `meeting-new-people` (trộn xếp thứ tự + trắc nghiệm), `formhd-match` (ghép cặp + trắc nghiệm).
 - Chặng Mời hẹn: `weekly-schedule`, `invitation-basics`, `invite-by-person` (B2 tr.18–21). Chặng Demo/Opp (ABC): `abc-roles`, `abc-meeting` (B2 tr.23–24).
+- Nhóm Demo: `air-purifier-demo` (MH; LKK tr.1–4), gộp các bước demo + cấu tạo lõi lọc thành 1 bài theo yêu cầu người dùng.
 - Đã duyệt 2026-11-10: lời mời người nhiều kinh nghiệm phải nói thật mục đích ("đang bắt đầu kinh doanh thêm"), không dùng "xin ý kiến" làm cái cớ.

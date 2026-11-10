@@ -573,6 +573,76 @@
       ]
     },
     {
+      "id": "air-purifier-demo",
+      "title": "Demo máy lọc không khí",
+      "xp": 15,
+      "stage": "demo",
+      "questions": [
+        {
+          "type": "order",
+          "prompt": "Xếp 6 bước demo máy lọc không khí theo đúng thứ tự.",
+          "steps": [
+            "Hỏi thăm: nhà mình đã có máy lọc nước chưa",
+            "So sánh lượng nước uống và không khí hít thở mỗi ngày",
+            "Giải thích bụi mịn bằng cách so với sợi tóc",
+            "Đo chất lượng không khí cho mọi người cùng xem",
+            "Minh hoạ trước và sau khi bật máy",
+            "Nói về chi phí tính theo ngày"
+          ],
+          "explanation": "Đi từ câu hỏi, đến hiểu vấn đề, rồi tự thấy bằng mắt, cuối cùng mới nói chi phí."
+        },
+        {
+          "prompt": "Vì sao nên mở đầu buổi demo bằng câu hỏi?",
+          "options": [
+            "Để người nghe tự nghĩ về nhu cầu của mình",
+            "Để kéo dài thời gian",
+            "Để kiểm tra kiến thức của họ"
+          ],
+          "correctIndex": 0,
+          "explanation": "Câu hỏi giúp người nghe tự liên hệ với gia đình mình."
+        },
+        {
+          "type": "match",
+          "prompt": "Ghép mỗi lớp lọc với việc nó làm.",
+          "pairs": [
+            {
+              "left": "Lọc sơ cấp",
+              "right": "Giữ bụi lớn, xơ vải"
+            },
+            {
+              "left": "Lọc HEPA",
+              "right": "Giữ hạt siêu mịn"
+            },
+            {
+              "left": "Lọc carbon",
+              "right": "Khử mùi khó chịu"
+            }
+          ],
+          "explanation": "Ba lớp lọc, mỗi lớp một việc, từ hạt lớn đến hạt siêu mịn và mùi."
+        },
+        {
+          "prompt": "PM2.5 là gì?",
+          "options": [
+            "Hạt bụi nhỏ hơn 2,5 micromet",
+            "Một loại máy lọc",
+            "Chỉ số độ ẩm"
+          ],
+          "correctIndex": 0,
+          "explanation": "Hạt nhỏ đến mức mắt thường không thấy, nên cần máy đo để thấy chỉ số."
+        },
+        {
+          "prompt": "Khi nói về chi phí, cách nào dễ hiểu nhất?",
+          "options": [
+            "Quy ra chi phí mỗi ngày",
+            "Chỉ nói tổng số tiền",
+            "Không nhắc tới chi phí"
+          ],
+          "correctIndex": 0,
+          "explanation": "Chi phí mỗi ngày giúp người nghe dễ so với các khoản chi quen thuộc."
+        }
+      ]
+    },
+    {
       "id": "abc-roles",
       "title": "ABC là ai?",
       "xp": 10,
