@@ -810,3 +810,101 @@ body { margin: 0; }
 .admin-member .button { min-height: 44px; }
 .admin-code-cancelled { color: var(--color-muted); overflow-wrap: anywhere; }
 .admin-result { min-width: 0; overflow-wrap: anywhere; }
+
+/* Học: "Xếp đúng thứ tự" mini-game */
+.order-question { display: flex; flex-direction: column; gap: 12px; }
+.order-question__hint { margin: 0; color: var(--color-muted); font-weight: 600; }
+.order-slots { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.order-slot {
+  min-height: 52px;
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+}
+.order-slot--empty { padding: 0 16px; }
+.order-slot:not(.order-slot--empty) { border-style: solid; border-color: var(--color-diamond); background: var(--color-diamond-light); }
+.order-slot--correct:not(.order-slot--empty) { border-color: var(--color-success); background: var(--color-success-light); }
+.order-slot--wrong:not(.order-slot--empty) { border-color: var(--color-error); background: var(--color-surface); }
+.order-slot__button {
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+.order-slot__button:disabled { cursor: default; }
+.order-slot__button:focus-visible { outline: 3px solid var(--color-diamond-dark); outline-offset: 2px; border-radius: var(--radius); }
+.order-slot__number {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  color: var(--color-muted);
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+.order-pool { display: flex; flex-direction: column; gap: 8px; padding-top: 4px; border-top: 2px solid var(--color-border); }
+.order-pool__step { min-height: 48px; font-size: 1rem; }
+.order-answer { padding: 12px 16px; border-radius: var(--radius); background: var(--color-diamond-light); }
+.order-answer__title { margin: 0; font-weight: 800; }
+.order-answer__list { margin: 4px 0 0; padding-left: 22px; font-weight: 600; }
+
+/* Học: "Ghép cặp" mini-game */
+.match-question { display: flex; flex-direction: column; gap: 12px; }
+.match-column { display: flex; flex-direction: column; gap: 6px; }
+.match-column--right { padding-top: 12px; border-top: 2px solid var(--color-border); }
+.match-card {
+  width: 100%;
+  min-height: 48px;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 2px solid var(--color-border);
+  border-bottom-width: 4px;
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+.match-card:focus-visible { outline: 3px solid var(--color-diamond-dark); outline-offset: 2px; }
+.match-card:disabled { cursor: default; }
+.match-card--pending { border-color: var(--color-diamond-dark); background: var(--color-diamond-light); box-shadow: 0 0 0 3px var(--color-diamond-light); }
+.match-card--linked { border-color: var(--color-diamond); background: var(--color-diamond-light); }
+.match-card--correct { border-color: var(--color-success); background: var(--color-success-light); }
+.match-card--wrong { border-color: var(--color-error); background: var(--color-surface); }
+.match-card__badge--empty { border-style: dashed; }
+
+/* Học: lesson groups (chia theo chặng) */
+.lesson-group { display: flex; flex-direction: column; gap: 8px; }
+.lesson-group + .lesson-group { margin-top: 12px; }
+.lesson-group__header {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+.lesson-group__meta { color: var(--color-muted); font-size: 0.9rem; font-weight: 700; white-space: nowrap; }
+.lesson-group--empty .lesson-group__title { color: var(--color-muted); }
+.lesson-group--empty { padding: 12px 16px; border: 2px dashed var(--color-border); border-radius: var(--radius); }
+.lesson-group:last-child { margin-bottom: 16px; }
