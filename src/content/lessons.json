@@ -204,6 +204,114 @@
           "explanation": "Giữ thái độ tử tế, để cửa luôn mở."
         }
       ]
+    },
+    {
+      "id": "formhd-basics",
+      "title": "FORMHD: hiểu người qua 6 chủ đề",
+      "xp": 10,
+      "questions": [
+        {
+          "prompt": "Chữ D trong FORMHD là gì?",
+          "options": [
+            "Gia đình",
+            "Ước muốn",
+            "Thu nhập"
+          ],
+          "correctIndex": 1,
+          "explanation": "D là Dream: dự định vài năm tới của người đó."
+        },
+        {
+          "prompt": "Bạn hỏi: \"Dạo này bé nhà mình học hành sao rồi?\" Câu này thuộc chủ đề nào?",
+          "options": [
+            "Gia đình",
+            "Công việc",
+            "Thời gian rảnh"
+          ],
+          "correctIndex": 0,
+          "explanation": "Hỏi về con cái, bố mẹ, vợ chồng là chủ đề Gia đình."
+        },
+        {
+          "prompt": "Về chủ đề Tài chính, cách nào phù hợp?",
+          "options": [
+            "Hỏi thẳng lương bao nhiêu",
+            "Lắng nghe điều họ tự chia sẻ, không dò hỏi",
+            "Bỏ qua người đó"
+          ],
+          "correctIndex": 1,
+          "explanation": "Tôn trọng chuyện riêng tư giúp giữ lòng tin."
+        },
+        {
+          "prompt": "Một người kể cuối tuần hay đi học thêm kỹ năng. Điều đó cho bạn biết gì?",
+          "options": [
+            "Họ thích phát triển bản thân",
+            "Họ không có thời gian",
+            "Họ không quan tâm gì"
+          ],
+          "correctIndex": 0,
+          "explanation": "Cách dùng thời gian rảnh cho thấy mong muốn của người đó."
+        },
+        {
+          "prompt": "Tinh thần chung khi trò chuyện theo FORMHD là gì?",
+          "options": [
+            "Hỏi thật nhanh cho đủ 6 chủ đề",
+            "Quan tâm thật lòng tới người đó trước",
+            "Nói về mình trước"
+          ],
+          "correctIndex": 1,
+          "explanation": "FORMHD là để hiểu người khác, không phải để lấy thông tin."
+        }
+      ]
+    },
+    {
+      "id": "meeting-new-people",
+      "title": "Làm quen người mới",
+      "xp": 10,
+      "questions": [
+        {
+          "type": "order",
+          "prompt": "Xếp 5 bước làm quen người mới theo đúng thứ tự.",
+          "steps": [
+            "Để ý một điểm đặc biệt",
+            "Khen thật lòng",
+            "Trò chuyện ngắn",
+            "Xin liên lạc kèm lý do chung",
+            "Nhắn lại sau 24–48 giờ"
+          ],
+          "explanation": "Để ý, khen, trò chuyện, xin liên lạc, rồi giữ kết nối bằng một tin nhắn lại."
+        },
+        {
+          "prompt": "Mới gặp ai đó, cách mở lời tự nhiên nhất là gì?",
+          "options": [
+            "Giới thiệu ngay việc mình đang làm",
+            "Khen thật lòng một điểm bạn để ý thấy",
+            "Xin số điện thoại luôn"
+          ],
+          "correctIndex": 1,
+          "explanation": "Một lời khen chân thành giúp người đối diện thấy thoải mái."
+        },
+        {
+          "prompt": "Sau khi xin được liên lạc, nên nhắn lại khi nào?",
+          "options": [
+            "Trong 24–48 giờ",
+            "Một tháng sau",
+            "Chờ họ nhắn trước"
+          ],
+          "correctIndex": 0,
+          "explanation": "Nhắn lại sớm khi cả hai còn nhớ cuộc trò chuyện."
+        },
+        {
+          "type": "order",
+          "prompt": "Xếp các nấc của mối quan hệ từ mới gặp đến gắn bó.",
+          "steps": [
+            "Quen biết",
+            "Thân thuộc",
+            "Quý mến",
+            "Tin tưởng",
+            "Thân thiết"
+          ],
+          "explanation": "Mối quan hệ lớn dần từng bước; lòng tin cần thời gian."
+        }
+      ]
     }
   ]
 }
