@@ -187,7 +187,8 @@ Ba chặng cuối chờ thêm tài liệu.
 
 ## Cách soạn bài trong `src/content/lessons.json`
 
-- Mỗi bài: `id` (không đổi sau khi dùng), `title`, `xp`, `questions` (3–5 câu). Một bài trộn được nhiều dạng câu.
+- Đầu file có `stages`: danh sách nhóm bài theo thứ tự hiển thị (`id`, `title`): `list` Danh sách · `invite` Mời hẹn · `demo` Demo · `opp` Opp · `followup` Follow-up · `care` Chăm sóc KH · `support` Hỗ trợ NPP. Nhóm chưa có bài hiện mờ "Sắp có bài".
+- Mỗi bài: `id` (không đổi sau khi dùng), `title`, `xp`, `stage` (id nhóm; thiếu hoặc sai thì bài nằm ở mục "Khác" cuối danh sách), `questions` (3–5 câu). Một bài trộn được nhiều dạng câu.
 - **Trắc nghiệm** (mặc định, không ghi `type`): `prompt`, `options` (2–4), `correctIndex`, `explanation`.
 - **Xếp đúng thứ tự** (`"type": "order"`): `prompt`, `steps` (3–6 bước, viết THEO ĐÚNG THỨ TỰ, không trùng nhau), `explanation`. App tự xáo trộn khi hiển thị.
 - **Ghép cặp** (`"type": "match"`): `prompt`, `pairs` (3–6 cặp `{"left": ..., "right": ...}`, viết ĐÃ GHÉP ĐÚNG; vế trái không trùng nhau, vế phải không trùng nhau), `explanation`. App tự xáo trộn vế phải. Dùng được cho "lời từ chối ↔ cách đáp".

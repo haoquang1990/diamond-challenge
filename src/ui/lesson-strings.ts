@@ -15,7 +15,19 @@ export const LESSON_STRINGS = {
   matchRightLabel: 'Vế để chọn',
   matchLinkAll: 'Ghép hết các cặp',
   matchCorrectPairsTitle: 'Cặp đúng:',
+  stageComingSoon: 'Sắp có bài',
+  stageOther: 'Khác',
 } as const;
+
+/** Numbered group heading, e.g. "2. Mời hẹn". */
+export function stageHeading(position: number, title: string): string {
+  return `${position}. ${title}`;
+}
+
+/** Group progress, e.g. "1/4 bài hôm nay". */
+export function stageProgressLabel(done: number, total: number): string {
+  return `${done}/${total} bài hôm nay`;
+}
 
 /** Accessible label of an empty slot, e.g. "Ô 2, còn trống". */
 export function orderEmptySlotLabel(position: number): string {

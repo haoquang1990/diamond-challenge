@@ -899,3 +899,20 @@ body { margin: 0; }
 .match-card--correct { border-color: var(--color-success); background: var(--color-success-light); }
 .match-card--wrong { border-color: var(--color-error); background: var(--color-surface); }
 .match-card__badge--empty { border-style: dashed; }
+
+/* Học: lesson groups (chia theo chặng) */
+.lesson-group { display: flex; flex-direction: column; gap: 8px; }
+.lesson-group + .lesson-group { margin-top: 12px; }
+.lesson-group__header {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+.lesson-group__meta { color: var(--color-muted); font-size: 0.9rem; font-weight: 700; white-space: nowrap; }
+.lesson-group--empty .lesson-group__title { color: var(--color-muted); }
+.lesson-group--empty { padding: 12px 16px; border: 2px dashed var(--color-border); border-radius: var(--radius); }
+.lesson-group:last-child { margin-bottom: 16px; }

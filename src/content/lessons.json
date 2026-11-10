@@ -1,9 +1,40 @@
 {
+  "stages": [
+    {
+      "id": "list",
+      "title": "Danh sách"
+    },
+    {
+      "id": "invite",
+      "title": "Mời hẹn"
+    },
+    {
+      "id": "demo",
+      "title": "Demo"
+    },
+    {
+      "id": "opp",
+      "title": "Opp"
+    },
+    {
+      "id": "followup",
+      "title": "Follow-up"
+    },
+    {
+      "id": "care",
+      "title": "Chăm sóc KH"
+    },
+    {
+      "id": "support",
+      "title": "Hỗ trợ NPP"
+    }
+  ],
   "lessons": [
     {
       "id": "prospect-list",
       "title": "Lập danh sách người quen",
       "xp": 10,
+      "stage": "list",
       "questions": [
         {
           "prompt": "Khi bắt đầu lập danh sách, cách nào hiệu quả nhất?",
@@ -41,6 +72,7 @@
       "id": "friendly-invitation",
       "title": "Lời mời thân thiện",
       "xp": 10,
+      "stage": "invite",
       "questions": [
         {
           "prompt": "Mở đầu lời mời tốt nhất là gì?",
@@ -78,6 +110,7 @@
       "id": "simple-presentation",
       "title": "Trình bày cơ hội đơn giản",
       "xp": 15,
+      "stage": "opp",
       "questions": [
         {
           "prompt": "Một buổi trình bày tốt nên bắt đầu bằng gì?",
@@ -125,6 +158,7 @@
       "id": "follow-up",
       "title": "Theo dõi sau cuộc gặp",
       "xp": 10,
+      "stage": "followup",
       "questions": [
         {
           "prompt": "Khi nào nên liên hệ lại sau cuộc gặp?",
@@ -162,6 +196,7 @@
       "id": "handling-no",
       "title": "Đón nhận lời từ chối",
       "xp": 15,
+      "stage": "followup",
       "questions": [
         {
           "prompt": "Ai đó nói \"không\". Cách nghĩ nào lành mạnh nhất?",
@@ -209,6 +244,7 @@
       "id": "formhd-basics",
       "title": "FORMHD: hiểu người qua 6 chủ đề",
       "xp": 10,
+      "stage": "list",
       "questions": [
         {
           "prompt": "Chữ D trong FORMHD là gì?",
@@ -266,6 +302,7 @@
       "id": "meeting-new-people",
       "title": "Làm quen người mới",
       "xp": 10,
+      "stage": "list",
       "questions": [
         {
           "type": "order",
@@ -317,6 +354,7 @@
       "id": "formhd-match",
       "title": "FORMHD: ghép cặp",
       "xp": 10,
+      "stage": "list",
       "questions": [
         {
           "type": "match",
@@ -392,6 +430,7 @@
       "id": "weekly-schedule",
       "title": "Sắp lịch tuần 3 bước",
       "xp": 10,
+      "stage": "invite",
       "questions": [
         {
           "type": "order",
@@ -429,6 +468,7 @@
       "id": "invitation-basics",
       "title": "Cách mời hẹn",
       "xp": 10,
+      "stage": "invite",
       "questions": [
         {
           "type": "match",
@@ -489,6 +529,7 @@
       "id": "invite-by-person",
       "title": "Mời theo từng kiểu người",
       "xp": 10,
+      "stage": "invite",
       "questions": [
         {
           "type": "match",
@@ -535,6 +576,7 @@
       "id": "abc-roles",
       "title": "ABC là ai?",
       "xp": 10,
+      "stage": "opp",
       "questions": [
         {
           "type": "match",
@@ -591,6 +633,7 @@
       "id": "abc-meeting",
       "title": "Buổi gặp có tuyến trên hỗ trợ",
       "xp": 10,
+      "stage": "opp",
       "questions": [
         {
           "type": "order",

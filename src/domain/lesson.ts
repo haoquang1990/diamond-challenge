@@ -83,6 +83,8 @@ export interface Lesson {
   readonly title: string;
   /** XP awarded for the first completion each local day. */
   readonly xp: number;
+  /** Id of the lesson group (see lesson-stages.ts); absent = "other". */
+  readonly stage?: string;
   readonly questions: readonly LessonQuestion[];
 }
 
@@ -185,6 +187,7 @@ export function parseLessons(raw: unknown): ParsedLessons {
     if (seen.has(entry.id)) return fail('trùng id');
     if (!isNonEmptyString(entry.title)) return fail('thiếu tiêu đề (title)');
     if (typeof entry.xp !== 'number' || !Number.isFinite(entry.xp) || entry.xp < 0) return fail('xp không hợp lệ');
+    if (entry.stage !== undefined && !isNonEmptyString(entry.stage)) return fail('nhóm bài (stage) không hợp lệ');
     const questions = entry.questions;
     if (!Array.isArray(questions) || questions.length < MIN_QUESTIONS || questions.length > MAX_QUESTIONS) {
       return fail(`cần ${MIN_QUESTIONS}–${MAX_QUESTIONS} câu hỏi`);

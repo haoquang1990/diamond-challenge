@@ -13,13 +13,18 @@ import {
   xpForCompletion,
 } from '../../domain/lesson';
 import type { Lesson, LessonAnswer, LessonResult, ParsedLessons } from '../../domain/lesson';
-import { LESSON_STRINGS } from '../lesson-strings';
+import { groupLessonsByStage, parseLessonStages } from '../../domain/lesson-stages';
+import type { LessonStage } from '../../domain/lesson-stages';
+import { LESSON_STRINGS, stageHeading, stageProgressLabel } from '../lesson-strings';
 import { STRINGS, questionProgressLabel, scoreLabel, xpLabel } from '../strings';
 import { MatchQuestionView } from './match-question';
 import { OrderQuestionView } from './order-question';
 
 /** Lessons from content/lessons.json, validated once at load (never throws). */
 const LOADED_LESSONS: ParsedLessons = parseLessons(lessonsJson);
+
+/** Lesson groups from content/lessons.json, in display order. */
+const LOADED_STAGES: readonly LessonStage[] = parseLessonStages(lessonsJson).stages;
 
 /** Props for {@link LessonScreen}. */
 export interface LessonScreenProps {
@@ -31,6 +36,8 @@ export interface LessonScreenProps {
   readonly onActiveChange?: (active: boolean) => void;
   /** Lessons to offer; defaults to the validated content file. */
   readonly parsed?: ParsedLessons;
+  /** Lesson groups in display order; defaults to the content file's. */
+  readonly stages?: readonly LessonStage[];
   /** Injected clock; defaults to the real one. */
   readonly now?: () => Date;
   /** IANA time zone defining the local day; defaults to the device's. */
@@ -71,6 +78,7 @@ export function LessonScreen({
   onDone,
   onActiveChange,
   parsed = LOADED_LESSONS,
+  stages = LOADED_STAGES,
   now = () => new Date(),
   timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone,
   random = Math.random,
@@ -282,25 +290,42 @@ export function LessonScreen({
         <p className="screen__prompt">{STRINGS.lessonListPrompt}</p>
       </header>
       {parsed.problems.length > 0 && <p className="message">{STRINGS.lessonSkippedNote}</p>}
-      <div className="activity-list">
-        {parsed.lessons.map((lesson) => {
-          const done = isLessonCompletedToday(events, lesson.id, at, timeZone);
-          return (
-            <button
-              key={lesson.id}
-              type="button"
-              className={done ? 'activity-option lesson-item--done' : 'activity-option'}
-              onClick={() => setView(questionView(lesson, 0, []))}
-            >
-              <span className="activity-option__name">
-                {done && '✓ '}
-                {lesson.title}
+      {groupLessonsByStage(parsed.lessons, stages).map((group, groupIndex) => {
+        const heading = group.stage === null ? LESSON_STRINGS.stageOther : stageHeading(groupIndex + 1, group.stage.title);
+        const doneCount = group.lessons.filter((l) => isLessonCompletedToday(events, l.id, at, timeZone)).length;
+        const empty = group.lessons.length === 0;
+        return (
+          <section key={group.stage?.id ?? 'other'} className={empty ? 'lesson-group lesson-group--empty' : 'lesson-group'}>
+            <h2 className="lesson-group__header">
+              <span className="lesson-group__title">{heading}</span>
+              <span className="lesson-group__meta">
+                {empty ? LESSON_STRINGS.stageComingSoon : stageProgressLabel(doneCount, group.lessons.length)}
               </span>
-              <span className="activity-option__xp">{done ? STRINGS.lessonDoneToday : xpLabel(lesson.xp)}</span>
-            </button>
-          );
-        })}
-      </div>
+            </h2>
+            {!empty && (
+              <div className="activity-list">
+                {group.lessons.map((lesson) => {
+                  const done = isLessonCompletedToday(events, lesson.id, at, timeZone);
+                  return (
+                    <button
+                      key={lesson.id}
+                      type="button"
+                      className={done ? 'activity-option lesson-item--done' : 'activity-option'}
+                      onClick={() => setView(questionView(lesson, 0, []))}
+                    >
+                      <span className="activity-option__name">
+                        {done && '✓ '}
+                        {lesson.title}
+                      </span>
+                      <span className="activity-option__xp">{done ? STRINGS.lessonDoneToday : xpLabel(lesson.xp)}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+        );
+      })}
     </main>
   );
 }
