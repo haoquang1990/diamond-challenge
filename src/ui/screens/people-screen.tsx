@@ -209,7 +209,13 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
             ‹ {STRINGS.boardBackFromContacts}
           </button>
         )}
-        <h1 className="screen__title">{STRINGS.peopleTitle}</h1>
+        <div className="today-header">
+          <h1 className="screen__title">{STRINGS.peopleTitle}</h1>
+          {/* Small header toggle so the closed "Thêm người" takes no row of its own. */}
+          <button type="button" className="reminder-button" aria-expanded={addOpen} onClick={() => setShowAdd(!addOpen)}>
+            {addOpen ? STRINGS.addPersonToggleClose : `+ ${STRINGS.addPersonToggleOpen}`}
+          </button>
+        </div>
         <p className="screen__prompt">{STRINGS.peoplePrompt}</p>
       </header>
 
@@ -219,32 +225,26 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
         </button>
       )}
 
-      <section className="card person-section" aria-label={STRINGS.addPersonTitle}>
-        <button
-          type="button"
-          className="button button--secondary"
-          aria-expanded={addOpen}
-          onClick={() => setShowAdd(!addOpen)}
-        >
-          {addOpen ? STRINGS.addPersonToggleClose : STRINGS.addPersonToggleOpen}
-        </button>
-        {addOpen && (
-          <>
-            <h2 className="person-section__heading">{STRINGS.addPersonTitle}</h2>
-            <AddPersonForm people={people} onSubmit={addPerson} />
-          </>
-        )}
-        {addedXp !== null && (
-          <p className="message" role="status">
-            {STRINGS.personAddedXp} · {xpLabel(addedXp)}
-          </p>
-        )}
-        {error !== null && (
-          <p className="message message--error" role="alert">
-            {error}
-          </p>
-        )}
-      </section>
+      {(addOpen || addedXp !== null || error !== null) && (
+        <section className="card person-section" aria-label={STRINGS.addPersonTitle}>
+          {addOpen && (
+            <>
+              <h2 className="person-section__heading">{STRINGS.addPersonTitle}</h2>
+              <AddPersonForm people={people} onSubmit={addPerson} />
+            </>
+          )}
+          {addedXp !== null && (
+            <p className="message" role="status">
+              {STRINGS.personAddedXp} · {xpLabel(addedXp)}
+            </p>
+          )}
+          {error !== null && (
+            <p className="message message--error" role="alert">
+              {error}
+            </p>
+          )}
+        </section>
+      )}
 
       {allPeople.length > 0 && (
         <div className="search-field" role="search">
