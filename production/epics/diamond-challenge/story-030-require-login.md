@@ -1,7 +1,7 @@
 # Story 030: Bắt buộc đăng nhập và gộp thông báo đồng ý vào lần đăng nhập đầu
 
 > **Epic**: diamond-challenge
-> **Status**: Ready
+> **Status**: In Progress
 > **Layer**: Feature
 > **Type**: UI
 > **Estimate**: M
