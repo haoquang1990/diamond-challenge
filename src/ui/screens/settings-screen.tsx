@@ -12,6 +12,7 @@ import { readSoundEnabled } from '../achievements-helpers';
 import { ACHIEVEMENTS_CONFIG } from '../achievements-overlay';
 import { setSoundEnabled } from '../play-ting';
 import { authFailureText, contactSyncLastSyncedLabel, STRINGS, syncFailureText } from '../strings';
+import { selectEventsToPush } from '../../data/contact-sync';
 import type { ContactConsent, SyncStatus } from '../../data/contact-sync';
 import { validateDisplayName } from '../../data/auth-service';
 import type { AccountInfo, AuthResult } from '../../data/auth-service';
@@ -23,8 +24,6 @@ import type { AccountInfo, AuthResult } from '../../data/auth-service';
 export interface SettingsAccountProps {
   /** Signed-in account, or null when signed out. */
   readonly account: AccountInfo | null;
-  /** Opens the Đăng nhập screen. */
-  readonly onLogin: () => void;
   /** Signs out (the event log is untouched); resolves to false when it failed. */
   readonly onSignOut: () => Promise<boolean>;
   /** Saves a validated, trimmed display name. */
@@ -35,15 +34,10 @@ export interface SettingsAccountProps {
   readonly onOpenAdmin?: () => void;
 }
 
-/** "Đồng bộ Danh bạ hộ" card (story 023). Pass it only when the build has Supabase configured. */
+/** "Đồng bộ Danh bạ hộ" status card (story 023). Pass it only when the build has Supabase configured. */
 export interface SettingsContactSyncProps {
-  readonly signedIn: boolean;
   readonly consent: ContactConsent;
-  /** The latest local choice on this device is "Không đồng ý" (wins over server consent). */
-  readonly declined: boolean;
   readonly status: SyncStatus;
-  /** Shows the consent screen again. */
-  readonly onEnable: () => void;
   /** Syncs now (re-checks consent first when it is unknown). */
   readonly onSyncNow: () => void;
 }
@@ -61,19 +55,10 @@ function syncStatusText(status: SyncStatus): string {
   }
 }
 
-/** Status of the household contact sync, "Bật đồng bộ" and "Đồng bộ ngay". */
-function ContactSyncCard({ signedIn, consent, declined, status, onEnable, onSyncNow }: SettingsContactSyncProps) {
-  const failed = !declined && consent === 'granted' && status.kind === 'failed';
-  const canEnable = signedIn && (declined || consent === 'missing');
-  const text = !signedIn
-    ? STRINGS.contactSyncSignedOut
-    : declined
-      ? STRINGS.contactSyncOff
-      : consent === 'unknown'
-        ? STRINGS.contactSyncChecking
-        : consent === 'missing'
-          ? STRINGS.contactSyncNotConsented
-          : syncStatusText(status);
+/** Read-only status of the household contact sync and "Đồng bộ ngay" (no on/off switch, story 030). */
+function ContactSyncCard({ consent, status, onSyncNow }: SettingsContactSyncProps) {
+  const failed = consent === 'granted' && status.kind === 'failed';
+  const text = consent === 'unknown' ? STRINGS.contactSyncChecking : consent === 'missing' ? STRINGS.contactSyncNotConsented : syncStatusText(status);
   return (
     <section className="card form" aria-labelledby="contact-sync-title">
       <h2 id="contact-sync-title" className="card__title">
@@ -82,16 +67,9 @@ function ContactSyncCard({ signedIn, consent, declined, status, onEnable, onSync
       <p className={failed ? 'message message--error' : 'card__body'} role={failed ? 'alert' : 'status'}>
         {text}
       </p>
-      {canEnable && (
-        <button type="button" className="button button--primary" onClick={onEnable}>
-          {STRINGS.contactSyncEnable}
-        </button>
-      )}
-      {signedIn && !canEnable && (
-        <button type="button" className="button button--secondary" onClick={onSyncNow} disabled={status.kind === 'syncing'}>
-          {STRINGS.contactSyncNow}
-        </button>
-      )}
+      <button type="button" className="button button--secondary" onClick={onSyncNow} disabled={status.kind === 'syncing'}>
+        {STRINGS.contactSyncNow}
+      </button>
     </section>
   );
 }
@@ -121,10 +99,16 @@ export interface SettingsScreenProps {
   readonly accountSection?: SettingsAccountProps;
   /** Household contact sync card; omitted when Supabase is not configured. */
   readonly contactSync?: SettingsContactSyncProps;
+  /**
+   * "Đăng xuất và xoá dữ liệu trên máy này" (story 030): signs out and deletes THIS account's
+   * store. Called only after the confirm step and when no contact event is left to sync.
+   * Resolves to false when it failed. Omit when there is no signed-in account.
+   */
+  readonly onEraseDevice?: () => Promise<boolean>;
 }
 
 /** "Tài khoản" card: login state, display name edit, sign out. */
-function AccountCard({ account, onLogin, onSignOut, onSaveDisplayName, onOpenHousehold, onOpenAdmin }: SettingsAccountProps) {
+function AccountCard({ account, onSignOut, onSaveDisplayName, onOpenHousehold, onOpenAdmin }: SettingsAccountProps) {
   const [name, setName] = useState(account?.displayName ?? '');
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<{ readonly text: string; readonly error: boolean } | null>(null);
@@ -165,13 +149,7 @@ function AccountCard({ account, onLogin, onSignOut, onSaveDisplayName, onOpenHou
         {STRINGS.accountHeading}
       </h2>
       {account === null ? (
-        <>
-          <p className="account-name">{STRINGS.accountSignedOut}</p>
-          <p className="card__body">{STRINGS.accountSignedOutHint}</p>
-          <button type="button" className="button button--primary" onClick={onLogin}>
-            {STRINGS.accountLogin}
-          </button>
-        </>
+        <p className="account-name">{STRINGS.accountSignedOut}</p>
       ) : (
         <>
           <p className="card__body">{STRINGS.accountSignedInAs}</p>
@@ -290,6 +268,7 @@ export function SettingsScreen({
   now = () => new Date(),
   accountSection,
   contactSync,
+  onEraseDevice,
 }: SettingsScreenProps) {
   const [state, setState] = useState<ScreenState>({ kind: 'loading' });
   const [reloadKey, setReloadKey] = useState(0);
@@ -355,6 +334,23 @@ export function SettingsScreen({
   const busy = saveStatus === 'saving';
   const [backup, setBackup] = useState<BackupStatus>({ kind: 'idle' });
   const backupBusy = backup.kind === 'busy';
+  const [erase, setErase] = useState<{ readonly step: 'idle' | 'confirm' | 'busy'; readonly blocked: number; readonly error: boolean }>({ step: 'idle', blocked: 0, error: false });
+
+  const onEraseConfirm = async () => {
+    if (onEraseDevice === undefined || erase.step === 'busy') return;
+    setErase({ step: 'busy', blocked: 0, error: false });
+    try {
+      const left = selectEventsToPush(await eventStore.list()).length;
+      if (left > 0) {
+        setErase({ step: 'confirm', blocked: left, error: false });
+        return;
+      }
+      if (await onEraseDevice()) return;
+    } catch (error) {
+      console.error('[settings] erase failed', error);
+    }
+    setErase({ step: 'confirm', blocked: 0, error: true });
+  };
 
   const onExport = async () => {
     if (backupBusy) return;
@@ -436,6 +432,61 @@ export function SettingsScreen({
       {accountSection !== undefined && <AccountCard key={accountSection.account?.accountId ?? 'signed-out'} {...accountSection} />}
 
       {contactSync !== undefined && <ContactSyncCard {...contactSync} />}
+
+      {onEraseDevice !== undefined && (
+        <section className="card form" aria-labelledby="erase-title">
+          <h2 id="erase-title" className="card__title">
+            {STRINGS.eraseHeading}
+          </h2>
+          {erase.step === 'idle' ? (
+            <button type="button" className="button button--secondary" onClick={() => setErase({ step: 'confirm', blocked: 0, error: false })}>
+              {STRINGS.eraseOpen}
+            </button>
+          ) : (
+            <>
+              <p className="message message--warn" role="alert">
+                {STRINGS.eraseWarning}
+              </p>
+              {erase.blocked > 0 && (
+                <p className="message message--error" role="alert">
+                  {STRINGS.eraseBlocked(erase.blocked)}
+                </p>
+              )}
+              {erase.error && (
+                <p className="message message--error" role="alert">
+                  {STRINGS.eraseError}
+                </p>
+              )}
+              <div className="erase-actions">
+                {erase.blocked > 0 && contactSync !== undefined && (
+                  <button
+                    type="button"
+                    className="button button--secondary"
+                    onClick={() => {
+                      contactSync.onSyncNow();
+                      // "Xoá và đăng xuất" checks again before erasing, so it can be offered again now.
+                      setErase({ step: 'confirm', blocked: 0, error: false });
+                    }}
+                  >
+                    {STRINGS.contactSyncNow}
+                  </button>
+                )}
+                {erase.blocked > 0 && (
+                  <button type="button" className="button button--secondary" onClick={() => void onExport()} disabled={backupBusy}>
+                    {STRINGS.eraseExport}
+                  </button>
+                )}
+                <button type="button" className="button button--primary" onClick={() => void onEraseConfirm()} disabled={erase.step === 'busy' || erase.blocked > 0}>
+                  {STRINGS.eraseConfirm}
+                </button>
+                <button type="button" className="button button--secondary" onClick={() => setErase({ step: 'idle', blocked: 0, error: false })} disabled={erase.step === 'busy'}>
+                  {STRINGS.eraseCancel}
+                </button>
+              </div>
+            </>
+          )}
+        </section>
+      )}
 
       {state.kind === 'loading' && (
         <p className="message" role="status">

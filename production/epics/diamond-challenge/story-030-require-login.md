@@ -55,8 +55,9 @@
 
 ## Files
 
-- `src/app.tsx`, `src/main.tsx`, `src/ui/screens/consent-screen.tsx`, `src/ui/screens/login-screen.tsx`, `src/ui/screens/settings-screen.tsx`
-- `src/data/account-stores.ts` (new: kho theo tài khoản, chuyển kho cũ), `src/data/indexeddb-event-store.ts`, `src/data/auth-service.ts`, `src/data/contact-sync.ts`
+- `src/ui/auth-gate.tsx` (new: login gate, session restore incl. offline, per-account App, migration loading/error)
+- `src/data/account-stores.ts` (new: per-account stores, legacy migration, device account cache, erase), `src/data/indexeddb-event-store.ts` (`seedFrom`, close on version change), `src/data/contact-sync.ts` (consent version read)
+- `src/main.tsx`, `src/app.tsx`, `src/ui/screens/consent-screen.tsx`, `src/ui/screens/login-screen.tsx`, `src/ui/screens/settings-screen.tsx`
 - `src/ui/strings.ts`, `src/ui/styles.css`
 - `tests/unit/data/account-stores.test.ts`
 - `design/gdd/accounts.md`, `design/gdd/crm.md`, `docs/architecture/adr-0002-household-contacts-on-server.md`

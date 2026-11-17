@@ -52,9 +52,33 @@ export class IndexedDbEventStore implements EventStore, SyncStateStore {
         events.createIndex(TIMESTAMP_INDEX, TIMESTAMP_INDEX);
         db.createObjectStore(META_STORE);
       };
-      open.onsuccess = () => resolve(open.result);
+      open.onsuccess = () => {
+        // Lets `deleteDatabase` (erase this device's data) proceed instead of waiting on this open connection.
+        open.result.onversionchange = () => open.result.close();
+        resolve(open.result);
+      };
       open.onerror = () => reject(open.error);
     });
+  }
+
+  /**
+   * Fills an EMPTY store with rows copied from another store (story 030 legacy migration):
+   * the raw event rows in order plus every `meta` entry (local userId, sync cursors, member
+   * ids). One transaction, so it is all or nothing. Does nothing and returns 0 when this
+   * store already holds events (never duplicates, safe to retry). Returns the rows copied.
+   */
+  async seedFrom(rows: readonly unknown[], meta: ReadonlyMap<string, unknown>): Promise<number> {
+    const db = await this.dbPromise;
+    const tx = db.transaction([EVENTS_STORE, META_STORE], 'readwrite');
+    const events = tx.objectStore(EVENTS_STORE);
+    const metaStore = tx.objectStore(META_STORE);
+    const existing = await requestToPromise(events.count());
+    if (existing > 0) return 0;
+    for (const row of rows) events.add(row);
+    for (const [key, value] of meta) metaStore.put(value, key);
+    await transactionDone(tx);
+    this.userIdPromise = null;
+    return rows.length;
   }
 
   /** @inheritdoc */

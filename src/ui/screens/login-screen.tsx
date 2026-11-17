@@ -10,8 +10,8 @@ import { authFailureText, STRINGS } from '../strings';
 export interface LoginScreenProps {
   /** Lazy Supabase client (from `getSupabaseClient`). */
   readonly clientPromise: Promise<SupabaseClient>;
-  /** "Quay lại": back to Cài đặt without signing in. */
-  readonly onBack: () => void;
+  /** True when the device is offline and has never signed in: shows the notice and blocks the form. */
+  readonly needsNetwork?: boolean;
   /** Called after a successful sign-in with the account and the password typed (kept in memory only, to compare with the new one). */
   readonly onSignedIn: (account: AccountInfo, password: string) => void;
 }
@@ -24,9 +24,9 @@ const DEFAULT_COUNTRY = '+84';
  * Vietnamese message that does not reveal whether the phone exists.
  *
  * @example
- * <LoginScreen clientPromise={client} onBack={back} onSignedIn={handleSignedIn} />
+ * <LoginScreen clientPromise={client} onSignedIn={handleSignedIn} />
  */
-export function LoginScreen({ clientPromise, onBack, onSignedIn }: LoginScreenProps) {
+export function LoginScreen({ clientPromise, needsNetwork = false, onSignedIn }: LoginScreenProps) {
   const [country, setCountry] = useState(DEFAULT_COUNTRY);
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
@@ -35,7 +35,7 @@ export function LoginScreen({ clientPromise, onBack, onSignedIn }: LoginScreenPr
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (busy) return;
+    if (busy || needsNetwork) return;
     if (password === '') {
       setError(STRINGS.loginPasswordRequired);
       return;
@@ -59,9 +59,6 @@ export function LoginScreen({ clientPromise, onBack, onSignedIn }: LoginScreenPr
   return (
     <main className="screen">
       <header className="screen__header">
-        <button type="button" className="back-button" onClick={onBack}>
-          {STRINGS.back}
-        </button>
         <h1 className="screen__title">{STRINGS.loginTitle}</h1>
         <p className="screen__prompt">{STRINGS.loginPrompt}</p>
       </header>
@@ -75,7 +72,7 @@ export function LoginScreen({ clientPromise, onBack, onSignedIn }: LoginScreenPr
               <span className="select-code__value" aria-hidden="true">
                 {country}
               </span>
-              <select value={country} onChange={(e) => setCountry(e.target.value)} disabled={busy}>
+              <select value={country} onChange={(e) => setCountry(e.target.value)} disabled={busy || needsNetwork}>
                 {gameConfig.countryCodes.map((c) => (
                   <option key={c.code} value={c.code}>
                     {c.code} {c.name}
@@ -93,7 +90,7 @@ export function LoginScreen({ clientPromise, onBack, onSignedIn }: LoginScreenPr
               className="note__input form__input"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              disabled={busy}
+              disabled={busy || needsNetwork}
             />
           </label>
         </div>
@@ -105,18 +102,25 @@ export function LoginScreen({ clientPromise, onBack, onSignedIn }: LoginScreenPr
             className="note__input form__input"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            disabled={busy}
+            disabled={busy || needsNetwork}
           />
         </label>
+        {needsNetwork && (
+          <p className="message message--error" role="alert">
+            {STRINGS.loginNeedsNetwork}
+          </p>
+        )}
         {error !== null && (
           <p className="message message--error" role="alert">
             {error}
           </p>
         )}
-        <button type="submit" className="button button--primary" disabled={busy}>
+        <button type="submit" className="button button--primary" disabled={busy || needsNetwork}>
           {busy ? STRINGS.loginSubmitting : STRINGS.loginSubmit}
         </button>
       </form>
+      <p className="login-help">{STRINGS.loginNoAccount}</p>
+      <p className="login-help">{STRINGS.loginForgotPassword}</p>
     </main>
   );
 }

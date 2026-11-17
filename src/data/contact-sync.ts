@@ -245,6 +245,16 @@ export async function readContactConsent(client: SupabaseClient): Promise<{ read
   return typeof data === 'boolean' ? { ok: true, consented: data } : { ok: false, reason: 'server' };
 }
 
+/**
+ * Consent text version this account agreed to (own `contact_consents` row, readable by RLS),
+ * or null when the row cannot be read. Used to re-ask once when the version increases.
+ */
+export async function readContactConsentVersion(client: SupabaseClient): Promise<number | null> {
+  const { data, error } = await client.from('contact_consents').select('version').maybeSingle();
+  const version = (data as { version?: unknown } | null)?.version;
+  return error === null && typeof version === 'number' ? version : null;
+}
+
 /** `record_contact_consent(p_version)`. */
 export async function recordContactConsent(client: SupabaseClient, version: number): Promise<{ readonly ok: true } | { readonly ok: false; readonly reason: SyncFailure }> {
   const { error, status } = await client.rpc('record_contact_consent', { p_version: version });

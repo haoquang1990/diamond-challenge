@@ -763,6 +763,8 @@ body { margin: 0; }
 .account-name { margin: 0; font-weight: 800; overflow-wrap: anywhere; }
 
 /* Story 023: consent screen and history author */
+.consent-actions { display: flex; flex-direction: column; gap: 12px; }
+.consent-actions .button { flex: none; }
 .consent-list { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; }
 .history-row__author { display: block; font-weight: 400; font-size: 0.875em; opacity: 0.75; }
 
@@ -908,3 +910,9 @@ body { margin: 0; }
 .lesson-group--empty .lesson-group__title { color: var(--color-muted); }
 .lesson-group--empty { padding: 12px 16px; border: 2px dashed var(--color-border); border-radius: var(--radius); }
 .lesson-group:last-child { margin-bottom: 16px; }
+
+/* Story 030: login gate help lines, erase-on-device card, loading/error screens */
+.login-help { margin: 0; color: var(--color-muted); font-weight: 600; text-align: center; overflow-wrap: anywhere; }
+.erase-actions { display: flex; flex-direction: column; gap: 8px; }
+.erase-actions .button { min-height: 44px; }
+.gate-screen { justify-content: center; text-align: center; }

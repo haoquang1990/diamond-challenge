@@ -3,13 +3,14 @@ import gameConfig from './config/game-config.json';
 import { getSupabaseClient } from './config/supabase';
 import { loadIsAdmin } from './data/admin-service';
 import { clearGroupCaches, dismissCheers, loadUnseenCheer } from './data/group-service';
-import { ensureAccountLinked, loadAccount, saveDisplayName, signOut } from './data/auth-service';
+import { ensureAccountLinked, saveDisplayName, signOut } from './data/auth-service';
+import { readDeviceAccount, updateDeviceAccount } from './data/account-stores';
 import type { AccountInfo, AuthResult } from './data/auth-service';
 import {
   CONTACT_EVENT_TYPES,
   createContactSyncController,
   readContactConsent,
-  readContactSyncDeclined,
+  readContactConsentVersion,
   recordContactConsent,
   withHouseholdClock,
 } from './data/contact-sync';
@@ -33,7 +34,6 @@ import { DiamondPathScreen } from './ui/screens/diamond-path-screen';
 import { LessonScreen } from './ui/screens/lesson-screen';
 import { HouseholdScreen } from './ui/screens/household-screen';
 import { MyGroupScreen } from './ui/screens/my-group-screen';
-import { LoginScreen } from './ui/screens/login-screen';
 import { DuplicatesScreen } from './ui/screens/duplicates-screen';
 import { PeopleScreen } from './ui/screens/people-screen';
 import { SettingsScreen } from './ui/screens/settings-screen';
@@ -47,6 +47,22 @@ export interface AppProps {
   readonly eventStore: EventStore & SyncStateStore;
   /** Notification capabilities for reminders (story 007); defaults to the browser's. */
   readonly notificationPlatform?: NotificationPlatform;
+  /**
+   * The signed-in account (story 030), given by the login gate. Absent when Supabase is not
+   * configured: the account features are then hidden and nothing is gated.
+   */
+  readonly session?: AppSession;
+}
+
+/** The signed-in session the login gate hands to {@link App}. */
+export interface AppSession {
+  readonly account: AccountInfo;
+  /** Temporary password typed at sign-in (memory only), or null. */
+  readonly temporaryPassword: string | null;
+  /** Called after sign-out: the gate shows the Login screen. */
+  readonly onSignedOut: () => void;
+  /** Deletes this account's store and the cached device account; resolves false on failure. */
+  readonly onEraseDevice: (accountId: string) => Promise<boolean>;
 }
 
 /** Message the service worker posts when a reminder notification is tapped (public/sw.js). */
@@ -64,9 +80,9 @@ function realNow(): Date {
  * merged person list (Danh bạ). `settings` (opened from Hôm nay) and `board`
  * (opened from Con đường) are not in the tab bar.
  */
-type Tab = 'today' | 'learn' | 'people' | 'path' | 'settings' | 'board' | 'achievements' | 'login' | 'household' | 'admin' | 'duplicates' | 'group';
+type Tab = 'today' | 'learn' | 'people' | 'path' | 'settings' | 'board' | 'achievements' | 'household' | 'admin' | 'duplicates' | 'group';
 
-const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'board' | 'achievements' | 'login' | 'household' | 'admin' | 'duplicates' | 'group'>; readonly label: string }[] = [
+const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'board' | 'achievements' | 'household' | 'admin' | 'duplicates' | 'group'>; readonly label: string }[] = [
   { id: 'today', label: STRINGS.tabToday },
   { id: 'learn', label: STRINGS.tabLearn },
   { id: 'people', label: STRINGS.tabPeople },
@@ -90,12 +106,13 @@ const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'board' | 'achieve
  * change. A tapped reminder notification brings the app to Hôm nay.
  *
  * Household contact sync (story 023): once signed in (after the password and display-name
- * steps), the consent screen shows while `has_contact_consent()` is false and the user has
- * not declined on this device. With consent, a sync runs on start, after consenting, ~2 s
+ * steps), the consent screen shows until the server has the account's consent (story 030:
+ * required; a local "Không đồng ý" no longer counts; a cached agreement opens the app offline).
+ * With consent, a sync runs on start, after consenting, ~2 s
  * after a Danh bạ append, after a backup restore and on `online`. New Danh bạ events get the
  * household clock (`withHouseholdClock`).
  */
-export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_PLATFORM }: AppProps) {
+export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_PLATFORM, session }: AppProps) {
   // Every screen gets the observed store, so each saved event reaches the achievements overlay.
   const observed = useMemo(() => createObservedStore(withHouseholdClock(rawEventStore, realNow, gameConfig.contactSync.maxClockSkewMs)), [rawEventStore]);
   const eventStore = observed.store;
@@ -117,17 +134,18 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
   const onLessonActive = useCallback((active: boolean) => setLessonActive(active), []);
 
   // Optional account (story 021): the whole feature is hidden when the build has no Supabase config.
-  const clientPromise = useMemo(() => getSupabaseClient(), []);
-  const [account, setAccount] = useState<AccountInfo | null>(null);
+  const clientPromise = useMemo(() => (session === undefined ? null : getSupabaseClient()), [session]);
+  const [account, setAccount] = useState<AccountInfo | null>(session?.account ?? null);
   /** Temporary password typed at sign-in; memory only, cleared once the password is changed. */
-  const temporaryPasswordRef = useRef<string | null>(null);
+  const temporaryPasswordRef = useRef<string | null>(session?.temporaryPassword ?? null);
   const [askDisplayName, setAskDisplayName] = useState(false);
 
   // Household contact sync (story 023).
-  const [consent, setConsent] = useState<ContactConsent>('unknown');
-  const [declined, setDeclined] = useState(false);
-  /** The consent screen was reopened from Cài đặt. */
-  const [consentOpen, setConsentOpen] = useState(false);
+  // Consent is required (story 030): server state is the truth; the cached agreement opens the app offline.
+  const [consent, setConsent] = useState<ContactConsent>(() => {
+    const cached = session === undefined ? null : readDeviceAccount();
+    return cached !== null && cached.accountId === session?.account.accountId && (cached.consentVersion ?? 0) >= gameConfig.contactConsentVersion ? 'granted' : 'unknown';
+  });
   const [syncController, setSyncController] = useState<ContactSyncController | null>(null);
   const [syncStatus, setSyncStatus] = useState<SyncStatus>({ kind: 'idle' });
   const [members, setMembers] = useState<ReadonlyMap<string, HouseholdMember> | null>(null);
@@ -147,15 +165,16 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
   const passwordPending = account?.mustChangePassword === true;
 
   // Story 029: "Quản trị" is shown only to role = admin (read from the own profile; the server enforces it too).
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(() => session !== undefined && readDeviceAccount()?.accountId === session.account.accountId && readDeviceAccount()?.isAdmin === true);
   useEffect(() => {
-    setIsAdmin(false);
     if (clientPromise === null || accountId === null || passwordPending) return;
     let cancelled = false;
     clientPromise
       .then((client) => loadIsAdmin(client, accountId))
       .then((admin) => {
-        if (!cancelled) setIsAdmin(admin);
+        if (cancelled) return;
+        setIsAdmin(admin);
+        updateDeviceAccount(accountId, { isAdmin: admin });
       })
       .catch((error: unknown) => console.error('[admin] could not read the role', error));
     return () => {
@@ -185,46 +204,52 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
     setUnseenCheer(null);
   }, [unseenCheer]);
 
+  // Link this account to the store's local user id (story 021); a no-op when already linked.
   useEffect(() => {
-    if (clientPromise === null) return;
-    let cancelled = false;
-    clientPromise
-      .then(loadAccount)
-      .then((loaded) => {
-        if (!cancelled) setAccount(loaded);
-      })
-      .catch((error: unknown) => console.error('[auth] could not restore the session', error));
-    return () => {
-      cancelled = true;
-    };
-  }, [clientPromise]);
+    if (accountId === null) return;
+    ensureAccountLinked(rawEventStore, accountId).catch((error: unknown) => console.error('[auth] could not link the account', error));
+  }, [rawEventStore, accountId]);
 
   useEffect(() => {
-    rawEventStore
-      .list()
-      .then((events) => setDeclined(readContactSyncDeclined(events)))
-      .catch((error: unknown) => console.error('[contact-sync] could not read the sync setting', error));
     refreshMemberIds();
   }, [rawEventStore, refreshMemberIds]);
 
   const checkConsent = useCallback(async () => {
     if (clientPromise === null || accountId === null) return;
     try {
-      const result = await readContactConsent(await clientPromise);
-      setConsent(result.ok ? (result.consented ? 'granted' : 'missing') : 'unknown');
+      const client = await clientPromise;
+      const result = await readContactConsent(client);
+      if (!result.ok) {
+        // Offline or failed: keep an agreement cached on this device, else stay undecided.
+        setConsent((c) => (c === 'granted' ? c : 'unknown'));
+        return;
+      }
+      if (!result.consented) {
+        updateDeviceAccount(accountId, { consentVersion: null });
+        setConsent('missing');
+        return;
+      }
+      // Agreed on the server: ask again once when the consent text version increased.
+      const version = await readContactConsentVersion(client);
+      if (version !== null && version < gameConfig.contactConsentVersion) {
+        updateDeviceAccount(accountId, { consentVersion: version });
+        setConsent('missing');
+        return;
+      }
+      updateDeviceAccount(accountId, { consentVersion: version ?? gameConfig.contactConsentVersion });
+      setConsent('granted');
     } catch (error) {
       console.error('[contact-sync] consent check failed', error);
-      setConsent('unknown');
+      setConsent((c) => (c === 'granted' ? c : 'unknown'));
     }
   }, [clientPromise, accountId]);
 
   useEffect(() => {
-    setConsent('unknown');
     if (accountId !== null && !passwordPending) void checkConsent();
   }, [accountId, passwordPending, checkConsent]);
 
   useEffect(() => {
-    if (clientPromise === null || accountId === null || consent !== 'granted' || declined) return;
+    if (clientPromise === null || accountId === null || consent !== 'granted') return;
     let controller: ContactSyncController | null = null;
     let cancelled = false;
     void clientPromise.then((client) => {
@@ -248,7 +273,7 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
       setSyncStatus({ kind: 'idle' });
       setMembers(null);
     };
-  }, [clientPromise, accountId, consent, declined, rawEventStore, refreshMemberIds]);
+  }, [clientPromise, accountId, consent, rawEventStore, refreshMemberIds]);
 
   // Debounced push after a local Danh bạ append (the sync itself picks only Danh bạ events).
   useEffect(
@@ -262,11 +287,11 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
   useEffect(() => {
     const onOnline = () => {
       if (consent === 'unknown') void checkConsent();
-      else if (!declined) void syncController?.sync(false);
+      else void syncController?.sync(false);
     };
     window.addEventListener('online', onOnline);
     return () => window.removeEventListener('online', onOnline);
-  }, [consent, declined, checkConsent, syncController]);
+  }, [consent, checkConsent, syncController]);
 
   // Household 30x30 numbers (story 027): sent only when signed in, consented and online, and only when they changed.
   const [aggregates, setAggregates] = useState<AggregatesSync | null>(null);
@@ -276,7 +301,7 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
     contactsPulledRef.current = false;
   }, [accountId]);
   useEffect(() => {
-    if (clientPromise === null || accountId === null || consent !== 'granted' || declined) return;
+    if (clientPromise === null || accountId === null || consent !== 'granted') return;
     let created: AggregatesSync | null = null;
     let cancelled = false;
     void clientPromise.then((client) => {
@@ -298,7 +323,7 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
       created?.dispose();
       setAggregates(null);
     };
-  }, [clientPromise, accountId, consent, declined, rawEventStore]);
+  }, [clientPromise, accountId, consent, rawEventStore]);
   useEffect(
     () =>
       observed.subscribe((event) => {
@@ -318,37 +343,17 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
   }, [aggregates]);
 
   const onConsentAgree = async (): Promise<SyncFailure | null> => {
-    if (clientPromise === null) return 'server';
-    if (consent !== 'granted') {
-      const result = await recordContactConsent(await clientPromise, gameConfig.contactConsentVersion);
-      if (!result.ok) return result.reason;
-    }
-    await eventStore.append({ type: 'settings_changed', payload: { contactSync: { enabled: true } } });
-    setDeclined(false);
-    setConsentOpen(false);
+    if (clientPromise === null || accountId === null) return 'server';
+    const result = await recordContactConsent(await clientPromise, gameConfig.contactConsentVersion);
+    if (!result.ok) return result.reason;
+    updateDeviceAccount(accountId, { consentVersion: gameConfig.contactConsentVersion });
     setConsent('granted');
     return null;
   };
 
-  const onConsentDecline = async () => {
-    try {
-      await eventStore.append({ type: 'settings_changed', payload: { contactSync: { enabled: false } } });
-    } catch (error) {
-      console.error('[contact-sync] could not save the choice', error);
-    }
-    setDeclined(true);
-    setConsentOpen(false);
-  };
-
-  const onSignedIn = (signedIn: AccountInfo, password: string) => {
-    ensureAccountLinked(rawEventStore, signedIn.accountId).catch((error: unknown) => console.error('[auth] could not link the account', error));
-    setAccount(signedIn);
-    if (signedIn.mustChangePassword) temporaryPasswordRef.current = password;
-    setTab('settings');
-  };
-
+  /** Signs out (keeping this account's store) and returns to the Login screen. */
   const onSignOut = async (): Promise<boolean> => {
-    if (clientPromise === null) return false;
+    if (clientPromise === null || session === undefined) return false;
     try {
       const result = await signOut(await clientPromise);
       if (!result.ok) return false;
@@ -358,17 +363,28 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
     }
     temporaryPasswordRef.current = null;
     setAskDisplayName(false);
-    setConsentOpen(false);
     setUnseenCheer(null);
     clearGroupCaches();
     setAccount(null);
+    session.onSignedOut();
+    return true;
+  };
+
+  /** Deletes this account's store, then signs out. Settings has already checked nothing is left to sync. */
+  const onEraseDevice = async (): Promise<boolean> => {
+    if (session === undefined || accountId === null) return false;
+    if (!(await session.onEraseDevice(accountId))) return false;
+    if (!(await onSignOut())) session.onSignedOut();
     return true;
   };
 
   const onSaveDisplayName = async (name: string): Promise<AuthResult> => {
     if (clientPromise === null) return { ok: false, reason: 'server' };
     const result = await saveDisplayName(await clientPromise, name);
-    if (result.ok) setAccount((a) => (a === null ? a : { ...a, displayName: name }));
+    if (result.ok) {
+      setAccount((a) => (a === null ? a : { ...a, displayName: name }));
+      if (accountId !== null) updateDeviceAccount(accountId, { displayName: name });
+    }
     return result;
   };
 
@@ -490,10 +506,15 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
     );
   }
 
-  if (clientPromise !== null && account !== null && (consentOpen || (consent === 'missing' && !declined))) {
+  if (clientPromise !== null && account !== null && consent !== 'granted') {
     return (
       <div className="app-shell">
-        <ConsentScreen onAgree={onConsentAgree} onDecline={() => void onConsentDecline()} />
+        <ConsentScreen
+          onAgree={onConsentAgree}
+          onSignOut={() => void onSignOut()}
+          needsNetwork={consent === 'unknown'}
+          onRetry={() => void checkConsent()}
+        />
       </div>
     );
   }
@@ -510,14 +531,6 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
             setCreateAccountFor(null);
           }}
         />
-      </div>
-    );
-  }
-
-  if (tab === 'login' && clientPromise !== null) {
-    return (
-      <div className="app-shell">
-        <LoginScreen clientPromise={clientPromise} onBack={() => setTab('settings')} onSignedIn={onSignedIn} />
       </div>
     );
   }
@@ -589,18 +602,16 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
           {...(clientPromise === null
             ? {}
             : {
-                accountSection: { account, onLogin: () => setTab('login'), onSignOut, onSaveDisplayName, onOpenHousehold: () => setTab('household'), ...(isAdmin ? { onOpenAdmin: () => setTab('admin') } : {}) },
+                accountSection: { account, onSignOut, onSaveDisplayName, onOpenHousehold: () => setTab('household'), ...(isAdmin ? { onOpenAdmin: () => setTab('admin') } : {}) },
                 contactSync: {
-                  signedIn: account !== null,
                   consent,
-                  declined,
                   status: syncStatus,
-                  onEnable: () => setConsentOpen(true),
                   onSyncNow: () => {
-                    if (consent === 'granted' && !declined) void syncController?.sync(true);
+                    if (consent === 'granted') void syncController?.sync(true);
                     else void checkConsent();
                   },
                 },
+                onEraseDevice,
               })}
         />
       </div>
