@@ -7,7 +7,7 @@ Accepted
 2026-11-07
 
 ## Last Verified
-2026-11-07
+2026-11-17
 
 ## Decision Makers
 Người dùng (chủ dự án) + Claude
@@ -155,6 +155,7 @@ Bảng và RLS nằm trong migration hộ (ADR-0001); cột `sync_seq`, sequence
 - 2026-11-07: con trỏ đồng bộ đổi từ `created_at` sang `sync_seq` (xung đột ADR-0002/ADR-0003 trong `docs/architecture/architecture-review-2026-11-07.md`); thêm rủi ro giờ máy sai, commit không theo thứ tự, xoá không đồng bộ. Trả về Proposed để duyệt lại; chấp nhận lại cùng ngày sau khi người dùng đọc bản sửa.
 
 - 2026-11-07 (story 023, người dùng chọn): giới hạn nâng `occurred_at` trong 10 phút lệch giờ; "của mình" đảo thành "mọi thứ trừ sự kiện của thành viên khác"; lựa chọn "Không đồng ý" trên máy thắng đồng ý của tài khoản.
+- 2026-11-17 (story 030, người dùng chọn): **app bắt buộc đăng nhập và đồng ý.** Thay quyết định "lựa chọn Không đồng ý trên máy thắng" của amendment trước: không còn đường dùng app mà không đồng bộ Danh bạ; máy từng chọn "Không đồng ý" phải đồng ý mới dùng tiếp, hoặc đăng xuất. Dữ liệu trên máy tách theo tài khoản (một kho IndexedDB cho mỗi tài khoản); kho cũ của máy chuyển sang tài khoản đăng nhập đầu tiên (hoặc đúng tài khoản đã liên kết ở story 021) và được giữ lại, chỉ đánh dấu đã chuyển. Đăng xuất mặc định giữ kho; xoá kho chỉ khi người dùng chọn và không còn sự kiện Danh bạ chưa đồng bộ. Không đổi gì phía server.
 
 ## Related
 - ADR-0001 (mô hình hộ), ADR-0003 (chuyển liên hệ khi gộp mã)

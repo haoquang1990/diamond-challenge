@@ -72,7 +72,7 @@ Một Danh bạ duy nhất. Mỗi người có một danh sách **việc cần l
 
 16. **Danh bạ hộ trên server.** Mọi sự kiện về người (`person_*`, `activity_logged` có `personId`, `activity_reassigned`, sự kiện bù của chúng và nhóm sự kiện gộp ở luật 3) thuộc nhật ký của hộ và đồng bộ lên Supabase. Sự kiện cá nhân (bài học, hoạt động không gắn người, cài đặt, ghi nhận thành tích) ở lại trên máy. **Chỉ thành viên hộ đọc/ghi** Danh bạ hộ; tuyến trên, tuyến dưới và người dùng khác không đọc được (RLS).
 17. **Offline và gộp đồng thời.** App vẫn ghi vào nhật ký trên máy khi không có mạng; khi có mạng thì đẩy sự kiện chưa đồng bộ (`syncedAt` rỗng) và kéo sự kiện mới của hộ theo **`sync_seq`** do server cấp (không theo `created_at`; ADR-0002). Sự kiện có id do máy tạo nên hai người sửa cùng lúc không đè nhau: tất cả sự kiện được giữ, mọi giá trị suy ra tính lại từ toàn bộ nhật ký hộ. Trường hợp hai `person_updated` sửa cùng một trường: lấy sự kiện có thời điểm (`occurred_at`) muộn hơn. **Rủi ro giờ máy sai:** thời điểm do máy ghi, nên máy chạy nhanh giờ có thể đè sửa thật sự mới hơn, máy chạy chậm luôn thua; app giảm rủi ro bằng cách ghi `occurred_at` lớn hơn mọi thời điểm đã thấy trong hộ, và lịch sử luôn giữ cả hai sửa. Mỗi sự kiện ghi người làm; XP cộng cho người làm (`accounts.md` luật 4).
-18. **Đồng ý trước khi lưu trên server.** Lần đăng nhập đầu, app hiện thông báo: Danh bạ (tên, SĐT, mã số, ghi chú, nhãn, việc, lịch sử) sẽ được lưu trên server ở Singapore để đồng bộ trong hộ, chỉ thành viên hộ xem được. Chỉ sau khi đồng ý app mới đẩy dữ liệu cũ trên máy lên; không đồng ý thì app vẫn dùng như giai đoạn 1 trên máy và không đồng bộ Danh bạ. Server từ chối sự kiện Danh bạ của người chưa đồng ý.
+18. **Đồng ý trước khi lưu trên server.** Lần đăng nhập đầu, app hiện thông báo: Danh bạ (tên, SĐT, mã số, ghi chú, nhãn, việc, lịch sử) sẽ được lưu trên server ở Singapore để đồng bộ trong hộ, chỉ thành viên hộ xem được. Chỉ sau khi đồng ý app mới đẩy dữ liệu cũ trên máy lên. **Đồng ý là điều kiện để dùng app** (story 030, quyết định 2026-11-17): màn đồng ý chỉ có "Đồng ý và tiếp tục" và "Đăng xuất"; máy từng "Không đồng ý" cũng phải đồng ý mới dùng tiếp; Cài đặt không còn công tắc tắt đồng bộ. Server từ chối sự kiện Danh bạ của người chưa đồng ý.
 19. **Dò liên hệ trùng** khi thành viên thứ hai vào hộ, khi đẩy dữ liệu cũ lên, khi nhận liên hệ chuyển đến từ gộp mã, và khi thêm hoặc sửa một liên hệ:
     - **Trùng chắc chắn:** cùng `amwayCode` (sau chuẩn hoá), hoặc cùng SĐT sau chuẩn hoá E.164.
     - **Có thể trùng:** chỉ cùng tên hoặc tên gần giống (bỏ dấu, không phân biệt hoa thường, khoảng cách sửa ≤ `duplicateNameMaxDistance`).
@@ -165,7 +165,7 @@ Công thức tầng, nhánh, điểm sâu và 30x30x4x4 thuộc giai đoạn 2 v
 - **Hai thành viên cùng gộp một cặp khi offline:** hai `person_merged` trùng nội dung; lần thứ hai không đổi kết quả.
 - **Một thành viên gộp, thành viên kia đánh dấu "Không phải cùng người" khi offline:** sự kiện muộn hơn thắng; nếu `person_not_duplicate` muộn hơn thì cặp được tách.
 - **[2b] Liên hệ đang có trong Danh bạ hộ X bị chuyển lên S2 khi gộp mã:** máy của X xoá chi tiết, chỉ giữ dòng tên "Đã chuyển lên tuyến trên". File sao lưu tạo trước đó vẫn còn chi tiết; khôi phục file đó không làm liên hệ xuất hiện lại (sự kiện `person_transferred_out` vẫn ẩn nó).
-- **Chưa đồng ý lưu trên server:** Danh bạ chỉ ở trên máy, Bảng 30x30 tính như giai đoạn 1, tuyến trên không nhận số tổng hợp mới.
+- **Chưa đồng ý lưu trên server:** app dừng ở màn đồng ý (chỉ có Đồng ý và tiếp tục / Đăng xuất); không sự kiện Danh bạ nào được gửi, tuyến trên không nhận số tổng hợp mới.
 
 ## Dependencies
 
@@ -221,7 +221,7 @@ Công thức tầng, nhánh, điểm sâu và 30x30x4x4 thuộc giai đoạn 2 v
 - **AC-23:** Given một NPP vừa được đánh dấu, When mở Danh bạ (Tất cả hoặc lọc NPP), Then người đó hiện đúng một dòng với nhãn NPP.
 - **AC-26:** Given hộ Lan–Minh, When Lan thêm "Bình" trên máy Lan và có mạng, Then máy Minh thấy "Bình" sau lần đồng bộ kế tiếp, kèm "Lan thêm"; người ngoài hộ, tuyến trên và tuyến dưới không đọc được "Bình" qua API.
 - **AC-27:** Given Lan và Minh cùng hoàn thành việc cho hai liên hệ khác nhau khi offline, When cả hai có mạng, Then cả hai hoạt động đều còn, XP mỗi người chỉ tính việc của mình.
-- **AC-28:** Given lần đăng nhập đầu, When người dùng chưa bấm đồng ý, Then không sự kiện Danh bạ nào được gửi lên server; When đồng ý, Then dữ liệu cũ được đẩy lên.
+- **AC-28:** Given lần đăng nhập đầu, When người dùng chưa bấm đồng ý, Then app dừng ở màn đồng ý và không sự kiện Danh bạ nào được gửi lên server; When đồng ý, Then dữ liệu cũ được đẩy lên và app mở; Given máy từng chọn "Không đồng ý", When mở app, Then thấy lại màn đồng ý.
 - **AC-29:** Given Lan có An (mã 111) và Minh có "An Nguyễn" (mã 111), When Minh vào hộ của Lan, Then màn "Kiểm tra liên hệ trùng" có cặp này là trùng chắc chắn; When "Gộp tất cả", Then còn một liên hệ nhãn NPP, lịch sử của cả hai, XP không đổi.
 - **AC-30:** Given hai liên hệ chỉ trùng tên, When bấm "Gộp tất cả", Then cặp đó không bị gộp; When bấm "Không phải cùng người", Then cặp đó không hiện lại.
 - **AC-31:** Given còn 1 cặp chưa duyệt, When mở Bảng 30x30, Then thấy cảnh báo có thể đếm trùng; When duyệt xong, Then cảnh báo mất.
