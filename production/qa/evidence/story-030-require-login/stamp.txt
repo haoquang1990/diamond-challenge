@@ -1,0 +1,12 @@
+Reviewed-Content-Hash: src/ui/auth-gate.tsx 2b2a6a6c6bb8704d7ff60be0e39d136b6358d0ec
+Reviewed-Content-Hash: src/data/account-stores.ts c5520ad65cb91602c4abde84874c6b54a63e013d
+Reviewed-Content-Hash: src/data/indexeddb-event-store.ts 579ad730b57c4a52300c505f91f028cc61fbeaea
+Reviewed-Content-Hash: src/data/contact-sync.ts d476cc638de169fd50f1286addc2984fb09ba62a
+Reviewed-Content-Hash: src/app.tsx 5b7e97d12bbd8c16bede145a017b9db61ab51026
+Reviewed-Content-Hash: src/main.tsx 8b4852bdc85e3d9a0f19b656e8475f1d45988914
+Reviewed-Content-Hash: src/ui/screens/consent-screen.tsx 92fdce855e455f9427748f2801bf5fd7c913f991
+Reviewed-Content-Hash: src/ui/screens/login-screen.tsx 9f8396a7c0d41ebcc02b769b2ebe26923bcf954f
+Reviewed-Content-Hash: src/ui/screens/settings-screen.tsx 5f3a78628d32eb4b817e590be227ee25c23ff0e0
+Reviewed-Content-Hash: src/ui/strings.ts c0f7a687810cce48f33a6be51d5eabce1c7a763b
+Reviewed-Content-Hash: src/ui/styles.css ed688218533f5b19ba17574ed8e34442302579fd
+Reviewed-Content-Hash: tests/unit/data/account-stores.test.ts 857d3fc23388f96ad108a27fd6800daaee101fe5

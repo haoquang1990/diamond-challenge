@@ -44,7 +44,13 @@ Mục nào thuộc 2b được đánh dấu **[2b]**. Ở 2a, server vẫn giữ
 1. Không tự đăng ký. Tài khoản chỉ sinh ra qua "Tạo tài khoản" (tạo hộ F1), "Thêm vợ/chồng vào hộ" hoặc do admin tạo người gốc.
 2. Đăng nhập bằng SĐT + mật khẩu; email nội bộ `<E.164 bỏ dấu +>@phone.diamond-challenge.app`; bắt buộc đổi mật khẩu tạm ở lần đăng nhập đầu (giữ nguyên story 019).
 3. Mỗi người có `display_name` do chính người đó đặt (1–60 ký tự sau khi cắt khoảng trắng). Tuyến trên thấy tên này và SĐT của thành viên; chưa đặt thì chỉ thấy SĐT.
-4. XP, streak, mục tiêu ngày, thành tích, bài học và cài đặt **tính theo người** và **vẫn chỉ lưu trên máy** ở giai đoạn này. Mỗi sự kiện ghi `userId` của người làm; mỗi máy chỉ cộng XP, streak, mục tiêu ngày từ sự kiện có `userId` là của mình.
+4. XP, streak, mục tiêu ngày, thành tích, bài học và cài đặt **tính theo người**, lưu trên máy và **đồng bộ lên server theo tài khoản** (ADR-0004, chỉ chính người đó đọc/ghi; cài đặt thiết bị như giờ nhắc, âm thanh vẫn chỉ trên máy). Mỗi sự kiện ghi `userId` của người làm; mỗi máy chỉ cộng XP, streak, mục tiêu ngày từ sự kiện có `userId` là của mình.
+   **Bắt buộc đăng nhập (story 030, quyết định 2026-11-17):**
+   - Chưa đăng nhập thì chỉ thấy màn Đăng nhập, kèm "Chưa có tài khoản? Liên hệ người bảo trợ" và "Quên mật khẩu? Nhờ người bảo trợ hoặc quản trị đặt lại". Không có chế độ dùng tạm.
+   - Lần đăng nhập đầu cần có mạng; máy chưa từng đăng nhập mà offline thì báo cần mạng. Đã đăng nhập thì phiên lưu trên máy và app dùng offline như trước.
+   - Dữ liệu trên máy **tách theo tài khoản** (mỗi tài khoản một kho). Lần đầu đăng nhập trên máy, dữ liệu cũ của máy chuyển sang tài khoản đó (nếu đã liên kết với một tài khoản ở story 021 thì chỉ tài khoản đó nhận) rồi được đẩy lên sau khi đồng ý; kho cũ được giữ, chỉ đánh dấu đã chuyển.
+   - Đăng xuất mặc định **giữ** dữ liệu của tài khoản trên máy; đăng nhập lại cùng tài khoản thì thấy lại, tài khoản khác không thấy dữ liệu của người trước.
+   - "Đăng xuất và xoá dữ liệu trên máy này" có cảnh báo mất XP, streak, thành tích, bài học; bị chặn khi còn sự kiện Danh bạ chưa đồng bộ (mời đồng bộ hoặc xuất file trước).
 5. Thành tích về người (`people`: khách hàng đầu tiên, đủ 30 KH, đủ 30 NPP F1, đạt 30×30, 250 liên hệ) **đếm theo Danh bạ hộ**, nhưng mỗi thành viên có ghi nhận riêng: mỗi người nhận popup một lần. Các mốc `stage`, `daily_goal`, `streak` chỉ tính sự kiện của chính người đó.
 
 **Hộ kinh doanh**
