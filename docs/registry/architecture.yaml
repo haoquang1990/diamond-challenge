@@ -82,7 +82,18 @@ state_ownership:
     write_access: members-insert-only
     referenced_by:
       - docs/architecture/adr-0002-household-contacts-on-server.md
+      - docs/architecture/adr-0004-personal-progress-on-server.md   # personal progress events are kept out of contact_events
     added: 2026-11-07
+    revised: ""
+  - state: personal_progress
+    status: active
+    owner_system: supabase-personal-events
+    adr: docs/architecture/adr-0004-personal-progress-on-server.md
+    interface: "personal_events rows for user_id; the owner reads and inserts only"
+    write_access: owner-insert-only
+    referenced_by:
+      - docs/architecture/adr-0004-personal-progress-on-server.md
+    added: 2026-11-17
     revised: ""
 
 # Example:
@@ -138,6 +149,18 @@ interfaces:
       - docs/architecture/adr-0003-transfer-contacts-on-code-merge.md
     added: 2026-11-07
     revised: 2026-11-07
+  - contract: progress_sync
+    status: active
+    pattern: shared_resource
+    producer: app-event-store
+    consumers:
+      - supabase-personal-events
+    adr: docs/architecture/adr-0004-personal-progress-on-server.md
+    signal_signature: "insert personal_events on conflict (id) do nothing; select where sync_seq > cursor minus an overlap, dedupe by id"
+    referenced_by:
+      - docs/architecture/adr-0004-personal-progress-on-server.md
+    added: 2026-11-17
+    revised: ""
 
 # Example:
 #
@@ -248,6 +271,24 @@ forbidden_patterns:
     why: "The publishable key is public; RLS is the only guard."
     adr: docs/architecture/adr-0001-household-model.md
     added: 2026-11-07
+  - pattern: push_progress_without_consent
+    status: active
+    description: "The app must never push personal progress events before the account consented to the current consent version."
+    why: "The consent text names progress as stored on the server (ADR-0004)."
+    adr: docs/architecture/adr-0004-personal-progress-on-server.md
+    added: 2026-11-17
+  - pattern: push_device_settings_to_server
+    status: active
+    description: "Device settings (reminder, sound, dailyGoal, accountLinked, contactSync) never go to personal_events or any server table."
+    why: "Device settings stay per device; only progress follows the account (ADR-0004)."
+    adr: docs/architecture/adr-0004-personal-progress-on-server.md
+    added: 2026-11-17
+  - pattern: mix_contact_and_progress_streams
+    status: active
+    description: "Contact events never go to personal_events and personal progress events never go to contact_events."
+    why: "Household members read contact_events; progress is private to its owner (ADR-0004)."
+    adr: docs/architecture/adr-0004-personal-progress-on-server.md
+    added: 2026-11-17
 
 # Example:
 #

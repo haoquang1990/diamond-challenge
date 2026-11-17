@@ -44,7 +44,7 @@ Mục nào thuộc 2b được đánh dấu **[2b]**. Ở 2a, server vẫn giữ
 1. Không tự đăng ký. Tài khoản chỉ sinh ra qua "Tạo tài khoản" (tạo hộ F1), "Thêm vợ/chồng vào hộ" hoặc do admin tạo người gốc.
 2. Đăng nhập bằng SĐT + mật khẩu; email nội bộ `<E.164 bỏ dấu +>@phone.diamond-challenge.app`; bắt buộc đổi mật khẩu tạm ở lần đăng nhập đầu (giữ nguyên story 019).
 3. Mỗi người có `display_name` do chính người đó đặt (1–60 ký tự sau khi cắt khoảng trắng). Tuyến trên thấy tên này và SĐT của thành viên; chưa đặt thì chỉ thấy SĐT.
-4. XP, streak, mục tiêu ngày, thành tích, bài học và cài đặt **tính theo người** và **vẫn chỉ lưu trên máy** ở giai đoạn này. Mỗi sự kiện ghi `userId` của người làm; mỗi máy chỉ cộng XP, streak, mục tiêu ngày từ sự kiện có `userId` là của mình.
+4. XP, streak, mục tiêu ngày, thành tích, bài học và cài đặt **tính theo người**, lưu trên máy và **đồng bộ lên server theo tài khoản** (ADR-0004, chỉ chính người đó đọc/ghi; cài đặt thiết bị như giờ nhắc, âm thanh vẫn chỉ trên máy). Mỗi sự kiện ghi `userId` của người làm; mỗi máy chỉ cộng XP, streak, mục tiêu ngày từ sự kiện có `userId` là của mình.
    **Bắt buộc đăng nhập (story 030, quyết định 2026-11-17):**
    - Chưa đăng nhập thì chỉ thấy màn Đăng nhập, kèm "Chưa có tài khoản? Liên hệ người bảo trợ" và "Quên mật khẩu? Nhờ người bảo trợ hoặc quản trị đặt lại". Không có chế độ dùng tạm.
    - Lần đăng nhập đầu cần có mạng; máy chưa từng đăng nhập mà offline thì báo cần mạng. Đã đăng nhập thì phiên lưu trên máy và app dùng offline như trước.
