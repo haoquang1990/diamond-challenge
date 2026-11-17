@@ -9,6 +9,7 @@ import {
   accountDbName,
   decideLegacyMigration,
   deleteAccountStore,
+  eraseAccountData,
   linkedAccountIds,
   migrateLegacyStore,
   openAccountStore,
@@ -172,6 +173,35 @@ describe('per-account stores', () => {
     expect(names).not.toContain(accountDbName(ACCOUNT_A));
     expect(names).toContain(LEGACY_DB_NAME);
     expect(await openAccountStore(ACCOUNT_A).list()).toEqual([]);
+  });
+
+  it('erasing an account that received the legacy store deletes the legacy database too', async () => {
+    await seedLegacy(legacyEvents);
+    const marker = memoryMarker();
+    const a = openAccountStore(ACCOUNT_A);
+    expect(await migrateLegacyStore(ACCOUNT_A, a, marker)).toBe('copied');
+    await eraseAccountData(ACCOUNT_A, marker);
+    const names = await databaseNames();
+    expect(names).not.toContain(accountDbName(ACCOUNT_A));
+    expect(names).not.toContain(LEGACY_DB_NAME);
+    expect(marker.value).toBe(ACCOUNT_A);
+  });
+
+  it('erasing another account keeps the legacy database', async () => {
+    await seedLegacy(legacyEvents);
+    const marker = memoryMarker(ACCOUNT_A);
+    await openAccountStore(ACCOUNT_B).append({ type: 'lesson_completed', payload: { lessonId: 'l9' } });
+    await eraseAccountData(ACCOUNT_B, marker);
+    const names = await databaseNames();
+    expect(names).not.toContain(accountDbName(ACCOUNT_B));
+    expect(names).toContain(LEGACY_DB_NAME);
+  });
+
+  it('erasing when the device never migrated keeps the legacy database', async () => {
+    await seedLegacy(legacyEvents);
+    await openAccountStore(ACCOUNT_A).append({ type: 'lesson_completed', payload: { lessonId: 'l9' } });
+    await eraseAccountData(ACCOUNT_A, memoryMarker());
+    expect(await databaseNames()).toContain(LEGACY_DB_NAME);
   });
 
   it('refuses an empty account id', async () => {

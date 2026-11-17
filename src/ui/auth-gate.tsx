@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { App } from '../app';
 import { SUPABASE_CONFIG, getSupabaseClient } from '../config/supabase';
-import { clearDeviceAccount, deleteAccountStore, prepareAccountStore, readDeviceAccount, updateDeviceAccount, LEGACY_DB_NAME } from '../data/account-stores';
+import { clearDeviceAccount, eraseAccountData, prepareAccountStore, readDeviceAccount, updateDeviceAccount, LEGACY_DB_NAME } from '../data/account-stores';
 import { loadAccount } from '../data/auth-service';
 import type { AccountInfo } from '../data/auth-service';
 import { IndexedDbEventStore } from '../data/indexeddb-event-store';
@@ -152,7 +152,7 @@ export function AuthGate() {
   const onSignedOut = useCallback(() => setPhase({ kind: 'signed-out' }), []);
   const onEraseDevice = useCallback(async (accountId: string): Promise<boolean> => {
     try {
-      await deleteAccountStore(accountId);
+      await eraseAccountData(accountId);
       clearDeviceAccount();
       return true;
     } catch (error) {

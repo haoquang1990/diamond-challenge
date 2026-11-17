@@ -31,11 +31,27 @@ export function openAccountStore(accountId: string): IndexedDbEventStore {
  */
 export function deleteAccountStore(accountId: string): Promise<void> {
   if (accountId.trim() === '') return Promise.reject(new Error('account id required'));
+  return deleteDatabase(accountDbName(accountId));
+}
+
+function deleteDatabase(name: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.deleteDatabase(accountDbName(accountId));
+    const request = indexedDB.deleteDatabase(name);
     request.onsuccess = () => resolve();
     request.onerror = () => reject(request.error);
   });
+}
+
+/**
+ * "Đăng xuất và xoá dữ liệu trên máy này": deletes the store of `accountId` and, when the
+ * device's legacy store was given to this same account, the legacy database too (it holds the
+ * same contacts and progress, so leaving it would break the promise of the button). The
+ * legacy database is kept when it was given to another account or never migrated. The marker
+ * stays, so the legacy data is never looked for again.
+ */
+export async function eraseAccountData(accountId: string, marker: MigrationMarker = localStorageMarker()): Promise<void> {
+  await deleteAccountStore(accountId);
+  if (marker.read() === accountId) await deleteDatabase(LEGACY_DB_NAME);
 }
 
 // ---------------------------------------------------------------------------
@@ -189,7 +205,8 @@ export async function migrateLegacyStore(
     linked: snapshot === null ? new Set() : linkedAccountIds(snapshot.rows),
   });
   if (outcome !== 'copied' || snapshot === null) return outcome;
-  await target.seedFrom(snapshot.rows, snapshot.meta);
+  const copied = await target.seedFrom(snapshot.rows, snapshot.meta);
+  if (copied === 0) console.warn('[account-stores] the account store already held events; legacy data was not copied');
   marker.write(accountId);
   return 'copied';
 }
