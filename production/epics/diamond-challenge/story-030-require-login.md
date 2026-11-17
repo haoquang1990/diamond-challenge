@@ -1,7 +1,7 @@
 # Story 030: Bắt buộc đăng nhập và gộp thông báo đồng ý vào lần đăng nhập đầu
 
 > **Epic**: diamond-challenge
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Feature
 > **Type**: UI
 > **Estimate**: M
@@ -82,3 +82,10 @@
 
 - Depends on: `production/epics/diamond-challenge/story-021-login-change-password.md`, `production/epics/diamond-challenge/story-023-consent-household-contact-sync.md`
 - Unlocks: None
+
+## Completion Notes
+**Completed**: 2026-11-17
+**Criteria**: 7/7 passing (built app in Chromium 390×844 and 320px with a fake Supabase; not tried on a real phone or against the live Supabase)
+**Deviations**: Advisory, not logged as tech debt: (1) the real-Supabase try is still to do (the user runs the test-household checklist after the deploy; the legacy copy happens once per real device); (2) a signed-in device is recognised offline through supabase-js's own `sb-<project>-auth-token` localStorage key, which can break if the library changes how it stores the session, and nothing tests it; (3) the consent screen gets a third button "Thử lại" when the device is offline and the consent state is unknown (the normal state has exactly two buttons); (4) the legacy copy takes the whole old `meta` (sync cursors and member ids), not only the local userId, so other members' XP is not counted as mine before the first sync; (5) after "Xuất file sao lưu" the erase stays blocked until the contact events are synced (stricter than the decision); (6) the "legacy log linked to another account is not transferred" rule and the consent-version re-ask were checked by unit test or by reading code only; (7) `src/ui/auth-gate.tsx` was added beyond the planned list and is in `## Files`; (8) the story did not go through `/code-review` or a security review, although it touches store migration and erase
+**Test Evidence**: screenshots in production/qa/evidence/story-030-require-login/ (01–12 plus stamp.txt, stamp unchanged); `tests/unit/data/account-stores.test.ts` (18 tests); full suite 436/436
+**Reviewed by**: self, no independent review
