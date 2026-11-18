@@ -1,7 +1,7 @@
 # Story 033: Văn bản đồng ý mới và chặn xoá dữ liệu theo tiến độ chưa đồng bộ
 
 > **Epic**: diamond-challenge
-> **Status**: Ready
+> **Status**: In Progress
 > **Layer**: Feature
 > **Type**: UI
 > **Estimate**: M
