@@ -1,7 +1,7 @@
 # Story 031: Bảng `personal_events` trên server (migration, RLS, `sync_seq`)
 
 > **Epic**: diamond-challenge
-> **Status**: Ready
+> **Status**: In Progress
 > **Layer**: Foundation
 > **Type**: Integration
 > **Estimate**: M
