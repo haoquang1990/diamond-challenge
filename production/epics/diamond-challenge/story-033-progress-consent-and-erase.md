@@ -1,7 +1,7 @@
 # Story 033: Văn bản đồng ý mới và chặn xoá dữ liệu theo tiến độ chưa đồng bộ
 
 > **Epic**: diamond-challenge
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Feature
 > **Type**: UI
 > **Estimate**: M
@@ -79,3 +79,10 @@
 
 - Depends on: `production/epics/diamond-challenge/story-032-progress-sync.md`
 - Unlocks: None
+
+## Completion Notes
+**Completed**: 2026-11-18
+**Criteria**: 6/6 passing (none deferred)
+**Deviations**: Advisory, not logged as tech debt: (1) all checks ran against a fake Supabase and PGlite, not the live one; migrations 20261118000000 (story 031) and 20261118010000 (this story) are not on the live DB; (2) deploy order matters: merging the new migration raises `app_config.contact_consent_version` to 2 and every account that agreed at version 1 must agree again once, so deploy 031 and 032 first, prove them on the live Supabase, then 033, and ship `game-config.json` (2) and the migration in the same release; (3) the consent screen title is still "Đồng bộ Danh bạ trong hộ" although it now also covers personal progress; (4) `src/app.tsx` also changed so an unreadable consent version is never treated as the current one (listed in `## Files`)
+**Test Evidence**: screenshots `production/qa/evidence/story-033-progress-consent-and-erase/01-04` (stamp unchanged); tests waived at qa.level minimal; full suite 535/535 and the migration applied twice on PGlite
+**Reviewed by**: self, no independent review
