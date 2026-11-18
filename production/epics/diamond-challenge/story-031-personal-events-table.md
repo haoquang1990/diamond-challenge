@@ -53,8 +53,9 @@
 
 ## Files
 
-- `supabase/migrations/<timestamp>_personal_events.sql`
-- `tests/integration/supabase/personal-events-rls.test.ts`
+- `supabase/migrations/20261118000000_personal_events.sql` (new: `personal_events`, `personal_events_sync_seq` + trigger, check constraints, RLS, `app_config.contact_consent_version`, `contact_consent_version()`, `has_current_contact_consent()`)
+- `tests/integration/supabase/personal-events-rls.test.ts` (new, 32 tests)
+- `docs/architecture/adr-0004-personal-progress-on-server.md` (Risks: the compensation limit)
 
 ## QA Test Cases
 
