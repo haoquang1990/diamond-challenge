@@ -56,10 +56,12 @@
 
 ## Files
 
-- `src/data/progress-sync.ts` (new)
-- `src/data/contact-sync.ts`, `src/data/event-store.ts`, `src/app.tsx`
-- `src/ui/screens/settings-screen.tsx`, `src/ui/strings.ts`
-- `tests/unit/data/progress-sync.test.ts`, `tests/integration/progress-sync.test.ts`
+- `src/data/progress-sync.ts` (new: stream filter, push/pull, controller)
+- `src/app.tsx` (progress controller wired to login, online, "Đồng bộ ngay", local appends, backup import)
+- `src/ui/screens/settings-screen.tsx` (sync card: "Danh bạ:" and "Tiến độ:" lines, separate error)
+- `src/ui/strings.ts` (heading "Đồng bộ dữ liệu", line labels, progress denied text)
+- `tests/unit/data/progress-sync.test.ts`, `tests/integration/progress-sync.test.ts` (new)
+- `production/qa/evidence/story-032-progress-sync/` (4 screenshots + stamp)
 
 ## QA Test Cases
 

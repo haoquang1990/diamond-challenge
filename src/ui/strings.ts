@@ -424,15 +424,21 @@ export const STRINGS = {
   eraseCancel: 'Huỷ',
   eraseBlocked: (n: number) => `Còn ${n} mục Danh bạ chưa đồng bộ. Hãy đồng bộ hoặc xuất file sao lưu trước khi xoá.`,
   eraseError: 'Chưa xoá được dữ liệu. Thử lại nhé.',
-  contactSyncHeading: 'Đồng bộ Danh bạ hộ',
+  contactSyncHeading: 'Đồng bộ dữ liệu',
   contactSyncChecking: 'Chưa kiểm tra được bạn đã đồng ý hay chưa. Cần có mạng.',
   contactSyncNotConsented: 'Chưa đồng ý lưu Danh bạ trên máy chủ.',
   contactSyncNow: 'Đồng bộ ngay',
   contactSyncIdle: 'Chưa đồng bộ.',
   contactSyncSyncing: 'Đang đồng bộ…',
+  /** Prefix of the Danh bạ line in the sync card (story 032). */
+  contactSyncContactsLabel: 'Danh bạ:',
+  /** Prefix of the personal progress line in the sync card (story 032). */
+  contactSyncProgressLabel: 'Tiến độ:',
   syncNetworkError: 'Không có mạng. App sẽ thử lại khi có mạng.',
   syncServerError: 'Máy chủ đang gặp sự cố. Thử lại sau ít phút nhé.',
   syncDenied: 'Máy chủ từ chối đồng bộ (có thể bạn không còn trong hộ). Đã dừng đồng bộ; dữ liệu trên máy vẫn giữ nguyên.',
+  /** Progress sync refused (no current consent or no rights); the Danh bạ wording about the household does not apply. */
+  progressSyncDenied: 'Máy chủ từ chối lưu tiến độ (có thể bạn cần đồng ý lại). Đã dừng đồng bộ tiến độ; dữ liệu trên máy vẫn giữ nguyên.',
   syncNoHousehold: 'Tài khoản chưa thuộc hộ nào nên chưa đồng bộ được. Dữ liệu trên máy vẫn giữ nguyên.',
   historyFormerMember: 'Thành viên cũ',
 
