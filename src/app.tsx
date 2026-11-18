@@ -16,6 +16,8 @@ import {
 } from './data/contact-sync';
 import type { ContactConsent, ContactSyncController, HouseholdMember, SyncFailure, SyncStatus } from './data/contact-sync';
 import type { EventStore, SyncStateStore } from './data/event-store';
+import { createProgressSyncController, PERSONAL_EVENT_TYPES } from './data/progress-sync';
+import type { ProgressSyncController } from './data/progress-sync';
 import { browserNotificationPlatform, createReminderScheduler } from './notifications/reminders';
 import type { NotificationPlatform } from './notifications/reminders';
 import { AchievementsOverlay, ACHIEVEMENTS_CONFIG } from './ui/achievements-overlay';
@@ -148,6 +150,9 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
   });
   const [syncController, setSyncController] = useState<ContactSyncController | null>(null);
   const [syncStatus, setSyncStatus] = useState<SyncStatus>({ kind: 'idle' });
+  // Personal progress sync (story 032, ADR-0004): its own controller and status, same rhythm as Danh bạ.
+  const [progressController, setProgressController] = useState<ProgressSyncController | null>(null);
+  const [progressStatus, setProgressStatus] = useState<SyncStatus>({ kind: 'idle' });
   const [members, setMembers] = useState<ReadonlyMap<string, HouseholdMember> | null>(null);
   /** Bumped when a sync pulled new events, so the open Làm list re-reads the log. */
   const [dataVersion, setDataVersion] = useState(0);
@@ -231,12 +236,17 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
       }
       // Agreed on the server: ask again once when the consent text version increased.
       const version = await readContactConsentVersion(client);
-      if (version !== null && version < gameConfig.contactConsentVersion) {
+      if (version === null) {
+        // Version unreadable: never assume the current version (story 033); keep a cached current agreement only.
+        setConsent((c) => (c === 'granted' ? c : 'unknown'));
+        return;
+      }
+      if (version < gameConfig.contactConsentVersion) {
         updateDeviceAccount(accountId, { consentVersion: version });
         setConsent('missing');
         return;
       }
-      updateDeviceAccount(accountId, { consentVersion: version ?? gameConfig.contactConsentVersion });
+      updateDeviceAccount(accountId, { consentVersion: version });
       setConsent('granted');
     } catch (error) {
       console.error('[contact-sync] consent check failed', error);
@@ -275,23 +285,51 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
     };
   }, [clientPromise, accountId, consent, rawEventStore, refreshMemberIds]);
 
-  // Debounced push after a local Danh bạ append (the sync itself picks only Danh bạ events).
+  useEffect(() => {
+    if (clientPromise === null || accountId === null || consent !== 'granted') return;
+    let controller: ProgressSyncController | null = null;
+    let cancelled = false;
+    void clientPromise.then((client) => {
+      if (cancelled) return;
+      const created = createProgressSyncController({ client, store: rawEventStore, accountId, consented: true, config: gameConfig.contactSync, now: realNow });
+      controller = created;
+      created.subscribe(() => {
+        const status = created.status();
+        setProgressStatus(status);
+        if (status.kind === 'synced' && status.pulled > 0) setDataVersion((v) => v + 1);
+      });
+      setProgressController(created);
+      void created.sync(false);
+    });
+    return () => {
+      cancelled = true;
+      controller?.dispose();
+      setProgressController(null);
+      setProgressStatus({ kind: 'idle' });
+    };
+  }, [clientPromise, accountId, consent, rawEventStore]);
+
+  // Debounced push after a local append; each controller picks only its own stream's events.
   useEffect(
     () =>
       observed.subscribe((event) => {
         if (CONTACT_EVENT_TYPES.includes(event.type)) syncController?.schedule();
+        if (PERSONAL_EVENT_TYPES.includes(event.type)) progressController?.schedule();
       }),
-    [observed, syncController],
+    [observed, syncController, progressController],
   );
 
   useEffect(() => {
     const onOnline = () => {
       if (consent === 'unknown') void checkConsent();
-      else void syncController?.sync(false);
+      else {
+        void syncController?.sync(false);
+        void progressController?.sync(false);
+      }
     };
     window.addEventListener('online', onOnline);
     return () => window.removeEventListener('online', onOnline);
-  }, [consent, checkConsent, syncController]);
+  }, [consent, checkConsent, syncController, progressController]);
 
   // Household 30x30 numbers (story 027): sent only when signed in, consented and online, and only when they changed.
   const [aggregates, setAggregates] = useState<AggregatesSync | null>(null);
@@ -457,7 +495,8 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
     await refreshSound();
     // Restored Danh bạ events are unsynced like any local event.
     syncController?.schedule();
-  }, [refreshSound, syncController]);
+    progressController?.schedule();
+  }, [refreshSound, syncController, progressController]);
 
   const screen = renderScreen();
   return (
@@ -606,9 +645,12 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
                 contactSync: {
                   consent,
                   status: syncStatus,
+                  progressStatus,
                   onSyncNow: () => {
-                    if (consent === 'granted') void syncController?.sync(true);
-                    else void checkConsent();
+                    if (consent === 'granted') {
+                      void syncController?.sync(true);
+                      void progressController?.sync(true);
+                    } else void checkConsent();
                   },
                 },
                 onEraseDevice,

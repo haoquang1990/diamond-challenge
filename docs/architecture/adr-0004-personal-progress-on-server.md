@@ -1,7 +1,7 @@
 # ADR-0004: Tiến độ cá nhân trên server
 
 ## Status
-Proposed
+Accepted
 
 ## Date
 2026-11-17
@@ -116,7 +116,7 @@ Từ story 030 dữ liệu trên máy tách theo tài khoản; Danh bạ đã c�
 - Ghi nhận thành tích đã đồng bộ nên máy mới không hiện lại popup cũ.
 
 ## Risks
-- **Phân loại nhầm sự kiện** (một sự kiện Danh bạ lọt vào `personal_events` hoặc ngược lại): một bộ lọc thuần duy nhất có unit test; server `check` chặn `activity_logged` có `personId`.
+- **Phân loại nhầm sự kiện** (một sự kiện Danh bạ lọt vào `personal_events` hoặc ngược lại): một bộ lọc thuần duy nhất có unit test; server `check` chặn `activity_logged` có `personId`. Giới hạn đã biết (story 031): sự kiện bù `activity_logged { compensates }` qua được `check` vì server không biết sự kiện gốc thuộc luồng nào; app phân loại theo sự kiện gốc (story 032).
 - **Nhân đôi XP khi gộp:** gộp theo `id`, `on conflict (id) do nothing`; test hai máy offline.
 - **Kho cũ được chép cho tài khoản rồi đẩy lên:** chỉ tài khoản nhận kho cũ (story 030) đẩy phần tiến độ đó; có test.
 - **Lượng sự kiện lớn:** kéo theo trang (`limit`) như Danh bạ.

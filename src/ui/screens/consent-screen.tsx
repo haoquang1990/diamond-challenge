@@ -50,6 +50,7 @@ export function ConsentScreen({ onAgree, onSignOut, needsNetwork = false, onRetr
         <p className="card__body">{STRINGS.consentIntro}</p>
         <ul className="consent-list">
           <li>{STRINGS.consentMembersOnly}</li>
+          <li>{STRINGS.consentProgress}</li>
           <li>{STRINGS.consentAdmins}</li>
         </ul>
         <p className="card__body">{STRINGS.consentRequiredNote}</p>

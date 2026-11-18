@@ -13,6 +13,7 @@ import { ACHIEVEMENTS_CONFIG } from '../achievements-overlay';
 import { setSoundEnabled } from '../play-ting';
 import { authFailureText, contactSyncLastSyncedLabel, STRINGS, syncFailureText } from '../strings';
 import { selectEventsToPush } from '../../data/contact-sync';
+import { selectProgressToPush } from '../../data/progress-sync';
 import type { ContactConsent, SyncStatus } from '../../data/contact-sync';
 import { validateDisplayName } from '../../data/auth-service';
 import type { AccountInfo, AuthResult } from '../../data/auth-service';
@@ -38,6 +39,8 @@ export interface SettingsAccountProps {
 export interface SettingsContactSyncProps {
   readonly consent: ContactConsent;
   readonly status: SyncStatus;
+  /** Personal progress sync status (story 032); its own line so its error never hides the Danh bạ one. */
+  readonly progressStatus?: SyncStatus;
   /** Syncs now (re-checks consent first when it is unknown). */
   readonly onSyncNow: () => void;
 }
@@ -56,18 +59,26 @@ function syncStatusText(status: SyncStatus): string {
 }
 
 /** Read-only status of the household contact sync and "Đồng bộ ngay" (no on/off switch, story 030). */
-function ContactSyncCard({ consent, status, onSyncNow }: SettingsContactSyncProps) {
-  const failed = consent === 'granted' && status.kind === 'failed';
+function ContactSyncCard({ consent, status, progressStatus, onSyncNow }: SettingsContactSyncProps) {
+  const granted = consent === 'granted';
+  const failed = granted && status.kind === 'failed';
   const text = consent === 'unknown' ? STRINGS.contactSyncChecking : consent === 'missing' ? STRINGS.contactSyncNotConsented : syncStatusText(status);
+  const progressFailed = granted && progressStatus?.kind === 'failed';
+  const syncing = status.kind === 'syncing' || progressStatus?.kind === 'syncing';
   return (
     <section className="card form" aria-labelledby="contact-sync-title">
       <h2 id="contact-sync-title" className="card__title">
         {STRINGS.contactSyncHeading}
       </h2>
       <p className={failed ? 'message message--error' : 'card__body'} role={failed ? 'alert' : 'status'}>
-        {text}
+        {granted && progressStatus !== undefined ? `${STRINGS.contactSyncContactsLabel} ${text}` : text}
       </p>
-      <button type="button" className="button button--secondary" onClick={onSyncNow} disabled={status.kind === 'syncing'}>
+      {granted && progressStatus !== undefined && (
+        <p className={progressFailed ? 'message message--error' : 'card__body'} role={progressFailed ? 'alert' : 'status'} data-testid="progress-sync-status">
+          {`${STRINGS.contactSyncProgressLabel} ${progressStatus.kind === 'failed' && progressStatus.reason === 'denied' ? STRINGS.progressSyncDenied : syncStatusText(progressStatus)}`}
+        </p>
+      )}
+      <button type="button" className="button button--secondary" onClick={onSyncNow} disabled={syncing}>
         {STRINGS.contactSyncNow}
       </button>
     </section>
@@ -340,7 +351,9 @@ export function SettingsScreen({
     if (onEraseDevice === undefined || erase.step === 'busy') return;
     setErase({ step: 'busy', blocked: 0, error: false });
     try {
-      const left = selectEventsToPush(await eventStore.list()).length;
+      // Both unsynced Danh bạ and progress events block the erase (story 033).
+      const events = await eventStore.list();
+      const left = selectEventsToPush(events).length + selectProgressToPush(events).length;
       if (left > 0) {
         setErase({ step: 'confirm', blocked: left, error: false });
         return;

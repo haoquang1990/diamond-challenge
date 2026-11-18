@@ -399,10 +399,12 @@ export const STRINGS = {
   },
 
   // Đồng bộ Danh bạ hộ (story 023)
-  consentTitle: 'Đồng bộ Danh bạ trong hộ',
+  consentTitle: 'Đồng bộ dữ liệu',
   consentIntro:
     'Để đồng bộ với các thành viên trong hộ, Danh bạ của bạn (tên, số điện thoại, mã số Amway, ghi chú, nhãn, việc cần làm và lịch sử) sẽ được lưu trên máy chủ đặt tại Singapore.',
   consentMembersOnly: 'Chỉ thành viên trong hộ của bạn xem được Danh bạ này qua app.',
+  consentProgress:
+    'Tiến độ học và XP của bạn (bài học đã học, XP, streak, thành tích) cũng được lưu trên máy chủ ở Singapore, chỉ bạn xem được.',
   consentAdmins: 'Quản trị viên của dự án có thể truy cập dữ liệu trên máy chủ.',
   consentRequiredNote: 'Bạn cần đồng ý để dùng app. Nếu chưa muốn, hãy đăng xuất.',
   consentAgree: 'Đồng ý và tiếp tục',
@@ -418,21 +420,27 @@ export const STRINGS = {
   eraseHeading: 'Xoá dữ liệu trên máy này',
   eraseOpen: 'Đăng xuất và xoá dữ liệu trên máy này',
   eraseWarning:
-    'XP, streak, thành tích và bài học chỉ có trên máy này sẽ mất và không lấy lại được. Danh bạ đã đồng bộ vẫn còn trên máy chủ.',
+    'Dữ liệu chưa đồng bộ sẽ mất và không lấy lại được. Tiến độ và Danh bạ đã đồng bộ vẫn còn trên máy chủ và sẽ quay lại khi bạn đăng nhập lại.',
   eraseExport: 'Xuất file sao lưu',
   eraseConfirm: 'Xoá và đăng xuất',
   eraseCancel: 'Huỷ',
-  eraseBlocked: (n: number) => `Còn ${n} mục Danh bạ chưa đồng bộ. Hãy đồng bộ hoặc xuất file sao lưu trước khi xoá.`,
+  eraseBlocked: (n: number) => `Còn ${n} mục chưa đồng bộ (Danh bạ và tiến độ). Hãy đồng bộ hoặc xuất file sao lưu trước khi xoá.`,
   eraseError: 'Chưa xoá được dữ liệu. Thử lại nhé.',
-  contactSyncHeading: 'Đồng bộ Danh bạ hộ',
+  contactSyncHeading: 'Đồng bộ dữ liệu',
   contactSyncChecking: 'Chưa kiểm tra được bạn đã đồng ý hay chưa. Cần có mạng.',
   contactSyncNotConsented: 'Chưa đồng ý lưu Danh bạ trên máy chủ.',
   contactSyncNow: 'Đồng bộ ngay',
   contactSyncIdle: 'Chưa đồng bộ.',
   contactSyncSyncing: 'Đang đồng bộ…',
+  /** Prefix of the Danh bạ line in the sync card (story 032). */
+  contactSyncContactsLabel: 'Danh bạ:',
+  /** Prefix of the personal progress line in the sync card (story 032). */
+  contactSyncProgressLabel: 'Tiến độ:',
   syncNetworkError: 'Không có mạng. App sẽ thử lại khi có mạng.',
   syncServerError: 'Máy chủ đang gặp sự cố. Thử lại sau ít phút nhé.',
   syncDenied: 'Máy chủ từ chối đồng bộ (có thể bạn không còn trong hộ). Đã dừng đồng bộ; dữ liệu trên máy vẫn giữ nguyên.',
+  /** Progress sync refused (no current consent or no rights); the Danh bạ wording about the household does not apply. */
+  progressSyncDenied: 'Máy chủ từ chối lưu tiến độ (có thể bạn cần đồng ý lại). Đã dừng đồng bộ tiến độ; dữ liệu trên máy vẫn giữ nguyên.',
   syncNoHousehold: 'Tài khoản chưa thuộc hộ nào nên chưa đồng bộ được. Dữ liệu trên máy vẫn giữ nguyên.',
   historyFormerMember: 'Thành viên cũ',
 

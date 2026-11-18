@@ -1,0 +1,6 @@
+Reviewed-Content-Hash: src/data/progress-sync.ts 64968f923cee40c4c006f0831237a515fee090f0
+Reviewed-Content-Hash: src/app.tsx 3ea4fb50a9806eff8447c323aea62f6825f0cc84
+Reviewed-Content-Hash: src/ui/screens/settings-screen.tsx 4115ddb0446be55f5f70ceeb84437946f43dcde7
+Reviewed-Content-Hash: src/ui/strings.ts 203ba19548ba6d182ec8d418f1a2a90924a01fbc
+Reviewed-Content-Hash: tests/unit/data/progress-sync.test.ts 25aa82ada06a48e736ebe8c9d0c07c4bdc829482
+Reviewed-Content-Hash: tests/integration/progress-sync.test.ts abfb66934b602ae6a07ae9586cc33854941fd57b

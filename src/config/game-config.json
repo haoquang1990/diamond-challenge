@@ -148,7 +148,7 @@
       { "id": "people:achieved_30x30", "kind": "people", "metric": "achieved30x30", "name": "Đạt 30x30" }
     ]
   },
-  "contactConsentVersion": 1,
+  "contactConsentVersion": 2,
   "maxHouseholdMembers": 2,
   "inactiveDays": 3,
   "cheersPerDay": 1,
