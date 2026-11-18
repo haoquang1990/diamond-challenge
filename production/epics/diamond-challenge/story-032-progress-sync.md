@@ -1,7 +1,7 @@
 # Story 032: Bộ đồng bộ tiến độ cá nhân trong app (đẩy, kéo, offline)
 
 > **Epic**: diamond-challenge
-> **Status**: Ready
+> **Status**: In Progress
 > **Layer**: Feature
 > **Type**: Integration
 > **Estimate**: L
