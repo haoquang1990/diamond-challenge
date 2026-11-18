@@ -1,7 +1,7 @@
 # Story 032: Bộ đồng bộ tiến độ cá nhân trong app (đẩy, kéo, offline)
 
 > **Epic**: diamond-challenge
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Feature
 > **Type**: Integration
 > **Estimate**: L
@@ -82,3 +82,10 @@
 
 - Depends on: `production/epics/diamond-challenge/story-031-personal-events-table.md`
 - Unlocks: story 033
+
+## Completion Notes
+**Completed**: 2026-11-18
+**Criteria**: 8/8 passing (none deferred)
+**Deviations**: Advisory, not logged as tech debt: (1) all checks ran against a fake Supabase (Playwright) and PGlite; the sync has not run against the live Supabase, because migration 20261118000000 (story 031) is not on the live DB yet, so deploy 031 and 032 together; (2) "popup of an already acknowledged achievement does not show again on a new device" is covered by a test on the acknowledgement list, not by a screenshot; (3) the sync card heading changed from "Đồng bộ Danh bạ hộ" to "Đồng bộ dữ liệu" and a progress-specific denied message was added (both in `strings.ts`)
+**Test Evidence**: `tests/unit/data/progress-sync.test.ts`, `tests/integration/progress-sync.test.ts` (full suite 535/535); screenshots `production/qa/evidence/story-032-progress-sync/01-04` (stamp unchanged)
+**Reviewed by**: self, no independent review
