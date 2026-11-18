@@ -1,7 +1,7 @@
 # Story 031: Bảng `personal_events` trên server (migration, RLS, `sync_seq`)
 
 > **Epic**: diamond-challenge
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Foundation
 > **Type**: Integration
 > **Estimate**: M
@@ -76,3 +76,10 @@
 
 - Depends on: `production/epics/diamond-challenge/story-030-require-login.md` (kho theo tài khoản; đồng ý bắt buộc)
 - Unlocks: story 032
+
+## Completion Notes
+**Completed**: 2026-11-18
+**Criteria**: 7/7 passing (migration and RLS run only on PGlite; not applied to the live Supabase)
+**Deviations**: Advisory, not logged as tech debt: (1) the migration reaches the live database for the first time on the next deploy, and story 032 needs it there; (2) a compensating `activity_logged { compensates }` passes the server `check`, so the app must classify it by its target (story 032), recorded in the migration and ADR-0004; (3) the consent version lives in two places (`game-config.json` and `app_config.contact_consent_version`) and story 033 must raise both together; (4) only two guards were mutation-tested (the owner condition of the select policy and the consent condition of the insert policy); the grants and the `check` constraints were not; (5) `docs/architecture/adr-0004-personal-progress-on-server.md` (Risks) was edited to record the compensation limit, beyond the planned list
+**Test Evidence**: `tests/integration/supabase/personal-events-rls.test.ts` (32 tests, rerun at close: 32/32); full suite 471/471
+**Reviewed by**: self, no independent review

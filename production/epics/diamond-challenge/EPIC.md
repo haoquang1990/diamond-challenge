@@ -44,7 +44,7 @@ Theo Build order của brief: nhật ký sự kiện + XP/streak → Làm + Hôm
 | 028 | Màn "Nhóm của tôi" (một tầng), cảnh báo không hoạt động, cổ vũ | UI | Ready | N/A |
 | 029 | Màn Quản trị tối thiểu (đặt lại mật khẩu, đặt mã số cho hộ) | UI | Ready | N/A |
 | 030 | Bắt buộc đăng nhập, đồng ý bắt buộc, dữ liệu trên máy theo tài khoản | UI | Complete | N/A |
-| 031 | Bảng `personal_events` trên server (migration, RLS, `sync_seq`) | Integration | Ready | N/A |
+| 031 | Bảng `personal_events` trên server (migration, RLS, `sync_seq`) | Integration | Complete | N/A |
 | 032 | Bộ đồng bộ tiến độ cá nhân trong app (đẩy, kéo, offline) | Integration | Ready | N/A |
 | 033 | Văn bản đồng ý mới và chặn xoá dữ liệu theo tiến độ chưa đồng bộ | UI | Ready | N/A |
 
