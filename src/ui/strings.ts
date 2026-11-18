@@ -399,7 +399,7 @@ export const STRINGS = {
   },
 
   // Đồng bộ Danh bạ hộ (story 023)
-  consentTitle: 'Đồng bộ Danh bạ trong hộ',
+  consentTitle: 'Đồng bộ dữ liệu',
   consentIntro:
     'Để đồng bộ với các thành viên trong hộ, Danh bạ của bạn (tên, số điện thoại, mã số Amway, ghi chú, nhãn, việc cần làm và lịch sử) sẽ được lưu trên máy chủ đặt tại Singapore.',
   consentMembersOnly: 'Chỉ thành viên trong hộ của bạn xem được Danh bạ này qua app.',

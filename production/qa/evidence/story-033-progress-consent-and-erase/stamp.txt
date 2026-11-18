@@ -1,6 +1,6 @@
 Reviewed-Content-Hash: src/config/game-config.json 486dcf0cdb523ed730ef289789c54db54f2b2e4b
 Reviewed-Content-Hash: supabase/migrations/20261118010000_consent_version_2.sql 74794be34f0bbacc29b31d66c114eae36f30e85b
-Reviewed-Content-Hash: src/ui/strings.ts f189dcea007e207951c39474b6c2693e4581790f
+Reviewed-Content-Hash: src/ui/strings.ts 35c37e57685da2035a65ac1956f76310de54edf5
 Reviewed-Content-Hash: src/ui/screens/consent-screen.tsx 6a17c26145067a786b0dea7d99ecf906b0a481aa
 Reviewed-Content-Hash: src/ui/screens/settings-screen.tsx e272f0ae2e11302631fe37915a13c9e831b47b3b
 Reviewed-Content-Hash: src/app.tsx fa9b54ebacaabcab842ac09762513a55782ff31d
