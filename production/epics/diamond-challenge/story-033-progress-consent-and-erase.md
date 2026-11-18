@@ -52,10 +52,13 @@
 
 ## Files
 
-- `src/ui/screens/consent-screen.tsx`, `src/ui/screens/settings-screen.tsx`, `src/app.tsx`
-- `src/config/game-config.json` (`contactConsentVersion`), `src/ui/strings.ts`, `src/ui/styles.css`
-- `supabase/migrations/<timestamp>_consent_version_2.sql`
-- `production/qa/evidence/story-033-progress-consent-and-erase/`
+- `src/config/game-config.json` (`contactConsentVersion` 1 → 2)
+- `supabase/migrations/20261118010000_consent_version_2.sql` (new: `app_config.contact_consent_version` = 2, idempotent)
+- `src/ui/strings.ts` (`consentProgress`, new `eraseWarning` and `eraseBlocked`)
+- `src/ui/screens/consent-screen.tsx` (progress line in the consent list)
+- `src/ui/screens/settings-screen.tsx` (erase block counts Danh bạ and progress events)
+- `src/app.tsx` (an unreadable consent version is never treated as the current one)
+- `production/qa/evidence/story-033-progress-consent-and-erase/` (4 screenshots + stamp)
 
 ## QA Test Cases
 

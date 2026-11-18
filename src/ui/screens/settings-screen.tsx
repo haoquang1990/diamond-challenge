@@ -13,6 +13,7 @@ import { ACHIEVEMENTS_CONFIG } from '../achievements-overlay';
 import { setSoundEnabled } from '../play-ting';
 import { authFailureText, contactSyncLastSyncedLabel, STRINGS, syncFailureText } from '../strings';
 import { selectEventsToPush } from '../../data/contact-sync';
+import { selectProgressToPush } from '../../data/progress-sync';
 import type { ContactConsent, SyncStatus } from '../../data/contact-sync';
 import { validateDisplayName } from '../../data/auth-service';
 import type { AccountInfo, AuthResult } from '../../data/auth-service';
@@ -350,7 +351,9 @@ export function SettingsScreen({
     if (onEraseDevice === undefined || erase.step === 'busy') return;
     setErase({ step: 'busy', blocked: 0, error: false });
     try {
-      const left = selectEventsToPush(await eventStore.list()).length;
+      // Both unsynced Danh bạ and progress events block the erase (story 033).
+      const events = await eventStore.list();
+      const left = selectEventsToPush(events).length + selectProgressToPush(events).length;
       if (left > 0) {
         setErase({ step: 'confirm', blocked: left, error: false });
         return;

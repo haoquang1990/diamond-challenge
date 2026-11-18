@@ -236,12 +236,17 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
       }
       // Agreed on the server: ask again once when the consent text version increased.
       const version = await readContactConsentVersion(client);
-      if (version !== null && version < gameConfig.contactConsentVersion) {
+      if (version === null) {
+        // Version unreadable: never assume the current version (story 033); keep a cached current agreement only.
+        setConsent((c) => (c === 'granted' ? c : 'unknown'));
+        return;
+      }
+      if (version < gameConfig.contactConsentVersion) {
         updateDeviceAccount(accountId, { consentVersion: version });
         setConsent('missing');
         return;
       }
-      updateDeviceAccount(accountId, { consentVersion: version ?? gameConfig.contactConsentVersion });
+      updateDeviceAccount(accountId, { consentVersion: version });
       setConsent('granted');
     } catch (error) {
       console.error('[contact-sync] consent check failed', error);
