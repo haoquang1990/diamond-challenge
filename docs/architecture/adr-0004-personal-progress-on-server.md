@@ -1,7 +1,7 @@
 # ADR-0004: Tiến độ cá nhân trên server
 
 ## Status
-Proposed
+Accepted
 
 ## Date
 2026-11-17
