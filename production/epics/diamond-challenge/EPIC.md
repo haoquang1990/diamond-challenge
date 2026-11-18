@@ -43,9 +43,15 @@ Theo Build order của brief: nhật ký sự kiện + XP/streak → Làm + Hôm
 | 027 | Bảng 30x30 theo hộ và đồng bộ số tổng hợp | UI | Ready | N/A |
 | 028 | Màn "Nhóm của tôi" (một tầng), cảnh báo không hoạt động, cổ vũ | UI | Ready | N/A |
 | 029 | Màn Quản trị tối thiểu (đặt lại mật khẩu, đặt mã số cho hộ) | UI | Ready | N/A |
+| 030 | Bắt buộc đăng nhập, đồng ý bắt buộc, dữ liệu trên máy theo tài khoản | UI | Complete | N/A |
+| 031 | Bảng `personal_events` trên server (migration, RLS, `sync_seq`) | Integration | Ready | N/A |
+| 032 | Bộ đồng bộ tiến độ cá nhân trong app (đẩy, kéo, offline) | Integration | Ready | N/A |
+| 033 | Văn bản đồng ý mới và chặn xoá dữ liệu theo tiến độ chưa đồng bộ | UI | Ready | N/A |
 
 > 012–014 thay mô hình giai đoạn bằng việc cần làm + nhãn KH/NPP theo phản hồi dùng thử (2026-11-04, `design/gdd/crm.md`). Thứ tự gợi ý: 012 → 013 → 014 → 011.
 
 > 016–018 thêm hệ thống thông báo thành tích (`design/quick-specs/achievements-system-2026-11-05.md`). Thứ tự: 016 → 017 → 018.
 
 > 021–029 là giai đoạn 2a (tập trung 30x30, `design/gdd/accounts.md`, `design/gdd/crm.md`); 019–020 là phần server. Thứ tự: 021 → 022 → 023 → 024 → 025 → 026 → 027 → 028 → 029. Migration `sync_seq` (sửa ADR-0002) đã có; phải deploy trước khi thử 023 trên server. Không có story cho Bảng 4x4, cây nhiều tầng, gộp hai mã, Web Push (2b).
+
+> 030 bắt buộc đăng nhập (xong 2026-11-17). 031–033 đồng bộ tiến độ cá nhân theo ADR-0004 (Accepted 2026-11-18). Thứ tự: 031 → 032 → 033. Migration của 031 chạy lên Supabase thật khi merge: deploy 031 trước hoặc cùng lúc với 032; deploy 033 sau khi 032 chạy ổn vì nó buộc mọi người đồng ý lại.
