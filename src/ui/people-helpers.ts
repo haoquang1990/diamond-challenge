@@ -159,6 +159,75 @@ export interface HistoryEntry {
   readonly name: string;
   /** `userId` of the event (who did it). */
   readonly userId: string;
+  /** Activity type id (kind 'activity' only). */
+  readonly taskId?: string;
+  /** XP the activity earned (kind 'activity' only, when recorded). */
+  readonly xp?: number;
+  /** Free-text note of the activity; present only when non-empty. */
+  readonly note?: string;
+}
+
+/** One task's count in a {@link HistorySummary}. */
+export interface HistoryTaskCount {
+  readonly id: string;
+  /** Task name, '' when unknown. */
+  readonly name: string;
+  readonly count: number;
+}
+
+/** Totals over a person's history (see {@link summarizeHistory}). */
+export interface HistorySummary {
+  /** Per-task counts, in order of first occurrence. */
+  readonly counts: readonly HistoryTaskCount[];
+  readonly totalXp: number;
+  /** Timestamp of the earliest / latest activity, null when there is none. */
+  readonly firstAt: string | null;
+  readonly lastAt: string | null;
+  /** Whole days from `lastAt` to `now` (never negative), null when there is no activity. */
+  readonly daysSinceLast: number | null;
+}
+
+/**
+ * Summary of a person's history: per-task counts, total XP, first and last
+ * activity and whole days since the last one, relative to the injected `now`.
+ * Takes the rows of {@link buildPersonHistory}, which already drops compensated
+ * (undone) activities and includes merged contacts' activities; legacy stage
+ * rows are ignored. Pure.
+ *
+ * @example
+ * const s = summarizeHistory(buildPersonHistory(events, id, config, named), new Date());
+ */
+export function summarizeHistory(entries: readonly HistoryEntry[], now: Date): HistorySummary {
+  const counts = new Map<string, { name: string; count: number }>();
+  let totalXp = 0;
+  let first: { ms: number; iso: string } | null = null;
+  let last: { ms: number; iso: string } | null = null;
+  for (const h of entries) {
+    if (h.kind !== 'activity') continue;
+    const id = h.taskId ?? '';
+    const c = counts.get(id);
+    if (c === undefined) counts.set(id, { name: h.name, count: 1 });
+    else c.count += 1;
+    totalXp += h.xp ?? 0;
+    const ms = Date.parse(h.timestamp);
+    if (Number.isNaN(ms)) continue;
+    if (first === null || ms < first.ms) first = { ms, iso: h.timestamp };
+    if (last === null || ms > last.ms) last = { ms, iso: h.timestamp };
+  }
+  const days = last === null ? null : Math.max(0, Math.floor((now.getTime() - last.ms) / 86_400_000));
+  return {
+    counts: [...counts].map(([id, c]) => ({ id, name: c.name, count: c.count })),
+    totalXp,
+    firstAt: first === null ? null : first.iso,
+    lastAt: last === null ? null : last.iso,
+    daysSinceLast: days,
+  };
+}
+
+/** Value for an `<input type="datetime-local">` in local time, minute precision ("YYYY-MM-DDTHH:mm"). */
+export function toLocalInputValue(date: Date): string {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
 /**
@@ -186,7 +255,14 @@ export function buildPersonHistory(
       if (owners.get(e.id) !== personId) continue;
       const typeId = e.payload.activityType;
       const name = namedTypes.find((t) => t.id === typeId)?.name ?? '';
-      entries.push({ id: e.id, timestamp: e.timestamp, kind: 'activity', name, userId: e.userId });
+      const row: HistoryEntry = { id: e.id, timestamp: e.timestamp, kind: 'activity', name, userId: e.userId };
+      const note = typeof e.payload.note === 'string' ? e.payload.note.trim() : '';
+      entries.push({
+        ...row,
+        ...(typeof typeId === 'string' ? { taskId: typeId } : {}),
+        ...(typeof e.payload.xp === 'number' ? { xp: e.payload.xp } : {}),
+        ...(note !== '' ? { note } : {}),
+      });
     } else if (e.type === 'person_stage_changed' && typeof e.payload.personId === 'string' && (rootOf.get(e.payload.personId) ?? e.payload.personId) === personId) {
       const stage = config.stages.find((s) => s.id === e.payload.to);
       if (stage !== undefined) entries.push({ id: e.id, timestamp: e.timestamp, kind: 'stage', name: stage.name, userId: e.userId });

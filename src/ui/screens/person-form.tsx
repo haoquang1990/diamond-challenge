@@ -1,18 +1,164 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
+import type { ReactNode } from 'react';
+import gameConfig from '../../config/game-config.json';
 import type { EventStore, LogEvent } from '../../data/event-store';
 import { buildSplitEvents } from '../../domain/duplicates';
 import {
   buildTaskCompletionEvent,
   findDuplicateNames,
+  parseActivityLimits,
   pendingTasks,
+  validateActivityTime,
   validateAmwayCode,
   validatePersonName,
   validatePhone,
 } from '../../domain/people';
-import type { PeopleConfig, Person, PersonPhone } from '../../domain/people';
+import type { PeopleConfig, Person, PersonPhone, PersonTaskDef } from '../../domain/people';
 import { COUNTRY_CODES, PEOPLE_CONFIG, PERSON_TASKS } from '../people-config';
-import { buildPersonHistory, duplicateCodeNames, findDuplicateCodes, findPeopleWithCode, formatPhone } from '../people-helpers';
-import { STRINGS, duplicateCodeWarning, historyStageLabel, shortDateLabel, splitLabel, taskButtonLabel, xpLabel } from '../strings';
+import { buildPersonHistory, duplicateCodeNames, findDuplicateCodes, findPeopleWithCode, formatPhone, summarizeHistory, toLocalInputValue } from '../people-helpers';
+import {
+  STRINGS,
+  activityTimeTooOldLabel,
+  dateTimeLabel,
+  daysSinceLabel,
+  duplicateCodeWarning,
+  historyStageLabel,
+  noteCounterLabel,
+  splitLabel,
+  taskButtonLabel,
+  xpLabel,
+} from '../strings';
+
+/** Activity limits: from the people config when present, else the validated game-config values. */
+const DEFAULT_LIMITS = parseActivityLimits(gameConfig.activityBackdateDays, gameConfig.activityNoteMaxLength);
+
+const FOCUSABLE = 'button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [href], [tabindex]:not([tabindex="-1"])';
+
+/** Props for {@link Dialog}. */
+interface DialogProps {
+  readonly title: string;
+  readonly onClose: () => void;
+  readonly children: ReactNode;
+}
+
+/**
+ * Modal popup (reuses `.popup-backdrop` / `.popup`): role="dialog", aria-modal, labelled by its
+ * title. On open focus moves to the first field inside; Tab stays inside; Esc and a click on the
+ * backdrop call `onClose`; the page behind does not scroll (body class) and the focus returns to
+ * the opener on close. The content scrolls inside (max-height ~90vh).
+ */
+function Dialog({ title, onClose, children }: DialogProps) {
+  const titleId = useId();
+  const panelRef = useRef<HTMLDivElement>(null);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+
+  useEffect(() => {
+    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    document.body.classList.add('dialog-open');
+    const panel = panelRef.current;
+    (panel?.querySelector<HTMLElement>(FOCUSABLE) ?? panel)?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onCloseRef.current();
+      } else if (e.key === 'Tab' && panel !== null) {
+        const items = Array.from(panel.querySelectorAll<HTMLElement>(FOCUSABLE));
+        if (items.length === 0) {
+          e.preventDefault();
+          return;
+        }
+        const first = items[0];
+        const last = items[items.length - 1];
+        if (e.shiftKey && (document.activeElement === first || document.activeElement === panel)) {
+          e.preventDefault();
+          last?.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first?.focus();
+        }
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.classList.remove('dialog-open');
+      // After the commit, so an opener that was disabled while saving can take focus again.
+      setTimeout(() => opener?.focus(), 0);
+    };
+  }, []);
+
+  return (
+    <div
+      className="popup-backdrop"
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div ref={panelRef} className="popup popup--dialog" role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1}>
+        <h2 id={titleId} className="popup__title">
+          {title}
+        </h2>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+/** Props for {@link ActivityDialog}. */
+interface ActivityDialogProps {
+  readonly task: PersonTaskDef;
+  readonly noteMaxLength: number;
+  readonly backdateDays: number;
+  readonly busy: boolean;
+  readonly error: string | null;
+  readonly onConfirm: (note: string, when: Date) => void;
+  readonly onCancel: () => void;
+}
+
+/** Popup to log one task: optional note, date and time (default now), Confirm / Cancel. */
+function ActivityDialog({ task, noteMaxLength, backdateDays, busy, error, onConfirm, onCancel }: ActivityDialogProps) {
+  const [note, setNote] = useState('');
+  const [when, setWhen] = useState(() => toLocalInputValue(new Date()));
+  const chosen = new Date(when);
+  const check = validateActivityTime(chosen, new Date(), backdateDays);
+  const problem =
+    check === 'future' ? STRINGS.activityTimeFuture : check === 'too_old' ? activityTimeTooOldLabel(backdateDays) : check === 'invalid' ? STRINGS.activityTimeInvalid : null;
+  return (
+    <Dialog title={task.name} onClose={onCancel}>
+      <p className="popup__body">
+        <strong>{xpLabel(task.xp)}</strong>
+      </p>
+      <label className="note popup__field">
+        <span className="note__label">{STRINGS.activityNoteLabel}</span>
+        <textarea className="note__input" rows={3} maxLength={noteMaxLength} value={note} onChange={(e) => setNote(e.target.value)} disabled={busy} />
+        <span className="popup__counter">{noteCounterLabel(note.length, noteMaxLength)}</span>
+      </label>
+      <label className="note popup__field">
+        <span className="note__label">{STRINGS.activityDateTimeLabel}</span>
+        <input className="note__input" type="datetime-local" value={when} onChange={(e) => setWhen(e.target.value)} disabled={busy} aria-invalid={problem !== null} />
+      </label>
+      {problem !== null && (
+        <p className="message message--error" role="alert">
+          {problem}
+        </p>
+      )}
+      {error !== null && (
+        <p className="message message--error" role="alert">
+          {error}
+        </p>
+      )}
+      <div className="button-row popup__actions">
+        <button type="button" className="button button--secondary" onClick={onCancel} disabled={busy}>
+          {STRINGS.activityCancel}
+        </button>
+        <button type="button" className="button button--primary" onClick={() => onConfirm(note, chosen)} disabled={busy || problem !== null}>
+          {STRINGS.activityConfirm}
+        </button>
+      </div>
+    </Dialog>
+  );
+}
 
 /** Maps a phone validation failure to its message. */
 function phoneErrorText(reason: 'unknown_country' | 'not_digits' | 'bad_length'): string {
@@ -301,10 +447,11 @@ interface TaskUndo {
 /**
  * Detail view of one person, top to bottom (story 015): header (name as the
  * title, KH/NPP badge, phone), to-do tasks ("Hoạt động", completed through
- * one activity_logged event, undo by compensating event), a collapsed
- * "Sửa thông tin" section with the name/phone/note form (closed by default,
- * closes again after a successful save), read-only history and archive (with
- * confirm). State of record is the event log; this only holds form state.
+ * one activity_logged event after a confirm popup with note and date/time, undo
+ * by compensating event), an always-open info form (name/phone/code/note; Save
+ * enabled only when a field differs from the saved person), a "Lịch sử" button
+ * opening a summary + list popup (story 034) and archive (with confirm). State
+ * of record is the event log; this only holds form state.
  */
 export function PersonDetail({ eventStore, person, people, events, activityTypes, config = PEOPLE_CONFIG, authorLabel, createAccount, onChanged, onBack }: PersonDetailProps) {
   const [name, setName] = useState(person.name);
@@ -319,12 +466,19 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [taskUndo, setTaskUndo] = useState<TaskUndo | null>(null);
-  const [editOpen, setEditOpen] = useState(false);
+  const [activeTask, setActiveTask] = useState<PersonTaskDef | null>(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const backdateDays = config.activityBackdateDays ?? DEFAULT_LIMITS.activityBackdateDays;
+  const noteMaxLength = config.activityNoteMaxLength ?? DEFAULT_LIMITS.activityNoteMaxLength;
 
+  const savedCountry = person.phone?.country ?? DEFAULT_COUNTRY;
+  const dirty =
+    name !== person.name || note !== person.note || country !== savedCountry || number !== (person.phone?.number ?? '') || code !== (person.amwayCode ?? '');
   const duplicate = name.trim() !== '' && findDuplicateNames(people, name, person.personId).duplicate;
   const sameCode = findDuplicateCodes(people).get(person.personId);
   const todo = pendingTasks(person, config);
   const history = buildPersonHistory(events, person.personId, config, [...PERSON_TASKS, ...activityTypes]);
+  const summary = summarizeHistory(history, new Date());
 
   async function run(action: () => Promise<void>): Promise<void> {
     setBusy(true);
@@ -370,15 +524,24 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
         },
       });
       await onChanged();
-      setEditOpen(false);
+      // Show what was stored (trimmed name, digits only) so the form is clean again.
+      setName(checked.name);
+      setNote(note.trim());
+      setNumber(phone.phone?.number ?? '');
+      setCode(amway.code ?? '');
       setInfo(STRINGS.personSaved);
     });
 
-  const completeTask = (taskId: string) =>
+  const completeTask = (taskId: string, activityNote: string, when: Date) =>
     run(async () => {
-      const built = buildTaskCompletionEvent(person, taskId, config);
-      if (!built.ok) return;
+      if (validateActivityTime(when, new Date(), backdateDays) !== 'ok') return;
+      const built = buildTaskCompletionEvent(person, taskId, config, when.toISOString(), activityNote);
+      if (!built.ok) {
+        setActiveTask(null);
+        return;
+      }
       const saved = await eventStore.append(built.event);
+      setActiveTask(null);
       setTaskUndo({ eventId: saved.id, taskName: config.tasks?.find((t) => t.id === taskId)?.name ?? '', xp: built.xp });
       await onChanged();
       // Chốt NPP also opens "Tạo tài khoản" (user decision 2026-11-09) when it can run now:
@@ -462,7 +625,10 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
                 <button
                   type="button"
                   className="task-row"
-                  onClick={() => void completeTask(t.id)}
+                  onClick={() => {
+                    setError(null);
+                    setActiveTask(t);
+                  }}
                   disabled={busy}
                   aria-label={taskButtonLabel(t.name, t.xp)}
                 >
@@ -483,26 +649,11 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
             </button>
           </div>
         )}
-        {error !== null && !editOpen && (
-          <p className="message message--error" role="alert">
-            {error}
-          </p>
-        )}
       </section>
 
-      <section className="card person-section" aria-label={STRINGS.personEditToggle}>
-        <button
-          type="button"
-          className="button button--secondary"
-          aria-expanded={editOpen}
-          aria-controls="person-edit-form"
-          onClick={() => setEditOpen(!editOpen)}
-          disabled={busy}
-        >
-          {editOpen ? STRINGS.personEditClose : STRINGS.personEditToggle}
-        </button>
-        {editOpen && (
-          <div id="person-edit-form" className="person-form">
+      <section className="card person-section" aria-label={STRINGS.personInfoSectionTitle}>
+        <h2 className="person-section__heading">{STRINGS.personInfoSectionTitle}</h2>
+        <div id="person-edit-form" className="person-form">
             <label className="note">
               <span className="note__label">{STRINGS.personNameLabel}</span>
               <input
@@ -547,15 +698,19 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
                 {STRINGS.personDuplicateWarning}
               </p>
             )}
-            <button type="button" className="button button--secondary" onClick={() => void saveEdits()} disabled={busy}>
+            <button type="button" className="button button--secondary" onClick={() => void saveEdits()} disabled={busy || !dirty}>
               {STRINGS.personSaveChanges}
             </button>
-            {error !== null && (
+            {error !== null && activeTask === null && (
               <p className="message message--error" role="alert">
                 {error}
               </p>
             )}
-          </div>
+        </div>
+        {info !== null && (
+          <p className="message" role="status">
+            {info}
+          </p>
         )}
       </section>
 
@@ -604,31 +759,84 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
       )}
 
       <section className="card person-section" aria-label={STRINGS.historyTitle}>
-        <h2 className="person-section__heading">{STRINGS.historyTitle}</h2>
-        {history.length === 0 ? (
-          <p className="message">{STRINGS.historyEmpty}</p>
-        ) : (
-          <ul className="history-list">
-            {history.map((h) => {
-              const author = authorLabel?.(h.userId) ?? null;
-              return (
-              <li key={h.id} className="history-row">
-                <span className="history-row__name">
-                  {h.kind === 'stage' ? historyStageLabel(h.name) : h.name === '' ? STRINGS.legacyUnknownActivity : h.name}
-                  {author !== null && <span className="history-row__author">{author}</span>}
-                </span>
-                <span className="person-row__stage">{shortDateLabel(h.timestamp)}</span>
-              </li>
-              );
-            })}
-          </ul>
-        )}
+        <button type="button" className="button button--secondary" onClick={() => setHistoryOpen(true)} disabled={busy}>
+          {STRINGS.historyTitle}
+        </button>
       </section>
 
-      {info !== null && (
-        <p className="message" role="status">
-          {info}
-        </p>
+      {activeTask !== null && (
+        <ActivityDialog
+          key={activeTask.id}
+          task={activeTask}
+          noteMaxLength={noteMaxLength}
+          backdateDays={backdateDays}
+          busy={busy}
+          error={error}
+          onConfirm={(activityNote, when) => void completeTask(activeTask.id, activityNote, when)}
+          onCancel={() => setActiveTask(null)}
+        />
+      )}
+
+      {historyOpen && (
+        <Dialog title={STRINGS.historyTitle} onClose={() => setHistoryOpen(false)}>
+          {history.length === 0 ? (
+            <p className="message">{STRINGS.historyEmpty}</p>
+          ) : (
+            <>
+              <section className="history-summary" aria-label={STRINGS.historySummaryTitle}>
+                <h3 className="history-summary__heading">{STRINGS.historySummaryTitle}</h3>
+                <ul className="history-summary__counts">
+                  {summary.counts.map((c) => (
+                    <li key={c.id}>
+                      {c.name === '' ? STRINGS.legacyUnknownActivity : c.name}: <strong>{c.count}</strong>
+                    </li>
+                  ))}
+                </ul>
+                <dl className="history-summary__facts">
+                  <dt>{STRINGS.historyTotalXpLabel}</dt>
+                  <dd>{xpLabel(summary.totalXp)}</dd>
+                  {summary.firstAt !== null && (
+                    <>
+                      <dt>{STRINGS.historyFirstLabel}</dt>
+                      <dd>{dateTimeLabel(summary.firstAt)}</dd>
+                    </>
+                  )}
+                  {summary.lastAt !== null && (
+                    <>
+                      <dt>{STRINGS.historyLastLabel}</dt>
+                      <dd>{dateTimeLabel(summary.lastAt)}</dd>
+                    </>
+                  )}
+                  {summary.daysSinceLast !== null && (
+                    <>
+                      <dt>{STRINGS.historyDaysSinceLabel}</dt>
+                      <dd>{daysSinceLabel(summary.daysSinceLast)}</dd>
+                    </>
+                  )}
+                </dl>
+              </section>
+              <h3 className="history-summary__heading">{STRINGS.historyListTitle}</h3>
+              <ul className="history-list">
+                {history.map((h) => {
+                  const author = authorLabel?.(h.userId) ?? null;
+                  return (
+                    <li key={h.id} className="history-row history-row--stacked">
+                      <span className="history-row__name">
+                        {h.kind === 'stage' ? historyStageLabel(h.name) : h.name === '' ? STRINGS.legacyUnknownActivity : h.name}
+                        {author !== null && <span className="history-row__author">{author}</span>}
+                      </span>
+                      <span className="person-row__stage">{dateTimeLabel(h.timestamp)}</span>
+                      {h.note !== undefined && <span className="history-row__note">{h.note}</span>}
+                    </li>
+                  );
+                })}
+              </ul>
+            </>
+          )}
+          <button type="button" className="button button--primary" onClick={() => setHistoryOpen(false)}>
+            {STRINGS.historyClose}
+          </button>
+        </Dialog>
       )}
 
       <section className="card person-section">

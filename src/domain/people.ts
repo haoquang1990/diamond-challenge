@@ -100,6 +100,10 @@ export interface PeopleConfig {
   readonly amwayCodeDigits?: AmwayCodeDigits;
   /** Max edit distance for "same name" duplicates (additive; absent means the fallback, 0 = exact only). */
   readonly duplicateNameMaxDistance?: number;
+  /** Max days an activity may be back-dated (additive; absent means the fallback). */
+  readonly activityBackdateDays?: number;
+  /** Max length of an activity note (additive; absent means the fallback). */
+  readonly activityNoteMaxLength?: number;
 }
 
 /** Result of {@link parsePeopleConfig}. */
@@ -108,6 +112,8 @@ export interface PeopleConfigResult extends PeopleConfig {
   readonly countryCodes: readonly CountryCodeDef[];
   readonly amwayCodeDigits: AmwayCodeDigits;
   readonly duplicateNameMaxDistance: number;
+  readonly activityBackdateDays: number;
+  readonly activityNoteMaxLength: number;
   /** Human-readable problems; empty when the config is valid. */
   readonly problems: readonly string[];
 }
@@ -195,6 +201,8 @@ const FALLBACK_STAGES: readonly PersonStageDef[] = [{ id: 'acquaintance', name: 
 const FALLBACK_AMWAY_DIGITS: AmwayCodeDigits = { min: 4, max: 15 };
 /** Safe max name distance used when `duplicateNameMaxDistance` is missing or invalid. */
 const FALLBACK_NAME_DISTANCE = 1;
+const FALLBACK_BACKDATE_DAYS = 7;
+const FALLBACK_NOTE_MAX_LENGTH = 500;
 const UNREACHABLE_TARGET = Number.MAX_SAFE_INTEGER;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -319,6 +327,27 @@ export function parseDuplicateNameMaxDistance(raw: unknown): { duplicateNameMaxD
   };
 }
 
+/**
+ * Validates raw `activityBackdateDays` (integer 0-30) and `activityNoteMaxLength`
+ * (integer 50-2000); an out-of-range value falls back to the default and is reported.
+ *
+ * @example
+ * parseActivityLimits(7, 500); // { activityBackdateDays: 7, activityNoteMaxLength: 500, problems: [] }
+ */
+export function parseActivityLimits(
+  rawDays: unknown,
+  rawLength: unknown,
+): { activityBackdateDays: number; activityNoteMaxLength: number; problems: readonly string[] } {
+  const problems: string[] = [];
+  let days = FALLBACK_BACKDATE_DAYS;
+  if (typeof rawDays === 'number' && Number.isInteger(rawDays) && rawDays >= 0 && rawDays <= 30) days = rawDays;
+  else problems.push('activityBackdateDays: expected an integer 0-30, using fallback');
+  let length = FALLBACK_NOTE_MAX_LENGTH;
+  if (typeof rawLength === 'number' && Number.isInteger(rawLength) && rawLength >= 50 && rawLength <= 2000) length = rawLength;
+  else problems.push('activityNoteMaxLength: expected an integer 50-2000, using fallback');
+  return { activityBackdateDays: days, activityNoteMaxLength: length, problems };
+}
+
 /** Safe default when `countryCodes` is unusable. */
 const FALLBACK_COUNTRY_CODES: readonly CountryCodeDef[] = [{ code: '+84', name: 'Việt Nam' }];
 
@@ -398,7 +427,15 @@ export function parsePeopleConfig(raw: unknown): PeopleConfigResult {
     duplicateNameMaxDistance = r.duplicateNameMaxDistance;
     problems.push(...r.problems);
   }
-  return { stages, targets, tasks, countryCodes, amwayCodeDigits, duplicateNameMaxDistance, problems };
+  let activityBackdateDays = FALLBACK_BACKDATE_DAYS;
+  let activityNoteMaxLength = FALLBACK_NOTE_MAX_LENGTH;
+  if ('activityBackdateDays' in source || 'activityNoteMaxLength' in source) {
+    const r = parseActivityLimits(source.activityBackdateDays, source.activityNoteMaxLength);
+    activityBackdateDays = r.activityBackdateDays;
+    activityNoteMaxLength = r.activityNoteMaxLength;
+    problems.push(...r.problems);
+  }
+  return { stages, targets, tasks, countryCodes, amwayCodeDigits, duplicateNameMaxDistance, activityBackdateDays, activityNoteMaxLength, problems };
 }
 
 /** Ids of events that some other event compensates. */
@@ -799,6 +836,7 @@ export function pendingTasks(person: Person, config: PeopleConfig): PersonTaskDe
  * `{activityType: taskId, taskId, xp, personId}` with xp from the config.
  * Rejects (no event) an archived person, an unknown task and an already-done
  * non-repeatable task. `timestamp` is passed through so callers own the clock.
+ * `note` is written as `payload.note` (trimmed) only when non-empty.
  *
  * @example
  * const r = buildTaskCompletionEvent(person, 'demo', config, now.toISOString());
@@ -809,14 +847,39 @@ export function buildTaskCompletionEvent(
   taskId: string,
   config: PeopleConfig,
   timestamp?: string,
+  note?: string,
 ): TaskCompletionResult {
   if (person.archived) return { ok: false, reason: 'archived' };
   const task = (config.tasks ?? []).find((t) => t.id === taskId);
   if (task === undefined) return { ok: false, reason: 'unknown_task' };
   if (!task.repeatable && (person.doneTaskIds ?? []).includes(taskId)) return { ok: false, reason: 'already_done' };
-  const payload = { activityType: task.id, taskId: task.id, xp: task.xp, personId: person.personId };
+  const trimmedNote = note?.trim() ?? '';
+  const payload: Record<string, unknown> = { activityType: task.id, taskId: task.id, xp: task.xp, personId: person.personId };
+  if (trimmedNote !== '') payload.note = trimmedNote;
   const event: NewEvent = timestamp === undefined ? { type: 'activity_logged', payload } : { type: 'activity_logged', payload, timestamp };
   return { ok: true, xp: task.xp, event };
+}
+
+/** Result of {@link validateActivityTime}. */
+export type ActivityTimeCheck = 'ok' | 'future' | 'too_old' | 'invalid';
+
+const MS_PER_DAY = 86_400_000;
+
+/**
+ * Checks the instant chosen for an activity: `invalid` when it is not a real
+ * date, `future` when after `now`, `too_old` when more than `backdateDays`
+ * days before `now` (exactly `backdateDays` days back is still `ok`). Pure.
+ *
+ * @example
+ * validateActivityTime(new Date('2026-11-14T10:00:00Z'), new Date('2026-11-21T10:00:00Z'), 7); // 'ok'
+ */
+export function validateActivityTime(chosen: Date, now: Date, backdateDays: number): ActivityTimeCheck {
+  const t = chosen.getTime();
+  const n = now.getTime();
+  if (Number.isNaN(t) || Number.isNaN(n)) return 'invalid';
+  if (t > n) return 'future';
+  if (n - t > backdateDays * MS_PER_DAY) return 'too_old';
+  return 'ok';
 }
 
 /**
