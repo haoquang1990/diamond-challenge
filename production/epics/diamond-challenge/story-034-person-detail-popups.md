@@ -1,7 +1,7 @@
 # Story 034: Trang chi tiết người: thông tin mở sẵn, popup hoạt động và popup Lịch sử
 
 > **Epic**: diamond-challenge
-> **Status**: Ready
+> **Status**: In Progress
 > **Layer**: Feature
 > **Type**: UI
 > **Estimate**: M
