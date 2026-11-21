@@ -64,7 +64,13 @@ Một Danh bạ duy nhất. Mỗi người có một danh sách **việc cần l
     - **NPP:** hiện "ngày lên NPP"; mới nhất lên đầu. Nút "Tạo tài khoản" thuộc giai đoạn 2.
     - **Tất cả:** mọi người chưa lưu trữ, mỗi dòng kèm nhãn nếu có.
 12. **Tab Làm = Danh bạ** (phản hồi 2026-11-05): chỉ còn 4 tab **Hôm nay · Học · Làm · Con đường**. Danh bạ (danh sách người, bộ lọc, thêm người, khôi phục, gán hoạt động cũ) nằm trong tab **Làm**, tiêu đề màn "Làm"; không còn màn chọn người riêng. Nút **Làm** trên Hôm nay mở tab này. Có ô tìm tên, không phân biệt dấu. Nhãn ô ghi chú: "(FORMHD)".
-13. **Trang chi tiết người:** danh sách việc cần làm nằm trên cùng; sửa tên, số điện thoại, ghi chú thu gọn sau nút "Sửa thông tin"; lịch sử và lưu trữ ở dưới. Hoàn thành việc chỉ diễn ra ở đây.
+13. **Trang chi tiết người** (sửa 2026-11-21). Từ trên xuống:
+    - tên, nhãn và các cảnh báo trùng;
+    - **Hoạt động**: các việc cần làm;
+    - **Thông tin**: các ô tên, số điện thoại, mã Amway, ghi chú, luôn mở sẵn. Không còn nút "Sửa thông tin" hay "Thu gọn". Nút "Lưu thay đổi" chỉ bật khi có ô bị sửa;
+    - nút **Lịch sử** (luật 26), rồi nút lưu trữ.
+
+    Việc cần làm chỉ được hoàn thành ở trang này.
 14. **Sao lưu:** xuất một file JSON `diamond-challenge-backup-YYYY-MM-DD.json` gồm `format`, `formatVersion: 1`, `exportedAt`, `events[]` (toàn bộ nhật ký). **Khôi phục** là **gộp, bỏ trùng theo `id` sự kiện**: nhập hai lần không sinh trùng, không mất dữ liệu đang có. Mỗi sự kiện đi qua cùng bộ kiểm tra khi đọc (`parseStoredEvent`), gồm cả `person_restored`. Sau khi nhập, báo "thêm N, bỏ qua M". File chứa tên, số điện thoại và ghi chú về người khác, nên app nhắc người dùng giữ file cẩn thận.
 15. **Danh sách của hộ.** Mọi người chưa lưu trữ trong Danh bạ đều là của hộ mình (giai đoạn 1: hộ chỉ có mình). Ai có nhãn KH là KH của hộ, ai có nhãn NPP là NPP F1 của hộ. Không có ô chọn người bảo trợ, không dựng cây nhiều tầng trên máy.
 
@@ -91,6 +97,13 @@ Một Danh bạ duy nhất. Mỗi người có một danh sách **việc cần l
 23. **Cảnh báo đếm trùng:** khi Danh bạ hộ còn cặp trùng (chắc chắn hoặc có thể) chưa duyệt, Bảng 30x30 hiện "Có N cặp liên hệ có thể trùng, số liệu có thể bị đếm hai lần" kèm lối vào màn kiểm tra.
 24. **[2b] Liên hệ "Đã chuyển lên tuyến trên"** (từ gộp mã, `accounts.md` luật 21): chỉ hiện tên với trạng thái đó, chỉ xem, không có việc, không đếm vào KH, NPP F1 hay liên hệ. Máy xoá bản chi tiết của liên hệ đó khi nhận `person_transferred_out`.
 25. **Sao lưu và khôi phục bằng file vẫn giữ.** Khôi phục một file vào Danh bạ hộ đi qua dò trùng (luật 19). Rời hộ: app mời xuất file trước khi xoá bản Danh bạ hộ trên máy.
+
+26. **Popup hoạt động và popup Lịch sử** (2026-11-21).
+    - **Popup hoạt động:** bấm một việc thì mở popup gồm tên việc và XP, ô **Ghi chú** (không bắt buộc, tối đa `activityNoteMaxLength` ký tự) và ô **Ngày giờ**, mặc định là bây giờ. Ngày giờ không được ở tương lai và lùi tối đa `activityBackdateDays` ngày.
+    - "Xác nhận" ghi một `activity_logged` với thời điểm đã chọn và `payload.note` (bỏ khi trống). "Huỷ" không ghi gì. "Hoàn tác" và việc Chốt NPP mở "Tạo tài khoản" vẫn như cũ.
+    - XP tính vào ngày đã chọn, nên ghi lùi có thể nối lại streak đã đứt trong khoảng `activityBackdateDays` (quyết định của người dùng 2026-11-21).
+    - Ghi chú là dữ liệu Danh bạ: đồng bộ trong hộ như mọi sự kiện có `personId` (luật 16), thành viên hộ đọc được. Hoạt động cũ không có ghi chú vẫn hiện bình thường.
+    - **Popup Lịch sử:** phần tóm tắt gồm số lần làm mỗi việc, tổng XP từ người này, lần liên hệ đầu tiên và gần nhất, số ngày kể từ lần gần nhất. Bên dưới là danh sách lịch sử, mới nhất trước, kèm ghi chú và người làm (nếu là thành viên hộ). Có nút "Đóng".
 
 ### States and Transitions
 
@@ -189,6 +202,8 @@ Công thức tầng, nhánh, điểm sâu và 30x30x4x4 thuộc giai đoạn 2 v
 | `countryCodes` | `+84` (Việt Nam) mặc định, kèm một số mã phổ biến | ≥1 mục | mã nước chọn khi nhập số |
 | `duplicateNameMaxDistance` | 1 | 0–3 | tên khác nhau bao nhiêu ký tự (sau bỏ dấu) vẫn coi là "có thể trùng"; 0 = chỉ trùng hẳn |
 | `amwayCodeDigits` | 4–15 | 1–20 | độ dài mã số hợp lệ (`accounts.md`) |
+| `activityBackdateDays` | 7 | 0–30 | số ngày tối đa được lùi khi ghi hoạt động (luật 26); 0 = chỉ ghi lúc bấm |
+| `activityNoteMaxLength` | 500 | 50–2000 | độ dài tối đa ghi chú của một hoạt động |
 
 `personStages` chỉ còn dùng để đọc dữ liệu cũ, không dùng cho giao diện mới. Các núm của Bảng 4x4 (`depthTarget`, `branchTarget`, `topBranchesShown`) thuộc giai đoạn 2, xem `design/phase-2-notes.md`.
 
@@ -228,3 +243,7 @@ Công thức tầng, nhánh, điểm sâu và 30x30x4x4 thuộc giai đoạn 2 v
 - **AC-32:** Given một cặp đã gộp, When bấm "Tách liên hệ", Then hai liên hệ trở lại như trước với nhãn và việc đã làm riêng.
 - **AC-33:** Given hai liên hệ trong Danh bạ có cùng mã, When mở Danh bạ, Then thấy cảnh báo trùng mã trên cả hai.
 - **[2b] AC-34:** Given gộp mã đã chạy (`accounts.md` AC-7), When thành viên hộ X mở Danh bạ, Then liên hệ được chuyển chỉ hiện tên với "Đã chuyển lên tuyến trên", không mở được chi tiết, không đếm 30x30.
+- **AC-35:** Given trang chi tiết một người, When mở trang, Then các ô tên, số điện thoại, mã Amway, ghi chú hiện sẵn, không có nút "Sửa thông tin"; nút "Lưu thay đổi" chỉ bật sau khi sửa một ô.
+- **AC-36:** Given trang chi tiết, When bấm "Demo", nhập ghi chú rồi "Xác nhận", Then có đúng một `activity_logged` với `payload.note` và XP của việc; When bấm "Huỷ" thay vì xác nhận, Then không có sự kiện nào.
+- **AC-37:** Given popup hoạt động, When chọn ngày giờ ở tương lai hoặc lùi quá `activityBackdateDays` ngày, Then không xác nhận được và có thông báo; When chọn 2 ngày trước, Then sự kiện mang thời điểm đó và XP tính vào ngày đó.
+- **AC-38:** Given một người đã có 2 lần "Follow-up" và 1 "Demo", When bấm "Lịch sử", Then popup hiện số lần mỗi việc, tổng XP, lần đầu và gần nhất, số ngày kể từ lần gần nhất, và danh sách kèm ghi chú, mới nhất trước.
