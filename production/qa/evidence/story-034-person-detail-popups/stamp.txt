@@ -1,0 +1,8 @@
+Reviewed-Content-Hash: src/ui/screens/person-form.tsx f2d06840e6f1093e3cada3299eae2eda39245309
+Reviewed-Content-Hash: src/domain/people.ts 5389f0242ab9bb85f9d5310507b15c969e2e5a71
+Reviewed-Content-Hash: src/ui/people-helpers.ts cebfc6c9b3c3dd25181c373b66a2bfe70096ae6d
+Reviewed-Content-Hash: src/config/game-config.json 25ed81f9e01d30a4aea43513a80cd57fdd706df2
+Reviewed-Content-Hash: src/ui/strings.ts 165d507d2b26c271486c96e5137043708741c791
+Reviewed-Content-Hash: src/ui/styles.css cf917f3f6fed569447cbdab8faa4c36e1f9df54f
+Reviewed-Content-Hash: tests/unit/people/activity-popup.test.ts de54aab27d1024cf0e6b10244451827555172efe
+Reviewed-Content-Hash: tests/unit/people-ui/history-summary.test.ts 410cf8874896cf74fd9b24ce3e0a3a9024f7f3fb

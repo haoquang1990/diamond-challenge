@@ -57,10 +57,13 @@
 
 ## Files
 
-- `src/ui/screens/person-form.tsx`, `src/domain/people.ts`
-- `src/config/game-config.json`, `src/ui/strings.ts`, `src/ui/styles.css`
-- `tests/unit/domain/` (hàm kiểm tra ngày giờ, hàm tóm tắt lịch sử)
-- `production/qa/evidence/story-034-person-detail-popups/`
+- `src/ui/screens/person-form.tsx` (info always open, `Dialog`, activity popup, history popup)
+- `src/domain/people.ts` (`validateActivityTime`, `parseActivityLimits`, note in `buildTaskCompletionEvent`)
+- `src/ui/people-helpers.ts` (`summarizeHistory`, note/taskId/xp on history rows)
+- `src/config/game-config.json` (`activityBackdateDays` 7, `activityNoteMaxLength` 500)
+- `src/ui/strings.ts`, `src/ui/styles.css`
+- `tests/unit/people/activity-popup.test.ts`, `tests/unit/people-ui/history-summary.test.ts` (new)
+- `production/qa/evidence/story-034-person-detail-popups/` (10 screenshots at 390 and 320px + stamp)
 
 ## QA Test Cases
 
