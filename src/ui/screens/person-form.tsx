@@ -13,7 +13,7 @@ import {
 } from '../../domain/people';
 import type { PeopleConfig, Person, PersonPhone, PersonTaskDef } from '../../domain/people';
 import { COUNTRY_CODES, PEOPLE_CONFIG, PERSON_TASKS } from '../people-config';
-import { buildPersonHistory, duplicateCodeNames, findDuplicateCodes, findPeopleWithCode, formatPhone, summarizeHistory, toLocalInputValue } from '../people-helpers';
+import { buildPersonHistory, countDoneTasks, duplicateCodeNames, findDuplicateCodes, findPeopleWithCode, formatPhone, summarizeHistory, toLocalInputValue } from '../people-helpers';
 import {
   STRINGS,
   activityTimeTooOldLabel,
@@ -24,6 +24,7 @@ import {
   noteCounterLabel,
   splitLabel,
   taskButtonLabel,
+  taskDoneTimesLabel,
   xpLabel,
 } from '../strings';
 
@@ -463,6 +464,7 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
   const [taskUndo, setTaskUndo] = useState<TaskUndo | null>(null);
   const [activeTask, setActiveTask] = useState<PersonTaskDef | null>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [taskListOpen, setTaskListOpen] = useState(false);
   const backdateDays = config.activityBackdateDays ?? PEOPLE_CONFIG.activityBackdateDays;
   const noteMaxLength = config.activityNoteMaxLength ?? PEOPLE_CONFIG.activityNoteMaxLength;
 
@@ -471,8 +473,9 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
     name !== person.name || note !== person.note || country !== savedCountry || number !== (person.phone?.number ?? '') || code !== (person.amwayCode ?? '');
   const duplicate = name.trim() !== '' && findDuplicateNames(people, name, person.personId).duplicate;
   const sameCode = findDuplicateCodes(people).get(person.personId);
-  const todo = pendingTasks(person, config);
+  const tasks = pendingTasks(person, config);
   const history = buildPersonHistory(events, person.personId, config, [...PERSON_TASKS, ...activityTypes]);
+  const doneCounts = countDoneTasks(history);
   const summary = summarizeHistory(history, new Date());
 
   async function run(action: () => Promise<void>): Promise<void> {
@@ -609,43 +612,6 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
         )}
       </header>
 
-      <section className="card person-section" aria-label={STRINGS.activitySectionTitle}>
-        <h2 className="person-section__heading">{STRINGS.activitySectionTitle}</h2>
-        {todo.length === 0 ? (
-          <p className="message">{STRINGS.activityNoneLeft}</p>
-        ) : (
-          <ul className="people-list">
-            {todo.map((t) => (
-              <li key={t.id}>
-                <button
-                  type="button"
-                  className="task-row"
-                  onClick={() => {
-                    setError(null);
-                    setActiveTask(t);
-                  }}
-                  disabled={busy}
-                  aria-label={taskButtonLabel(t.name, t.xp)}
-                >
-                  <span className="task-row__name">{t.name}</span>
-                  <span className="activity-option__xp">{xpLabel(t.xp)}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-        {taskUndo !== null && (
-          <div className="person-result" role="status" aria-live="polite">
-            <p className="message">
-              {taskUndo.taskName} · <strong>{xpLabel(taskUndo.xp)}</strong>
-            </p>
-            <button type="button" className="button button--secondary" onClick={() => void undoTask()} disabled={busy}>
-              {STRINGS.undo}
-            </button>
-          </div>
-        )}
-      </section>
-
       <section className="card person-section" aria-label={STRINGS.personInfoSectionTitle}>
         <h2 className="person-section__heading">{STRINGS.personInfoSectionTitle}</h2>
         <div id="person-edit-form" className="person-form">
@@ -709,6 +675,36 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
         )}
       </section>
 
+      <section className="card person-section" aria-label={STRINGS.activitySectionTitle}>
+        <div className="person-actions">
+          <button
+            type="button"
+            className="button button--primary"
+            onClick={() => {
+              setError(null);
+              setTaskListOpen(true);
+            }}
+            disabled={busy || tasks.length === 0}
+          >
+            {STRINGS.activitySectionTitle}
+          </button>
+          <button type="button" className="button button--secondary" onClick={() => setHistoryOpen(true)} disabled={busy}>
+            {STRINGS.historyTitle}
+          </button>
+        </div>
+        {person.archived && <p className="message">{STRINGS.activityArchivedNote}</p>}
+        {taskUndo !== null && (
+          <div className="person-result" role="status" aria-live="polite">
+            <p className="message">
+              {taskUndo.taskName} · <strong>{xpLabel(taskUndo.xp)}</strong>
+            </p>
+            <button type="button" className="button button--secondary" onClick={() => void undoTask()} disabled={busy}>
+              {STRINGS.undo}
+            </button>
+          </div>
+        )}
+      </section>
+
       {createAccount !== undefined && person.label === 'NPP' && !person.archived && person.linkedUserId == null && (
         <section className="card person-section" aria-label={STRINGS.createAccountTitle}>
           {(() => {
@@ -753,11 +749,40 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
         </section>
       )}
 
-      <section className="card person-section" aria-label={STRINGS.historyTitle}>
-        <button type="button" className="button button--secondary" onClick={() => setHistoryOpen(true)} disabled={busy}>
-          {STRINGS.historyTitle}
-        </button>
-      </section>
+
+      {taskListOpen && (
+        <Dialog title={STRINGS.activitySectionTitle} onClose={() => setTaskListOpen(false)}>
+          <ul className="people-list">
+            {tasks.map((t) => {
+              const times = doneCounts.get(t.id) ?? 0;
+              return (
+                <li key={t.id}>
+                  <button
+                    type="button"
+                    className="task-row"
+                    onClick={() => {
+                      setError(null);
+                      setTaskListOpen(false);
+                      setActiveTask(t);
+                    }}
+                    disabled={busy}
+                    aria-label={taskButtonLabel(t.name, t.xp, times)}
+                  >
+                    <span className="task-row__main">
+                      <span className="task-row__name">{t.name}</span>
+                      {times > 0 && <span className="task-row__times">{taskDoneTimesLabel(times)}</span>}
+                    </span>
+                    <span className="activity-option__xp">{xpLabel(t.xp)}</span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+          <button type="button" className="button button--secondary" onClick={() => setTaskListOpen(false)}>
+            {STRINGS.historyClose}
+          </button>
+        </Dialog>
+      )}
 
       {activeTask !== null && (
         <ActivityDialog

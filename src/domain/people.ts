@@ -140,7 +140,7 @@ export interface Person {
   readonly amwayCode?: string | null;
   /** Supabase user id of the account created for this person (story 024), or null/absent when none. */
   readonly linkedUserId?: string | null;
-  /** Ids of tasks already done (non-repeatable ones are hidden from pending). */
+  /** Ids of tasks done at least once (informational: every task stays available, crm rule 4). */
   readonly doneTaskIds?: readonly string[];
   /** Timestamp of the event that set the currently effective label; null when none. */
   readonly labelledAt?: string | null;
@@ -153,7 +153,7 @@ export interface Person {
 /** Result of {@link buildTaskCompletionEvent}. */
 export type TaskCompletionResult =
   | { readonly ok: true; readonly xp: number; readonly event: NewEvent }
-  | { readonly ok: false; readonly reason: 'archived' | 'unknown_task' | 'already_done' };
+  | { readonly ok: false; readonly reason: 'archived' | 'unknown_task' };
 
 /** Result of {@link validatePhone}. `phone` is null for an empty number (no phone). */
 export type PhoneValidation =
@@ -684,9 +684,11 @@ function setLabel(person: MutablePerson, next: PersonLabel | null, timestamp: st
  * - Stage (legacy): `to` of the latest non-compensated `person_stage_changed`.
  * - Label: iterate active events in log order. Legacy stage `customer` -> KH,
  *   `downline` -> NPP, any other known stage -> none. An `activity_logged`
- *   with a string `taskId` whose config task has label KH sets KH (unless NPP);
- *   label NPP sets NPP, which never reverts to KH. Legacy `new_customer`
- *   without `taskId` gives no label.
+ *   with a string `taskId` whose config task has label KH sets KH (unless already KH/NPP);
+ *   label NPP sets NPP, which never reverts to KH. Repeating a closing keeps the label and its
+ *   date: `labelledAt`/`nppAt` stay at the FIRST non-compensated closing of that label (crm
+ *   rule 4, 2026-11-22). Undoing a closing drops it from the log, so label and date are
+ *   recomputed from the remaining ones. Legacy `new_customer` without `taskId` gives no label.
  * - Done tasks: activities owned by the person (honouring `activity_reassigned`)
  *   by `taskId` (or legacy `demo`/`opp`), plus legacy stages that earned XP.
  * - Merges (story 026, see {@link deriveMerges}): a merged-away person is not listed; its activities
@@ -734,8 +736,9 @@ export function derivePeople(events: readonly LogEvent[], config: PeopleConfig):
       if (typeof p.taskId === 'string') {
         person.done.add(p.taskId);
         const label = tasks.find((t) => t.id === p.taskId)?.label;
+        // setLabel is a no-op when the label is unchanged, so a repeated closing keeps the first date.
         if (label === 'KH' && person.label === null) setLabel(person, 'KH', e.timestamp);
-        else if (label === 'NPP') setLabel(person, 'NPP', e.timestamp);
+        else if (label === 'NPP' && person.label !== 'NPP') setLabel(person, 'NPP', e.timestamp);
       } else if (LEGACY_ACTIVITY_TASKS.has(activityType)) {
         person.done.add(activityType);
       }
@@ -819,23 +822,22 @@ export function derivePeople(events: readonly LogEvent[], config: PeopleConfig):
 }
 
 /**
- * Tasks still to do for a person, in config order: non-repeatable tasks vanish
- * once done, repeatable ones always stay, archived people have none.
+ * Tasks a person can do, in config order: every task always stays (done ones too,
+ * crm rule 4, 2026-11-22); archived people have none.
  *
  * @example
  * pendingTasks(person, config).map((t) => t.name);
  */
 export function pendingTasks(person: Person, config: PeopleConfig): PersonTaskDef[] {
   if (person.archived) return [];
-  const done = person.doneTaskIds ?? [];
-  return (config.tasks ?? []).filter((t) => t.repeatable || !done.includes(t.id));
+  return [...(config.tasks ?? [])];
 }
 
 /**
  * Builds the single `activity_logged` event that completes a task:
  * `{activityType: taskId, taskId, xp, personId}` with xp from the config.
- * Rejects (no event) an archived person, an unknown task and an already-done
- * non-repeatable task. `timestamp` is passed through so callers own the clock.
+ * Rejects (no event) an archived person and an unknown task. A task done before is
+ * always accepted again with full XP (crm rule 4, 2026-11-22). `timestamp` is passed through so callers own the clock.
  * `note` is written as `payload.note` (trimmed) only when non-empty.
  *
  * @example
@@ -852,7 +854,6 @@ export function buildTaskCompletionEvent(
   if (person.archived) return { ok: false, reason: 'archived' };
   const task = (config.tasks ?? []).find((t) => t.id === taskId);
   if (task === undefined) return { ok: false, reason: 'unknown_task' };
-  if (!task.repeatable && (person.doneTaskIds ?? []).includes(taskId)) return { ok: false, reason: 'already_done' };
   const trimmedNote = note?.trim() ?? '';
   const payload: Record<string, unknown> = { activityType: task.id, taskId: task.id, xp: task.xp, personId: person.personId };
   if (trimmedNote !== '') payload.note = trimmedNote;

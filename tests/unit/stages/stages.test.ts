@@ -10,6 +10,7 @@ import { computeProgress } from '../../../src/domain/progress';
 import {
   computeStageProgress,
   countActivities,
+  countMilestoneActivities,
   lastAcknowledgedStageId,
   parseStageConfig,
   shouldCelebrate,
@@ -162,6 +163,47 @@ describe('milestone counting', () => {
       ev('activity_logged', { xp: 5 }),
     ];
     expect(countActivities(events).get(NEW_CUSTOMER)).toBeUndefined();
+  });
+});
+
+describe('Khách hàng mới counts distinct people (story 035, crm rule 4)', () => {
+  const closing = (personId: string): LogEvent =>
+    ev('activity_logged', { activityType: NEW_CUSTOMER, taskId: NEW_CUSTOMER, xp: 30, personId });
+  const undoOf = (target: LogEvent): LogEvent => ev('activity_logged', { compensates: target.id });
+  const milestone = (events: LogEvent[]): number | undefined =>
+    computeStageProgress(events, 4000, STAGES).stages.find((s) => s.stage.id === 'emerald')?.milestones[0]?.current;
+
+  it('the same person closed twice counts 1', () => {
+    const log = [closing('a'), closing('a')];
+    expect(countMilestoneActivities(log).get(NEW_CUSTOMER)).toBe(1);
+    expect(milestone(log)).toBe(1);
+    expect(countActivities(log).get(NEW_CUSTOMER)).toBe(2);
+  });
+
+  it('undoing one of the two still counts 1, undoing both counts 0', () => {
+    const first = closing('a');
+    const second = closing('a');
+    expect(countMilestoneActivities([first, second, undoOf(first)]).get(NEW_CUSTOMER)).toBe(1);
+    expect(countMilestoneActivities([first, second, undoOf(first), undoOf(second)]).get(NEW_CUSTOMER)).toBeUndefined();
+    expect(milestone([first, second, undoOf(first), undoOf(second)])).toBe(0);
+  });
+
+  it('two people count 2', () => {
+    expect(countMilestoneActivities([closing('a'), closing('b'), closing('a')]).get(NEW_CUSTOMER)).toBe(2);
+  });
+
+  it('legacy closings without a person still count one each, so existing numbers do not change', () => {
+    const log = [...customers(3), closing('a')];
+    expect(countMilestoneActivities(log).get(NEW_CUSTOMER)).toBe(4);
+    expect(currentId(4000, customers(5))).toBe('emerald');
+  });
+
+  it('keeps raw counts for every other activity type and honours others', () => {
+    const demo = (personId: string): LogEvent => ev('activity_logged', { activityType: 'demo', taskId: 'demo', xp: 10, personId });
+    const log = [demo('a'), demo('a'), closing('a')];
+    expect(countMilestoneActivities(log).get('demo')).toBe(2);
+    const other = { ...closing('b'), userId: 'other' };
+    expect(countMilestoneActivities([closing('a'), other], new Set(['other'])).get(NEW_CUSTOMER)).toBe(1);
   });
 });
 
