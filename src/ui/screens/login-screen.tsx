@@ -4,6 +4,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import gameConfig from '../../config/game-config.json';
 import { signInWithPhone } from '../../data/auth-service';
 import type { AccountInfo } from '../../data/auth-service';
+import { PasswordInput } from '../password-input';
 import { authFailureText, STRINGS } from '../strings';
 
 /** Props for {@link LoginScreen}. */
@@ -96,14 +97,7 @@ export function LoginScreen({ clientPromise, needsNetwork = false, onSignedIn }:
         </div>
         <label className="form__field">
           <span className="form__label">{STRINGS.loginPasswordLabel}</span>
-          <input
-            type="password"
-            autoComplete="current-password"
-            className="note__input form__input"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            disabled={busy || needsNetwork}
-          />
+          <PasswordInput autoComplete="current-password" value={password} onChange={setPassword} disabled={busy || needsNetwork} />
         </label>
         {needsNetwork && (
           <p className="message message--error" role="alert">

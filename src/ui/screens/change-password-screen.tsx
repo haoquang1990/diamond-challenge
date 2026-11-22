@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { changePassword, saveDisplayName, validateDisplayName, validateNewPassword } from '../../data/auth-service';
+import { PasswordInput } from '../password-input';
 import { authFailureText, passwordProblemText, STRINGS } from '../strings';
 
 /** Props for {@link ChangePasswordScreen}. */
@@ -45,7 +46,7 @@ export function ChangePasswordScreen({ clientPromise, temporaryPassword, onDone,
         onDone();
         return;
       }
-      setError(authFailureText(result.reason));
+      setError(authFailureText(result.reason, result.code));
     } catch (err) {
       console.error('[change-password] failed', err);
       setError(authFailureText('network'));
@@ -63,25 +64,11 @@ export function ChangePasswordScreen({ clientPromise, temporaryPassword, onDone,
       <form className="card form" onSubmit={(e) => void onSubmit(e)} noValidate>
         <label className="form__field">
           <span className="form__label">{STRINGS.newPasswordLabel}</span>
-          <input
-            type="password"
-            autoComplete="new-password"
-            className="note__input form__input"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            disabled={busy}
-          />
+          <PasswordInput autoComplete="new-password" value={password} onChange={setPassword} disabled={busy} />
         </label>
         <label className="form__field">
           <span className="form__label">{STRINGS.confirmPasswordLabel}</span>
-          <input
-            type="password"
-            autoComplete="new-password"
-            className="note__input form__input"
-            value={confirmation}
-            onChange={(e) => setConfirmation(e.target.value)}
-            disabled={busy}
-          />
+          <PasswordInput autoComplete="new-password" value={confirmation} onChange={setConfirmation} disabled={busy} />
         </label>
         {error !== null && (
           <p className="message message--error" role="alert">
@@ -136,7 +123,7 @@ export function DisplayNameScreen({ clientPromise, onSaved, onSkip }: DisplayNam
         onSaved(valid);
         return;
       }
-      setError(authFailureText(result.reason));
+      setError(authFailureText(result.reason, result.code));
     } catch (err) {
       console.error('[display-name] failed', err);
       setError(authFailureText('network'));
