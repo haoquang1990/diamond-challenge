@@ -1,0 +1,11 @@
+Reviewed-Content-Hash: src/ui/screens/person-form.tsx dc3e06ea281c741e89c5130d96c042874a098615
+Reviewed-Content-Hash: src/ui/screens/people-screen.tsx f065e373cc6bee7a8cf5ade7a37de2b98c3d9d81
+Reviewed-Content-Hash: src/ui/people-helpers.ts a90eec7b6a65d749e647139b1df685c6df0e5524
+Reviewed-Content-Hash: src/domain/people.ts 31505c9d9b43ec1df8677679090e32ad426433f3
+Reviewed-Content-Hash: src/domain/stages.ts 4937ed7072572c309e66d6d9f378bd84b740b21b
+Reviewed-Content-Hash: src/config/game-config.json 5bf4c780ecbd62ff79ef8456faa79174eae0d5d5
+Reviewed-Content-Hash: src/ui/strings.ts ea16c70e372b67d7facfa87c8532de85fd07a14e
+Reviewed-Content-Hash: src/ui/styles.css 3b2eef39a29c04601f012a5dc18ce49668e438fa
+Reviewed-Content-Hash: tests/unit/people/people-tasks.test.ts 753ce906c110053fa66a7757dcbc42cc988e981e
+Reviewed-Content-Hash: tests/unit/people/done-task-counts.test.ts 2bd16e90a8e7655653ed415fe1b64663e02efcb2
+Reviewed-Content-Hash: tests/unit/stages/stages.test.ts bf7efd2b70c52a5dcb5532235c1098aa596d244d

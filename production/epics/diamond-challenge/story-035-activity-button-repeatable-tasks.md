@@ -56,11 +56,15 @@
 
 ## Files
 
-- `src/ui/screens/person-form.tsx`, `src/ui/screens/people-screen.tsx`, `src/ui/people-helpers.ts`
-- `src/domain/people.ts`, `src/domain/stages.ts`
-- `src/config/game-config.json`, `src/ui/strings.ts`, `src/ui/styles.css`
-- `tests/unit/people/`, `tests/unit/stages/`
-- `production/qa/evidence/story-035-activity-button-repeatable-tasks/`
+- `src/ui/screens/person-form.tsx` (Thông tin first, Hoạt động / Lịch sử row, task list dialog)
+- `src/ui/screens/people-screen.tsx` (add form collapses after adding)
+- `src/ui/people-helpers.ts` (`countDoneTasks`)
+- `src/domain/people.ts` (every task stays and repeats; first NPP date kept)
+- `src/domain/stages.ts` (`countMilestoneActivities`: Khách hàng mới counts people)
+- `src/config/game-config.json` (`repeatable: true` on all 6 tasks)
+- `src/ui/strings.ts`, `src/ui/styles.css`
+- `tests/unit/people/people-tasks.test.ts` (updated to crm rule 4 + new label tests), `tests/unit/people/done-task-counts.test.ts` (new), `tests/unit/stages/stages.test.ts` (new milestone tests; Emerald fixture 2 → 1)
+- `production/qa/evidence/story-035-activity-button-repeatable-tasks/` (10 screenshots at 390 and 320px + stamp)
 
 ## QA Test Cases
 
