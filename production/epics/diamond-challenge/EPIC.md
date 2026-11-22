@@ -47,7 +47,8 @@ Theo Build order của brief: nhật ký sự kiện + XP/streak → Làm + Hôm
 | 031 | Bảng `personal_events` trên server (migration, RLS, `sync_seq`) | Integration | Complete | N/A |
 | 032 | Bộ đồng bộ tiến độ cá nhân trong app (đẩy, kéo, offline) | Integration | Complete | N/A |
 | 033 | Văn bản đồng ý mới và chặn xoá dữ liệu theo tiến độ chưa đồng bộ | UI | Complete | N/A |
-| 034 | Trang chi tiết người: thông tin mở sẵn, popup hoạt động và popup Lịch sử | UI | Ready | N/A |
+| 034 | Trang chi tiết người: thông tin mở sẵn, popup hoạt động và popup Lịch sử | UI | Complete | N/A |
+| 035 | Trang chi tiết người: Thông tin lên đầu, nút Hoạt động mở danh sách đủ việc, làm lại mọi việc | UI | Ready | N/A |
 
 > 012–014 thay mô hình giai đoạn bằng việc cần làm + nhãn KH/NPP theo phản hồi dùng thử (2026-11-04, `design/gdd/crm.md`). Thứ tự gợi ý: 012 → 013 → 014 → 011.
 
@@ -58,3 +59,5 @@ Theo Build order của brief: nhật ký sự kiện + XP/streak → Làm + Hôm
 > 030 bắt buộc đăng nhập (xong 2026-11-17). 031–033 đồng bộ tiến độ cá nhân theo ADR-0004 (Accepted 2026-11-18). Thứ tự: 031 → 032 → 033. Migration của 031 chạy lên Supabase thật khi merge: deploy 031 trước hoặc cùng lúc với 032; deploy 033 sau khi 032 chạy ổn vì nó buộc mọi người đồng ý lại.
 
 > 034 (2026-11-21) đổi trang chi tiết người theo phản hồi dùng thử: thông tin mở sẵn, bấm hoạt động mở popup ghi chú + ngày giờ, Lịch sử thành popup thống kê (`design/gdd/crm.md` luật 13, 26; AC-35–38). Không cần migration.
+
+> 035 (2026-11-22) theo phản hồi dùng thử: thu gọn form sau khi thêm người, Thông tin lên đầu trang chi tiết, nút Hoạt động mở danh sách đủ việc, mọi việc làm lại được và cộng đủ XP mỗi lần; nhãn giữ ngày chốt đầu, mốc Khách hàng mới đếm người (`design/gdd/crm.md` luật 2, 4, 12, 13, 26; AC-39–42). Không cần migration.

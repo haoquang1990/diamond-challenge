@@ -32,12 +32,14 @@ Một Danh bạ duy nhất. Mỗi người có một danh sách **việc cần l
 
    | id | Tên | XP | Làm lại | Nhãn |
    |---|---|---|---|---|
-   | `contact` | Liên hệ | 5 | không | – |
-   | `demo` | Demo | 10 | không | – |
-   | `opp` | Trình bày opp | 20 | không | – |
+   | `contact` | Liên hệ | 5 | có | – |
+   | `demo` | Demo | 10 | có | – |
+   | `opp` | Trình bày opp | 20 | có | – |
    | `follow_up` | Follow-up | 10 | có | – |
-   | `new_customer` | Chốt khách hàng | 30 | không | KH |
-   | `new_npp` | Chốt NPP | 50 | không | NPP |
+   | `new_customer` | Chốt khách hàng | 30 | có | KH |
+   | `new_npp` | Chốt NPP | 50 | có | NPP |
+
+   Từ 2026-11-22 mọi việc đều làm lại được (quyết định của người dùng: có việc làm nhiều lần với cùng một người).
 
    Id `new_customer` được giữ để mốc Con đường (`stages[].milestones`) không đổi.
 3. **Sự kiện** (đều chỉ thêm):
@@ -48,7 +50,9 @@ Một Danh bạ duy nhất. Mỗi người có một danh sách **việc cần l
    - `activity_reassigned {activityId, personId}` (gán lại hoạt động cũ chưa gắn ai)
    - `person_stage_changed {personId, from, to, xp}`: **chỉ còn là sự kiện cũ**, vẫn đọc được và vẫn tính XP; app không ghi thêm.
    - Giai đoạn 2: `person_merged {keepId, mergedId, amwayCode?}`, `person_not_duplicate {personIds: [a, b]}`, `person_transferred_out {personId, name}` (do server ghi khi gộp mã). Tách liên hệ = sự kiện bù của `person_merged` (`payload.compensates`). Không sự kiện nào trong nhóm này có `xp`.
-4. **Hoàn thành một việc** = ghi `activity_logged {activityType: taskId, taskId, xp: xp của việc, personId}`. Việc `repeatable: false` biến khỏi danh sách của người đó khi có một sự kiện chưa bị bù; việc `repeatable: true` luôn còn. Người đã lưu trữ không hoàn thành được việc. Không còn gợi ý đổi giai đoạn.
+4. **Hoàn thành một việc** = ghi `activity_logged {activityType: taskId, taskId, xp: xp của việc, personId}`. Mọi việc luôn còn trong danh sách; **mỗi lần hoàn thành cộng đủ XP của việc** (quyết định 2026-11-22). Người đã lưu trữ không hoàn thành được việc. Không còn gợi ý đổi giai đoạn.
+   - **Nhãn khi chốt lại:** chốt KH cho người đã có KH hoặc NPP thì nhãn không đổi; chốt NPP lại thì vẫn giữ ngày lên NPP của lần chốt NPP đầu tiên chưa bị hoàn tác. Hoàn tác một lần chốt thì nhãn và ngày tính lại từ các lần chốt còn lại.
+   - **Mốc Con đường đếm người:** mốc "Khách hàng mới" (`stages[].milestones` với `activityType: new_customer`) đếm số **người khác nhau** có lần chốt KH chưa bị hoàn tác, không đếm số lần bấm, nên dữ liệu hiện có không đổi con số.
 5. **Hoàn tác** một việc bằng sự kiện bù `payload.compensates` (như cách hoàn tác hoạt động): việc hiện lại, XP trừ lại, nhãn được tính lại.
 6. **Thêm người** ghi đồng thời `person_added` và `activity_logged {add_name}` (+5 XP). `add_name` không phải việc cần làm. Tự thêm người không kèm hoạt động thì không có XP.
 7. **Nhãn** (suy ra, duyệt sự kiện chưa bị bù theo thứ tự nhật ký): `taskId = new_customer` → KH; `taskId = new_npp` → NPP; **NPP thay KH và không quay lại KH** khi làm thêm `new_customer`. Mỗi người tối đa một nhãn; gỡ nhãn bằng cách hoàn tác việc chốt.
@@ -63,14 +67,14 @@ Một Danh bạ duy nhất. Mỗi người có một danh sách **việc cần l
     - **Khách hàng:** hiện "liên hệ gần nhất"; sắp **lâu chưa chăm sóc lên đầu**.
     - **NPP:** hiện "ngày lên NPP"; mới nhất lên đầu. Nút "Tạo tài khoản" thuộc giai đoạn 2.
     - **Tất cả:** mọi người chưa lưu trữ, mỗi dòng kèm nhãn nếu có.
-12. **Tab Làm = Danh bạ** (phản hồi 2026-11-05): chỉ còn 4 tab **Hôm nay · Học · Làm · Con đường**. Danh bạ (danh sách người, bộ lọc, thêm người, khôi phục, gán hoạt động cũ) nằm trong tab **Làm**, tiêu đề màn "Làm"; không còn màn chọn người riêng. Nút **Làm** trên Hôm nay mở tab này. Có ô tìm tên, không phân biệt dấu. Nhãn ô ghi chú: "(FORMHD)".
-13. **Trang chi tiết người** (sửa 2026-11-21). Từ trên xuống:
+12. **Tab Làm = Danh bạ** (phản hồi 2026-11-05): chỉ còn 4 tab **Hôm nay · Học · Làm · Con đường**. Danh bạ (danh sách người, bộ lọc, thêm người, khôi phục, gán hoạt động cũ) nằm trong tab **Làm**, tiêu đề màn "Làm"; không còn màn chọn người riêng. Nút **Làm** trên Hôm nay mở tab này. Có ô tìm tên, không phân biệt dấu. Nhãn ô ghi chú: "(FORMHD)". Thêm người xong thì form "Thêm người" thu gọn ngay (2026-11-22); Danh bạ còn trống thì form mở sẵn.
+13. **Trang chi tiết người** (sửa 2026-11-21, 2026-11-22). Từ trên xuống:
     - tên, nhãn và các cảnh báo trùng;
-    - **Hoạt động**: các việc cần làm;
-    - **Thông tin**: các ô tên, số điện thoại, mã Amway, ghi chú, luôn mở sẵn. Không còn nút "Sửa thông tin" hay "Thu gọn". Nút "Lưu thay đổi" chỉ bật khi có ô bị sửa;
-    - nút **Lịch sử** (luật 26), rồi nút lưu trữ.
+    - **Thông tin**: các ô tên, số điện thoại, mã Amway, ghi chú, luôn mở sẵn; nút "Lưu thay đổi" chỉ bật khi có ô bị sửa;
+    - một hàng hai nút **Hoạt động** và **Lịch sử** (luật 26);
+    - nút lưu trữ.
 
-    Việc cần làm chỉ được hoàn thành ở trang này.
+    Việc cần làm chỉ được hoàn thành ở trang này, qua nút Hoạt động.
 14. **Sao lưu:** xuất một file JSON `diamond-challenge-backup-YYYY-MM-DD.json` gồm `format`, `formatVersion: 1`, `exportedAt`, `events[]` (toàn bộ nhật ký). **Khôi phục** là **gộp, bỏ trùng theo `id` sự kiện**: nhập hai lần không sinh trùng, không mất dữ liệu đang có. Mỗi sự kiện đi qua cùng bộ kiểm tra khi đọc (`parseStoredEvent`), gồm cả `person_restored`. Sau khi nhập, báo "thêm N, bỏ qua M". File chứa tên, số điện thoại và ghi chú về người khác, nên app nhắc người dùng giữ file cẩn thận.
 15. **Danh sách của hộ.** Mọi người chưa lưu trữ trong Danh bạ đều là của hộ mình (giai đoạn 1: hộ chỉ có mình). Ai có nhãn KH là KH của hộ, ai có nhãn NPP là NPP F1 của hộ. Không có ô chọn người bảo trợ, không dựng cây nhiều tầng trên máy.
 
@@ -99,7 +103,8 @@ Một Danh bạ duy nhất. Mỗi người có một danh sách **việc cần l
 25. **Sao lưu và khôi phục bằng file vẫn giữ.** Khôi phục một file vào Danh bạ hộ đi qua dò trùng (luật 19). Rời hộ: app mời xuất file trước khi xoá bản Danh bạ hộ trên máy.
 
 26. **Popup hoạt động và popup Lịch sử** (2026-11-21).
-    - **Popup hoạt động:** bấm một việc thì mở popup gồm tên việc và XP, ô **Ghi chú** (không bắt buộc, tối đa `activityNoteMaxLength` ký tự) và ô **Ngày giờ**, mặc định là bây giờ. Ngày giờ không được ở tương lai và lùi tối đa `activityBackdateDays` ngày.
+    - **Nút Hoạt động** (2026-11-22): mở popup danh sách **đủ mọi việc** trong `personTasks`, mỗi dòng có XP và "đã làm N lần" khi đã làm. Chọn một việc thì chuyển sang popup hoạt động bên dưới; "Huỷ" ở đó quay về trang, không ghi gì.
+    - **Popup hoạt động:** chọn một việc thì mở popup gồm tên việc và XP, ô **Ghi chú** (không bắt buộc, tối đa `activityNoteMaxLength` ký tự) và ô **Ngày giờ**, mặc định là bây giờ. Ngày giờ không được ở tương lai và lùi tối đa `activityBackdateDays` ngày.
     - "Xác nhận" ghi một `activity_logged` với thời điểm đã chọn và `payload.note` (bỏ khi trống). "Huỷ" không ghi gì. "Hoàn tác" và việc Chốt NPP mở "Tạo tài khoản" vẫn như cũ.
     - XP tính vào ngày đã chọn, nên ghi lùi có thể nối lại streak đã đứt trong khoảng `activityBackdateDays` (quyết định của người dùng 2026-11-21).
     - Ghi chú là dữ liệu Danh bạ: đồng bộ trong hộ như mọi sự kiện có `personId` (luật 16), thành viên hộ đọc được. Hoạt động cũ không có ghi chú vẫn hiện bình thường.
@@ -110,7 +115,7 @@ Một Danh bạ duy nhất. Mỗi người có một danh sách **việc cần l
 - Người: `Đang dùng` ⇄ `Đã lưu trữ` (`person_archived` / `person_restored`); `Đang dùng` → `Đã gộp vào X` (`person_merged`) → `Đang dùng` (tách); `Đang dùng` → `Đã chuyển lên tuyến trên` (`person_transferred_out`, do server ghi; hoàn tác gộp mã bỏ trạng thái này).
 - Cặp trùng: `Chưa duyệt` → `Đã gộp` / `Không phải cùng người`; `Đã gộp` → `Không phải cùng người` (tách).
 - Nhãn: không có → KH → NPP bằng cách chốt; NPP thay KH; mọi lần chốt đều hoàn tác được. Không có chuyển lùi riêng: muốn gỡ nhãn thì hoàn tác việc chốt.
-- Việc: `Còn` → `Đã làm` (một lần, trừ Follow-up) → `Còn` khi hoàn tác.
+- Việc: luôn `Còn`; mỗi lần làm thêm một dòng lịch sử (2026-11-22).
 
 ### Interactions with Other Systems
 
@@ -154,7 +159,7 @@ Công thức tầng, nhánh, điểm sâu và 30x30x4x4 thuộc giai đoạn 2 v
 - Tên rỗng hoặc chỉ có khoảng trắng: từ chối. Tên trùng nhau: cho phép nhưng cảnh báo.
 - Tên rất dài: cắt khi hiển thị, lưu nguyên (giới hạn trong config).
 - Hoạt động trỏ tới `personId` không có sự kiện `person_added` (ví dụ sau khi nhập file thiếu): hiện "Người không rõ", không báo lỗi, không mất XP.
-- Việc không làm lại được: sau khi làm một lần không nhận XP lần hai; hoàn tác lần làm đầu thì làm lại được.
+- Làm lại một việc nhiều lần: mỗi lần là một sự kiện riêng, cộng XP riêng và hiện riêng trong Lịch sử; hoàn tác chỉ bù đúng lần vừa làm.
 - Nhập file sai định dạng hoặc `formatVersion` lạ: từ chối cả file với thông báo rõ. Từng sự kiện hỏng trong file hợp lệ: bỏ qua và đếm.
 - Hai sự kiện cùng thời điểm: xếp theo thứ tự thêm vào.
 - Người đã lưu trữ có hoạt động: XP đã có vẫn giữ.
@@ -197,7 +202,7 @@ Công thức tầng, nhánh, điểm sâu và 30x30x4x4 thuộc giai đoạn 2 v
 | `target30x30.customersTarget` | 30 | 1–999 | ngưỡng KH của "đạt 30x30" |
 | `target30x30.f1Target` | 30 | 1–999 | ngưỡng NPP F1 của "đạt 30x30" |
 | `personTasks[].xp` | 5 / 10 / 20 / 10 / 30 / 50 | 0–200 | XP mỗi việc |
-| `personTasks[].repeatable` | chỉ `follow_up` | true/false | việc còn trong danh sách sau khi làm |
+| `personTasks[].repeatable` | mọi việc (từ 2026-11-22) | true/false | việc còn trong danh sách sau khi làm |
 | `personTasks[].label` | `new_customer` → KH, `new_npp` → NPP | `KH`/`NPP`/không có | nhãn đặt khi làm việc đó |
 | `countryCodes` | `+84` (Việt Nam) mặc định, kèm một số mã phổ biến | ≥1 mục | mã nước chọn khi nhập số |
 | `duplicateNameMaxDistance` | 1 | 0–3 | tên khác nhau bao nhiêu ký tự (sau bỏ dấu) vẫn coi là "có thể trùng"; 0 = chỉ trùng hẳn |
@@ -210,7 +215,7 @@ Công thức tầng, nhánh, điểm sâu và 30x30x4x4 thuộc giai đoạn 2 v
 ## Acceptance Criteria
 
 - **AC-1:** Given nhật ký rỗng, When thêm người "An", Then Danh bạ có "An" không nhãn, XP tăng 5 (hoạt động `add_name`) và không có mục "Người quen".
-- **AC-2:** Given An có việc "Demo", When hoàn thành, Then có `activity_logged` với `taskId = demo`, `xp = 10`, "Demo" biến khỏi danh sách việc của An và hiện trong lịch sử.
+- **AC-2:** Given An có việc "Demo", When hoàn thành, Then có `activity_logged` với `taskId = demo`, `xp = 10`, "Demo" vẫn còn trong danh sách việc của An và hiện trong lịch sử.
 - **AC-3:** Given An, When hoàn thành "Follow-up" hai lần, Then mỗi lần +10 XP và mục "Follow-up" vẫn còn.
 - **AC-4:** Given một việc đã hoàn thành, When hoàn tác bằng sự kiện bù, Then XP bị trừ lại và việc hiện lại.
 - **AC-5:** Given dữ liệu cũ An từng chuyển tới `demoed` (xp 10), When mở trang chi tiết sau khi cập nhật, Then "Demo" không còn trong danh sách việc, tổng XP không đổi và lịch sử không mất.
@@ -247,3 +252,7 @@ Công thức tầng, nhánh, điểm sâu và 30x30x4x4 thuộc giai đoạn 2 v
 - **AC-36:** Given trang chi tiết, When bấm "Demo", nhập ghi chú rồi "Xác nhận", Then có đúng một `activity_logged` với `payload.note` và XP của việc; When bấm "Huỷ" thay vì xác nhận, Then không có sự kiện nào.
 - **AC-37:** Given popup hoạt động, When chọn ngày giờ ở tương lai hoặc lùi quá `activityBackdateDays` ngày, Then không xác nhận được và có thông báo; When chọn 2 ngày trước, Then sự kiện mang thời điểm đó và XP tính vào ngày đó.
 - **AC-38:** Given một người đã có 2 lần "Follow-up" và 1 "Demo", When bấm "Lịch sử", Then popup hiện số lần mỗi việc, tổng XP, lần đầu và gần nhất, số ngày kể từ lần gần nhất, và danh sách kèm ghi chú, mới nhất trước.
+- **AC-39:** Given Danh bạ đã có người, When thêm một người mới, Then form "Thêm người" thu gọn ngay và người mới hiện trong danh sách.
+- **AC-40:** Given trang chi tiết một người, When mở trang, Then thứ tự là tên → Thông tin → hàng nút "Hoạt động" và "Lịch sử" → lưu trữ; không có danh sách việc hiện sẵn.
+- **AC-41:** Given An đã làm "Demo" một lần, When bấm "Hoạt động", Then popup hiện đủ 6 việc, "Demo" ghi "đã làm 1 lần"; When chọn "Demo" và xác nhận, Then có thêm một `activity_logged` với `xp = 10` và Lịch sử có 2 dòng Demo.
+- **AC-42:** Given An đã là NPP từ ngày D, When chốt NPP lại hôm nay, Then nhãn vẫn NPP và ngày lên NPP vẫn là D; Given An đã chốt KH 2 lần, When xem mốc "Khách hàng mới", Then An chỉ được đếm 1.
