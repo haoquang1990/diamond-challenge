@@ -17,14 +17,30 @@ export interface AccountInfo {
   readonly mustChangePassword: boolean;
 }
 
-/** Why an auth call failed. Deliberately says nothing about whether a phone number exists. */
-export type AuthFailure = 'invalid-phone' | 'bad-credentials' | 'network' | 'server' | 'same-password';
+/**
+ * Why an auth call failed. Deliberately says nothing about whether a phone number exists.
+ * `session-expired`, `reauthentication-needed` and `weak-password` only come from calls made
+ * while signed in (changing the password, saving the name): there a 400/401 is never a wrong
+ * phone or password.
+ */
+export type AuthFailure =
+  | 'invalid-phone'
+  | 'bad-credentials'
+  | 'network'
+  | 'server'
+  | 'same-password'
+  | 'session-expired'
+  | 'reauthentication-needed'
+  | 'weak-password';
+
+/** A failed auth call: the reason, plus the server's error code (never a password or token) when it had one. */
+export type AuthFailed = { readonly ok: false; readonly reason: AuthFailure; readonly code?: string };
 
 /** Outcome of a call that returns nothing on success. */
-export type AuthResult = { readonly ok: true } | { readonly ok: false; readonly reason: AuthFailure };
+export type AuthResult = { readonly ok: true } | AuthFailed;
 
 /** Outcome of {@link signInWithPhone}. */
-export type SignInResult = { readonly ok: true; readonly account: AccountInfo } | { readonly ok: false; readonly reason: AuthFailure };
+export type SignInResult = { readonly ok: true; readonly account: AccountInfo } | AuthFailed;
 
 /** Why a new password was rejected on the client. */
 export type PasswordProblem = 'too-short' | 'mismatch' | 'same-as-temporary';
@@ -49,22 +65,60 @@ export function validateDisplayName(raw: string): string | null {
   return name.length >= 1 && name.length <= MAX_DISPLAY_NAME_LENGTH ? name : null;
 }
 
-interface ErrorLike {
+/** The fields of a Supabase Auth or PostgREST error that classification reads. */
+export interface ErrorLike {
   readonly name?: string;
   readonly message?: string;
   readonly status?: number;
   readonly code?: string;
 }
 
-/** Maps a Supabase/PostgREST error to a failure reason. */
-function classify(error: ErrorLike): AuthFailure {
+/** Where an error came from: signing in (a 400 means wrong credentials) or a call made while signed in. */
+export type AuthErrorContext = 'sign-in' | 'signed-in';
+
+/**
+ * Maps a Supabase Auth or PostgREST error to an {@link AuthFailure}. Only `sign-in` maps a
+ * 400/401 to `bad-credentials`; while signed in, a missing or expired session becomes
+ * `session-expired` and a 400 the user cannot fix by retyping becomes `server`.
+ *
+ * @example
+ * classifyAuthError({ name: 'AuthSessionMissingError', status: 400 }, 'signed-in'); // 'session-expired'
+ * classifyAuthError({ status: 400, code: 'invalid_credentials' }, 'sign-in');        // 'bad-credentials'
+ */
+export function classifyAuthError(error: ErrorLike, context: AuthErrorContext): AuthFailure {
   if (error.code === 'same_password') return 'same-password';
   const offline = typeof navigator !== 'undefined' && navigator.onLine === false;
   if (offline || error.name === 'AuthRetryableFetchError' || error.status === 0 || /fetch|network/i.test(error.message ?? '')) {
     return 'network';
   }
-  if (error.status === 400 || error.status === 401 || error.code === 'invalid_credentials') return 'bad-credentials';
+  if (error.code === 'weak_password') return 'weak-password';
+  if (error.code === 'reauthentication_needed' || error.code === 'reauthentication_not_valid') return 'reauthentication-needed';
+  if (context === 'sign-in') {
+    if (error.status === 400 || error.status === 401 || error.code === 'invalid_credentials') return 'bad-credentials';
+    return 'server';
+  }
+  if (
+    error.name === 'AuthSessionMissingError' ||
+    error.code === 'session_not_found' ||
+    error.code === 'session_expired' ||
+    error.code === 'bad_jwt' ||
+    error.code === 'user_not_found' ||
+    error.code === 'PGRST301' ||
+    error.code === 'PGRST303' ||
+    error.status === 401 ||
+    error.status === 403
+  ) {
+    return 'session-expired';
+  }
   return 'server';
+}
+
+/** A failed result for `error`, carrying its code (or name) for support. Logs the code, never a secret. */
+function failure(error: ErrorLike, context: AuthErrorContext, where: string): AuthFailed {
+  const code = error.code ?? error.name ?? (error.status === undefined ? undefined : String(error.status));
+  const reason = classifyAuthError(error, context);
+  if (reason !== 'bad-credentials' && reason !== 'network') console.error(`[auth] ${where} failed`, { code, status: error.status });
+  return code === undefined ? { ok: false, reason } : { ok: false, reason, code };
 }
 
 function phoneFromUser(user: User): string | null {
@@ -106,7 +160,7 @@ export async function signInWithPhone(
   const e164 = normalizePhone(`${input.countryCode}${input.number}`);
   if (e164 === null) return { ok: false, reason: 'invalid-phone' };
   const { data, error } = await client.auth.signInWithPassword({ email: phoneToEmail(e164), password: input.password });
-  if (error !== null || data.user === null) return { ok: false, reason: classify(error ?? { status: 500 }) };
+  if (error !== null || data.user === null) return failure(error ?? { status: 500 }, 'sign-in', 'sign in');
   return { ok: true, account: await toAccount(client, data.user) };
 }
 
@@ -119,7 +173,7 @@ export async function loadAccount(client: SupabaseClient): Promise<AccountInfo |
 /** Signs out on this device only. Does not touch the local event log. */
 export async function signOut(client: SupabaseClient): Promise<AuthResult> {
   const { error } = await client.auth.signOut({ scope: 'local' });
-  return error === null ? { ok: true } : { ok: false, reason: classify(error) };
+  return error === null ? { ok: true } : failure(error, 'signed-in', 'sign out');
 }
 
 /**
@@ -128,15 +182,15 @@ export async function signOut(client: SupabaseClient): Promise<AuthResult> {
  */
 export async function changePassword(client: SupabaseClient, newPassword: string): Promise<AuthResult> {
   const update = await client.auth.updateUser({ password: newPassword });
-  if (update.error !== null) return { ok: false, reason: classify(update.error) };
+  if (update.error !== null) return failure(update.error, 'signed-in', 'password update');
   const marked = await client.rpc('mark_password_changed');
-  return marked.error === null ? { ok: true } : { ok: false, reason: classify(marked.error) };
+  return marked.error === null ? { ok: true } : failure(marked.error, 'signed-in', 'mark_password_changed');
 }
 
 /** Saves the display name through `set_display_name`. `name` must pass {@link validateDisplayName}. */
 export async function saveDisplayName(client: SupabaseClient, name: string): Promise<AuthResult> {
   const { error } = await client.rpc('set_display_name', { p_name: name });
-  return error === null ? { ok: true } : { ok: false, reason: classify(error) };
+  return error === null ? { ok: true } : failure(error, 'signed-in', 'set_display_name');
 }
 
 /**

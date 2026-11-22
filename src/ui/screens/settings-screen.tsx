@@ -135,7 +135,7 @@ function AccountCard({ account, onSignOut, onSaveDisplayName, onOpenHousehold, o
     setMessage(null);
     try {
       const result = await onSaveDisplayName(valid);
-      setMessage(result.ok ? { text: STRINGS.displayNameSaved, error: false } : { text: authFailureText(result.reason), error: true });
+      setMessage(result.ok ? { text: STRINGS.displayNameSaved, error: false } : { text: authFailureText(result.reason, result.code), error: true });
       if (result.ok) setName(valid);
     } catch (error) {
       console.error('[settings] could not save the display name', error);

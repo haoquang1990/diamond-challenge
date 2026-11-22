@@ -1,0 +1,8 @@
+Reviewed-Content-Hash: src/data/auth-service.ts d9961df585aad4281f4cc93b5ccbc0a46c57fafb
+Reviewed-Content-Hash: src/ui/password-input.tsx a0b1f02d1617834ab13bc0dedb8cdcf08f19d8f9
+Reviewed-Content-Hash: src/ui/screens/change-password-screen.tsx c874f95b004161f467ccdc6fd5298a01cc6c1951
+Reviewed-Content-Hash: src/ui/screens/login-screen.tsx 80491eb3e375074b2158ca47c8ae0a45f4bf041a
+Reviewed-Content-Hash: src/ui/screens/settings-screen.tsx cfaa356244347b80bb0b6a23204787a2db44d4b8
+Reviewed-Content-Hash: src/ui/strings.ts 05c2cef68308f7daaa80123847bc384dcb67c450
+Reviewed-Content-Hash: src/ui/styles.css 35be843f4250dcc4c28f0188df79a17845941d98
+Reviewed-Content-Hash: tests/unit/data/auth-errors.test.ts d0aa2653f40b97ea742ab5f83b4f75c025e11fa7

@@ -276,6 +276,13 @@ export const STRINGS = {
   authBadCredentials: 'Số điện thoại hoặc mật khẩu chưa đúng. Kiểm tra lại rồi thử nhé.',
   authNetworkError: 'Không có kết nối mạng. Kiểm tra mạng rồi thử lại nhé.',
   authServerError: 'Máy chủ đang gặp sự cố. Thử lại sau ít phút nhé.',
+  authSessionExpired: 'Phiên đăng nhập trên máy này đã hết. Bấm "Đăng xuất" rồi đăng nhập lại (bằng mật khẩu tạm nếu chưa đổi), sau đó thử lại.',
+  authReauthenticationNeeded: 'Máy chủ cần bạn đăng nhập lại trước khi đổi mật khẩu. Bấm "Đăng xuất", đăng nhập lại bằng mật khẩu tạm rồi đổi ngay.',
+  authWeakPassword: 'Mật khẩu này quá yếu hoặc đã từng bị lộ. Chọn mật khẩu khác dài hơn, có cả chữ và số.',
+  /** Appended to a server error so the user can report it; `code` is the server's error code, never a secret. */
+  authErrorCode: (code: string) => `(mã lỗi: ${code})`,
+  passwordShow: 'Hiện mật khẩu',
+  passwordHide: 'Ẩn mật khẩu',
   changePasswordTitle: 'Đổi mật khẩu',
   changePasswordPrompt: 'Đây là lần đăng nhập đầu. Hãy đặt mật khẩu của riêng bạn trước khi tiếp tục.',
   newPasswordLabel: 'Mật khẩu mới',
@@ -733,8 +740,11 @@ export function createAccountShareText(phone: string, password: string): string 
   return `Số điện thoại: ${phone}\nMật khẩu tạm: ${password}\nHãy đổi mật khẩu khi đăng nhập lần đầu.`;
 }
 
-/** Vietnamese message for a failed auth call; never says whether a phone number exists. */
-export function authFailureText(reason: AuthFailure): string {
+/**
+ * Vietnamese message for a failed auth call; never says whether a phone number exists.
+ * `code` (the server's error code) is shown only for unexpected server errors, so they can be reported.
+ */
+export function authFailureText(reason: AuthFailure, code?: string): string {
   switch (reason) {
     case 'invalid-phone':
       return STRINGS.loginInvalidPhone;
@@ -744,8 +754,14 @@ export function authFailureText(reason: AuthFailure): string {
       return STRINGS.authNetworkError;
     case 'same-password':
       return STRINGS.passwordSameAsTemporary;
+    case 'session-expired':
+      return STRINGS.authSessionExpired;
+    case 'reauthentication-needed':
+      return STRINGS.authReauthenticationNeeded;
+    case 'weak-password':
+      return STRINGS.authWeakPassword;
     case 'server':
-      return STRINGS.authServerError;
+      return code === undefined ? STRINGS.authServerError : `${STRINGS.authServerError} ${STRINGS.authErrorCode(code)}`;
   }
 }
 
