@@ -1,7 +1,7 @@
 # Story 035: Trang chi tiết người: Thông tin lên đầu, nút Hoạt động mở danh sách đủ việc, làm lại mọi việc
 
 > **Epic**: diamond-challenge
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Feature
 > **Type**: UI
 > **Estimate**: M
@@ -85,3 +85,10 @@
 
 - Depends on: `production/epics/diamond-challenge/story-034-person-detail-popups.md`
 - Unlocks: None
+
+## Completion Notes
+**Completed**: 2026-11-22
+**Criteria**: 8/8 passing (none deferred)
+**Deviations**: Advisory, not logged as tech debt: (1) "count distinct people" is a constant for `new_customer` in `stages.ts` (`DISTINCT_PERSON_ACTIVITY`), not a per-milestone config flag; (2) activities logged without a person and later reassigned, and two merged contacts that both closed a customer, still count per event, so today's numbers do not change; (3) seven existing tests were updated to crm.md rule 4 (done tasks stay, no `already_done` rejection; the Emerald fixture went from 2 to 1 because both closings were the same person), none skipped or weakened; (4) every task earns full XP each time (user decision 2026-11-22), so repeating Chốt NPP gives +50 XP each time; (5) `activityNoneLeft` in `strings.ts` is now unused and ESLint did not run (no config in the repo)
+**Test Evidence**: screenshots `production/qa/evidence/story-035-activity-button-repeatable-tasks/` (10 images at 390 and 320px, stamp unchanged); `tests/unit/people/people-tasks.test.ts`, `tests/unit/people/done-task-counts.test.ts`, `tests/unit/stages/stages.test.ts`; full suite 571/571
+**Reviewed by**: self, no independent review
