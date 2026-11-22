@@ -272,6 +272,23 @@ export function buildPersonHistory(
 }
 
 /**
+ * How many times each activity type appears in a person's history (non-compensated
+ * `activity_logged` rows, merged contacts included, as {@link buildPersonHistory} gives them).
+ * Drives "đã làm N lần" in the Hoạt động list (story 035). Pure.
+ *
+ * @example
+ * countDoneTasks(history).get('demo'); // 2
+ */
+export function countDoneTasks(entries: readonly HistoryEntry[]): ReadonlyMap<string, number> {
+  const counts = new Map<string, number>();
+  for (const h of entries) {
+    if (h.kind !== 'activity' || h.taskId === undefined) continue;
+    counts.set(h.taskId, (counts.get(h.taskId) ?? 0) + 1);
+  }
+  return counts;
+}
+
+/**
  * People (non-archived, other than `excludePersonId`) whose code equals `code`. `code` is a
  * normalized code; null or empty matches nobody. Pure; drives the typing warning in the form.
  */

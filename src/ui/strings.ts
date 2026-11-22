@@ -154,6 +154,7 @@ export const STRINGS = {
   personDetailAmwayCode: 'Mã số Amway',
   activitySectionTitle: 'Hoạt động',
   activityNoneLeft: 'Đã làm hết các việc. Giỏi lắm!',
+  activityArchivedNote: 'Người đã lưu trữ không làm được việc.',
   historyTitle: 'Lịch sử',
   historyEmpty: 'Chưa có hoạt động nào.',
   taskUndone: 'Đã hoàn tác việc vừa làm.',
@@ -635,8 +636,13 @@ export function historyStageLabel(stageName: string): string {
 }
 
 /** Aria label for a task button, e.g. "Demo, +10 XP". */
-export function taskButtonLabel(name: string, xp: number): string {
-  return `${name}, ${xpLabel(xp)}`;
+export function taskButtonLabel(name: string, xp: number, times = 0): string {
+  return times > 0 ? `${name}, ${xpLabel(xp)}, ${taskDoneTimesLabel(times)}` : `${name}, ${xpLabel(xp)}`;
+}
+
+/** "đã làm N lần" on a task of the Hoạt động list (story 035), shown when N > 0. */
+export function taskDoneTimesLabel(times: number): string {
+  return `đã làm ${times} lần`;
 }
 
 /** Message when the chosen activity time is more than `days` days back. */

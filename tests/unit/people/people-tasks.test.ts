@@ -57,12 +57,12 @@ const pendingIds = (p: Person): string[] => pendingTasks(p, CONFIG).map((t) => t
 describe('config parsing', () => {
   it('reads the six tasks and the country codes with no problems', () => {
     expect(CONFIG.tasks?.map((t) => [t.id, t.xp, t.repeatable, t.label ?? null])).toEqual([
-      ['contact', 5, false, null],
-      ['demo', 10, false, null],
-      ['opp', 20, false, null],
+      ['contact', 5, true, null],
+      ['demo', 10, true, null],
+      ['opp', 20, true, null],
       ['follow_up', 10, true, null],
-      ['new_customer', 30, false, 'KH'],
-      ['new_npp', 50, false, 'NPP'],
+      ['new_customer', 30, true, 'KH'],
+      ['new_npp', 50, true, 'NPP'],
     ]);
     expect(CONFIG.countryCodes?.[0]).toEqual({ code: '+84', name: 'Việt Nam' });
     expect(parsePeopleConfig(gameConfig).problems).toEqual([]);
@@ -108,15 +108,14 @@ describe('pendingTasks', () => {
     expect(pendingIds(one([added('a')]))).toEqual(['contact', 'demo', 'opp', 'follow_up', 'new_customer', 'new_npp']);
   });
 
-  it('hides a done non-repeatable task but keeps follow_up always', () => {
-    const p = one([added('a'), task('a', 'contact'), task('a', 'follow_up'), task('a', 'follow_up')]);
-    expect(pendingIds(p)).not.toContain('contact');
-    expect(pendingIds(p)).toContain('follow_up');
+  it('keeps every done task in the list (crm rule 4, 2026-11-22)', () => {
+    const p = one([added('a'), task('a', 'contact'), task('a', 'follow_up'), task('a', 'follow_up'), task('a', 'new_npp')]);
+    expect(pendingIds(p)).toEqual(['contact', 'demo', 'opp', 'follow_up', 'new_customer', 'new_npp']);
   });
 
-  it('shows the task again after the completion is compensated', () => {
+  it('keeps the task after the completion is compensated', () => {
     const done = task('a', 'demo');
-    expect(pendingIds(one([added('a'), done]))).not.toContain('demo');
+    expect(pendingIds(one([added('a'), done]))).toContain('demo');
     expect(pendingIds(one([added('a'), done, undo(done)]))).toContain('demo');
   });
 
@@ -143,14 +142,25 @@ describe('buildTaskCompletionEvent', () => {
     expect(r.ok && 'timestamp' in r.event).toBe(false);
   });
 
-  it('rejects archived people, unknown tasks and done non-repeatable tasks', () => {
+  it('rejects archived people and unknown tasks', () => {
     expect(buildTaskCompletionEvent(personOf('a', { archived: true }), 'demo', CONFIG)).toEqual({ ok: false, reason: 'archived' });
     expect(buildTaskCompletionEvent(personOf('a'), 'zzz', CONFIG)).toEqual({ ok: false, reason: 'unknown_task' });
-    expect(buildTaskCompletionEvent(personOf('a', { doneTaskIds: ['demo'] }), 'demo', CONFIG)).toEqual({ ok: false, reason: 'already_done' });
   });
 
-  it('allows a repeatable task again', () => {
-    expect(buildTaskCompletionEvent(personOf('a', { doneTaskIds: ['follow_up'] }), 'follow_up', CONFIG).ok).toBe(true);
+  it('allows every done task again with full XP (crm rule 4, AC-41)', () => {
+    for (const t of CONFIG.tasks ?? []) {
+      expect(buildTaskCompletionEvent(personOf('a', { doneTaskIds: [t.id] }), t.id, CONFIG)).toMatchObject({ ok: true, xp: t.xp });
+    }
+    // Even a config task marked non-repeatable is never blocked any more.
+    const strict: PeopleConfig = { ...CONFIG, tasks: [{ id: 'x', name: 'X', xp: 7, repeatable: false }] };
+    expect(buildTaskCompletionEvent(personOf('a', { doneTaskIds: ['x'] }), 'x', strict)).toMatchObject({ ok: true, xp: 7 });
+  });
+
+  it('AC-41: a second Demo adds one more activity_logged with xp 10', () => {
+    const log = [added('a'), task('a', 'demo', D2), task('a', 'demo', D3)];
+    const demos = log.filter((e) => e.type === 'activity_logged' && e.payload.taskId === 'demo');
+    expect(demos.map((e) => e.payload.xp)).toEqual([10, 10]);
+    expect(computeProgress(log, NOW, { dailyXpGoal: gameConfig.dailyXpGoal }, 'UTC').totalXp).toBe(20);
   });
 });
 
@@ -176,6 +186,36 @@ describe('labels', () => {
     expect(one([added('a'), kh, npp, undo(npp)]).label).toBe('KH');
     expect(one([added('a'), kh, npp, undo(npp)]).labelledAt).toBe(D2);
     expect(one([added('a'), kh, undo(kh)]).label).toBeNull();
+  });
+
+  it('repeating Chốt KH keeps KH and its first date; on an NPP it keeps NPP', () => {
+    const p = one([added('a'), task('a', 'new_customer', D2), task('a', 'new_customer', D3)]);
+    expect(p.label).toBe('KH');
+    expect(p.labelledAt).toBe(D2);
+    const q = one([added('a'), task('a', 'new_npp', D2), task('a', 'new_customer', D3), task('a', 'new_customer', D4)]);
+    expect(q.label).toBe('NPP');
+    expect(q.nppAt).toBe(D2);
+  });
+
+  it('AC-42: repeating Chốt NPP keeps the date of the first NPP closing', () => {
+    const p = one([added('a'), task('a', 'new_customer', D1), task('a', 'new_npp', D2), task('a', 'new_npp', D4)]);
+    expect(p.label).toBe('NPP');
+    expect(p.nppAt).toBe(D2);
+    expect(p.labelledAt).toBe(D2);
+  });
+
+  it('undoing one of several closings recomputes from the remaining ones', () => {
+    const npp1 = task('a', 'new_npp', D2);
+    const npp2 = task('a', 'new_npp', D3);
+    expect(one([added('a'), npp1, npp2, undo(npp1)]).nppAt).toBe(D3);
+    expect(one([added('a'), npp1, npp2, undo(npp2)]).nppAt).toBe(D2);
+    const kh = task('a', 'new_customer', D1);
+    const both = one([added('a'), kh, npp1, npp2, undo(npp1), undo(npp2)]);
+    expect(both.label).toBe('KH');
+    expect(both.labelledAt).toBe(D1);
+    const kh2 = task('a', 'new_customer', D3);
+    expect(one([added('a'), kh, kh2, undo(kh)]).labelledAt).toBe(D3);
+    expect(one([added('a'), kh, kh2, undo(kh), undo(kh2)]).label).toBeNull();
   });
 
   it('legacy new_customer activity without taskId gives no label', () => {
@@ -204,7 +244,8 @@ describe('legacy migration', () => {
     const p = one(legacy());
     expect(p.label).toBe('KH');
     expect(p.doneTaskIds).toEqual(expect.arrayContaining(['contact', 'demo', 'opp']));
-    expect(pendingIds(p)).toEqual(['follow_up', 'new_customer', 'new_npp']);
+    // Done tasks stay in the list (crm rule 4, 2026-11-22).
+    expect(pendingIds(p)).toEqual(['contact', 'demo', 'opp', 'follow_up', 'new_customer', 'new_npp']);
   });
 
   it('downline gives NPP, other known stages give no label, unknown stages are ignored', () => {
@@ -252,7 +293,8 @@ describe('legacy migration', () => {
     expect(computeProgress(withTask, NOW, { dailyXpGoal: gameConfig.dailyXpGoal }, 'UTC').totalXp).toBe(100);
     const emerald = computeStageProgress(withTask, 100, stages).stages.find((s) => s.stage.id === 'emerald');
     expect(emerald?.milestones[0]?.count).toBe(5);
-    expect(emerald?.milestones[0]?.current).toBe(2);
+    // Both closings belong to person a: "Khách hàng mới" counts people, not clicks (crm rule 4).
+    expect(emerald?.milestones[0]?.current).toBe(1);
   });
 });
 

@@ -177,6 +177,46 @@ export function countActivities(events: readonly LogEvent[], others?: ReadonlySe
   return counts;
 }
 
+/**
+ * Milestone activity type counted as distinct people rather than raw events (crm rule 4,
+ * 2026-11-22): "Khách hàng mới" counts people closed as KH, so repeating Chốt KH with the same
+ * person does not count twice.
+ */
+export const DISTINCT_PERSON_ACTIVITY = 'new_customer';
+
+/**
+ * Counts used by the Con đường milestones. Every activity type keeps the raw
+ * {@link countActivities} count, except {@link DISTINCT_PERSON_ACTIVITY}: there each
+ * non-compensated event with a string `payload.personId` counts once per personId, and each such
+ * event without a personId (legacy, logged without a person) still counts on its own, so data
+ * from before repeatable tasks keeps its number. Same compensation and `others` rules.
+ *
+ * @example
+ * countMilestoneActivities(events).get('new_customer'); // people with a Chốt KH
+ */
+export function countMilestoneActivities(events: readonly LogEvent[], others?: ReadonlySet<string>): ReadonlyMap<string, number> {
+  const counts = new Map(countActivities(events, others));
+  const compensated = new Set<string>();
+  for (const e of events) {
+    const target = e.payload.compensates;
+    if (typeof target === 'string') compensated.add(target);
+  }
+  const people = new Set<string>();
+  let withoutPerson = 0;
+  for (const e of events) {
+    if (e.type !== 'activity_logged' || e.payload.activityType !== DISTINCT_PERSON_ACTIVITY) continue;
+    if (compensated.has(e.id) || typeof e.payload.compensates === 'string') continue;
+    if (others?.has(e.userId) === true) continue;
+    const personId = e.payload.personId;
+    if (typeof personId === 'string') people.add(personId);
+    else withoutPerson += 1;
+  }
+  const distinct = people.size + withoutPerson;
+  if (distinct > 0) counts.set(DISTINCT_PERSON_ACTIVITY, distinct);
+  else counts.delete(DISTINCT_PERSON_ACTIVITY);
+  return counts;
+}
+
 function clampPercent(value: number): number {
   if (!Number.isFinite(value)) return 0;
   return Math.min(100, Math.max(0, value));
@@ -189,7 +229,7 @@ function clampPercent(value: number): number {
  * milestones are met and every earlier stage is unlocked. The percentage is
  * XP-based; `blockedByMilestones` tells the UI that 100% XP is not "reached".
  *
- * @param events Event log (for milestone counts).
+ * @param events Event log (for milestone counts, see {@link countMilestoneActivities}).
  * @param totalXp Total XP from computeProgress.
  * @param stages Validated stages from {@link parseStageConfig}.
  * @param others Optional authors that are not me: their events do not count for milestones (story 023).
@@ -200,7 +240,7 @@ export function computeStageProgress(
   stages: readonly StageDef[],
   others?: ReadonlySet<string>,
 ): StageProgress {
-  const counts = countActivities(events, others);
+  const counts = countMilestoneActivities(events, others);
   const details = stages.map((stage) => {
     const milestones: MilestoneStatus[] = stage.milestones.map((m) => {
       const current = counts.get(m.activityType) ?? 0;

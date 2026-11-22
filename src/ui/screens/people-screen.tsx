@@ -166,6 +166,9 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
       setAddedXp(null);
     }
     await reload();
+    // The person is saved: collapse "Thêm người" (crm rule 12, 2026-11-22). An empty book never
+    // gets here with zero people, so it still opens automatically.
+    setShowAdd(false);
   }
 
   async function restore(personId: string): Promise<void> {
