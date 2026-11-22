@@ -1,7 +1,7 @@
 # Story 035: Trang chi tiết người: Thông tin lên đầu, nút Hoạt động mở danh sách đủ việc, làm lại mọi việc
 
 > **Epic**: diamond-challenge
-> **Status**: Ready
+> **Status**: In Progress
 > **Layer**: Feature
 > **Type**: UI
 > **Estimate**: M
