@@ -1,12 +1,12 @@
 # Story 034: Trang chi tiết người: thông tin mở sẵn, popup hoạt động và popup Lịch sử
 
 > **Epic**: diamond-challenge
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Feature
 > **Type**: UI
 > **Estimate**: M
 > **Manifest Version**: N/A (minimal — no control manifest)
-> **Last Updated**: 2026-11-21
+> **Last Updated**: 2026-11-22
 
 ## Context
 
@@ -84,3 +84,10 @@
 
 - Depends on: None (story 033 đã xong; không cần migration)
 - Unlocks: None
+
+## Completion Notes
+**Completed**: 2026-11-22
+**Criteria**: 8/8 passing (none deferred)
+**Deviations**: Advisory, not logged as tech debt: (1) `activityBackdateDays` and `activityNoteMaxLength` are read from `game-config.json` through a fallback in `person-form.tsx` (`DEFAULT_LIMITS`), not through `PEOPLE_CONFIG`, because `src/ui/people-config.ts` was outside the approved file list; threading them there (two keys in `parsePeopleConfig` input and in `PEOPLE_CONFIG`) lets the fallback go; `people.ts` keeps `FALLBACK_BACKDATE_DAYS = 7` and `FALLBACK_NOTE_MAX_LENGTH = 500` for a missing or out-of-range config; (2) the effect of a backdated activity on streak and daily goal was checked through the event timestamp, not on screen; (3) the activity note is Danh bạ data, so household members can read it
+**Test Evidence**: screenshots `production/qa/evidence/story-034-person-detail-popups/` (8 images at 390 and 320px, stamp unchanged); `tests/unit/people/activity-popup.test.ts`, `tests/unit/people-ui/history-summary.test.ts`; full suite 551/551
+**Reviewed by**: self, no independent review
