@@ -9,17 +9,21 @@ const PARSED = parsePeopleConfig({
   countryCodes: gameConfig.countryCodes,
   amwayCodeDigits: gameConfig.amwayCodeDigits,
   duplicateNameMaxDistance: gameConfig.duplicateNameMaxDistance,
+  activityBackdateDays: gameConfig.activityBackdateDays,
+  activityNoteMaxLength: gameConfig.activityNoteMaxLength,
 });
 if (PARSED.problems.length > 0) console.warn('[people] config problems', PARSED.problems);
 
-/** People stages (legacy), targets, tasks, country codes, Amway code digits and duplicate name distance from game-config.json, validated once at load. */
-export const PEOPLE_CONFIG: PeopleConfig & { readonly tasks: readonly PersonTaskDef[]; readonly countryCodes: readonly CountryCodeDef[] } = {
+/** People stages (legacy), targets, tasks, country codes, Amway code digits, duplicate name distance and activity limits (story 034) from game-config.json, validated once at load. */
+export const PEOPLE_CONFIG: PeopleConfig & { readonly tasks: readonly PersonTaskDef[]; readonly countryCodes: readonly CountryCodeDef[]; readonly activityBackdateDays: number; readonly activityNoteMaxLength: number } = {
   stages: PARSED.stages,
   targets: PARSED.targets,
   tasks: PARSED.tasks,
   countryCodes: PARSED.countryCodes,
   amwayCodeDigits: PARSED.amwayCodeDigits,
   duplicateNameMaxDistance: PARSED.duplicateNameMaxDistance,
+  activityBackdateDays: PARSED.activityBackdateDays,
+  activityNoteMaxLength: PARSED.activityNoteMaxLength,
 };
 
 /** Person tasks in display order. */

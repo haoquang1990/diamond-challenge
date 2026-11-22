@@ -218,8 +218,20 @@ export const STRINGS = {
   personDuplicateWarning: 'Đã có người trùng tên này. Bạn vẫn có thể thêm.',
   personAddedXp: 'Đã thêm người',
   personSaveError: 'Không lưu được. Thử lại nhé.',
-  personEditToggle: 'Sửa thông tin',
-  personEditClose: 'Thu gọn',
+  personInfoSectionTitle: 'Thông tin',
+  activityNoteLabel: 'Ghi chú (không bắt buộc)',
+  activityDateTimeLabel: 'Ngày giờ',
+  activityConfirm: 'Xác nhận',
+  activityCancel: 'Huỷ',
+  activityTimeFuture: 'Ngày giờ không được ở tương lai.',
+  activityTimeInvalid: 'Hãy chọn ngày giờ hợp lệ.',
+  historyClose: 'Đóng',
+  historySummaryTitle: 'Tóm tắt',
+  historyTotalXpLabel: 'Tổng XP từ người này',
+  historyFirstLabel: 'Liên hệ đầu tiên',
+  historyLastLabel: 'Liên hệ gần nhất',
+  historyDaysSinceLabel: 'Kể từ lần gần nhất',
+  historyListTitle: 'Danh sách',
   personSaveChanges: 'Lưu thay đổi',
   personSaved: 'Đã lưu.',
   personChangeStage: 'Đổi giai đoạn',
@@ -618,6 +630,27 @@ export function historyStageLabel(stageName: string): string {
 /** Aria label for a task button, e.g. "Demo, +10 XP". */
 export function taskButtonLabel(name: string, xp: number): string {
   return `${name}, ${xpLabel(xp)}`;
+}
+
+/** Message when the chosen activity time is more than `days` days back. */
+export function activityTimeTooOldLabel(days: number): string {
+  return days === 0 ? 'Chỉ ghi được vào lúc bấm.' : `Chỉ ghi lùi tối đa ${days} ngày.`;
+}
+
+/** "Hôm nay" / "N ngày trước" for the days since the last contact. */
+export function daysSinceLabel(days: number): string {
+  return days === 0 ? 'Hôm nay' : `${days} ngày trước`;
+}
+
+/** Character counter under the note field, e.g. "12/500". */
+export function noteCounterLabel(length: number, max: number): string {
+  return `${length}/${max}`;
+}
+
+/** Local date and time for an activity row, e.g. "21/11/2026, 09:30". */
+export function dateTimeLabel(iso: string): string {
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? '' : d.toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' });
 }
 
 /** Short local date for a legacy activity row. */
