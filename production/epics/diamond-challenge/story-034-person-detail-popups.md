@@ -58,6 +58,7 @@
 ## Files
 
 - `src/ui/screens/person-form.tsx` (info always open, `Dialog`, activity popup, history popup)
+- `src/ui/people-config.ts` (`PEOPLE_CONFIG` carries `activityBackdateDays` and `activityNoteMaxLength`; approved by the user 2026-11-22)
 - `src/domain/people.ts` (`validateActivityTime`, `parseActivityLimits`, note in `buildTaskCompletionEvent`)
 - `src/ui/people-helpers.ts` (`summarizeHistory`, note/taskId/xp on history rows)
 - `src/config/game-config.json` (`activityBackdateDays` 7, `activityNoteMaxLength` 500)
@@ -88,6 +89,6 @@
 ## Completion Notes
 **Completed**: 2026-11-22
 **Criteria**: 8/8 passing (none deferred)
-**Deviations**: Advisory, not logged as tech debt: (1) `activityBackdateDays` and `activityNoteMaxLength` are read from `game-config.json` through a fallback in `person-form.tsx` (`DEFAULT_LIMITS`), not through `PEOPLE_CONFIG`, because `src/ui/people-config.ts` was outside the approved file list; threading them there (two keys in `parsePeopleConfig` input and in `PEOPLE_CONFIG`) lets the fallback go; `people.ts` keeps `FALLBACK_BACKDATE_DAYS = 7` and `FALLBACK_NOTE_MAX_LENGTH = 500` for a missing or out-of-range config; (2) the effect of a backdated activity on streak and daily goal was checked through the event timestamp, not on screen; (3) the activity note is Danh bạ data, so household members can read it
+**Deviations**: Advisory, not logged as tech debt: (1) resolved after closing (2026-11-22, user-approved edit of `src/ui/people-config.ts`): `activityBackdateDays` and `activityNoteMaxLength` now go through `PEOPLE_CONFIG` and the `DEFAULT_LIMITS` fallback in `person-form.tsx` is gone; evidence re-captured; `people.ts` keeps `FALLBACK_BACKDATE_DAYS = 7` and `FALLBACK_NOTE_MAX_LENGTH = 500` for a missing or out-of-range config; (2) the effect of a backdated activity on streak and daily goal was checked through the event timestamp, not on screen; (3) the activity note is Danh bạ data, so household members can read it
 **Test Evidence**: screenshots `production/qa/evidence/story-034-person-detail-popups/` (8 images at 390 and 320px, stamp unchanged); `tests/unit/people/activity-popup.test.ts`, `tests/unit/people-ui/history-summary.test.ts`; full suite 551/551
 **Reviewed by**: self, no independent review

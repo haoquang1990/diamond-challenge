@@ -1,12 +1,10 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
-import gameConfig from '../../config/game-config.json';
 import type { EventStore, LogEvent } from '../../data/event-store';
 import { buildSplitEvents } from '../../domain/duplicates';
 import {
   buildTaskCompletionEvent,
   findDuplicateNames,
-  parseActivityLimits,
   pendingTasks,
   validateActivityTime,
   validateAmwayCode,
@@ -28,9 +26,6 @@ import {
   taskButtonLabel,
   xpLabel,
 } from '../strings';
-
-/** Activity limits: from the people config when present, else the validated game-config values. */
-const DEFAULT_LIMITS = parseActivityLimits(gameConfig.activityBackdateDays, gameConfig.activityNoteMaxLength);
 
 const FOCUSABLE = 'button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [href], [tabindex]:not([tabindex="-1"])';
 
@@ -468,8 +463,8 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
   const [taskUndo, setTaskUndo] = useState<TaskUndo | null>(null);
   const [activeTask, setActiveTask] = useState<PersonTaskDef | null>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
-  const backdateDays = config.activityBackdateDays ?? DEFAULT_LIMITS.activityBackdateDays;
-  const noteMaxLength = config.activityNoteMaxLength ?? DEFAULT_LIMITS.activityNoteMaxLength;
+  const backdateDays = config.activityBackdateDays ?? PEOPLE_CONFIG.activityBackdateDays;
+  const noteMaxLength = config.activityNoteMaxLength ?? PEOPLE_CONFIG.activityNoteMaxLength;
 
   const savedCountry = person.phone?.country ?? DEFAULT_COUNTRY;
   const dirty =
