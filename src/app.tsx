@@ -593,7 +593,7 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
   if (tab === 'group' && clientPromise !== null && account !== null) {
     return (
       <div className="app-shell">
-        <MyGroupScreen clientPromise={clientPromise} accountId={account.accountId} onBack={() => setTab('path')} />
+        <MyGroupScreen clientPromise={clientPromise} accountId={account.accountId} onBack={() => setTab('path')} eventStore={eventStore} />
       </div>
     );
   }

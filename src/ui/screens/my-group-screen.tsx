@@ -2,7 +2,10 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import gameConfig from '../../config/game-config.json';
 import { activityStatus, loadGroup, parseGroupConfig, readGroupCache, sendCheer, sortGroup, writeGroupCache } from '../../data/group-service';
-import type { GroupData, GroupHousehold } from '../../data/group-service';
+import type { GroupData, GroupHousehold, GroupMember } from '../../data/group-service';
+import type { EventStore } from '../../data/event-store';
+import { derivePeople } from '../../domain/people';
+import type { Person } from '../../domain/people';
 import { PEOPLE_CONFIG } from '../people-config';
 import {
   STRINGS,
@@ -26,6 +29,11 @@ export interface MyGroupScreenProps {
   readonly onBack: () => void;
   /** Clock; defaults to the real one. Injected for screenshots. */
   readonly now?: () => Date;
+  /**
+   * My own event log, read only for the names I gave the contacts I created accounts for
+   * (`linkedUserId`), so a member without a display name still shows who it is. Optional.
+   */
+  readonly eventStore?: EventStore;
 }
 
 type LoadState =
@@ -39,22 +47,57 @@ function realNow(): Date {
   return new Date();
 }
 
-/** Member names of a household: display name, else phone, else a placeholder. */
-function memberNames(h: GroupHousehold): string {
-  const names = h.members.map((m) => m.displayName ?? m.phone ?? STRINGS.groupMemberUnnamed);
+/**
+ * Account id → the name I saved in my own Danh bạ for the contact linked to that account
+ * (`linkedUserId`, set by "Tạo tài khoản"). Archived contacts are included: still that person.
+ */
+export function linkedContactNames(people: readonly Person[]): ReadonlyMap<string, string> {
+  const names = new Map<string, string>();
+  for (const p of people) if (p.linkedUserId != null && p.linkedUserId !== '' && !names.has(p.linkedUserId)) names.set(p.linkedUserId, p.name);
+  return names;
+}
+
+/** A member's name: the display name they set, else my contact name for that account, else phone, else a placeholder. */
+export function groupMemberName(member: Pick<GroupMember, 'userId' | 'displayName' | 'phone'>, contactNames: ReadonlyMap<string, string>): string {
+  return member.displayName ?? contactNames.get(member.userId) ?? member.phone ?? STRINGS.groupMemberUnnamed;
+}
+
+/** Member names of a household, joined; a placeholder when it has none. */
+function memberNames(h: GroupHousehold, contactNames: ReadonlyMap<string, string>): string {
+  const names = h.members.map((m) => groupMemberName(m, contactNames));
   return names.length === 0 ? STRINGS.groupMemberUnnamed : names.join(', ');
+}
+
+/** Member phones shown under the names, only those not already used as the name. */
+function memberPhones(h: GroupHousehold, contactNames: ReadonlyMap<string, string>): string | null {
+  const phones = h.members.filter((m) => m.phone !== null && groupMemberName(m, contactNames) !== m.phone).map((m) => m.phone as string);
+  return phones.length === 0 ? null : phones.join(', ');
 }
 
 /**
  * Màn "Nhóm của tôi" (story 028, no tab bar): only my direct F1 households, inactive ones first,
  * each with members, code, KH / NPP F1 x/30, the 30x30 badge, "cập nhật lúc…", a "Cổ vũ" button
  * (locked after today's cheer and offline) and "Thêm vợ/chồng" while the household has room.
- * Never reads the contact book. Offline it shows the last loaded copy with the cheer button locked.
+ * Reads my own contact book only for names (see `eventStore`); never the F1's. Offline it shows the last loaded copy with the cheer button locked.
  *
  * @example
  * <MyGroupScreen clientPromise={client} accountId={id} onBack={back} />
  */
-export function MyGroupScreen({ clientPromise, accountId, onBack, now = realNow }: MyGroupScreenProps) {
+export function MyGroupScreen({ clientPromise, accountId, onBack, now = realNow, eventStore }: MyGroupScreenProps) {
+  const [contactNames, setContactNames] = useState<ReadonlyMap<string, string>>(() => new Map());
+  useEffect(() => {
+    if (eventStore === undefined) return;
+    let cancelled = false;
+    eventStore
+      .list()
+      .then((events) => {
+        if (!cancelled) setContactNames(linkedContactNames(derivePeople(events, PEOPLE_CONFIG)));
+      })
+      .catch((error: unknown) => console.error('[group] could not read contact names', error));
+    return () => {
+      cancelled = true;
+    };
+  }, [eventStore]);
   const [state, setState] = useState<LoadState>({ kind: 'loading' });
   const [online, setOnline] = useState(() => navigator.onLine);
   const [reloadKey, setReloadKey] = useState(0);
@@ -182,11 +225,13 @@ export function MyGroupScreen({ clientPromise, accountId, onBack, now = realNow 
           {state.data.myHouseholdId !== null &&
             sorted.map((h) => {
               const status = activityStatus(h.lastActivityAt, now(), GROUP_CONFIG.inactiveDays);
-              const names = memberNames(h);
+              const names = memberNames(h, contactNames);
+              const phones = memberPhones(h, contactNames);
               const myId = state.data.myHouseholdId as string;
               return (
                 <section key={h.householdId} className={status.kind === 'active' ? 'card group-house' : 'card group-house group-house--inactive'} aria-label={names}>
                   <h2 className="card__title">{names}</h2>
+                  {phones !== null && <p className="group-house__code">{phones}</p>}
                   <p className="group-house__code">
                     {STRINGS.groupCodeLabel}: {h.code ?? STRINGS.groupNoCode}
                   </p>
