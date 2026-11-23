@@ -55,13 +55,14 @@ const one = (events: LogEvent[], id = 'a'): Person => {
 const pendingIds = (p: Person): string[] => pendingTasks(p, CONFIG).map((t) => t.id);
 
 describe('config parsing', () => {
-  it('reads the six tasks and the country codes with no problems', () => {
+  it('reads the seven tasks (renamed 2026-11-23, Expo/Hội thảo added) and the country codes with no problems', () => {
     expect(CONFIG.tasks?.map((t) => [t.id, t.xp, t.repeatable, t.label ?? null])).toEqual([
       ['contact', 5, true, null],
       ['demo', 10, true, null],
       ['opp', 20, true, null],
-      ['follow_up', 10, true, null],
+      ['expo', 20, true, null],
       ['new_customer', 30, true, 'KH'],
+      ['follow_up', 10, true, null],
       ['new_npp', 50, false, 'NPP'],
     ]);
     expect(CONFIG.countryCodes?.[0]).toEqual({ code: '+84', name: 'Việt Nam' });
@@ -104,13 +105,13 @@ describe('config parsing', () => {
 });
 
 describe('pendingTasks', () => {
-  it('lists all six for a new person, in config order', () => {
-    expect(pendingIds(one([added('a')]))).toEqual(['contact', 'demo', 'opp', 'follow_up', 'new_customer', 'new_npp']);
+  it('lists all seven for a new person, in config order', () => {
+    expect(pendingIds(one([added('a')]))).toEqual(['contact', 'demo', 'opp', 'expo', 'new_customer', 'follow_up', 'new_npp']);
   });
 
   it('keeps every done task in the list (crm rule 4, 2026-11-22)', () => {
     const p = one([added('a'), task('a', 'contact'), task('a', 'follow_up'), task('a', 'follow_up'), task('a', 'new_npp')]);
-    expect(pendingIds(p)).toEqual(['contact', 'demo', 'opp', 'follow_up', 'new_customer', 'new_npp']);
+    expect(pendingIds(p)).toEqual(['contact', 'demo', 'opp', 'expo', 'new_customer', 'follow_up', 'new_npp']);
   });
 
   it('keeps the task after the completion is compensated', () => {
@@ -123,7 +124,7 @@ describe('pendingTasks', () => {
     const p = one([added('a'), ev('person_archived', { personId: 'a' })]);
     expect(pendingIds(p)).toEqual([]);
     const q = one([added('a'), ev('activity_logged', { activityType: 'gone', taskId: 'gone', xp: 1, personId: 'a' })]);
-    expect(pendingIds(q)).toHaveLength(6);
+    expect(pendingIds(q)).toHaveLength(7);
   });
 });
 
@@ -254,7 +255,7 @@ describe('legacy migration', () => {
     expect(p.label).toBe('KH');
     expect(p.doneTaskIds).toEqual(expect.arrayContaining(['contact', 'demo', 'opp']));
     // Done tasks stay in the list (crm rule 4, 2026-11-22).
-    expect(pendingIds(p)).toEqual(['contact', 'demo', 'opp', 'follow_up', 'new_customer', 'new_npp']);
+    expect(pendingIds(p)).toEqual(['contact', 'demo', 'opp', 'expo', 'new_customer', 'follow_up', 'new_npp']);
   });
 
   it('downline gives NPP, other known stages give no label, unknown stages are ignored', () => {
@@ -368,7 +369,7 @@ describe('person_restored and phone', () => {
     expect(one([added('a'), arch]).archived).toBe(true);
     expect(one([added('a'), arch, rest]).archived).toBe(false);
     expect(one([added('a'), arch, rest, ev('person_archived', { personId: 'a' }, D4)]).archived).toBe(true);
-    expect(pendingIds(one([added('a'), arch, rest]))).toHaveLength(6);
+    expect(pendingIds(one([added('a'), arch, rest]))).toHaveLength(7);
   });
 
   it('phone: initial from person_added, latest person_updated wins, empty number clears', () => {

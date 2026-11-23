@@ -34,12 +34,13 @@ Một Danh bạ duy nhất. Mỗi người có một danh sách **việc cần l
    |---|---|---|---|---|
    | `contact` | Liên hệ | 5 | có | – |
    | `demo` | Demo | 10 | có | – |
-   | `opp` | Trình bày opp | 20 | có | – |
-   | `follow_up` | Follow-up | 10 | có | – |
-   | `new_customer` | Chốt khách hàng | 30 | có | KH |
-   | `new_npp` | Chốt NPP | 50 | không | NPP |
+   | `opp` | OPP | 20 | có | – |
+   | `expo` | Expo/Hội thảo | 20 | có | – |
+   | `new_customer` | Bán hàng | 30 | có | KH |
+   | `follow_up` | Chăm sóc | 10 | có | – |
+   | `new_npp` | Bảo trợ | 50 | không | NPP |
 
-   Từ 2026-11-22 mọi việc đều làm lại được (quyết định của người dùng: có việc làm nhiều lần với cùng một người), **trừ Chốt NPP** chỉ làm một lần (quyết định 2026-11-23).
+   Từ 2026-11-22 mọi việc đều làm lại được (quyết định của người dùng: có việc làm nhiều lần với cùng một người), **trừ Chốt NPP** chỉ làm một lần (quyết định 2026-11-23). Tên đổi ngày 2026-11-23 cho quen thuộc (Trình bày opp → OPP, Chốt khách hàng → Bán hàng, Follow-up → Chăm sóc, Chốt NPP → Bảo trợ) và thêm việc mới Expo/Hội thảo; `id` giữ nguyên nên dữ liệu cũ hiện tên mới, XP và mốc không đổi. Trong tài liệu này, "chốt KH" là việc Bán hàng và "chốt NPP" là việc Bảo trợ.
 
    Id `new_customer` được giữ để mốc Con đường (`stages[].milestones`) không đổi.
 3. **Sự kiện** (đều chỉ thêm):
@@ -50,7 +51,7 @@ Một Danh bạ duy nhất. Mỗi người có một danh sách **việc cần l
    - `activity_reassigned {activityId, personId}` (gán lại hoạt động cũ chưa gắn ai)
    - `person_stage_changed {personId, from, to, xp}`: **chỉ còn là sự kiện cũ**, vẫn đọc được và vẫn tính XP; app không ghi thêm.
    - Giai đoạn 2: `person_merged {keepId, mergedId, amwayCode?}`, `person_not_duplicate {personIds: [a, b]}`, `person_transferred_out {personId, name}` (do server ghi khi gộp mã). Tách liên hệ = sự kiện bù của `person_merged` (`payload.compensates`). Không sự kiện nào trong nhóm này có `xp`.
-4. **Hoàn thành một việc** = ghi `activity_logged {activityType: taskId, taskId, xp: xp của việc, personId}`. Mọi việc luôn còn trong danh sách; **mỗi lần hoàn thành cộng đủ XP của việc** (quyết định 2026-11-22). Việc `repeatable: false` (chỉ Chốt NPP, 2026-11-23) làm được một lần: khi đã có một lần chưa bị hoàn tác, dòng của nó vẫn hiện nhưng mờ, không bấm được, kèm ghi chú "Đã chốt NPP ngày …" (ngày lên NPP); hoàn tác lần chốt đó thì bấm lại được. Người đã lưu trữ không hoàn thành được việc. Không còn gợi ý đổi giai đoạn.
+4. **Hoàn thành một việc** = ghi `activity_logged {activityType: taskId, taskId, xp: xp của việc, personId}`. Mọi việc luôn còn trong danh sách; **mỗi lần hoàn thành cộng đủ XP của việc** (quyết định 2026-11-22). Việc `repeatable: false` (chỉ Chốt NPP, 2026-11-23) làm được một lần: khi đã có một lần chưa bị hoàn tác, dòng của nó vẫn hiện nhưng mờ, không bấm được, kèm ghi chú "Đã bảo trợ ngày …" (ngày lên NPP); hoàn tác lần chốt đó thì bấm lại được. Người đã lưu trữ không hoàn thành được việc. Không còn gợi ý đổi giai đoạn.
    - **Nhãn khi chốt lại:** chốt KH cho người đã có KH hoặc NPP thì nhãn không đổi; chốt NPP lại thì vẫn giữ ngày lên NPP của lần chốt NPP đầu tiên chưa bị hoàn tác. Hoàn tác một lần chốt thì nhãn và ngày tính lại từ các lần chốt còn lại.
    - **Mốc Con đường đếm người:** mốc "Khách hàng mới" (`stages[].milestones` với `activityType: new_customer`) đếm số **người khác nhau** có lần chốt KH chưa bị hoàn tác, không đếm số lần bấm, nên dữ liệu hiện có không đổi con số.
 5. **Hoàn tác** một việc bằng sự kiện bù `payload.compensates` (như cách hoàn tác hoạt động): việc hiện lại, XP trừ lại, nhãn được tính lại.
@@ -201,8 +202,8 @@ Công thức tầng, nhánh, điểm sâu và 30x30x4x4 thuộc giai đoạn 2 v
 | `target30x30.contactsTarget` | 250 | 1–5000 | mốc phụ "liên hệ" |
 | `target30x30.customersTarget` | 30 | 1–999 | ngưỡng KH của "đạt 30x30" |
 | `target30x30.f1Target` | 30 | 1–999 | ngưỡng NPP F1 của "đạt 30x30" |
-| `personTasks[].xp` | 5 / 10 / 20 / 10 / 30 / 50 | 0–200 | XP mỗi việc |
-| `personTasks[].repeatable` | mọi việc (từ 2026-11-22) | true/false | việc còn trong danh sách sau khi làm |
+| `personTasks[].xp` | 5 / 10 / 20 / 20 / 30 / 10 / 50 (theo thứ tự luật 2) | 0–200 | XP mỗi việc |
+| `personTasks[].repeatable` | mọi việc trừ `new_npp` (Bảo trợ, 2026-11-23) | true/false | việc còn trong danh sách sau khi làm |
 | `personTasks[].label` | `new_customer` → KH, `new_npp` → NPP | `KH`/`NPP`/không có | nhãn đặt khi làm việc đó |
 | `countryCodes` | `+84` (Việt Nam) mặc định, kèm một số mã phổ biến | ≥1 mục | mã nước chọn khi nhập số |
 | `duplicateNameMaxDistance` | 1 | 0–3 | tên khác nhau bao nhiêu ký tự (sau bỏ dấu) vẫn coi là "có thể trùng"; 0 = chỉ trùng hẳn |
@@ -254,5 +255,5 @@ Công thức tầng, nhánh, điểm sâu và 30x30x4x4 thuộc giai đoạn 2 v
 - **AC-38:** Given một người đã có 2 lần "Follow-up" và 1 "Demo", When bấm "Lịch sử", Then popup hiện số lần mỗi việc, tổng XP, lần đầu và gần nhất, số ngày kể từ lần gần nhất, và danh sách kèm ghi chú, mới nhất trước.
 - **AC-39:** Given Danh bạ đã có người, When thêm một người mới, Then form "Thêm người" thu gọn ngay và người mới hiện trong danh sách.
 - **AC-40:** Given trang chi tiết một người, When mở trang, Then thứ tự là tên → Thông tin → hàng nút "Hoạt động" và "Lịch sử" → lưu trữ; không có danh sách việc hiện sẵn.
-- **AC-41:** Given An đã làm "Demo" một lần, When bấm "Hoạt động", Then popup hiện đủ 6 việc, "Demo" ghi "đã làm 1 lần"; When chọn "Demo" và xác nhận, Then có thêm một `activity_logged` với `xp = 10` và Lịch sử có 2 dòng Demo.
-- **AC-42:** Given An đã chốt NPP ngày D, When bấm "Hoạt động", Then dòng "Chốt NPP" mờ, không bấm được, ghi "Đã chốt NPP ngày D"; When hoàn tác lần chốt đó, Then dòng bấm lại được (2026-11-23). Given An đã là NPP từ ngày D (dữ liệu có hai lần chốt NPP từ trước), Then nhãn vẫn NPP và ngày lên NPP vẫn là D; Given An đã chốt KH 2 lần, When xem mốc "Khách hàng mới", Then An chỉ được đếm 1.
+- **AC-41:** Given An đã làm "Demo" một lần, When bấm "Hoạt động", Then popup hiện đủ 7 việc, "Demo" ghi "đã làm 1 lần"; When chọn "Demo" và xác nhận, Then có thêm một `activity_logged` với `xp = 10` và Lịch sử có 2 dòng Demo.
+- **AC-42:** Given An đã chốt NPP ngày D, When bấm "Hoạt động", Then dòng "Bảo trợ" mờ, không bấm được, ghi "Đã bảo trợ ngày D"; When hoàn tác lần chốt đó, Then dòng bấm lại được (2026-11-23). Given An đã là NPP từ ngày D (dữ liệu có hai lần chốt NPP từ trước), Then nhãn vẫn NPP và ngày lên NPP vẫn là D; Given An đã chốt KH 2 lần, When xem mốc "Khách hàng mới", Then An chỉ được đếm 1.

@@ -92,10 +92,11 @@
   "personTasks": [
     { "id": "contact", "name": "Liên hệ", "xp": 5, "repeatable": true },
     { "id": "demo", "name": "Demo", "xp": 10, "repeatable": true },
-    { "id": "opp", "name": "Trình bày opp", "xp": 20, "repeatable": true },
-    { "id": "follow_up", "name": "Follow-up", "xp": 10, "repeatable": true },
-    { "id": "new_customer", "name": "Chốt khách hàng", "xp": 30, "repeatable": true, "label": "KH" },
-    { "id": "new_npp", "name": "Chốt NPP", "xp": 50, "repeatable": false, "label": "NPP" }
+    { "id": "opp", "name": "OPP", "xp": 20, "repeatable": true },
+    { "id": "expo", "name": "Expo/Hội thảo", "xp": 20, "repeatable": true },
+    { "id": "new_customer", "name": "Bán hàng", "xp": 30, "repeatable": true, "label": "KH" },
+    { "id": "follow_up", "name": "Chăm sóc", "xp": 10, "repeatable": true },
+    { "id": "new_npp", "name": "Bảo trợ", "xp": 50, "repeatable": false, "label": "NPP" }
   ],
   "countryCodes": [
     { "code": "+84", "name": "Việt Nam" },
