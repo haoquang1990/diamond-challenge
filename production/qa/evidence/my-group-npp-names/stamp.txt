@@ -1,0 +1,4 @@
+Reviewed-Content-Hash: src/ui/screens/my-group-screen.tsx 2c71b5155b57e980cde9d5489f7ffc392f240dd8
+Reviewed-Content-Hash: src/ui/strings.ts d746acb3c2760021da247044d34fad53ee1771ce
+Reviewed-Content-Hash: src/app.tsx c9ee1bdb72fb93e491c95b70e6beecc846b4464e
+Reviewed-Content-Hash: tests/unit/people-ui/group-member-name.test.ts 0b96b833fdc91a27314b751a7ba75009589a0347
