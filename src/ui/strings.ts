@@ -641,6 +641,13 @@ export function taskButtonLabel(name: string, xp: number, times = 0): string {
 }
 
 /** "đã làm N lần" on a task of the Hoạt động list (story 035), shown when N > 0. */
+/** Note under a one-time task that is done (greyed out, not selectable): "Đã chốt NPP ngày 22/11/2026". */
+export function taskDoneOnceLabel(taskName: string, iso: string | null): string {
+  const date = iso === null ? '' : shortDateLabel(iso);
+  const name = taskName.charAt(0).toLocaleLowerCase('vi-VN') + taskName.slice(1);
+  return date === '' ? `Đã ${name}` : `Đã ${name} ngày ${date}`;
+}
+
 export function taskDoneTimesLabel(times: number): string {
   return `đã làm ${times} lần`;
 }

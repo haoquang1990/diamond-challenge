@@ -13,7 +13,7 @@ import {
 } from '../../domain/people';
 import type { PeopleConfig, Person, PersonPhone, PersonTaskDef } from '../../domain/people';
 import { COUNTRY_CODES, PEOPLE_CONFIG, PERSON_TASKS } from '../people-config';
-import { buildPersonHistory, countDoneTasks, duplicateCodeNames, findDuplicateCodes, findPeopleWithCode, formatPhone, summarizeHistory, toLocalInputValue } from '../people-helpers';
+import { activityInstant, buildPersonHistory, countDoneTasks, duplicateCodeNames, findDuplicateCodes, findPeopleWithCode, formatPhone, summarizeHistory, toLocalInputValue } from '../people-helpers';
 import {
   STRINGS,
   activityTimeTooOldLabel,
@@ -24,6 +24,7 @@ import {
   noteCounterLabel,
   splitLabel,
   taskButtonLabel,
+  taskDoneOnceLabel,
   taskDoneTimesLabel,
   xpLabel,
 } from '../strings';
@@ -115,7 +116,8 @@ interface ActivityDialogProps {
 /** Popup to log one task: optional note, date and time (default now), Confirm / Cancel. */
 function ActivityDialog({ task, noteMaxLength, backdateDays, busy, error, onConfirm, onCancel }: ActivityDialogProps) {
   const [note, setNote] = useState('');
-  const [when, setWhen] = useState(() => toLocalInputValue(new Date()));
+  const [initialWhen] = useState(() => toLocalInputValue(new Date()));
+  const [when, setWhen] = useState(initialWhen);
   const chosen = new Date(when);
   const check = validateActivityTime(chosen, new Date(), backdateDays);
   const problem =
@@ -148,7 +150,7 @@ function ActivityDialog({ task, noteMaxLength, backdateDays, busy, error, onConf
         <button type="button" className="button button--secondary" onClick={onCancel} disabled={busy}>
           {STRINGS.activityCancel}
         </button>
-        <button type="button" className="button button--primary" onClick={() => onConfirm(note, chosen)} disabled={busy || problem !== null}>
+        <button type="button" className="button button--primary" onClick={() => onConfirm(note, activityInstant(when, initialWhen, new Date()))} disabled={busy || problem !== null}>
           {STRINGS.activityConfirm}
         </button>
       </div>
@@ -408,6 +410,13 @@ export function AddPersonForm({ people, onSubmit, compact = false }: AddPersonFo
       </button>
     </form>
   );
+}
+
+/** Earliest history time of `taskId` (history rows exclude undone completions), or null. */
+function firstDoneAt(history: readonly { readonly taskId?: string; readonly timestamp: string }[], taskId: string): string | null {
+  let first: string | null = null;
+  for (const h of history) if (h.taskId === taskId && (first === null || h.timestamp < first)) first = h.timestamp;
+  return first;
 }
 
 /** Props for {@link PersonDetail}. */
@@ -755,22 +764,28 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
           <ul className="people-list">
             {tasks.map((t) => {
               const times = doneCounts.get(t.id) ?? 0;
+              // One-time task (Chốt NPP) already done: shown greyed out with its date, not selectable.
+              const doneOnce = !t.repeatable && (person.doneTaskIds ?? []).includes(t.id);
+              const doneAt = doneOnce ? (t.label === 'NPP' ? person.nppAt ?? null : firstDoneAt(history, t.id)) : null;
+              const note = doneOnce ? taskDoneOnceLabel(t.name, doneAt) : times > 0 ? taskDoneTimesLabel(times) : null;
               return (
                 <li key={t.id}>
                   <button
                     type="button"
-                    className="task-row"
+                    className={doneOnce ? 'task-row task-row--done' : 'task-row'}
                     onClick={() => {
+                      if (doneOnce) return;
                       setError(null);
                       setTaskListOpen(false);
                       setActiveTask(t);
                     }}
-                    disabled={busy}
-                    aria-label={taskButtonLabel(t.name, t.xp, times)}
+                    disabled={busy || doneOnce}
+                    aria-disabled={doneOnce || undefined}
+                    aria-label={doneOnce ? `${t.name}, ${note ?? ''}` : taskButtonLabel(t.name, t.xp, times)}
                   >
                     <span className="task-row__main">
                       <span className="task-row__name">{t.name}</span>
-                      {times > 0 && <span className="task-row__times">{taskDoneTimesLabel(times)}</span>}
+                      {note !== null && <span className="task-row__times">{note}</span>}
                     </span>
                     <span className="activity-option__xp">{xpLabel(t.xp)}</span>
                   </button>

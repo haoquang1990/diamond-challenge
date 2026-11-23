@@ -37,9 +37,9 @@ Một Danh bạ duy nhất. Mỗi người có một danh sách **việc cần l
    | `opp` | Trình bày opp | 20 | có | – |
    | `follow_up` | Follow-up | 10 | có | – |
    | `new_customer` | Chốt khách hàng | 30 | có | KH |
-   | `new_npp` | Chốt NPP | 50 | có | NPP |
+   | `new_npp` | Chốt NPP | 50 | không | NPP |
 
-   Từ 2026-11-22 mọi việc đều làm lại được (quyết định của người dùng: có việc làm nhiều lần với cùng một người).
+   Từ 2026-11-22 mọi việc đều làm lại được (quyết định của người dùng: có việc làm nhiều lần với cùng một người), **trừ Chốt NPP** chỉ làm một lần (quyết định 2026-11-23).
 
    Id `new_customer` được giữ để mốc Con đường (`stages[].milestones`) không đổi.
 3. **Sự kiện** (đều chỉ thêm):
@@ -50,7 +50,7 @@ Một Danh bạ duy nhất. Mỗi người có một danh sách **việc cần l
    - `activity_reassigned {activityId, personId}` (gán lại hoạt động cũ chưa gắn ai)
    - `person_stage_changed {personId, from, to, xp}`: **chỉ còn là sự kiện cũ**, vẫn đọc được và vẫn tính XP; app không ghi thêm.
    - Giai đoạn 2: `person_merged {keepId, mergedId, amwayCode?}`, `person_not_duplicate {personIds: [a, b]}`, `person_transferred_out {personId, name}` (do server ghi khi gộp mã). Tách liên hệ = sự kiện bù của `person_merged` (`payload.compensates`). Không sự kiện nào trong nhóm này có `xp`.
-4. **Hoàn thành một việc** = ghi `activity_logged {activityType: taskId, taskId, xp: xp của việc, personId}`. Mọi việc luôn còn trong danh sách; **mỗi lần hoàn thành cộng đủ XP của việc** (quyết định 2026-11-22). Người đã lưu trữ không hoàn thành được việc. Không còn gợi ý đổi giai đoạn.
+4. **Hoàn thành một việc** = ghi `activity_logged {activityType: taskId, taskId, xp: xp của việc, personId}`. Mọi việc luôn còn trong danh sách; **mỗi lần hoàn thành cộng đủ XP của việc** (quyết định 2026-11-22). Việc `repeatable: false` (chỉ Chốt NPP, 2026-11-23) làm được một lần: khi đã có một lần chưa bị hoàn tác, dòng của nó vẫn hiện nhưng mờ, không bấm được, kèm ghi chú "Đã chốt NPP ngày …" (ngày lên NPP); hoàn tác lần chốt đó thì bấm lại được. Người đã lưu trữ không hoàn thành được việc. Không còn gợi ý đổi giai đoạn.
    - **Nhãn khi chốt lại:** chốt KH cho người đã có KH hoặc NPP thì nhãn không đổi; chốt NPP lại thì vẫn giữ ngày lên NPP của lần chốt NPP đầu tiên chưa bị hoàn tác. Hoàn tác một lần chốt thì nhãn và ngày tính lại từ các lần chốt còn lại.
    - **Mốc Con đường đếm người:** mốc "Khách hàng mới" (`stages[].milestones` với `activityType: new_customer`) đếm số **người khác nhau** có lần chốt KH chưa bị hoàn tác, không đếm số lần bấm, nên dữ liệu hiện có không đổi con số.
 5. **Hoàn tác** một việc bằng sự kiện bù `payload.compensates` (như cách hoàn tác hoạt động): việc hiện lại, XP trừ lại, nhãn được tính lại.
@@ -103,7 +103,7 @@ Một Danh bạ duy nhất. Mỗi người có một danh sách **việc cần l
 25. **Sao lưu và khôi phục bằng file vẫn giữ.** Khôi phục một file vào Danh bạ hộ đi qua dò trùng (luật 19). Rời hộ: app mời xuất file trước khi xoá bản Danh bạ hộ trên máy.
 
 26. **Popup hoạt động và popup Lịch sử** (2026-11-21).
-    - **Nút Hoạt động** (2026-11-22): mở popup danh sách **đủ mọi việc** trong `personTasks`, mỗi dòng có XP và "đã làm N lần" khi đã làm. Chọn một việc thì chuyển sang popup hoạt động bên dưới; "Huỷ" ở đó quay về trang, không ghi gì.
+    - **Nút Hoạt động** (2026-11-22): mở popup danh sách **đủ mọi việc** trong `personTasks`, mỗi dòng có XP và "đã làm N lần" khi đã làm; việc một lần đã làm (Chốt NPP) mờ đi kèm ngày đã chốt, không chọn được. Chọn một việc thì chuyển sang popup hoạt động bên dưới; "Huỷ" ở đó quay về trang, không ghi gì.
     - **Popup hoạt động:** chọn một việc thì mở popup gồm tên việc và XP, ô **Ghi chú** (không bắt buộc, tối đa `activityNoteMaxLength` ký tự) và ô **Ngày giờ**, mặc định là bây giờ. Ngày giờ không được ở tương lai và lùi tối đa `activityBackdateDays` ngày.
     - "Xác nhận" ghi một `activity_logged` với thời điểm đã chọn và `payload.note` (bỏ khi trống). "Huỷ" không ghi gì. "Hoàn tác" và việc Chốt NPP mở "Tạo tài khoản" vẫn như cũ.
     - XP tính vào ngày đã chọn, nên ghi lùi có thể nối lại streak đã đứt trong khoảng `activityBackdateDays` (quyết định của người dùng 2026-11-21).
@@ -255,4 +255,4 @@ Công thức tầng, nhánh, điểm sâu và 30x30x4x4 thuộc giai đoạn 2 v
 - **AC-39:** Given Danh bạ đã có người, When thêm một người mới, Then form "Thêm người" thu gọn ngay và người mới hiện trong danh sách.
 - **AC-40:** Given trang chi tiết một người, When mở trang, Then thứ tự là tên → Thông tin → hàng nút "Hoạt động" và "Lịch sử" → lưu trữ; không có danh sách việc hiện sẵn.
 - **AC-41:** Given An đã làm "Demo" một lần, When bấm "Hoạt động", Then popup hiện đủ 6 việc, "Demo" ghi "đã làm 1 lần"; When chọn "Demo" và xác nhận, Then có thêm một `activity_logged` với `xp = 10` và Lịch sử có 2 dòng Demo.
-- **AC-42:** Given An đã là NPP từ ngày D, When chốt NPP lại hôm nay, Then nhãn vẫn NPP và ngày lên NPP vẫn là D; Given An đã chốt KH 2 lần, When xem mốc "Khách hàng mới", Then An chỉ được đếm 1.
+- **AC-42:** Given An đã chốt NPP ngày D, When bấm "Hoạt động", Then dòng "Chốt NPP" mờ, không bấm được, ghi "Đã chốt NPP ngày D"; When hoàn tác lần chốt đó, Then dòng bấm lại được (2026-11-23). Given An đã là NPP từ ngày D (dữ liệu có hai lần chốt NPP từ trước), Then nhãn vẫn NPP và ngày lên NPP vẫn là D; Given An đã chốt KH 2 lần, When xem mốc "Khách hàng mới", Then An chỉ được đếm 1.

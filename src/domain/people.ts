@@ -153,7 +153,7 @@ export interface Person {
 /** Result of {@link buildTaskCompletionEvent}. */
 export type TaskCompletionResult =
   | { readonly ok: true; readonly xp: number; readonly event: NewEvent }
-  | { readonly ok: false; readonly reason: 'archived' | 'unknown_task' };
+  | { readonly ok: false; readonly reason: 'archived' | 'unknown_task' | 'already_done' };
 
 /** Result of {@link validatePhone}. `phone` is null for an empty number (no phone). */
 export type PhoneValidation =
@@ -836,8 +836,9 @@ export function pendingTasks(person: Person, config: PeopleConfig): PersonTaskDe
 /**
  * Builds the single `activity_logged` event that completes a task:
  * `{activityType: taskId, taskId, xp, personId}` with xp from the config.
- * Rejects (no event) an archived person and an unknown task. A task done before is
- * always accepted again with full XP (crm rule 4, 2026-11-22). `timestamp` is passed through so callers own the clock.
+ * Rejects (no event) an archived person, an unknown task and a `repeatable: false` task that
+ * is already done (a non-compensated completion, i.e. in `doneTaskIds`; only Chốt NPP since
+ * 2026-11-23). Every repeatable task is accepted again with full XP (crm rule 4). `timestamp` is passed through so callers own the clock.
  * `note` is written as `payload.note` (trimmed) only when non-empty.
  *
  * @example
@@ -854,6 +855,7 @@ export function buildTaskCompletionEvent(
   if (person.archived) return { ok: false, reason: 'archived' };
   const task = (config.tasks ?? []).find((t) => t.id === taskId);
   if (task === undefined) return { ok: false, reason: 'unknown_task' };
+  if (!task.repeatable && (person.doneTaskIds ?? []).includes(task.id)) return { ok: false, reason: 'already_done' };
   const trimmedNote = note?.trim() ?? '';
   const payload: Record<string, unknown> = { activityType: task.id, taskId: task.id, xp: task.xp, personId: person.personId };
   if (trimmedNote !== '') payload.note = trimmedNote;

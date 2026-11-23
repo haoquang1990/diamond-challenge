@@ -962,3 +962,7 @@ body.dialog-open { overflow: hidden; }
 .password-input__toggle[aria-pressed='true'] { color: var(--color-diamond-dark); }
 .password-input__toggle:focus-visible { outline: 3px solid var(--color-diamond-dark); outline-offset: 0; }
 .password-input__toggle:disabled { opacity: 0.5; cursor: default; }
+
+/* Việc chỉ làm một lần đã làm (Chốt NPP): mờ, không bấm được */
+.task-row--done, .task-row:disabled.task-row--done { opacity: 0.55; cursor: not-allowed; box-shadow: none; }
+.task-row--done .activity-option__xp { color: var(--color-muted); }

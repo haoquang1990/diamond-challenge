@@ -331,3 +331,16 @@ export function historyAuthorLabel(userId: string, others: ReadonlySet<string>, 
   const member = members.get(userId);
   return member?.displayName ?? member?.phone ?? STRINGS.historyFormerMember;
 }
+
+/**
+ * The instant an activity is recorded at. `value` is the "Ngày giờ" field (`datetime-local`,
+ * minute precision) and `initial` the value it opened with. When the user did not change it, the
+ * real `now` is used: the field rounds down to the minute, which would date an activity done right
+ * after adding the person before its `person_added` and make derivePeople ignore it.
+ *
+ * @example
+ * activityInstant(when, initialWhen, new Date()); // real now when untouched
+ */
+export function activityInstant(value: string, initial: string, now: Date): Date {
+  return value === initial ? now : new Date(value);
+}
