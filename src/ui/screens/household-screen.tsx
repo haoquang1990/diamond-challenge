@@ -84,7 +84,7 @@ export function HouseholdScreen({ clientPromise, accountId, onBack }: HouseholdS
     <main className="screen">
       <header className="screen__header">
         <button type="button" className="back-button" onClick={onBack}>
-          {STRINGS.back}
+          ‹ {STRINGS.back}
         </button>
         <h1 className="screen__title">{STRINGS.householdTitle}</h1>
         <p className="screen__prompt">{STRINGS.householdPrompt}</p>

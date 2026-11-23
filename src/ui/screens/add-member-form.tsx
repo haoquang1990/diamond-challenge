@@ -100,7 +100,7 @@ export function AddMemberForm({ clientPromise, householdId, onAdded, onClose }: 
     <main className="screen">
       <header className="screen__header">
         <button type="button" className="back-button" onClick={onClose} disabled={busy}>
-          {STRINGS.back}
+          ‹ {STRINGS.back}
         </button>
         <h1 className="screen__title">{STRINGS.addMemberTitle}</h1>
         <p className="screen__prompt">{STRINGS.addMemberPrompt}</p>
