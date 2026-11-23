@@ -282,10 +282,8 @@ export function LessonScreen({
   const at = now();
   return (
     <main className="screen">
+      {/* Tab root: no back button, the tab bar navigates (2026-11-23). */}
       <header className="screen__header">
-        <button type="button" className="back-button" onClick={onDone}>
-          ‹ {STRINGS.back}
-        </button>
         <h1 className="screen__title">{STRINGS.lessonListTitle}</h1>
         <p className="screen__prompt">{STRINGS.lessonListPrompt}</p>
       </header>

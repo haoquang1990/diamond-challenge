@@ -436,7 +436,7 @@ export function SettingsScreen({
     <main className="screen">
       <header className="screen__header">
         <button type="button" className="back-button" onClick={onBack}>
-          {STRINGS.back}
+          ‹ {STRINGS.back}
         </button>
         <h1 className="screen__title">{STRINGS.settingsTitle}</h1>
         <p className="screen__prompt">{STRINGS.settingsPrompt}</p>

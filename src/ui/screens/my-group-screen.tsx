@@ -175,7 +175,7 @@ export function MyGroupScreen({ clientPromise, accountId, onBack, now = realNow,
     <main className="screen">
       <header className="screen__header">
         <button type="button" className="back-button" onClick={onBack}>
-          {STRINGS.back}
+          ‹ {STRINGS.back}
         </button>
         <h1 className="screen__title">{STRINGS.groupTitle}</h1>
         <p className="screen__prompt">{STRINGS.groupPrompt}</p>

@@ -157,7 +157,7 @@ export function CreateAccountScreen({ clientPromise, eventStore, personId, onBac
     <main className="screen">
       <header className="screen__header">
         <button type="button" className="back-button" onClick={onBack} disabled={busy}>
-          {STRINGS.back}
+          ‹ {STRINGS.back}
         </button>
         <h1 className="screen__title">{STRINGS.createAccountTitle}</h1>
         <p className="screen__prompt">{STRINGS.createAccountPrompt}</p>
