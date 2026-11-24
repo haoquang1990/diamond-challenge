@@ -9,6 +9,10 @@ import type { Lesson } from './lesson';
 export interface LessonStage {
   readonly id: string;
   readonly title: string;
+  /** Icon name for the stage card and the fallback lesson icon (story 037). */
+  readonly icon?: string;
+  /** One-line stage description under the title (story 037). */
+  readonly description?: string;
 }
 
 /** Result of {@link parseLessonStages}. */
@@ -53,7 +57,12 @@ export function parseLessonStages(raw: unknown): ParsedLessonStages {
       return;
     }
     seen.add(entry.id);
-    stages.push({ id: entry.id, title: entry.title });
+    stages.push({
+      id: entry.id,
+      title: entry.title,
+      ...(isNonEmptyString(entry.icon) ? { icon: entry.icon } : {}),
+      ...(isNonEmptyString(entry.description) ? { description: entry.description } : {}),
+    });
   });
   return { stages, problems };
 }
@@ -70,4 +79,18 @@ export function groupLessonsByStage(lessons: readonly Lesson[], stages: readonly
   const other = lessons.filter((l) => l.stage === undefined || !known.has(l.stage));
   if (other.length > 0) groups.push({ stage: null, lessons: other });
   return groups;
+}
+
+/**
+ * The lesson the Học path suggests next (story 037): the first lesson never
+ * learned, in stage order then lesson order. Null when every lesson has been
+ * learned. Nothing is locked; this is only a hint.
+ */
+export function suggestedNextLesson(groups: readonly LessonGroup[], isLearned: (lessonId: string) => boolean): string | null {
+  for (const group of groups) {
+    for (const lesson of group.lessons) {
+      if (!isLearned(lesson.id)) return lesson.id;
+    }
+  }
+  return null;
 }

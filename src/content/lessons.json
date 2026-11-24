@@ -2,35 +2,51 @@
   "stages": [
     {
       "id": "start",
-      "title": "Khởi đầu"
+      "title": "Khởi đầu",
+      "icon": "sparkle",
+      "description": "Tư duy và động lực cho người mới"
     },
     {
       "id": "list",
-      "title": "Danh sách"
+      "title": "Danh sách",
+      "icon": "list",
+      "description": "Biết mình sẽ nói chuyện với ai"
     },
     {
       "id": "invite",
-      "title": "Mời hẹn"
+      "title": "Mời hẹn",
+      "icon": "send",
+      "description": "Mời hẹn tự nhiên, không nài ép"
     },
     {
       "id": "demo",
-      "title": "Demo"
+      "title": "Demo",
+      "icon": "presentation",
+      "description": "Cho khách tự trải nghiệm"
     },
     {
       "id": "opp",
-      "title": "Opp"
+      "title": "Opp",
+      "icon": "lightbulb",
+      "description": "Chia sẻ cơ hội rõ ràng, đơn giản"
     },
     {
       "id": "followup",
-      "title": "Follow-up"
+      "title": "Follow-up",
+      "icon": "refresh",
+      "description": "Giữ liên lạc sau cuộc gặp"
     },
     {
       "id": "care",
-      "title": "Chăm sóc KH"
+      "title": "Chăm sóc KH",
+      "icon": "heart",
+      "description": "Chăm sóc để khách dùng lâu dài"
     },
     {
       "id": "support",
-      "title": "Hỗ trợ NPP"
+      "title": "Hỗ trợ NPP",
+      "icon": "users",
+      "description": "Đồng hành cùng người mới"
     }
   ],
   "lessons": [
@@ -39,6 +55,7 @@
       "title": "Vì sao bắt đầu",
       "xp": 10,
       "stage": "start",
+      "icon": "rocket",
       "questions": [
         {
           "prompt": "Tài sản quan trọng nhất của mỗi người là gì?",
@@ -97,6 +114,7 @@
       "title": "Tư duy chủ kinh doanh",
       "xp": 10,
       "stage": "start",
+      "icon": "crown",
       "questions": [
         {
           "prompt": "Người làm chủ khác người làm thuê ở điểm nào?",
@@ -155,6 +173,7 @@
       "title": "Tổng quan 8 chìa khoá",
       "xp": 10,
       "stage": "start",
+      "icon": "key",
       "questions": [
         {
           "prompt": "8 chìa khoá được chia thành 4 phần nào?",
@@ -213,6 +232,7 @@
       "title": "Sức mạnh nhân đôi",
       "xp": 10,
       "stage": "start",
+      "icon": "trend",
       "questions": [
         {
           "prompt": "Bắt đầu từ 1 và nhân đôi 10 lần thì được bao nhiêu?",
@@ -271,6 +291,7 @@
       "title": "Điểm khác biệt của mô hình",
       "xp": 10,
       "stage": "start",
+      "icon": "layers",
       "questions": [
         {
           "prompt": "So với tự mở một cửa hàng, điểm khác biệt của mô hình này là gì?",
@@ -329,6 +350,7 @@
       "title": "Giá trị của công việc",
       "xp": 10,
       "stage": "start",
+      "icon": "gem",
       "questions": [
         {
           "prompt": "Giá trị \"làm chủ\" ở đây là gì?",
@@ -387,6 +409,7 @@
       "title": "10 nội dung cần học",
       "xp": 10,
       "stage": "start",
+      "icon": "book",
       "questions": [
         {
           "prompt": "Người mới cần học hai nhóm nội dung nào?",
@@ -445,6 +468,7 @@
       "title": "Thay – Dùng – Biết – Nói",
       "xp": 10,
       "stage": "start",
+      "icon": "chat",
       "questions": [
         {
           "prompt": "Bước đầu tiên của \"Thay – Dùng – Biết – Nói\" là gì?",
@@ -503,6 +527,7 @@
       "title": "7 bước cho người mới",
       "xp": 10,
       "stage": "start",
+      "icon": "steps",
       "questions": [
         {
           "prompt": "Bước đầu tiên trong 7 bước là gì?",
@@ -574,6 +599,7 @@
       "title": "Bốn cấp học",
       "xp": 10,
       "stage": "start",
+      "icon": "cap",
       "questions": [
         {
           "type": "order",
@@ -633,6 +659,7 @@
       "title": "Mục tiêu SMARTER",
       "xp": 10,
       "stage": "start",
+      "icon": "target",
       "questions": [
         {
           "type": "match",
@@ -718,6 +745,7 @@
       "title": "Làm theo hệ thống khi mới bắt đầu",
       "xp": 15,
       "stage": "start",
+      "icon": "compass",
       "questions": [
         {
           "prompt": "Bạn mới bắt đầu và nghĩ ra một cách làm khác hướng dẫn. Nên làm gì?",
@@ -786,6 +814,7 @@
       "title": "Lập danh sách người quen",
       "xp": 10,
       "stage": "list",
+      "icon": "list",
       "questions": [
         {
           "prompt": "Khi bắt đầu lập danh sách, cách nào hiệu quả nhất?",
@@ -844,6 +873,7 @@
       "title": "Lời mời thân thiện",
       "xp": 10,
       "stage": "invite",
+      "icon": "send",
       "questions": [
         {
           "prompt": "Mở đầu lời mời tốt nhất là gì?",
@@ -902,6 +932,7 @@
       "title": "Trình bày cơ hội đơn giản",
       "xp": 15,
       "stage": "opp",
+      "icon": "presentation",
       "questions": [
         {
           "prompt": "Một buổi trình bày tốt nên bắt đầu bằng gì?",
@@ -960,6 +991,7 @@
       "title": "Theo dõi sau cuộc gặp",
       "xp": 10,
       "stage": "followup",
+      "icon": "refresh",
       "questions": [
         {
           "prompt": "Khi nào nên liên hệ lại sau cuộc gặp?",
@@ -1018,6 +1050,7 @@
       "title": "Đón nhận lời từ chối",
       "xp": 15,
       "stage": "followup",
+      "icon": "shield",
       "questions": [
         {
           "prompt": "Ai đó nói \"không\". Cách nghĩ nào lành mạnh nhất?",
@@ -1076,6 +1109,7 @@
       "title": "FORMHD: hiểu người qua 6 chủ đề",
       "xp": 10,
       "stage": "list",
+      "icon": "chat",
       "questions": [
         {
           "prompt": "Chữ D trong FORMHD là gì?",
@@ -1134,6 +1168,7 @@
       "title": "Làm quen người mới",
       "xp": 10,
       "stage": "list",
+      "icon": "userplus",
       "questions": [
         {
           "type": "order",
@@ -1196,6 +1231,7 @@
       "title": "FORMHD: ghép cặp",
       "xp": 10,
       "stage": "list",
+      "icon": "puzzle",
       "questions": [
         {
           "type": "match",
@@ -1292,6 +1328,7 @@
       "title": "Sắp lịch tuần 3 bước",
       "xp": 10,
       "stage": "invite",
+      "icon": "calendar",
       "questions": [
         {
           "type": "order",
@@ -1350,6 +1387,7 @@
       "title": "Cách mời hẹn",
       "xp": 10,
       "stage": "invite",
+      "icon": "phone",
       "questions": [
         {
           "type": "match",
@@ -1421,6 +1459,7 @@
       "title": "Mời theo từng kiểu người",
       "xp": 10,
       "stage": "invite",
+      "icon": "users",
       "questions": [
         {
           "type": "match",
@@ -1488,6 +1527,7 @@
       "title": "Demo máy lọc không khí",
       "xp": 15,
       "stage": "demo",
+      "icon": "wind",
       "questions": [
         {
           "type": "order",
@@ -1558,6 +1598,7 @@
       "title": "ABC là ai?",
       "xp": 10,
       "stage": "opp",
+      "icon": "users",
       "questions": [
         {
           "type": "match",
@@ -1625,6 +1666,7 @@
       "title": "Buổi gặp có tuyến trên hỗ trợ",
       "xp": 10,
       "stage": "opp",
+      "icon": "handshake",
       "questions": [
         {
           "type": "order",

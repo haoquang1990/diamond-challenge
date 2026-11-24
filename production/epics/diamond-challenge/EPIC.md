@@ -50,6 +50,7 @@ Theo Build order của brief: nhật ký sự kiện + XP/streak → Làm + Hôm
 | 034 | Trang chi tiết người: thông tin mở sẵn, popup hoạt động và popup Lịch sử | UI | Complete | N/A |
 | 035 | Trang chi tiết người: Thông tin lên đầu, nút Hoạt động mở danh sách đủ việc, làm lại mọi việc | UI | Complete | N/A |
 | 036 | Bài học 5–7 câu, nhóm Khởi đầu, bổ sung 11 bài cũ | Logic | In Progress | N/A |
+| 037 | Tab Học theo chặng: con đường bài học có icon, popup bài | UI | In Progress | N/A |
 
 > 012–014 thay mô hình giai đoạn bằng việc cần làm + nhãn KH/NPP theo phản hồi dùng thử (2026-11-04, `design/gdd/crm.md`). Thứ tự gợi ý: 012 → 013 → 014 → 011.
 
@@ -64,3 +65,5 @@ Theo Build order của brief: nhật ký sự kiện + XP/streak → Làm + Hôm
 > 035 (2026-11-22) theo phản hồi dùng thử: thu gọn form sau khi thêm người, Thông tin lên đầu trang chi tiết, nút Hoạt động mở danh sách đủ việc, mọi việc làm lại được và cộng đủ XP mỗi lần; nhãn giữ ngày chốt đầu, mốc Khách hàng mới đếm người (`design/gdd/crm.md` luật 2, 4, 12, 13, 26; AC-39–42). Không cần migration.
 
 > 036 (2026-11-24) chuẩn bị đưa 86 bài mới lên app (`design/lessons/outline.md`): giới hạn 5–7 câu mỗi bài, nhóm Khởi đầu đứng đầu, bổ sung 11 bài cũ lên 5 câu. Nội dung 86 bài làm thành 7 đợt, mỗi đợt người dùng duyệt chữ rồi mới deploy.
+
+> 037 (2026-11-24) đổi danh sách bài trong tab Học thành con đường theo chặng (mẫu được duyệt 2026-11-24): icon từng bài, thẻ đầu chặng, cúp trang trí, popup bài; không khoá bài, không đổi XP.

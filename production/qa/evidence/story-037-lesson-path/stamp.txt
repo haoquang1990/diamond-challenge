@@ -1,0 +1,9 @@
+Reviewed-Content-Hash: src/ui/screens/lesson-path.tsx 88bf809bb72d0f721ec179dba88e387f0a6c63e1
+Reviewed-Content-Hash: src/ui/screens/lesson-screen.tsx e1535f66477ad2c88bddd2a778384bbd81a3096a
+Reviewed-Content-Hash: src/ui/lesson-icons.ts d8a377ffe6e84c2d52c2ce36158757fa4a7e287b
+Reviewed-Content-Hash: src/ui/lesson-strings.ts 4caff2109e8fb3c0911c9e000993639c09d8f12d
+Reviewed-Content-Hash: src/ui/styles.css 47ead9b8a51c22446eb5de43d6780ddf5dab2e93
+Reviewed-Content-Hash: src/ui/screens/person-form.tsx 7cba78597090efa7836b28ab8565d56f401507e3
+Reviewed-Content-Hash: src/domain/lesson-stages.ts bc597c79ad9d806d0eea1cb2d3cdd02ae1699e97
+Reviewed-Content-Hash: src/domain/lesson.ts e4e3ea5626950546c989d5004ebf5dec51c0acb3
+Reviewed-Content-Hash: src/content/lessons.json 669e1a358906d981cd93a0cc629a42ea5bf071ec

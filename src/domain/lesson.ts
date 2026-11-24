@@ -85,6 +85,8 @@ export interface Lesson {
   readonly xp: number;
   /** Id of the lesson group (see lesson-stages.ts); absent = "other". */
   readonly stage?: string;
+  /** Icon name on the Học path; absent = the stage's icon (story 037). */
+  readonly icon?: string;
   readonly questions: readonly LessonQuestion[];
 }
 
@@ -197,7 +199,13 @@ export function parseLessons(raw: unknown): ParsedLessons {
       if (problem !== null) return fail(problem);
     }
     seen.add(entry.id);
-    lessons.push(entry as unknown as Lesson);
+    if (entry.icon !== undefined && !isNonEmptyString(entry.icon)) {
+      // A bad icon only loses the icon (story 037); the lesson stays.
+      const { icon: _dropped, ...rest } = entry;
+      lessons.push(rest as unknown as Lesson);
+    } else {
+      lessons.push(entry as unknown as Lesson);
+    }
   });
   if (lessons.length === 0 && problems.length === 0) problems.push('File bài học đang trống.');
   return { lessons, problems };

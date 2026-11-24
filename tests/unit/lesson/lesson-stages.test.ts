@@ -85,6 +85,6 @@ describe('lessons.json stages', () => {
   });
 
   it('puts Khởi đầu (start) first (story 036)', () => {
-    expect(parseLessonStages(lessonsJson).stages[0]).toEqual({ id: 'start', title: 'Khởi đầu' });
+    expect(parseLessonStages(lessonsJson).stages[0]).toMatchObject({ id: 'start', title: 'Khởi đầu' });
   });
 });

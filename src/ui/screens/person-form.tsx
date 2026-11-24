@@ -32,7 +32,7 @@ import {
 const FOCUSABLE = 'button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [href], [tabindex]:not([tabindex="-1"])';
 
 /** Props for {@link Dialog}. */
-interface DialogProps {
+export interface DialogProps {
   readonly title: string;
   readonly onClose: () => void;
   readonly children: ReactNode;
@@ -44,7 +44,7 @@ interface DialogProps {
  * backdrop call `onClose`; the page behind does not scroll (body class) and the focus returns to
  * the opener on close. The content scrolls inside (max-height ~90vh).
  */
-function Dialog({ title, onClose, children }: DialogProps) {
+export function Dialog({ title, onClose, children }: DialogProps) {
   const titleId = useId();
   const panelRef = useRef<HTMLDivElement>(null);
   const onCloseRef = useRef(onClose);
