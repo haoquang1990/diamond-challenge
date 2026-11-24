@@ -115,7 +115,6 @@ export function DiamondPathScreen({
     <main className="screen">
       <header className="screen__header">
         <h1 className="screen__title">{STRINGS.pathTitle}</h1>
-        <p className="screen__prompt">{STRINGS.pathPrompt}</p>
       </header>
 
       {onOpenAchievements !== undefined && (

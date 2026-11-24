@@ -1049,3 +1049,26 @@ body.dialog-open { overflow: hidden; }
 .npp-sort { margin-top: -4px; }
 .person-row__progress { display: block; margin-top: 2px; font-size: 0.85rem; font-weight: 700; color: var(--color-diamond-dark); }
 .f1-box__progress { margin: 0; font-weight: 700; color: var(--color-text); }
+
+/* 2026-11-24: Làm header filter dropdown, search + add icon on one row */
+.filter-select { position: relative; flex: none; }
+.filter-select select {
+  appearance: none; -webkit-appearance: none; min-height: 44px; max-width: 52vw;
+  padding: 0 34px 0 14px; border: 2px solid var(--color-border); border-radius: 14px;
+  background: var(--color-surface); color: var(--color-diamond-dark); font: inherit; font-weight: 800; font-size: 0.95rem;
+  text-overflow: ellipsis;
+}
+.filter-select::after { content: '▾'; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--color-diamond-dark); pointer-events: none; }
+.filter-select select:focus-visible { outline: 3px solid var(--color-diamond-dark); outline-offset: 2px; }
+.search-row { display: flex; gap: 10px; align-items: stretch; }
+.search-row .search-field { flex: 1; min-width: 0; }
+.search-row:has(.search-field) .icon-button { flex: none; }
+.search-row:not(:has(.search-field)) { justify-content: flex-end; }
+.icon-button {
+  flex: none; width: 52px; min-height: 48px; display: grid; place-items: center; border-radius: 14px; cursor: pointer;
+  border: 2px solid var(--color-border); background: var(--color-surface); color: var(--color-diamond); box-shadow: 0 3px 0 var(--color-border);
+}
+.icon-button svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.icon-button--open { color: var(--color-muted); }
+.icon-button:focus-visible { outline: 3px solid var(--color-diamond-dark); outline-offset: 2px; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
