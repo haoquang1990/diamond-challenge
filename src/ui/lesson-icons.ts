@@ -104,6 +104,24 @@ export const LESSON_ICONS: Readonly<Record<string, readonly IconShape[]>> = {
     { d: 'M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22' },
     { d: 'M18 2H6v7a6 6 0 0 0 12 0V2Z' },
   ],
+  grid: [
+    { x: 3, y: 3, width: 7, height: 7, rx: 1 },
+    { x: 14, y: 3, width: 7, height: 7, rx: 1 },
+    { x: 14, y: 14, width: 7, height: 7, rx: 1 },
+    { x: 3, y: 14, width: 7, height: 7, rx: 1 },
+  ],
+  clipboard: [
+    { x: 8, y: 2, width: 8, height: 4, rx: 1 },
+    { d: 'M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2' },
+    { d: 'M12 11h4' },
+    { d: 'M12 16h4' },
+    { d: 'M8 11h.01' },
+    { d: 'M8 16h.01' },
+  ],
+  table: [{ x: 3, y: 3, width: 18, height: 18, rx: 2 }, { d: 'M3 9h18' }, { d: 'M3 15h18' }, { d: 'M9 3v18' }],
+  clock: [{ cx: 12, cy: 12, r: 10 }, { d: 'M12 6v6l4 2' }],
+  smile: [{ cx: 12, cy: 12, r: 10 }, { d: 'M8 14s1.5 2 4 2 4-2 4-2' }, { d: 'M9 9h.01' }, { d: 'M15 9h.01' }],
+  forward: [{ d: 'M5 4l10 8-10 8z' }, { d: 'M19 5v14' }],
   check: [{ d: 'M20 6 9 17l-5-5' }],
 };
 

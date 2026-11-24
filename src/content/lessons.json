@@ -869,6 +869,501 @@
       ]
     },
     {
+      "id": "hundred-meetings",
+      "title": "Bách chiến đồ",
+      "xp": 10,
+      "stage": "list",
+      "icon": "grid",
+      "questions": [
+        {
+          "prompt": "\"Bách chiến đồ\" là gì?",
+          "options": [
+            "Danh sách 100 khách đã mua hàng",
+            "Bảng 100 ô, mỗi ô ghi một cuộc hẹn mình đã làm",
+            "Bảng xếp hạng 100 người giỏi nhất"
+          ],
+          "correctIndex": 1,
+          "explanation": "Mỗi cuộc hẹn đã làm được tô một ô, để thấy mình đã hành động bao nhiêu lần."
+        },
+        {
+          "prompt": "Bách chiến đồ đo điều gì?",
+          "options": [
+            "Số người đã đồng ý",
+            "Số tiền đã bán được",
+            "Số lần mình đã hành động"
+          ],
+          "correctIndex": 2,
+          "explanation": "Kết quả từng lần không do mình quyết định hết, còn số lần hành động thì do mình."
+        },
+        {
+          "prompt": "Một cuộc hẹn mà người kia từ chối có được tô ô không?",
+          "options": [
+            "Có, vì mình đã thực hiện cuộc hẹn",
+            "Không, chỉ tô khi người kia đồng ý",
+            "Chỉ tô nửa ô"
+          ],
+          "correctIndex": 0,
+          "explanation": "Ô ghi nhận việc mình đã làm, không phụ thuộc người kia trả lời thế nào."
+        },
+        {
+          "prompt": "Vì sao đo bằng số lần hành động giúp bớt nản?",
+          "options": [
+            "Vì không cần quan tâm người khác",
+            "Không còn coi một lần bị từ chối là thất bại",
+            "Vì sẽ không bao giờ bị từ chối"
+          ],
+          "correctIndex": 1,
+          "explanation": "Mỗi ô tô được là một bước tiến, nên một lời từ chối không làm mình chùn bước."
+        },
+        {
+          "prompt": "Nên dùng bảng này thế nào cho hiệu quả?",
+          "options": [
+            "Tô một lần cho đủ 100 ô",
+            "Chỉ tô khi có kết quả tốt",
+            "Tô ô ngay sau mỗi cuộc hẹn và xem lại mỗi tuần"
+          ],
+          "correctIndex": 2,
+          "explanation": "Ghi đều đặn và xem lại giúp mình thấy nhịp làm việc của bản thân."
+        }
+      ]
+    },
+    {
+      "id": "new-person-form",
+      "title": "Form tiếp cận người mới",
+      "xp": 10,
+      "stage": "list",
+      "icon": "clipboard",
+      "questions": [
+        {
+          "prompt": "Form tiếp cận người mới dùng để làm gì?",
+          "options": [
+            "Ghi lại thông tin và các bước đã làm với một người",
+            "Để người kia ký cam kết",
+            "Để báo cáo doanh số"
+          ],
+          "correctIndex": 0,
+          "explanation": "Ghi đủ giúp mình nhớ người đó cần gì và đã làm tới đâu."
+        },
+        {
+          "prompt": "Mục nào thường có trong form tiếp cận?",
+          "options": [
+            "Số tài khoản ngân hàng",
+            "Tên, nghề nghiệp, cách liên lạc",
+            "Mật khẩu mạng xã hội"
+          ],
+          "correctIndex": 1,
+          "explanation": "Form chỉ ghi những gì cần để liên lạc và hỗ trợ, không hỏi chuyện riêng tư."
+        },
+        {
+          "prompt": "Mục \"loại\" trong form chia người mới thành mấy hướng?",
+          "options": [
+            "Giàu, trung bình, nghèo",
+            "Già, trẻ, trung niên",
+            "Khách hàng, làm bán thời gian, làm kinh doanh"
+          ],
+          "correctIndex": 2,
+          "explanation": "Mỗi người có nhu cầu khác nhau, ghi rõ để hỗ trợ đúng hướng."
+        },
+        {
+          "prompt": "Vì sao ghi ngày làm bài 1, bài 2 và ngày thăm gia đình?",
+          "options": [
+            "Để biết đã làm bước nào và bước tiếp theo là gì",
+            "Để tính tiền công",
+            "Để khoe với nhóm"
+          ],
+          "correctIndex": 0,
+          "explanation": "Có ngày cụ thể thì việc theo sát không bị bỏ sót."
+        },
+        {
+          "prompt": "Mục \"sản phẩm đã dùng\" giúp gì?",
+          "options": [
+            "Để ép mua thêm",
+            "Biết người kia đã trải nghiệm gì để hỏi thăm và hướng dẫn",
+            "Không giúp gì"
+          ],
+          "correctIndex": 1,
+          "explanation": "Biết họ đã dùng gì thì cuộc trò chuyện sau có nội dung cụ thể."
+        }
+      ]
+    },
+    {
+      "id": "formhd-basics",
+      "title": "FORMHD: hiểu người qua 6 chủ đề",
+      "xp": 10,
+      "stage": "list",
+      "icon": "chat",
+      "questions": [
+        {
+          "prompt": "Chữ D trong FORMHD là gì?",
+          "options": [
+            "Gia đình",
+            "Ước muốn",
+            "Thu nhập"
+          ],
+          "correctIndex": 1,
+          "explanation": "D là Dream: dự định vài năm tới của người đó."
+        },
+        {
+          "prompt": "Bạn hỏi: \"Dạo này bé nhà mình học hành sao rồi?\" Câu này thuộc chủ đề nào?",
+          "options": [
+            "Gia đình",
+            "Công việc",
+            "Thời gian rảnh"
+          ],
+          "correctIndex": 0,
+          "explanation": "Hỏi về con cái, bố mẹ, vợ chồng là chủ đề Gia đình."
+        },
+        {
+          "prompt": "Về chủ đề Tài chính, cách nào phù hợp?",
+          "options": [
+            "Hỏi thẳng lương bao nhiêu",
+            "Lắng nghe điều họ tự chia sẻ, không dò hỏi",
+            "Bỏ qua người đó"
+          ],
+          "correctIndex": 1,
+          "explanation": "Tôn trọng chuyện riêng tư giúp giữ lòng tin."
+        },
+        {
+          "prompt": "Một người kể cuối tuần hay đi học thêm kỹ năng. Điều đó cho bạn biết gì?",
+          "options": [
+            "Họ thích phát triển bản thân",
+            "Họ không có thời gian",
+            "Họ không quan tâm gì"
+          ],
+          "correctIndex": 0,
+          "explanation": "Cách dùng thời gian rảnh cho thấy mong muốn của người đó."
+        },
+        {
+          "prompt": "Tinh thần chung khi trò chuyện theo FORMHD là gì?",
+          "options": [
+            "Hỏi thật nhanh cho đủ 6 chủ đề",
+            "Quan tâm thật lòng tới người đó trước",
+            "Nói về mình trước"
+          ],
+          "correctIndex": 1,
+          "explanation": "FORMHD là để hiểu người khác, không phải để lấy thông tin."
+        }
+      ]
+    },
+    {
+      "id": "list-250",
+      "title": "Danh sách 250 người theo 8 nhóm",
+      "xp": 10,
+      "stage": "list",
+      "icon": "users",
+      "questions": [
+        {
+          "type": "match",
+          "prompt": "Ghép mỗi nhóm với một ví dụ.",
+          "pairs": [
+            {
+              "left": "Bạn học",
+              "right": "Người học cùng lớp cũ"
+            },
+            {
+              "left": "Đồng nghiệp",
+              "right": "Người làm cùng công ty"
+            },
+            {
+              "left": "Họ hàng",
+              "right": "Anh chị em trong gia đình lớn"
+            },
+            {
+              "left": "Hàng xóm",
+              "right": "Người sống cùng khu"
+            },
+            {
+              "left": "Bạn hàng",
+              "right": "Người mình thường mua bán cùng"
+            }
+          ],
+          "explanation": "Chia theo nhóm giúp nhớ ra nhiều người hơn là cố nghĩ một lúc."
+        },
+        {
+          "prompt": "Vì sao chia danh sách theo nhóm?",
+          "options": [
+            "Để chọn nhóm nào giàu hơn",
+            "Để bỏ bớt nhóm không quen",
+            "Mỗi nhóm gợi ra thêm những người mình dễ quên"
+          ],
+          "correctIndex": 2,
+          "explanation": "Một nhóm gợi tiếp nhóm con, nên danh sách dài ra một cách tự nhiên."
+        },
+        {
+          "prompt": "Khi mới lập danh sách, nên làm gì?",
+          "options": [
+            "Chỉ liệt kê, chưa vội đánh giá ai",
+            "Gạch ngay những người có vẻ không quan tâm",
+            "Gọi ngay cho từng người vừa nghĩ ra"
+          ],
+          "correctIndex": 0,
+          "explanation": "Đánh giá sớm làm mình bỏ sót người. Chọn người để liên hệ là bước sau."
+        },
+        {
+          "prompt": "Sau khi liệt kê, bước tiếp theo là gì?",
+          "options": [
+            "Gọi lần lượt cả 250 người",
+            "Chọn khoảng 10 người ưu tiên",
+            "Gửi tin nhắn hàng loạt"
+          ],
+          "correctIndex": 1,
+          "explanation": "Bắt đầu với một nhóm nhỏ thì làm được ngay và kỹ hơn."
+        },
+        {
+          "prompt": "Người ưu tiên nên là ai?",
+          "options": [
+            "Người mình ngại nhất",
+            "Người ở xa nhất",
+            "Người muốn kiếm thêm hoặc có quan hệ rộng"
+          ],
+          "correctIndex": 2,
+          "explanation": "Những người này thường sẵn lòng nghe hơn và mở ra thêm nhiều mối quan hệ."
+        },
+        {
+          "prompt": "Có 10 người ưu tiên rồi thì làm gì?",
+          "options": [
+            "Xếp lịch làm bài 1 cùng tuyến trên",
+            "Tự trình bày hết một mình ngay",
+            "Chờ họ tự liên lạc"
+          ],
+          "correctIndex": 0,
+          "explanation": "Có tuyến trên hỗ trợ trong buổi đầu giúp người mới tự tin hơn."
+        }
+      ]
+    },
+    {
+      "id": "prospect-sheet",
+      "title": "Bảng danh sách ứng viên",
+      "xp": 10,
+      "stage": "list",
+      "icon": "table",
+      "questions": [
+        {
+          "type": "match",
+          "prompt": "Ghép mỗi cột trong bảng với mục đích của nó.",
+          "pairs": [
+            {
+              "left": "Mối quan hệ",
+              "right": "Biết mình quen họ qua đâu"
+            },
+            {
+              "left": "Nhu cầu, vấn đề",
+              "right": "Biết điều họ đang quan tâm"
+            },
+            {
+              "left": "Ngày liên lạc gần nhất",
+              "right": "Biết đã bao lâu chưa hỏi thăm"
+            },
+            {
+              "left": "Mức ưu tiên A/B/C",
+              "right": "Biết nên liên hệ ai trước"
+            }
+          ],
+          "explanation": "Mỗi cột trả lời một câu hỏi khi mình chuẩn bị liên hệ."
+        },
+        {
+          "prompt": "Mức ưu tiên A/B/C dùng để làm gì?",
+          "options": [
+            "Chấm điểm con người",
+            "Sắp xếp thứ tự liên hệ",
+            "Chia người tốt người xấu"
+          ],
+          "correctIndex": 1,
+          "explanation": "Ưu tiên chỉ là thứ tự làm việc, không phải đánh giá con người."
+        },
+        {
+          "prompt": "Vì sao ghi ngày sinh trong bảng?",
+          "options": [
+            "Để tính tuổi người kia",
+            "Không cần thiết",
+            "Để nhớ hỏi thăm, chúc mừng đúng dịp"
+          ],
+          "correctIndex": 2,
+          "explanation": "Một lời chúc đúng dịp giúp giữ quan hệ tự nhiên."
+        },
+        {
+          "prompt": "Cột \"Ngày liên lạc gần nhất\" cho thấy đã lâu chưa hỏi thăm một người. Nên làm gì?",
+          "options": [
+            "Hỏi thăm nhẹ nhàng để nối lại liên lạc",
+            "Xoá họ khỏi danh sách",
+            "Mời ngay vào buổi trình bày"
+          ],
+          "correctIndex": 0,
+          "explanation": "Nối lại quan hệ trước, rồi mới nói tới chuyện khác."
+        },
+        {
+          "prompt": "Bảng danh sách nên được cập nhật khi nào?",
+          "options": [
+            "Mỗi năm một lần",
+            "Sau mỗi lần liên lạc hoặc gặp mặt",
+            "Chỉ khi tuyến trên hỏi"
+          ],
+          "correctIndex": 1,
+          "explanation": "Cập nhật ngay thì bảng luôn đúng và dùng được."
+        }
+      ]
+    },
+    {
+      "id": "formhd-match",
+      "title": "FORMHD: ghép cặp",
+      "xp": 10,
+      "stage": "list",
+      "icon": "puzzle",
+      "questions": [
+        {
+          "type": "match",
+          "prompt": "Ghép mỗi chữ cái với chủ đề của nó.",
+          "pairs": [
+            {
+              "left": "F",
+              "right": "Gia đình"
+            },
+            {
+              "left": "O",
+              "right": "Công việc"
+            },
+            {
+              "left": "R",
+              "right": "Thời gian rảnh"
+            },
+            {
+              "left": "M",
+              "right": "Tài chính"
+            },
+            {
+              "left": "H",
+              "right": "Sức khoẻ"
+            },
+            {
+              "left": "D",
+              "right": "Ước muốn"
+            }
+          ],
+          "explanation": "FORMHD là 6 chủ đề giúp bạn hiểu và quan tâm một người."
+        },
+        {
+          "type": "match",
+          "prompt": "Ghép mỗi câu hỏi thăm với chủ đề phù hợp.",
+          "pairs": [
+            {
+              "left": "\"Bố mẹ dạo này khoẻ không?\"",
+              "right": "Gia đình"
+            },
+            {
+              "left": "\"Công việc dạo này có vui không?\"",
+              "right": "Công việc"
+            },
+            {
+              "left": "\"Cuối tuần thường làm gì?\"",
+              "right": "Thời gian rảnh"
+            },
+            {
+              "left": "\"Hay tập thể dục môn gì?\"",
+              "right": "Sức khoẻ"
+            },
+            {
+              "left": "\"Vài năm tới có dự định gì?\"",
+              "right": "Ước muốn"
+            }
+          ],
+          "explanation": "Mỗi câu hỏi thăm mở ra một chủ đề để hiểu người đối diện hơn."
+        },
+        {
+          "prompt": "Vì sao chủ đề Tài chính chỉ nên lắng nghe, không hỏi thẳng?",
+          "options": [
+            "Để tôn trọng chuyện riêng tư và giữ lòng tin",
+            "Vì chủ đề này không quan trọng",
+            "Để họ tự nói ra số tiền cụ thể"
+          ],
+          "correctIndex": 0,
+          "explanation": "Chuyện tiền bạc là riêng tư; lắng nghe điều họ tự chia sẻ là đủ."
+        },
+        {
+          "prompt": "Mục đích của 6 chủ đề FORMHD là gì?",
+          "options": [
+            "Để hỏi càng nhiều càng tốt trong một lần gặp",
+            "Để hiểu và quan tâm người kia một cách tự nhiên",
+            "Để tìm cách nói về sản phẩm sớm"
+          ],
+          "correctIndex": 1,
+          "explanation": "FORMHD giúp trò chuyện có chiều sâu và hiểu người kia hơn, không phải để tra hỏi."
+        },
+        {
+          "prompt": "Khi hỏi về Sức khoẻ, nên dừng ở mức nào?",
+          "options": [
+            "Hỏi thăm chung, ví dụ dạo này có hay tập thể dục không",
+            "Hỏi chi tiết bệnh đang mắc",
+            "Gợi ý ngay một sản phẩm"
+          ],
+          "correctIndex": 0,
+          "explanation": "Sức khoẻ chỉ dừng ở mức hỏi thăm, không đi sâu chuyện riêng và không nói như công dụng sản phẩm."
+        }
+      ]
+    },
+    {
+      "id": "meeting-new-people",
+      "title": "Làm quen người mới",
+      "xp": 10,
+      "stage": "list",
+      "icon": "userplus",
+      "questions": [
+        {
+          "type": "order",
+          "prompt": "Xếp 5 bước làm quen người mới theo đúng thứ tự.",
+          "steps": [
+            "Để ý một điểm đặc biệt",
+            "Khen thật lòng",
+            "Trò chuyện ngắn",
+            "Xin liên lạc kèm lý do chung",
+            "Nhắn lại sau 24–48 giờ"
+          ],
+          "explanation": "Để ý, khen, trò chuyện, xin liên lạc, rồi giữ kết nối bằng một tin nhắn lại."
+        },
+        {
+          "prompt": "Mới gặp ai đó, cách mở lời tự nhiên nhất là gì?",
+          "options": [
+            "Giới thiệu ngay việc mình đang làm",
+            "Khen thật lòng một điểm bạn để ý thấy",
+            "Xin số điện thoại luôn"
+          ],
+          "correctIndex": 1,
+          "explanation": "Một lời khen chân thành giúp người đối diện thấy thoải mái."
+        },
+        {
+          "prompt": "Sau khi xin được liên lạc, nên nhắn lại khi nào?",
+          "options": [
+            "Trong 24–48 giờ",
+            "Một tháng sau",
+            "Chờ họ nhắn trước"
+          ],
+          "correctIndex": 0,
+          "explanation": "Nhắn lại sớm khi cả hai còn nhớ cuộc trò chuyện."
+        },
+        {
+          "type": "order",
+          "prompt": "Xếp các nấc của mối quan hệ từ mới gặp đến gắn bó.",
+          "steps": [
+            "Quen biết",
+            "Thân thuộc",
+            "Quý mến",
+            "Tin tưởng",
+            "Thân thiết"
+          ],
+          "explanation": "Mối quan hệ lớn dần từng bước; lòng tin cần thời gian."
+        },
+        {
+          "prompt": "Khi xin liên lạc người mới quen, nên kèm theo điều gì?",
+          "options": [
+            "Một lý do chung để giữ liên lạc, ví dụ cùng sở thích",
+            "Lời mời tham gia kinh doanh ngay",
+            "Không cần lý do gì"
+          ],
+          "correctIndex": 0,
+          "explanation": "Một lý do chung tự nhiên giúp người kia thoải mái cho liên lạc."
+        }
+      ]
+    },
+    {
       "id": "friendly-invitation",
       "title": "Lời mời thân thiện",
       "xp": 10,
@@ -924,6 +1419,768 @@
           ],
           "correctIndex": 2,
           "explanation": "Lời mời thân thiện là để người kia thấy thoải mái. Nài ép làm mất lòng tin."
+        }
+      ]
+    },
+    {
+      "id": "call-time-rules",
+      "title": "Gọi ngắn, gặp mới nói",
+      "xp": 10,
+      "stage": "invite",
+      "icon": "clock",
+      "questions": [
+        {
+          "prompt": "Một cuộc gọi hẹn nên dài khoảng bao lâu?",
+          "options": [
+            "Khoảng 30 phút",
+            "Càng lâu càng tốt",
+            "Khoảng 1 phút, đủ để hẹn"
+          ],
+          "correctIndex": 2,
+          "explanation": "Cuộc gọi chỉ để hẹn. Nội dung chính để dành cho lúc gặp."
+        },
+        {
+          "prompt": "Khi nào thì nói chuyện chi tiết?",
+          "options": [
+            "Khi gặp mặt, có đủ thời gian",
+            "Ngay trong cuộc gọi",
+            "Qua tin nhắn dài"
+          ],
+          "correctIndex": 0,
+          "explanation": "Gặp mặt thì người nghe tập trung và hỏi lại được."
+        },
+        {
+          "prompt": "Người kia chỉ còn 5 phút trước khi đi làm. Nên làm gì?",
+          "options": [
+            "Nói thật nhanh cho hết",
+            "Hẹn một lúc khác rảnh hơn",
+            "Gửi tài liệu để họ tự đọc"
+          ],
+          "correctIndex": 1,
+          "explanation": "Không đủ thời gian thì chưa nói, để buổi gặp không bị vội."
+        },
+        {
+          "prompt": "Đang ở chỗ ồn ào, đông người. Nên làm gì?",
+          "options": [
+            "Cố nói to cho người kia nghe",
+            "Trình bày luôn cho kịp",
+            "Chỉ chào hỏi, hẹn chỗ khác phù hợp hơn"
+          ],
+          "correctIndex": 2,
+          "explanation": "Sai địa điểm thì người nghe khó tập trung."
+        },
+        {
+          "prompt": "Người kia vừa có chuyện buồn trong nhà. Nên làm gì?",
+          "options": [
+            "Hỏi thăm, chia sẻ, chưa nói chuyện công việc",
+            "Vẫn mời như kế hoạch",
+            "Bảo họ cố gắng lên rồi mời"
+          ],
+          "correctIndex": 0,
+          "explanation": "Hoàn cảnh không hợp thì chưa nói. Quan tâm thật lòng quan trọng hơn."
+        }
+      ]
+    },
+    {
+      "id": "weekly-plan-grid",
+      "title": "Lịch tuần cố định",
+      "xp": 10,
+      "stage": "invite",
+      "icon": "calendar",
+      "questions": [
+        {
+          "prompt": "Lịch tuần cố định gồm gì?",
+          "options": [
+            "Chỉ ngày nghỉ",
+            "Các hoạt động lặp lại mỗi tuần như họp nhóm, gặp tại nhà, chuyên đề",
+            "Chỉ giờ đi làm chính"
+          ],
+          "correctIndex": 1,
+          "explanation": "Biết trước các hoạt động cố định thì dễ hẹn người tham gia."
+        },
+        {
+          "prompt": "Bảng kế hoạch tuần nên chia ngày theo cách nào?",
+          "options": [
+            "Chỉ chia theo ngày",
+            "Không cần chia",
+            "Sáng – trưa – chiều – tối"
+          ],
+          "correctIndex": 2,
+          "explanation": "Chia nhỏ trong ngày giúp thấy ô nào còn trống."
+        },
+        {
+          "prompt": "Cuộc hẹn mới nên xếp vào đâu?",
+          "options": [
+            "Vào ô còn trống trong bảng tuần",
+            "Chồng lên giờ họp nhóm",
+            "Để tuần sau tính"
+          ],
+          "correctIndex": 0,
+          "explanation": "Nhìn bảng là biết còn giờ nào hẹn được."
+        },
+        {
+          "prompt": "Vì sao nên ghi cả giờ làm việc chính và việc gia đình vào bảng?",
+          "options": [
+            "Để báo cáo với tuyến trên",
+            "Để thấy thời gian thật còn trống, tránh hẹn chồng chéo",
+            "Không cần ghi"
+          ],
+          "correctIndex": 1,
+          "explanation": "Kế hoạch thực tế phải tính cả các việc khác trong cuộc sống."
+        },
+        {
+          "prompt": "Lợi ích của lịch tuần cố định khi mời người là gì?",
+          "options": [
+            "Không cần hỏi người kia rảnh lúc nào",
+            "Mời được nhiều người cùng lúc mà không cần hẹn",
+            "Có sẵn thời gian và chương trình để đưa ra lựa chọn"
+          ],
+          "correctIndex": 2,
+          "explanation": "Có lịch rõ thì lời mời cụ thể, người nghe dễ chọn."
+        }
+      ]
+    },
+    {
+      "id": "ten-three-one",
+      "title": "Chìa 1: 10 + 3 + 1",
+      "xp": 10,
+      "stage": "invite",
+      "icon": "target",
+      "questions": [
+        {
+          "prompt": "Trong \"10 + 3 + 1\", số 10 là gì?",
+          "options": [
+            "10 cuộc gọi mỗi ngày",
+            "10 người mới mỗi tuần",
+            "10 giờ làm mỗi ngày"
+          ],
+          "correctIndex": 0,
+          "explanation": "Gọi đều mỗi ngày tạo ra các cuộc hẹn."
+        },
+        {
+          "prompt": "Số 3 là gì?",
+          "options": [
+            "3 cuộc gọi mỗi tuần",
+            "3 cuộc gặp mỗi ngày",
+            "3 sản phẩm mỗi lần"
+          ],
+          "correctIndex": 1,
+          "explanation": "Cuộc gọi để hẹn, cuộc gặp mới là nơi trao đổi thật."
+        },
+        {
+          "prompt": "Số 1 là gì?",
+          "options": [
+            "Mỗi ngày 1 khách mua hàng",
+            "Mỗi tháng 1 buổi học",
+            "Mỗi tuần làm quen 1 người mới"
+          ],
+          "correctIndex": 2,
+          "explanation": "Danh sách cần được bổ sung người mới đều đặn, ghi vào form tiếp cận."
+        },
+        {
+          "prompt": "Mỗi cuộc gọi trong 10 cuộc nên kéo dài bao lâu?",
+          "options": [
+            "Không quá 3 phút",
+            "Khoảng nửa tiếng",
+            "Không giới hạn"
+          ],
+          "correctIndex": 0,
+          "explanation": "Cuộc gọi ngắn giúp gọi đủ số và giữ đúng mục đích hẹn gặp."
+        },
+        {
+          "prompt": "Sau mỗi cuộc gọi nên ghi lại gì?",
+          "options": [
+            "Chỉ ghi số máy",
+            "Tên, mục đích, kết quả",
+            "Không cần ghi"
+          ],
+          "correctIndex": 1,
+          "explanation": "Ghi lại giúp biết ai cần gọi lại và đã nói gì."
+        },
+        {
+          "prompt": "Người làm toàn thời gian thì áp dụng thế nào?",
+          "options": [
+            "Giữ nguyên như người làm thêm",
+            "Giảm một nửa",
+            "Nhân đôi các con số"
+          ],
+          "correctIndex": 2,
+          "explanation": "Có nhiều thời gian hơn thì làm nhiều hơn theo cùng công thức."
+        }
+      ]
+    },
+    {
+      "id": "invitation-basics",
+      "title": "Cách mời hẹn",
+      "xp": 10,
+      "stage": "invite",
+      "icon": "phone",
+      "questions": [
+        {
+          "type": "match",
+          "prompt": "Ghép mỗi yếu tố của lời mời với cách làm đúng.",
+          "pairs": [
+            {
+              "left": "Kênh liên lạc",
+              "right": "Gọi điện ngắn, hoặc kênh quen thuộc với người đó"
+            },
+            {
+              "left": "Lý do hẹn",
+              "right": "Rõ ràng và trung thực"
+            },
+            {
+              "left": "Địa điểm",
+              "right": "Ưu tiên văn phòng"
+            },
+            {
+              "left": "Thời gian",
+              "right": "Đưa 2 lựa chọn theo lịch tuần"
+            }
+          ],
+          "explanation": "Một lời mời tốt: kênh quen thuộc, lý do thật, chỗ gặp rõ ràng, giờ dễ chọn."
+        },
+        {
+          "prompt": "Cách hỏi giờ nào giúp người kia dễ trả lời?",
+          "options": [
+            "\"Mai bạn rảnh sáng hay chiều?\"",
+            "\"Khi nào rảnh thì báo mình nhé\"",
+            "\"Hôm nay phải gặp nhé\""
+          ],
+          "correctIndex": 0,
+          "explanation": "Hai lựa chọn cụ thể giúp người kia quyết định nhanh và thoải mái."
+        },
+        {
+          "prompt": "Lý do hẹn mập mờ cho người kia tò mò thì có ổn không?",
+          "options": [
+            "Ổn, càng bí ẩn càng tốt",
+            "Không ổn, lý do phải rõ ràng và không nói dối",
+            "Tuỳ người"
+          ],
+          "correctIndex": 1,
+          "explanation": "Trung thực ngay từ lời mời là nền móng của lòng tin."
+        },
+        {
+          "prompt": "Sau cuộc gọi mời, người được mời nên cảm thấy thế nào?",
+          "options": [
+            "Thoải mái và thấy có lợi khi gặp",
+            "Bị ép phải đồng ý",
+            "Tò mò nhưng lo lắng"
+          ],
+          "correctIndex": 0,
+          "explanation": "Người được mời nên thấy buổi gặp có ích cho chính họ."
+        },
+        {
+          "prompt": "Người được mời hỏi chi tiết ngay trên điện thoại. Bạn nên làm gì?",
+          "options": [
+            "Trình bày đầy đủ qua điện thoại",
+            "Nói ngắn gọn và hẹn gặp để nói kỹ hơn",
+            "Từ chối trả lời"
+          ],
+          "correctIndex": 1,
+          "explanation": "Gọi điện là để hẹn gặp. Nội dung chi tiết nói khi gặp mặt mới rõ ràng."
+        }
+      ]
+    },
+    {
+      "id": "weekly-schedule",
+      "title": "Sắp lịch tuần 3 bước",
+      "xp": 10,
+      "stage": "invite",
+      "icon": "calendar",
+      "questions": [
+        {
+          "type": "order",
+          "prompt": "Xếp 3 bước sắp lịch hẹn theo đúng thứ tự.",
+          "steps": [
+            "Điền lịch tuần của mình",
+            "So lịch với tuyến trên, tuyến dưới",
+            "Chủ động đặt hẹn vào khung đã chọn"
+          ],
+          "explanation": "Biết mình rảnh lúc nào, tìm giờ chung, rồi chủ động đặt hẹn."
+        },
+        {
+          "prompt": "Khi điền lịch tuần, nên đánh dấu \"không tự quyết được\" cho giờ nào?",
+          "options": [
+            "Giờ đi làm và việc gia đình quan trọng",
+            "Mọi buổi tối",
+            "Cả cuối tuần"
+          ],
+          "correctIndex": 0,
+          "explanation": "Những ô còn lại là thời gian bạn tự quyết, dùng để đặt hẹn."
+        },
+        {
+          "prompt": "Bạn có khung giờ trống nhưng chưa ai nhắc. Bạn nên làm gì?",
+          "options": [
+            "Chủ động đặt hẹn vào khung đó",
+            "Chờ tuyến trên sắp xếp",
+            "Để tuần sau"
+          ],
+          "correctIndex": 0,
+          "explanation": "Lịch đã sắp thì cứ chủ động, không chờ đợi ai."
+        },
+        {
+          "prompt": "Vì sao nên so lịch với tuyến trên trước khi hẹn?",
+          "options": [
+            "Để tuyến trên quyết định thay mình",
+            "Để chọn được giờ mà người hỗ trợ cũng tham gia được",
+            "Để có lý do hoãn hẹn"
+          ],
+          "correctIndex": 1,
+          "explanation": "So lịch trước giúp buổi hẹn có người hỗ trợ khi cần."
+        },
+        {
+          "prompt": "Lịch tuần nên được làm khi nào?",
+          "options": [
+            "Đầu mỗi tuần, cập nhật khi có thay đổi",
+            "Chỉ khi có người hẹn",
+            "Mỗi tháng một lần"
+          ],
+          "correctIndex": 0,
+          "explanation": "Lịch tuần đều đặn giúp mình chủ động thay vì chờ việc tới."
+        }
+      ]
+    },
+    {
+      "id": "call-mindset",
+      "title": "Tâm thế trước khi gọi",
+      "xp": 10,
+      "stage": "invite",
+      "icon": "smile",
+      "questions": [
+        {
+          "prompt": "Trước khi gọi, cần rõ mục tiêu gì?",
+          "options": [
+            "Hẹn được thời gian và địa điểm gặp",
+            "Bán được sản phẩm qua điện thoại",
+            "Nói hết thông tin cơ hội"
+          ],
+          "correctIndex": 0,
+          "explanation": "Mục tiêu của cuộc gọi là cuộc gặp."
+        },
+        {
+          "prompt": "Nên nghĩ về người sắp gọi như thế nào?",
+          "options": [
+            "Nghĩ họ sẽ từ chối",
+            "Nghĩ tốt về họ, gọi vì muốn chia sẻ điều có ích",
+            "Nghĩ họ cần mình hơn mình cần họ"
+          ],
+          "correctIndex": 1,
+          "explanation": "Suy nghĩ tích cực thể hiện qua giọng nói và cách nói."
+        },
+        {
+          "prompt": "Chọn kênh liên lạc thế nào?",
+          "options": [
+            "Luôn nhắn tin cho đỡ ngại",
+            "Kênh nào cũng như nhau",
+            "Kênh người kia hay dùng: điện thoại, Zalo hay Messenger"
+          ],
+          "correctIndex": 2,
+          "explanation": "Liên lạc qua kênh quen thuộc với họ thì dễ được đón nhận."
+        },
+        {
+          "prompt": "Vì sao nên để người kia tự trải nghiệm thay vì cố thuyết phục bằng lý lẽ?",
+          "options": [
+            "Trải nghiệm tạo cảm xúc, còn tranh luận lý lẽ thì tốn sức",
+            "Vì không cần giải thích gì",
+            "Vì lý lẽ luôn sai"
+          ],
+          "correctIndex": 0,
+          "explanation": "Người ta tin điều mình tự thấy hơn điều được nói cho nghe."
+        },
+        {
+          "prompt": "Thái độ khi gọi nên thế nào?",
+          "options": [
+            "Đùa cợt cho thoải mái",
+            "Nghiêm túc, vui vẻ, tôn trọng thời gian người kia",
+            "Gấp gáp cho nhanh"
+          ],
+          "correctIndex": 1,
+          "explanation": "Nghiêm túc cho thấy mình coi trọng cuộc hẹn và người nghe."
+        }
+      ]
+    },
+    {
+      "id": "call-seven-steps",
+      "title": "7 bước gọi điện hẹn gặp",
+      "xp": 10,
+      "stage": "invite",
+      "icon": "steps",
+      "questions": [
+        {
+          "type": "order",
+          "prompt": "Xếp 4 bước đầu của cuộc gọi hẹn gặp theo đúng thứ tự.",
+          "steps": [
+            "Chào và xin phép",
+            "Giới thiệu bản thân",
+            "Nói lý do muốn gặp",
+            "Đưa ra 2 lựa chọn thời gian"
+          ],
+          "explanation": "Bốn bước đầu: mở lời lịch sự rồi đi thẳng vào việc hẹn."
+        },
+        {
+          "type": "order",
+          "prompt": "Xếp các bước cuối của cuộc gọi theo đúng thứ tự.",
+          "steps": [
+            "Đưa ra 2 lựa chọn thời gian",
+            "Xử lý từ chối nếu có",
+            "Xác nhận lại thời gian, địa điểm",
+            "Cảm ơn"
+          ],
+          "explanation": "Chốt lại rõ ràng và cảm ơn để kết thúc cuộc gọi."
+        },
+        {
+          "prompt": "Ở bước \"lý do muốn gặp\", nên nói thế nào?",
+          "options": [
+            "Trình bày đầy đủ cơ hội",
+            "Không nói lý do",
+            "Nói ngắn gọn lý do, không trình bày chi tiết"
+          ],
+          "correctIndex": 2,
+          "explanation": "Chi tiết để dành cho lúc gặp. Qua điện thoại dễ bị hiểu sai."
+        },
+        {
+          "prompt": "Vì sao nên đưa ra 2 lựa chọn thời gian?",
+          "options": [
+            "Người kia dễ chọn một giờ hơn là tự nghĩ",
+            "Để ép người kia phải gặp",
+            "Để có lý do huỷ"
+          ],
+          "correctIndex": 0,
+          "explanation": "Câu hỏi lựa chọn giúp cuộc hẹn cụ thể hơn."
+        },
+        {
+          "prompt": "Vì sao phải xác nhận lại trước khi cúp máy?",
+          "options": [
+            "Để kéo dài cuộc gọi",
+            "Để cả hai nhớ đúng giờ và địa điểm",
+            "Không cần thiết"
+          ],
+          "correctIndex": 1,
+          "explanation": "Xác nhận lại giúp tránh lỡ hẹn vì nhầm."
+        }
+      ]
+    },
+    {
+      "id": "invite-with-upline",
+      "title": "Hẹn có tuyến trên hỗ trợ",
+      "xp": 10,
+      "stage": "invite",
+      "icon": "handshake",
+      "questions": [
+        {
+          "type": "order",
+          "prompt": "Xếp các bước hẹn khách có tuyến trên hỗ trợ.",
+          "steps": [
+            "Hẹn giờ với tuyến trên trước",
+            "Gọi khách để hẹn",
+            "Báo kết quả cho tuyến trên",
+            "Xác nhận lại với cả hai"
+          ],
+          "explanation": "Biết giờ của người hỗ trợ trước thì hẹn khách không bị lệch."
+        },
+        {
+          "prompt": "Vì sao hẹn giờ với tuyến trên trước khi gọi khách?",
+          "options": [
+            "Để tuyến trên quyết định thay mình",
+            "Để có cớ hoãn hẹn",
+            "Để chắc người hỗ trợ có mặt được"
+          ],
+          "correctIndex": 2,
+          "explanation": "Hẹn khách rồi mới hỏi tuyến trên dễ phải đổi giờ."
+        },
+        {
+          "prompt": "Khách đổi giờ hẹn. Bạn làm gì?",
+          "options": [
+            "Báo ngay cho tuyến trên và xác nhận giờ mới",
+            "Tự đi một mình, không báo",
+            "Huỷ luôn buổi hẹn"
+          ],
+          "correctIndex": 0,
+          "explanation": "Thông tin kịp thời giúp người hỗ trợ sắp xếp."
+        },
+        {
+          "prompt": "Trước buổi gặp, nên kể với tuyến trên điều gì về khách?",
+          "options": [
+            "Chuyện riêng tư của khách",
+            "Mối quan hệ, nhu cầu và điều họ quan tâm",
+            "Không cần kể gì"
+          ],
+          "correctIndex": 1,
+          "explanation": "Biết trước người sắp gặp giúp tuyến trên hỗ trợ đúng chỗ, nhưng không kể chuyện riêng."
+        },
+        {
+          "prompt": "Khi giới thiệu tuyến trên với khách, nên nói thế nào?",
+          "options": [
+            "Không giới thiệu gì",
+            "Nói là sếp của mình",
+            "Giới thiệu là người có kinh nghiệm, mình rất quý"
+          ],
+          "correctIndex": 2,
+          "explanation": "Lời giới thiệu tốt giúp khách tin và chịu lắng nghe."
+        }
+      ]
+    },
+    {
+      "id": "one-one-one",
+      "title": "Chìa 2: 1 + 1 + 1",
+      "xp": 10,
+      "stage": "invite",
+      "icon": "chat",
+      "questions": [
+        {
+          "type": "match",
+          "prompt": "Ghép mỗi cuộc gặp với thời lượng gợi ý.",
+          "pairs": [
+            {
+              "left": "Đối tượng chủ yếu",
+              "right": "60–120 phút"
+            },
+            {
+              "left": "Đối tượng thứ yếu",
+              "right": "30–60 phút"
+            },
+            {
+              "left": "Người có thái độ tốt",
+              "right": "10–20 phút"
+            }
+          ],
+          "explanation": "Mỗi kiểu gặp có mục đích khác nhau nên dài ngắn khác nhau."
+        },
+        {
+          "prompt": "\"Đối tượng chủ yếu\" là cuộc gặp để làm gì?",
+          "options": [
+            "Làm bài 1 hoặc bài 2 với người mới",
+            "Uống cà phê chuyện phiếm",
+            "Giao hàng"
+          ],
+          "correctIndex": 0,
+          "explanation": "Đây là cuộc gặp chính, cần nhiều thời gian nhất."
+        },
+        {
+          "prompt": "\"Đối tượng thứ yếu\" là ai?",
+          "options": [
+            "Người chưa quen biết",
+            "Người đã nghe bài 1 hoặc bài 2, cần theo tiếp",
+            "Người đã từ chối hẳn"
+          ],
+          "correctIndex": 1,
+          "explanation": "Gặp lại để trả lời thắc mắc và hỗ trợ bước tiếp theo."
+        },
+        {
+          "prompt": "\"Người có thái độ tốt\" là ai?",
+          "options": [
+            "Người mình thấy dễ nói chuyện nhất",
+            "Người chưa bao giờ gặp",
+            "Người muốn làm sự nghiệp hoặc khách thích sản phẩm"
+          ],
+          "correctIndex": 2,
+          "explanation": "Gặp ngắn để động viên, giữ nhịp. Có thể là người sẽ dẫn dắt sau này."
+        },
+        {
+          "prompt": "Ý chính của 1 + 1 + 1 là gì?",
+          "options": [
+            "Mỗi ngày đều có cả gặp mới, gặp lại và nuôi dưỡng người tích cực",
+            "Mỗi ngày chỉ gặp 1 người",
+            "Mỗi tuần gặp 3 người"
+          ],
+          "correctIndex": 0,
+          "explanation": "Ba vai cân bằng giúp công việc vừa mở rộng vừa đi sâu."
+        }
+      ]
+    },
+    {
+      "id": "booking-technique",
+      "title": "Kỹ thuật hẹn gặp",
+      "xp": 10,
+      "stage": "invite",
+      "icon": "phone",
+      "questions": [
+        {
+          "prompt": "Câu nào là câu hỏi lựa chọn khi hẹn?",
+          "options": [
+            "Khi nào anh rảnh thì báo em nhé?",
+            "Tối thứ Ba hay sáng thứ Bảy thì tiện cho anh hơn?",
+            "Anh có muốn gặp không?"
+          ],
+          "correctIndex": 1,
+          "explanation": "Câu hỏi lựa chọn giúp người kia trả lời cụ thể."
+        },
+        {
+          "prompt": "Mỗi lần hẹn nên có bao nhiêu người được mời?",
+          "options": [
+            "Càng đông càng tốt",
+            "Ít nhất 10 người",
+            "1–2 người"
+          ],
+          "correctIndex": 2,
+          "explanation": "Ít người thì trò chuyện được kỹ và quan tâm từng người."
+        },
+        {
+          "prompt": "Nên hẹn gặp ở đâu?",
+          "options": [
+            "Ở nhà, chỗ làm hoặc văn phòng, nơi yên tĩnh",
+            "Quán đông người, ồn ào",
+            "Ở bất kỳ đâu"
+          ],
+          "correctIndex": 0,
+          "explanation": "Chỗ yên tĩnh giúp người nghe tập trung."
+        },
+        {
+          "prompt": "Khi tập gọi cùng tuyến trên, vì sao nên bật loa ngoài?",
+          "options": [
+            "Để người khác cùng nghe chuyện riêng",
+            "Để tuyến trên nghe, góp ý và cổ vũ",
+            "Để ghi âm người nghe"
+          ],
+          "correctIndex": 1,
+          "explanation": "Tuyến trên nghe trực tiếp thì góp ý sát hơn. Nếu người nghe hỏi, cứ nói thật là có người cùng nghe."
+        },
+        {
+          "prompt": "Người kia trả lời \"để xem đã\". Nên làm gì?",
+          "options": [
+            "Thôi không hẹn nữa",
+            "Nài nỉ cho bằng được",
+            "Đưa ra hai lựa chọn thời gian cụ thể"
+          ],
+          "correctIndex": 2,
+          "explanation": "Hai lựa chọn cụ thể giúp người kia dễ quyết định hơn."
+        }
+      ]
+    },
+    {
+      "id": "invite-by-person",
+      "title": "Mời theo từng kiểu người",
+      "xp": 10,
+      "stage": "invite",
+      "icon": "users",
+      "questions": [
+        {
+          "type": "match",
+          "prompt": "Ghép mỗi kiểu người với cách mở lời phù hợp.",
+          "pairs": [
+            {
+              "left": "Người nhiều kinh nghiệm hơn",
+              "right": "\"Mình đang bắt đầu kinh doanh thêm, muốn xin góc nhìn của anh/chị\""
+            },
+            {
+              "left": "Bạn ngang tuổi",
+              "right": "\"Mình đang tìm hiểu một việc, muốn rủ bạn cùng xem thử\""
+            },
+            {
+              "left": "Người mới quen",
+              "right": "\"Hôm trước nói chuyện vui quá, hẹn cà phê tiếp nhé\""
+            }
+          ],
+          "explanation": "Mỗi người một cách mở lời, nhưng lúc nào cũng nói thật mục đích."
+        },
+        {
+          "prompt": "Người ngang tuổi nghe xong thấy không hợp. Bạn nên làm gì?",
+          "options": [
+            "Cảm ơn, và hỏi họ có biết ai có thể phù hợp không",
+            "Thuyết phục thêm",
+            "Thôi không liên lạc nữa"
+          ],
+          "correctIndex": 0,
+          "explanation": "Tôn trọng lựa chọn của họ và giữ mối quan hệ tốt."
+        },
+        {
+          "prompt": "Dù mời ai, điều gì tuyệt đối không làm?",
+          "options": [
+            "Nói dối về lý do hẹn",
+            "Gọi điện trước",
+            "Đưa ra 2 lựa chọn giờ"
+          ],
+          "correctIndex": 0,
+          "explanation": "Không nói dối là nguyên tắc số một khi mời hẹn."
+        },
+        {
+          "prompt": "Với người bạn mới quen, lời mời nên thế nào?",
+          "options": [
+            "Rủ gặp để trò chuyện tiếp, nhẹ nhàng, chưa vội nói chuyện kinh doanh",
+            "Mời ngay vào một buổi trình bày",
+            "Gửi nhiều tài liệu để họ đọc"
+          ],
+          "correctIndex": 0,
+          "explanation": "Với người mới quen, ưu tiên xây mối quan hệ trước."
+        },
+        {
+          "prompt": "Với người nhiều kinh nghiệm hơn, vì sao phải nói thật mục đích?",
+          "options": [
+            "Vì họ dễ đoán ra nếu mình vòng vo",
+            "Vì nói thật giữ được sự tôn trọng và lòng tin",
+            "Không cần nói thật"
+          ],
+          "correctIndex": 1,
+          "explanation": "Mượn cớ \"xin ý kiến\" mà giấu mục đích dễ làm mất lòng tin. Hãy nói rõ là mình đang bắt đầu kinh doanh thêm."
+        }
+      ]
+    },
+    {
+      "id": "dont-wait",
+      "title": "Không chờ một người",
+      "xp": 15,
+      "stage": "invite",
+      "icon": "forward",
+      "questions": [
+        {
+          "prompt": "A nói tuần sau mới rảnh. Bạn nên làm gì?",
+          "options": [
+            "Hẹn A tuần sau, rồi gọi tiếp người khác trong danh sách",
+            "Chờ tới tuần sau rồi mới gọi ai khác",
+            "Bỏ hẳn A khỏi danh sách"
+          ],
+          "correctIndex": 0,
+          "explanation": "Làm theo danh sách, không để một người làm dừng cả kế hoạch."
+        },
+        {
+          "prompt": "B đang đi công tác xa. Bạn nên làm gì?",
+          "options": [
+            "Nghỉ gọi tuần này",
+            "Ghi lại để liên lạc khi B về, rồi gọi C",
+            "Nhắn liên tục cho B"
+          ],
+          "correctIndex": 1,
+          "explanation": "Ghi lại để không quên, nhưng vẫn tiếp tục với người tiếp theo."
+        },
+        {
+          "prompt": "Bạn rất mong một người bạn thân tham gia, nhưng người đó chưa sẵn sàng. Nên làm gì?",
+          "options": [
+            "Dừng lại chờ người đó sẵn sàng",
+            "Thuyết phục bằng mọi cách",
+            "Vẫn giữ quan hệ tốt và tiếp tục với những người khác"
+          ],
+          "correctIndex": 2,
+          "explanation": "Không đặt hết hy vọng vào một người. Mỗi người có thời điểm riêng."
+        },
+        {
+          "prompt": "Một tuần có 3 người hẹn rồi lại hoãn. Nên nghĩ gì?",
+          "options": [
+            "Đó là chuyện bình thường, quan trọng là giữ nhịp gọi đều",
+            "Mình không hợp công việc này",
+            "Nên ngừng hẹn một thời gian"
+          ],
+          "correctIndex": 0,
+          "explanation": "Hoãn hẹn xảy ra thường xuyên. Nhịp hành động đều mới tạo kết quả."
+        },
+        {
+          "prompt": "Vì sao danh sách cần đủ dài?",
+          "options": [
+            "Để khoe với tuyến trên",
+            "Để luôn có người tiếp theo khi ai đó bận",
+            "Không cần dài"
+          ],
+          "correctIndex": 1,
+          "explanation": "Danh sách dài giúp mình không phải chờ ai."
+        },
+        {
+          "prompt": "Người hôm trước từ chối, hôm nay gọi lại hỏi thăm. Bạn nên làm gì?",
+          "options": [
+            "Nhắc lại chuyện họ đã từ chối",
+            "Từ chối lại cho công bằng",
+            "Vui vẻ trò chuyện và hẹn gặp nếu họ muốn"
+          ],
+          "correctIndex": 2,
+          "explanation": "Giữ cửa luôn mở. Người từ chối hôm nay có thể quan tâm vào lúc khác."
         }
       ]
     },
@@ -1101,424 +2358,6 @@
           ],
           "correctIndex": 1,
           "explanation": "Đổi cách nhìn: lời từ chối là dấu hiệu mình đang hành động, giúp bớt sợ khi liên hệ."
-        }
-      ]
-    },
-    {
-      "id": "formhd-basics",
-      "title": "FORMHD: hiểu người qua 6 chủ đề",
-      "xp": 10,
-      "stage": "list",
-      "icon": "chat",
-      "questions": [
-        {
-          "prompt": "Chữ D trong FORMHD là gì?",
-          "options": [
-            "Gia đình",
-            "Ước muốn",
-            "Thu nhập"
-          ],
-          "correctIndex": 1,
-          "explanation": "D là Dream: dự định vài năm tới của người đó."
-        },
-        {
-          "prompt": "Bạn hỏi: \"Dạo này bé nhà mình học hành sao rồi?\" Câu này thuộc chủ đề nào?",
-          "options": [
-            "Gia đình",
-            "Công việc",
-            "Thời gian rảnh"
-          ],
-          "correctIndex": 0,
-          "explanation": "Hỏi về con cái, bố mẹ, vợ chồng là chủ đề Gia đình."
-        },
-        {
-          "prompt": "Về chủ đề Tài chính, cách nào phù hợp?",
-          "options": [
-            "Hỏi thẳng lương bao nhiêu",
-            "Lắng nghe điều họ tự chia sẻ, không dò hỏi",
-            "Bỏ qua người đó"
-          ],
-          "correctIndex": 1,
-          "explanation": "Tôn trọng chuyện riêng tư giúp giữ lòng tin."
-        },
-        {
-          "prompt": "Một người kể cuối tuần hay đi học thêm kỹ năng. Điều đó cho bạn biết gì?",
-          "options": [
-            "Họ thích phát triển bản thân",
-            "Họ không có thời gian",
-            "Họ không quan tâm gì"
-          ],
-          "correctIndex": 0,
-          "explanation": "Cách dùng thời gian rảnh cho thấy mong muốn của người đó."
-        },
-        {
-          "prompt": "Tinh thần chung khi trò chuyện theo FORMHD là gì?",
-          "options": [
-            "Hỏi thật nhanh cho đủ 6 chủ đề",
-            "Quan tâm thật lòng tới người đó trước",
-            "Nói về mình trước"
-          ],
-          "correctIndex": 1,
-          "explanation": "FORMHD là để hiểu người khác, không phải để lấy thông tin."
-        }
-      ]
-    },
-    {
-      "id": "meeting-new-people",
-      "title": "Làm quen người mới",
-      "xp": 10,
-      "stage": "list",
-      "icon": "userplus",
-      "questions": [
-        {
-          "type": "order",
-          "prompt": "Xếp 5 bước làm quen người mới theo đúng thứ tự.",
-          "steps": [
-            "Để ý một điểm đặc biệt",
-            "Khen thật lòng",
-            "Trò chuyện ngắn",
-            "Xin liên lạc kèm lý do chung",
-            "Nhắn lại sau 24–48 giờ"
-          ],
-          "explanation": "Để ý, khen, trò chuyện, xin liên lạc, rồi giữ kết nối bằng một tin nhắn lại."
-        },
-        {
-          "prompt": "Mới gặp ai đó, cách mở lời tự nhiên nhất là gì?",
-          "options": [
-            "Giới thiệu ngay việc mình đang làm",
-            "Khen thật lòng một điểm bạn để ý thấy",
-            "Xin số điện thoại luôn"
-          ],
-          "correctIndex": 1,
-          "explanation": "Một lời khen chân thành giúp người đối diện thấy thoải mái."
-        },
-        {
-          "prompt": "Sau khi xin được liên lạc, nên nhắn lại khi nào?",
-          "options": [
-            "Trong 24–48 giờ",
-            "Một tháng sau",
-            "Chờ họ nhắn trước"
-          ],
-          "correctIndex": 0,
-          "explanation": "Nhắn lại sớm khi cả hai còn nhớ cuộc trò chuyện."
-        },
-        {
-          "type": "order",
-          "prompt": "Xếp các nấc của mối quan hệ từ mới gặp đến gắn bó.",
-          "steps": [
-            "Quen biết",
-            "Thân thuộc",
-            "Quý mến",
-            "Tin tưởng",
-            "Thân thiết"
-          ],
-          "explanation": "Mối quan hệ lớn dần từng bước; lòng tin cần thời gian."
-        },
-        {
-          "prompt": "Khi xin liên lạc người mới quen, nên kèm theo điều gì?",
-          "options": [
-            "Một lý do chung để giữ liên lạc, ví dụ cùng sở thích",
-            "Lời mời tham gia kinh doanh ngay",
-            "Không cần lý do gì"
-          ],
-          "correctIndex": 0,
-          "explanation": "Một lý do chung tự nhiên giúp người kia thoải mái cho liên lạc."
-        }
-      ]
-    },
-    {
-      "id": "formhd-match",
-      "title": "FORMHD: ghép cặp",
-      "xp": 10,
-      "stage": "list",
-      "icon": "puzzle",
-      "questions": [
-        {
-          "type": "match",
-          "prompt": "Ghép mỗi chữ cái với chủ đề của nó.",
-          "pairs": [
-            {
-              "left": "F",
-              "right": "Gia đình"
-            },
-            {
-              "left": "O",
-              "right": "Công việc"
-            },
-            {
-              "left": "R",
-              "right": "Thời gian rảnh"
-            },
-            {
-              "left": "M",
-              "right": "Tài chính"
-            },
-            {
-              "left": "H",
-              "right": "Sức khoẻ"
-            },
-            {
-              "left": "D",
-              "right": "Ước muốn"
-            }
-          ],
-          "explanation": "FORMHD là 6 chủ đề giúp bạn hiểu và quan tâm một người."
-        },
-        {
-          "type": "match",
-          "prompt": "Ghép mỗi câu hỏi thăm với chủ đề phù hợp.",
-          "pairs": [
-            {
-              "left": "\"Bố mẹ dạo này khoẻ không?\"",
-              "right": "Gia đình"
-            },
-            {
-              "left": "\"Công việc dạo này có vui không?\"",
-              "right": "Công việc"
-            },
-            {
-              "left": "\"Cuối tuần thường làm gì?\"",
-              "right": "Thời gian rảnh"
-            },
-            {
-              "left": "\"Hay tập thể dục môn gì?\"",
-              "right": "Sức khoẻ"
-            },
-            {
-              "left": "\"Vài năm tới có dự định gì?\"",
-              "right": "Ước muốn"
-            }
-          ],
-          "explanation": "Mỗi câu hỏi thăm mở ra một chủ đề để hiểu người đối diện hơn."
-        },
-        {
-          "prompt": "Vì sao chủ đề Tài chính chỉ nên lắng nghe, không hỏi thẳng?",
-          "options": [
-            "Để tôn trọng chuyện riêng tư và giữ lòng tin",
-            "Vì chủ đề này không quan trọng",
-            "Để họ tự nói ra số tiền cụ thể"
-          ],
-          "correctIndex": 0,
-          "explanation": "Chuyện tiền bạc là riêng tư; lắng nghe điều họ tự chia sẻ là đủ."
-        },
-        {
-          "prompt": "Mục đích của 6 chủ đề FORMHD là gì?",
-          "options": [
-            "Để hỏi càng nhiều càng tốt trong một lần gặp",
-            "Để hiểu và quan tâm người kia một cách tự nhiên",
-            "Để tìm cách nói về sản phẩm sớm"
-          ],
-          "correctIndex": 1,
-          "explanation": "FORMHD giúp trò chuyện có chiều sâu và hiểu người kia hơn, không phải để tra hỏi."
-        },
-        {
-          "prompt": "Khi hỏi về Sức khoẻ, nên dừng ở mức nào?",
-          "options": [
-            "Hỏi thăm chung, ví dụ dạo này có hay tập thể dục không",
-            "Hỏi chi tiết bệnh đang mắc",
-            "Gợi ý ngay một sản phẩm"
-          ],
-          "correctIndex": 0,
-          "explanation": "Sức khoẻ chỉ dừng ở mức hỏi thăm, không đi sâu chuyện riêng và không nói như công dụng sản phẩm."
-        }
-      ]
-    },
-    {
-      "id": "weekly-schedule",
-      "title": "Sắp lịch tuần 3 bước",
-      "xp": 10,
-      "stage": "invite",
-      "icon": "calendar",
-      "questions": [
-        {
-          "type": "order",
-          "prompt": "Xếp 3 bước sắp lịch hẹn theo đúng thứ tự.",
-          "steps": [
-            "Điền lịch tuần của mình",
-            "So lịch với tuyến trên, tuyến dưới",
-            "Chủ động đặt hẹn vào khung đã chọn"
-          ],
-          "explanation": "Biết mình rảnh lúc nào, tìm giờ chung, rồi chủ động đặt hẹn."
-        },
-        {
-          "prompt": "Khi điền lịch tuần, nên đánh dấu \"không tự quyết được\" cho giờ nào?",
-          "options": [
-            "Giờ đi làm và việc gia đình quan trọng",
-            "Mọi buổi tối",
-            "Cả cuối tuần"
-          ],
-          "correctIndex": 0,
-          "explanation": "Những ô còn lại là thời gian bạn tự quyết, dùng để đặt hẹn."
-        },
-        {
-          "prompt": "Bạn có khung giờ trống nhưng chưa ai nhắc. Bạn nên làm gì?",
-          "options": [
-            "Chủ động đặt hẹn vào khung đó",
-            "Chờ tuyến trên sắp xếp",
-            "Để tuần sau"
-          ],
-          "correctIndex": 0,
-          "explanation": "Lịch đã sắp thì cứ chủ động, không chờ đợi ai."
-        },
-        {
-          "prompt": "Vì sao nên so lịch với tuyến trên trước khi hẹn?",
-          "options": [
-            "Để tuyến trên quyết định thay mình",
-            "Để chọn được giờ mà người hỗ trợ cũng tham gia được",
-            "Để có lý do hoãn hẹn"
-          ],
-          "correctIndex": 1,
-          "explanation": "So lịch trước giúp buổi hẹn có người hỗ trợ khi cần."
-        },
-        {
-          "prompt": "Lịch tuần nên được làm khi nào?",
-          "options": [
-            "Đầu mỗi tuần, cập nhật khi có thay đổi",
-            "Chỉ khi có người hẹn",
-            "Mỗi tháng một lần"
-          ],
-          "correctIndex": 0,
-          "explanation": "Lịch tuần đều đặn giúp mình chủ động thay vì chờ việc tới."
-        }
-      ]
-    },
-    {
-      "id": "invitation-basics",
-      "title": "Cách mời hẹn",
-      "xp": 10,
-      "stage": "invite",
-      "icon": "phone",
-      "questions": [
-        {
-          "type": "match",
-          "prompt": "Ghép mỗi yếu tố của lời mời với cách làm đúng.",
-          "pairs": [
-            {
-              "left": "Kênh liên lạc",
-              "right": "Gọi điện ngắn, hoặc kênh quen thuộc với người đó"
-            },
-            {
-              "left": "Lý do hẹn",
-              "right": "Rõ ràng và trung thực"
-            },
-            {
-              "left": "Địa điểm",
-              "right": "Ưu tiên văn phòng"
-            },
-            {
-              "left": "Thời gian",
-              "right": "Đưa 2 lựa chọn theo lịch tuần"
-            }
-          ],
-          "explanation": "Một lời mời tốt: kênh quen thuộc, lý do thật, chỗ gặp rõ ràng, giờ dễ chọn."
-        },
-        {
-          "prompt": "Cách hỏi giờ nào giúp người kia dễ trả lời?",
-          "options": [
-            "\"Mai bạn rảnh sáng hay chiều?\"",
-            "\"Khi nào rảnh thì báo mình nhé\"",
-            "\"Hôm nay phải gặp nhé\""
-          ],
-          "correctIndex": 0,
-          "explanation": "Hai lựa chọn cụ thể giúp người kia quyết định nhanh và thoải mái."
-        },
-        {
-          "prompt": "Lý do hẹn mập mờ cho người kia tò mò thì có ổn không?",
-          "options": [
-            "Ổn, càng bí ẩn càng tốt",
-            "Không ổn, lý do phải rõ ràng và không nói dối",
-            "Tuỳ người"
-          ],
-          "correctIndex": 1,
-          "explanation": "Trung thực ngay từ lời mời là nền móng của lòng tin."
-        },
-        {
-          "prompt": "Sau cuộc gọi mời, người được mời nên cảm thấy thế nào?",
-          "options": [
-            "Thoải mái và thấy có lợi khi gặp",
-            "Bị ép phải đồng ý",
-            "Tò mò nhưng lo lắng"
-          ],
-          "correctIndex": 0,
-          "explanation": "Người được mời nên thấy buổi gặp có ích cho chính họ."
-        },
-        {
-          "prompt": "Người được mời hỏi chi tiết ngay trên điện thoại. Bạn nên làm gì?",
-          "options": [
-            "Trình bày đầy đủ qua điện thoại",
-            "Nói ngắn gọn và hẹn gặp để nói kỹ hơn",
-            "Từ chối trả lời"
-          ],
-          "correctIndex": 1,
-          "explanation": "Gọi điện là để hẹn gặp. Nội dung chi tiết nói khi gặp mặt mới rõ ràng."
-        }
-      ]
-    },
-    {
-      "id": "invite-by-person",
-      "title": "Mời theo từng kiểu người",
-      "xp": 10,
-      "stage": "invite",
-      "icon": "users",
-      "questions": [
-        {
-          "type": "match",
-          "prompt": "Ghép mỗi kiểu người với cách mở lời phù hợp.",
-          "pairs": [
-            {
-              "left": "Người nhiều kinh nghiệm hơn",
-              "right": "\"Mình đang bắt đầu kinh doanh thêm, muốn xin góc nhìn của anh/chị\""
-            },
-            {
-              "left": "Bạn ngang tuổi",
-              "right": "\"Mình đang tìm hiểu một việc, muốn rủ bạn cùng xem thử\""
-            },
-            {
-              "left": "Người mới quen",
-              "right": "\"Hôm trước nói chuyện vui quá, hẹn cà phê tiếp nhé\""
-            }
-          ],
-          "explanation": "Mỗi người một cách mở lời, nhưng lúc nào cũng nói thật mục đích."
-        },
-        {
-          "prompt": "Người ngang tuổi nghe xong thấy không hợp. Bạn nên làm gì?",
-          "options": [
-            "Cảm ơn, và hỏi họ có biết ai có thể phù hợp không",
-            "Thuyết phục thêm",
-            "Thôi không liên lạc nữa"
-          ],
-          "correctIndex": 0,
-          "explanation": "Tôn trọng lựa chọn của họ và giữ mối quan hệ tốt."
-        },
-        {
-          "prompt": "Dù mời ai, điều gì tuyệt đối không làm?",
-          "options": [
-            "Nói dối về lý do hẹn",
-            "Gọi điện trước",
-            "Đưa ra 2 lựa chọn giờ"
-          ],
-          "correctIndex": 0,
-          "explanation": "Không nói dối là nguyên tắc số một khi mời hẹn."
-        },
-        {
-          "prompt": "Với người bạn mới quen, lời mời nên thế nào?",
-          "options": [
-            "Rủ gặp để trò chuyện tiếp, nhẹ nhàng, chưa vội nói chuyện kinh doanh",
-            "Mời ngay vào một buổi trình bày",
-            "Gửi nhiều tài liệu để họ đọc"
-          ],
-          "correctIndex": 0,
-          "explanation": "Với người mới quen, ưu tiên xây mối quan hệ trước."
-        },
-        {
-          "prompt": "Với người nhiều kinh nghiệm hơn, vì sao phải nói thật mục đích?",
-          "options": [
-            "Vì họ dễ đoán ra nếu mình vòng vo",
-            "Vì nói thật giữ được sự tôn trọng và lòng tin",
-            "Không cần nói thật"
-          ],
-          "correctIndex": 1,
-          "explanation": "Mượn cớ \"xin ý kiến\" mà giấu mục đích dễ làm mất lòng tin. Hãy nói rõ là mình đang bắt đầu kinh doanh thêm."
         }
       ]
     },
