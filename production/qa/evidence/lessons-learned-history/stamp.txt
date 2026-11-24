@@ -1,0 +1,5 @@
+Reviewed-Content-Hash: src/domain/lesson.ts 1ec8ab100000141808972c6a28236f40a5b62992
+Reviewed-Content-Hash: src/ui/lesson-strings.ts 6d98e7f6be9648eee0020070c57bc40770ac712b
+Reviewed-Content-Hash: src/ui/screens/lesson-screen.tsx 681b47afdcc46ea09e149b07a0a912eaf782c8f0
+Reviewed-Content-Hash: src/ui/styles.css 9347d017ed9575aac1c183fe39bdbc32f1b1874c
+Reviewed-Content-Hash: tests/unit/lesson/lesson-history.test.ts 0b30b45abd3f8728d24eca40978bb2253d2c0d5b

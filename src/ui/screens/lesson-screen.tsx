@@ -5,6 +5,7 @@ import {
   computeLessonResult,
   gradeAnswer,
   isLessonCompletedToday,
+  lessonHistory,
   isMatchQuestion,
   isOrderQuestion,
   parseLessons,
@@ -15,7 +16,7 @@ import {
 import type { Lesson, LessonAnswer, LessonResult, ParsedLessons } from '../../domain/lesson';
 import { groupLessonsByStage, parseLessonStages } from '../../domain/lesson-stages';
 import type { LessonStage } from '../../domain/lesson-stages';
-import { LESSON_STRINGS, stageHeading, stageProgressLabel } from '../lesson-strings';
+import { LESSON_STRINGS, lessonLearnedLabel, stageHeading, stageProgressLabel } from '../lesson-strings';
 import { STRINGS, questionProgressLabel, scoreLabel, xpLabel } from '../strings';
 import { MatchQuestionView } from './match-question';
 import { OrderQuestionView } from './order-question';
@@ -291,19 +292,21 @@ export function LessonScreen({
       {groupLessonsByStage(parsed.lessons, stages).map((group, groupIndex) => {
         const heading = group.stage === null ? LESSON_STRINGS.stageOther : stageHeading(groupIndex + 1, group.stage.title);
         const doneCount = group.lessons.filter((l) => isLessonCompletedToday(events, l.id, at, timeZone)).length;
+        const learnedCount = group.lessons.filter((l) => lessonHistory(events, l.id).count > 0).length;
         const empty = group.lessons.length === 0;
         return (
           <section key={group.stage?.id ?? 'other'} className={empty ? 'lesson-group lesson-group--empty' : 'lesson-group'}>
             <h2 className="lesson-group__header">
               <span className="lesson-group__title">{heading}</span>
               <span className="lesson-group__meta">
-                {empty ? LESSON_STRINGS.stageComingSoon : stageProgressLabel(doneCount, group.lessons.length)}
+                {empty ? LESSON_STRINGS.stageComingSoon : stageProgressLabel(learnedCount, group.lessons.length, doneCount)}
               </span>
             </h2>
             {!empty && (
               <div className="activity-list">
                 {group.lessons.map((lesson) => {
                   const done = isLessonCompletedToday(events, lesson.id, at, timeZone);
+                  const history = lessonHistory(events, lesson.id);
                   return (
                     <button
                       key={lesson.id}
@@ -314,6 +317,7 @@ export function LessonScreen({
                       <span className="activity-option__name">
                         {done && '✓ '}
                         {lesson.title}
+                        {history.count > 0 && history.lastAt !== null && <span className="lesson-item__learned">{lessonLearnedLabel(history.count, history.lastAt)}</span>}
                       </span>
                       <span className="activity-option__xp">{done ? STRINGS.lessonDoneToday : xpLabel(lesson.xp)}</span>
                     </button>

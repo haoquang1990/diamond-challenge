@@ -966,3 +966,6 @@ body.dialog-open { overflow: hidden; }
 /* Việc chỉ làm một lần đã làm (Chốt NPP): mờ, không bấm được */
 .task-row--done, .task-row:disabled.task-row--done { opacity: 0.55; cursor: not-allowed; box-shadow: none; }
 .task-row--done .activity-option__xp { color: var(--color-muted); }
+
+/* Bài đã học trước đây: số lần và lần gần nhất (2026-11-24) */
+.lesson-item__learned { display: block; margin-top: 2px; font-size: 0.85rem; font-weight: 600; color: var(--color-muted); }

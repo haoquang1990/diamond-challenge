@@ -317,6 +317,30 @@ export function isLessonCompletedToday(
 }
 
 /**
+ * How often a lesson was learned: non-compensated `lesson_completed` events for `lessonId` that
+ * earned XP (same-day zero-XP replays are not counted), and the latest of their timestamps.
+ *
+ * @example
+ * lessonHistory(events, 'list-1'); // { count: 2, lastAt: '2026-11-22T02:00:00.000Z' }
+ */
+export function lessonHistory(events: readonly LogEvent[], lessonId: string): { readonly count: number; readonly lastAt: string | null } {
+  const compensated = new Set<string>();
+  for (const e of events) {
+    const target = e.payload.compensates;
+    if (typeof target === 'string') compensated.add(target);
+  }
+  let count = 0;
+  let lastAt: string | null = null;
+  for (const e of events) {
+    if (e.type !== 'lesson_completed' || e.payload.lessonId !== lessonId || compensated.has(e.id) || typeof e.payload.compensates === 'string') continue;
+    if (typeof e.payload.xp !== 'number' || e.payload.xp <= 0) continue;
+    count += 1;
+    if (lastAt === null || e.timestamp > lastAt) lastAt = e.timestamp;
+  }
+  return { count, lastAt };
+}
+
+/**
  * XP to award now for completing `lesson`: the lesson's XP the first time
  * today, 0 on a same-day repeat.
  */
