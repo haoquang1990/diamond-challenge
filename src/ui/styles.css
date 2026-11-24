@@ -1044,3 +1044,8 @@ body.dialog-open { overflow: hidden; }
 
 /* Story 042: "Hộ F1" on an NPP contact */
 .f1-box__totals { margin: 0; font-size: 1.2rem; font-weight: 800; color: var(--color-diamond-dark); }
+
+/* Story 044: NPP ranking by XP */
+.npp-sort { margin-top: -4px; }
+.person-row__progress { display: block; margin-top: 2px; font-size: 0.85rem; font-weight: 700; color: var(--color-diamond-dark); }
+.f1-box__progress { margin: 0; font-weight: 700; color: var(--color-text); }

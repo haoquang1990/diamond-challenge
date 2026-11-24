@@ -57,6 +57,7 @@ Theo Build order của brief: nhật ký sự kiện + XP/streak → Làm + Hôm
 | 041 | Thẻ "Cổ vũ nhóm" trên Hôm nay | UI | Complete | N/A |
 | 042 | Bỏ màn Bảng 30x30 và Nhóm của tôi; khung "Hộ F1" trong chi tiết NPP | UI | Complete | N/A |
 | 043 | Bỏ Lưu trữ liên hệ | UI | Complete | N/A |
+| 044 | Xếp NPP theo mức tích cực (Tổng XP, XP 7 ngày) kèm chuỗi ngày | Integration | Complete | N/A |
 
 > 012–014 thay mô hình giai đoạn bằng việc cần làm + nhãn KH/NPP theo phản hồi dùng thử (2026-11-04, `design/gdd/crm.md`). Thứ tự gợi ý: 012 → 013 → 014 → 011.
 
@@ -75,3 +76,5 @@ Theo Build order của brief: nhật ký sự kiện + XP/streak → Làm + Hôm
 > 037 (2026-11-24) đổi danh sách bài trong tab Học thành con đường theo chặng (mẫu được duyệt 2026-11-24): icon từng bài, thẻ đầu chặng, cúp trang trí, popup bài; không khoá bài, không đổi XP.
 
 > 039–043 (2026-11-24) theo phản hồi dùng thử: bài nên học tiếp và cổ vũ lên Hôm nay; huỷ bảo trợ (migration thêm loại sự kiện); bỏ Bảng 30x30, Nhóm của tôi và Lưu trữ liên hệ. Thứ tự: 039 → 040 → 041 → 042 → 043. 040 có migration chạy trên Supabase khi merge.
+
+> 044 (2026-11-24) xếp NPP theo Tổng XP / XP 7 ngày kèm chuỗi ngày; mỗi tài khoản gửi số của mình lên bảng mới `member_progress` (migration chạy khi merge). Không đồng ý lại.

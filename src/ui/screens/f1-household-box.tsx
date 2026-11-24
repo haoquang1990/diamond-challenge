@@ -3,7 +3,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import gameConfig from '../../config/game-config.json';
 import { loadGroup, parseGroupConfig, readGroupCache, writeGroupCache } from '../../data/group-service';
 import type { GroupData } from '../../data/group-service';
-import { f1TotalsLabel, findF1Household, householdActivityNote } from '../group-helpers';
+import { f1TotalsLabel, findF1Household, householdActivityNote, householdProgress, householdProgressLabel } from '../group-helpers';
 import { STRINGS, groupUpdatedLabel } from '../strings';
 
 const GROUP_CONFIG = parseGroupConfig(gameConfig);
@@ -52,6 +52,7 @@ export function F1HouseholdBox({ clientPromise, accountId, amwayCode, now = real
   const household = group === null ? null : findF1Household(group.households, amwayCode);
   if (group === null || household === null) return null;
   const activity = householdActivityNote(household, now(), GROUP_CONFIG.inactiveDays);
+  const progress = householdProgress(household);
   return (
     <section className="card person-section f1-box" aria-labelledby="f1-box-title">
       <h2 id="f1-box-title" className="person-section__heading">
@@ -62,6 +63,7 @@ export function F1HouseholdBox({ clientPromise, accountId, amwayCode, now = real
       ) : (
         <p className="f1-box__totals">{f1TotalsLabel(household.numbers.customers, household.numbers.f1)}</p>
       )}
+      {progress !== null && <p className="f1-box__progress">{householdProgressLabel(progress)}</p>}
       {activity !== null && (
         <p className="message message--warn" role="status">
           {activity}

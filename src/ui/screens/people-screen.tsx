@@ -22,6 +22,11 @@ import {
 import type { ContactsFilter } from '../people-helpers';
 import { STRINGS, duplicateCodeWarning, duplicatesEntryLabel, filterChipLabel, lastContactLabel, nppSinceLabel, shortDateLabel, xpLabel } from '../strings';
 import { AddPersonForm, LabelBadge, PersonDetail } from './person-form';
+import { householdProgressLabel, sortNppByProgress } from '../group-helpers';
+import type { HouseholdProgress, NppSort } from '../group-helpers';
+
+/** Sort choices of the NPP chip (story 044). */
+const NPP_SORTS: readonly NppSort[] = ['newest', 'xpTotal', 'xp7d'];
 
 /** Props for {@link PeopleScreen}. */
 export interface PeopleScreenProps {
@@ -47,6 +52,8 @@ export interface PeopleScreenProps {
   readonly onOpenDuplicates?: () => void;
   /** Extra section for an opened person (story 042: "Hộ F1" for an NPP contact); nothing when it returns null. */
   readonly renderPersonExtra?: (person: Person) => ReactNode;
+  /** F1 household progress by Amway code (story 044); adds XP sorting and numbers to the NPP chip. */
+  readonly nppProgress?: ReadonlyMap<string, HouseholdProgress>;
 }
 
 type LoadState =
@@ -67,12 +74,13 @@ const ADD_NAME_ACTIVITY_ID = 'add_name';
  * the per-filter totals and ignore the search. Re-reads the event log on
  * mount and after every write; keeps no copy of truth.
  */
-export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initialFilter = 'all', onBack, members = null, memberIds = NO_MEMBERS, dataVersion = 0, initialOpenId = null, onCreateAccount, onOpenDuplicates, renderPersonExtra }: PeopleScreenProps) {
+export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initialFilter = 'all', onBack, members = null, memberIds = NO_MEMBERS, dataVersion = 0, initialOpenId = null, onCreateAccount, onOpenDuplicates, renderPersonExtra, nppProgress }: PeopleScreenProps) {
   const [load, setLoad] = useState<LoadState>({ kind: 'loading' });
   const [openId, setOpenId] = useState<string | null>(initialOpenId);
   const [addedXp, setAddedXp] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<ContactsFilter>(initialFilter);
+  const [nppSort, setNppSort] = useState<NppSort>('newest');
   /** null = automatic: open while the list is empty, collapsed once there are people. */
   const [showAdd, setShowAdd] = useState<boolean | null>(null);
   /** Name search text; kept while a person detail is open so the list returns as it was. */
@@ -175,7 +183,8 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
 
   const dupCodes = findDuplicateCodes(people);
   const counts = countContacts(allPeople);
-  const inFilter = filterContacts(allPeople, filter);
+  const listed = filterContacts(allPeople, filter);
+  const inFilter = filter === 'npp' && nppProgress !== undefined ? sortNppByProgress(listed, nppProgress, nppSort) : listed;
   const shown = searchPeopleByName(inFilter, query);
   const filterNames: Record<ContactsFilter, string> = {
     all: STRINGS.filterAll,
@@ -264,6 +273,22 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
         ))}
       </div>
 
+      {filter === 'npp' && nppProgress !== undefined && (
+        <div className="filter-bar npp-sort" role="group" aria-label={STRINGS.nppSortLabel}>
+          {NPP_SORTS.map((key) => (
+            <button
+              key={key}
+              type="button"
+              className={key === nppSort ? 'chip chip--selected' : 'chip'}
+              aria-pressed={key === nppSort}
+              onClick={() => setNppSort(key)}
+            >
+              {STRINGS.nppSortNames[key]}
+            </button>
+          ))}
+        </div>
+      )}
+
       {inFilter.length > 0 && shown.length === 0 ? (
         <p className="message" role="status">
           {STRINGS.searchNoMatch}
@@ -288,6 +313,9 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
                     )}
                     {filter === 'npp' && person.nppAt != null && (
                       <span className="person-row__stage">{nppSinceLabel(person.nppAt)}</span>
+                    )}
+                    {filter === 'npp' && person.amwayCode != null && nppProgress?.get(person.amwayCode) !== undefined && (
+                      <span className="person-row__progress">{householdProgressLabel(nppProgress.get(person.amwayCode) as HouseholdProgress)}</span>
                     )}
                   </span>
                   {person.label != null && <LabelBadge label={person.label} />}

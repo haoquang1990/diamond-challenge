@@ -1,0 +1,11 @@
+Reviewed-Content-Hash: supabase/migrations/20261124010000_member_progress.sql eaa8391bd4e7feb951cea16b5a0263c017912d8a
+Reviewed-Content-Hash: src/domain/progress.ts 98e25b21fdda0f4950085d1f0f299fd446624f21
+Reviewed-Content-Hash: src/data/member-progress-sync.ts ebcc13777cefc51b4e5d1b962d2c413b397bb0b1
+Reviewed-Content-Hash: src/data/group-service.ts d37937bafb6443dafc1a6797f0c1b776c1731b8c
+Reviewed-Content-Hash: src/ui/group-helpers.ts 28391ffde8d3698a855a4c6520afde9ee0039ef6
+Reviewed-Content-Hash: src/ui/use-group-data.ts 2d921893855b03a7e4b325bfb9d1dd88adbad04f
+Reviewed-Content-Hash: src/ui/screens/people-screen.tsx 805e00277161b8a10dad6403e6d7f00db8e3b9cb
+Reviewed-Content-Hash: src/ui/screens/f1-household-box.tsx d8d1287435b06639979c4baa538a0f70b5d96f17
+Reviewed-Content-Hash: src/app.tsx 10199d4b4f9ad7bd3130cbb3c0761df14bc9b150
+Reviewed-Content-Hash: src/ui/strings.ts 5983c05b200f40bf4d7c98d2ceccbc2647127a1e
+Reviewed-Content-Hash: src/ui/styles.css 361db3b8ca65a5969531aa428ac369bf0e47dc76

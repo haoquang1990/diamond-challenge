@@ -186,6 +186,8 @@ export const STRINGS = {
   sponsorCancelHistory: 'Huỷ bảo trợ',
   cheerGroupTitle: 'Cổ vũ nhóm',
   f1BoxTitle: 'Hộ F1',
+  nppSortLabel: 'Sắp xếp NPP',
+  nppSortNames: { newest: 'Mới bảo trợ', xpTotal: 'Tổng XP', xp7d: 'XP 7 ngày' },
   f1BoxOffline: 'đang không có mạng',
   groupCheerButton: 'Cổ vũ',
   groupCheeredToday: 'Đã cổ vũ hôm nay',

@@ -87,3 +87,61 @@ export function findF1Household(households: readonly GroupHousehold[], amwayCode
 export function f1TotalsLabel(customers: number, f1: number): string {
   return `KH ${customers} · NPP ${f1}`;
 }
+
+/** A household's shared progress (story 044): XP of every member added up, the best streak. */
+export interface HouseholdProgress {
+  readonly xpTotal: number;
+  readonly xp7d: number;
+  readonly streak: number;
+}
+
+/** Adds up the members' shared progress; null when no member has sent any. Pure. */
+export function householdProgress(h: GroupHousehold): HouseholdProgress | null {
+  const sent = h.members.map((m) => m.progress).filter((p): p is NonNullable<typeof p> => p != null);
+  if (sent.length === 0) return null;
+  return {
+    xpTotal: sent.reduce((sum, p) => sum + p.xpTotal, 0),
+    xp7d: sent.reduce((sum, p) => sum + p.xp7d, 0),
+    streak: Math.max(...sent.map((p) => p.streak)),
+  };
+}
+
+/** How the NPP list of Làm is ordered (story 044). */
+export type NppSort = 'newest' | 'xpTotal' | 'xp7d';
+
+/**
+ * Orders NPP contacts by their F1 household's progress, highest first (`xpTotal` or `xp7d`);
+ * contacts without numbers keep their given order after the others. `newest` keeps the order.
+ * Pure; stable.
+ */
+export function sortNppByProgress<T extends { readonly amwayCode?: string | null }>(
+  people: readonly T[],
+  progressByCode: ReadonlyMap<string, HouseholdProgress>,
+  sort: NppSort,
+): T[] {
+  if (sort === 'newest') return [...people];
+  const value = (p: T): number | null => {
+    const stats = p.amwayCode == null ? undefined : progressByCode.get(p.amwayCode);
+    return stats === undefined ? null : sort === 'xpTotal' ? stats.xpTotal : stats.xp7d;
+  };
+  return people
+    .map((p, i) => ({ p, i, v: value(p) }))
+    .sort((a, b) => (a.v === null && b.v === null ? a.i - b.i : a.v === null ? 1 : b.v === null ? -1 : b.v - a.v || a.i - b.i))
+    .map((x) => x.p);
+}
+
+/** Code → household progress for every F1 household with a code and shared numbers. */
+export function progressByCode(households: readonly GroupHousehold[]): ReadonlyMap<string, HouseholdProgress> {
+  const map = new Map<string, HouseholdProgress>();
+  for (const h of households) {
+    const stats = householdProgress(h);
+    if (h.code !== null && stats !== null) map.set(h.code, stats);
+  }
+  return map;
+}
+
+/** "XP 7 ngày 120 · Tổng 2.340 XP · Chuỗi 5 ngày" (story 044). */
+export function householdProgressLabel(p: HouseholdProgress): string {
+  const n = (x: number) => x.toLocaleString('vi-VN');
+  return `XP 7 ngày ${n(p.xp7d)} · Tổng ${n(p.xpTotal)} XP · Chuỗi ${p.streak} ngày`;
+}

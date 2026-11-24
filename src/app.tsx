@@ -26,6 +26,9 @@ import { setSoundEnabled } from './ui/play-ting';
 import { AchievementsScreen } from './ui/screens/achievements-screen';
 import { createAggregatesSync } from './data/aggregates-sync';
 import type { AggregatesSync } from './data/aggregates-sync';
+import { computeShareProgress, otherMemberIds } from './domain/progress';
+import { createMemberProgressSync } from './data/member-progress-sync';
+import type { MemberProgressSync } from './data/member-progress-sync';
 import { PEOPLE_CONFIG } from './ui/people-config';
 import { AdminScreen } from './ui/screens/admin-screen';
 import { ChangePasswordScreen, DisplayNameScreen } from './ui/screens/change-password-screen';
@@ -37,6 +40,8 @@ import { HouseholdScreen } from './ui/screens/household-screen';
 import { GroupCheerCard } from './ui/screens/group-cheer-card';
 import type { Person } from './domain/people';
 import { F1HouseholdBox } from './ui/screens/f1-household-box';
+import { useGroupData } from './ui/use-group-data';
+import { progressByCode } from './ui/group-helpers';
 import { DuplicatesScreen } from './ui/screens/duplicates-screen';
 import { PeopleScreen } from './ui/screens/people-screen';
 import { SettingsScreen } from './ui/screens/settings-screen';
@@ -381,6 +386,62 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
     return () => window.removeEventListener('online', onOnline);
   }, [aggregates]);
 
+  // Story 044: share total XP, 7-day XP and streak with the upline once personal progress was pulled.
+  const progressPulledRef = useRef(false);
+  useEffect(() => {
+    progressPulledRef.current = false;
+  }, [accountId]);
+  const [memberShare, setMemberShare] = useState<MemberProgressSync | null>(null);
+  useEffect(() => {
+    if (clientPromise === null || accountId === null || consent !== 'granted') return;
+    let created: MemberProgressSync | null = null;
+    let cancelled = false;
+    void clientPromise.then((client) => {
+      if (cancelled) return;
+      created = createMemberProgressSync({
+        client,
+        accountId,
+        debounceMs: gameConfig.aggregatesSync.debounceMs,
+        isReady: () => progressPulledRef.current,
+        compute: async () => {
+          const events = await rawEventStore.list();
+          const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+          return computeShareProgress(events, new Date(), { dailyXpGoal: gameConfig.dailyXpGoal }, timeZone, otherMemberIds(events, memberIdsRef.current));
+        },
+      });
+      setMemberShare(created);
+      if (progressPulledRef.current) created.schedule();
+    });
+    return () => {
+      cancelled = true;
+      created?.dispose();
+      setMemberShare(null);
+    };
+  }, [clientPromise, accountId, consent, rawEventStore]);
+  useEffect(() => observed.subscribe(() => memberShare?.schedule()), [observed, memberShare]);
+  useEffect(() => {
+    if (progressStatus.kind !== 'synced') return;
+    progressPulledRef.current = true;
+    memberShare?.schedule();
+  }, [progressStatus, memberShare]);
+  useEffect(() => {
+    // A new day changes the 7-day XP and the streak without any new event.
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') memberShare?.schedule();
+    };
+    const onOnline = () => void memberShare?.flush();
+    document.addEventListener('visibilitychange', onVisible);
+    window.addEventListener('online', onOnline);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener('online', onOnline);
+    };
+  }, [memberShare]);
+
+  // F1 group for the NPP ranking in Làm (story 044); refreshed each time Làm opens.
+  const group = useGroupData(tab === 'people' ? clientPromise : null, tab === 'people' ? accountId : null);
+  const nppProgress = useMemo(() => (group === null ? undefined : progressByCode(group.households)), [group]);
+
   const onConsentAgree = async (): Promise<SyncFailure | null> => {
     if (clientPromise === null || accountId === null) return 'server';
     const result = await recordContactConsent(await clientPromise, gameConfig.contactConsentVersion);
@@ -671,6 +732,7 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
           memberIds={memberIds}
           dataVersion={dataVersion}
           onOpenDuplicates={() => setTab('duplicates')}
+          {...(nppProgress === undefined ? {} : { nppProgress })}
           {...(clientPromise === null || account === null
             ? {}
             : {

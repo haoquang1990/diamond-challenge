@@ -158,3 +158,49 @@ export function otherMemberIds(events: readonly LogEvent[], memberIds: ReadonlyS
   }
   return others;
 }
+
+/** The numbers an account shares with its sponsor (story 044). */
+export interface ShareProgress {
+  /** Same as {@link Progress.totalXp}. */
+  readonly xpTotal: number;
+  /** XP of the last 7 local days, today included. */
+  readonly xp7d: number;
+  /** Same as {@link Progress.streak}. */
+  readonly streak: number;
+}
+
+/** Local days counted by {@link ShareProgress.xp7d}. */
+export const SHARE_XP_DAYS = 7;
+
+/**
+ * Total XP, XP of the last {@link SHARE_XP_DAYS} local days (today included) and the current
+ * streak, under the same rules as {@link computeProgress} (compensation, `others`, local days).
+ *
+ * @example
+ * computeShareProgress(events, new Date(), { dailyXpGoal: 30 }, 'Asia/Ho_Chi_Minh', others);
+ */
+export function computeShareProgress(
+  events: readonly LogEvent[],
+  now: Date,
+  config: ProgressConfig,
+  timeZone: string,
+  others?: ReadonlySet<string>,
+): ShareProgress {
+  const progress = computeProgress(events, now, config, timeZone, others);
+  const formatter = new Intl.DateTimeFormat('en-US', { timeZone, year: 'numeric', month: 'numeric', day: 'numeric' });
+  const compensated = new Set<string>();
+  for (const e of events) {
+    const target = e.payload.compensates;
+    if (typeof target === 'string') compensated.add(target);
+  }
+  const firstDay = localDayNumber(formatter, now) - (SHARE_XP_DAYS - 1);
+  let xp7d = 0;
+  for (const e of events) {
+    const xp = e.payload.xp;
+    if (typeof xp !== 'number' || !Number.isFinite(xp)) continue;
+    if (compensated.has(e.id) || typeof e.payload.compensates === 'string') continue;
+    if (others?.has(e.userId) === true) continue;
+    if (localDayNumber(formatter, new Date(e.timestamp)) >= firstDay) xp7d += xp;
+  }
+  return { xpTotal: Math.max(0, progress.totalXp), xp7d: Math.max(0, xp7d), streak: progress.streak };
+}

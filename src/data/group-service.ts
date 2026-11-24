@@ -62,6 +62,16 @@ export interface GroupMember {
   readonly userId: string;
   readonly displayName: string | null;
   readonly phone: string | null;
+  /** Shared progress numbers (story 044); null or absent when the member's app never sent them. */
+  readonly progress?: MemberProgress | null;
+}
+
+/** One member's shared progress (`member_progress`, story 044). */
+export interface MemberProgress {
+  readonly xpTotal: number;
+  readonly xp7d: number;
+  readonly streak: number;
+  readonly updatedAt: string;
 }
 
 /** Synced 30x30 numbers of one household. */
@@ -141,10 +151,16 @@ export async function loadGroup(
   const members = (memberRows.data ?? []) as { household_id: string; user_id: string }[];
   const userIds = members.map((m) => m.user_id);
   let profiles: { id: string; phone: string | null; display_name: string | null }[] = [];
+  let progressRows: { user_id: string; xp_total: number; xp_7d: number; streak: number; updated_at: string }[] = [];
   if (userIds.length > 0) {
-    const p = await client.from('profiles').select('id, phone, display_name').in('id', userIds);
+    const [p, mp] = await Promise.all([
+      client.from('profiles').select('id, phone, display_name').in('id', userIds),
+      client.from('member_progress').select('user_id, xp_total, xp_7d, streak, updated_at').in('user_id', userIds),
+    ]);
     if (p.error) return null;
     profiles = (p.data ?? []) as typeof profiles;
+    // Optional (story 044): a server without the table yet still shows the group.
+    if (!mp.error) progressRows = (mp.data ?? []) as typeof progressRows;
   }
   const codes = (codeRows.data ?? []) as { household_id: string; code: string }[];
   const numbers = (numberRows.data ?? []) as {
@@ -159,7 +175,13 @@ export async function loadGroup(
       householdId: r.id,
       members: mine.map((m) => {
         const p = profiles.find((x) => x.id === m.user_id);
-        return { userId: m.user_id, displayName: p?.display_name ?? null, phone: p?.phone ?? null };
+        const mp = progressRows.find((x) => x.user_id === m.user_id);
+        return {
+          userId: m.user_id,
+          displayName: p?.display_name ?? null,
+          phone: p?.phone ?? null,
+          progress: mp === undefined ? null : { xpTotal: mp.xp_total, xp7d: mp.xp_7d, streak: mp.streak, updatedAt: mp.updated_at },
+        };
       }),
       memberCount: mine.length,
       code: codes.find((c) => c.household_id === r.id)?.code ?? null,
