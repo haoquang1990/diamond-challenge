@@ -1,0 +1,556 @@
+{
+  "groups": [
+    {
+      "id": "habits",
+      "title": "Thói quen"
+    },
+    {
+      "id": "xp",
+      "title": "XP"
+    },
+    {
+      "id": "learn",
+      "title": "Học"
+    },
+    {
+      "id": "stages",
+      "title": "Chặng học"
+    },
+    {
+      "id": "list",
+      "title": "Danh sách"
+    },
+    {
+      "id": "work",
+      "title": "Việc làm"
+    },
+    {
+      "id": "team",
+      "title": "30x30 và hộ"
+    }
+  ],
+  "stageBadges": {
+    "group": "stages",
+    "icon": "flag",
+    "labelTemplate": "Xong chặng {stage}"
+  },
+  "badges": [
+    {
+      "id": "streak",
+      "group": "habits",
+      "name": "Chuỗi ngày",
+      "icon": "flame",
+      "metric": "streakBest",
+      "thresholds": [
+        3,
+        7,
+        14,
+        30,
+        60,
+        100,
+        200,
+        365
+      ],
+      "description": "Chuỗi ngày đạt mục tiêu dài nhất",
+      "label": "Chuỗi {n} ngày"
+    },
+    {
+      "id": "goal-days",
+      "group": "habits",
+      "name": "Ngày trọn vẹn",
+      "icon": "target",
+      "metric": "goalDays",
+      "thresholds": [
+        1,
+        10,
+        30,
+        100,
+        300
+      ],
+      "description": "Số ngày đạt mục tiêu",
+      "label": "{n} ngày đạt mục tiêu"
+    },
+    {
+      "id": "perfect-week",
+      "group": "habits",
+      "name": "Tuần trọn vẹn",
+      "icon": "calendar",
+      "metric": "perfectWeeks",
+      "thresholds": [
+        1,
+        4,
+        12,
+        26,
+        52
+      ],
+      "description": "Số tuần đạt mục tiêu đủ 7/7 ngày",
+      "label": "{n} tuần trọn vẹn"
+    },
+    {
+      "id": "busy-month",
+      "group": "habits",
+      "name": "Tháng chăm chỉ",
+      "icon": "calendar",
+      "metric": "busyMonths",
+      "thresholds": [
+        1,
+        3,
+        6,
+        12
+      ],
+      "description": "Số tháng có từ 20 ngày đạt mục tiêu",
+      "label": "{n} tháng chăm chỉ"
+    },
+    {
+      "id": "active-days",
+      "group": "habits",
+      "name": "Ngày có hoạt động",
+      "icon": "sun",
+      "metric": "activeDays",
+      "thresholds": [
+        7,
+        30,
+        100,
+        365
+      ],
+      "description": "Số ngày có XP",
+      "label": "{n} ngày có hoạt động"
+    },
+    {
+      "id": "weekend",
+      "group": "habits",
+      "name": "Cuối tuần chăm chỉ",
+      "icon": "sparkle",
+      "metric": "weekendGoalDays",
+      "thresholds": [
+        4,
+        12,
+        52
+      ],
+      "description": "Số ngày thứ Bảy, Chủ nhật đạt mục tiêu",
+      "label": "{n} ngày cuối tuần"
+    },
+    {
+      "id": "early",
+      "group": "habits",
+      "name": "Dậy sớm",
+      "icon": "sun",
+      "metric": "earlyEvents",
+      "thresholds": [
+        1,
+        10,
+        50
+      ],
+      "description": "Số lần học hoặc làm trước 7 giờ sáng",
+      "label": "Dậy sớm {n} lần"
+    },
+    {
+      "id": "night",
+      "group": "habits",
+      "name": "Cú đêm",
+      "icon": "star",
+      "metric": "lateEvents",
+      "thresholds": [
+        1,
+        10,
+        50
+      ],
+      "description": "Số lần học hoặc làm sau 22 giờ",
+      "label": "Cú đêm {n} lần"
+    },
+    {
+      "id": "xp-total",
+      "group": "xp",
+      "name": "Tích luỹ XP",
+      "icon": "gem",
+      "metric": "xpTotal",
+      "thresholds": [
+        100,
+        500,
+        1000,
+        2500,
+        5000,
+        10000,
+        25000,
+        50000
+      ],
+      "description": "Tổng XP",
+      "label": "{n} XP"
+    },
+    {
+      "id": "best-day",
+      "group": "xp",
+      "name": "Ngày bùng nổ",
+      "icon": "trend",
+      "metric": "bestDayXp",
+      "thresholds": [
+        50,
+        100,
+        200,
+        400
+      ],
+      "description": "XP cao nhất trong một ngày",
+      "label": "{n} XP trong một ngày"
+    },
+    {
+      "id": "best-week",
+      "group": "xp",
+      "name": "Tuần bứt phá",
+      "icon": "trend",
+      "metric": "best7DayXp",
+      "thresholds": [
+        200,
+        500,
+        1000
+      ],
+      "description": "XP cao nhất trong 7 ngày liền",
+      "label": "{n} XP trong 7 ngày"
+    },
+    {
+      "id": "first-xp",
+      "group": "xp",
+      "name": "Khởi đầu",
+      "icon": "rocket",
+      "metric": "xpTotal",
+      "thresholds": [
+        1
+      ],
+      "description": "Nhận XP đầu tiên",
+      "label": "Nhận XP đầu tiên"
+    },
+    {
+      "id": "first-lesson",
+      "group": "learn",
+      "name": "Bài học đầu tiên",
+      "icon": "book",
+      "metric": "lessonsDistinct",
+      "thresholds": [
+        1
+      ],
+      "description": "Học xong bài đầu tiên",
+      "label": "Bài học đầu tiên"
+    },
+    {
+      "id": "lessons",
+      "group": "learn",
+      "name": "Ham học",
+      "icon": "book",
+      "metric": "lessonsDistinct",
+      "thresholds": [
+        10,
+        25,
+        50,
+        75,
+        100
+      ],
+      "description": "Số bài khác nhau đã học",
+      "label": "{n} bài đã học"
+    },
+    {
+      "id": "perfect",
+      "group": "learn",
+      "name": "Hoàn hảo",
+      "icon": "check",
+      "metric": "lessonsPerfect",
+      "thresholds": [
+        1,
+        5,
+        20,
+        50,
+        100
+      ],
+      "description": "Số lần làm đúng hết một bài",
+      "label": "{n} bài đúng hết"
+    },
+    {
+      "id": "review",
+      "group": "learn",
+      "name": "Ôn luyện",
+      "icon": "refresh",
+      "metric": "lessonReviews",
+      "thresholds": [
+        10,
+        50,
+        100
+      ],
+      "description": "Số lần học lại bài đã học",
+      "label": "Ôn lại {n} lần"
+    },
+    {
+      "id": "lesson-days",
+      "group": "learn",
+      "name": "Học mỗi ngày",
+      "icon": "cap",
+      "metric": "lessonDays",
+      "thresholds": [
+        7,
+        30,
+        100
+      ],
+      "description": "Số ngày có học",
+      "label": "{n} ngày có học"
+    },
+    {
+      "id": "all-lessons",
+      "group": "stages",
+      "name": "Học hết 100 bài",
+      "icon": "crown",
+      "metric": "lessonsAll",
+      "thresholds": [
+        1
+      ],
+      "description": "Học hết mọi bài của tab Học",
+      "label": "Học hết mọi bài"
+    },
+    {
+      "id": "contacts",
+      "group": "list",
+      "name": "Mở rộng danh sách",
+      "icon": "list",
+      "metric": "contacts",
+      "thresholds": [
+        10,
+        50,
+        100,
+        250,
+        500,
+        1000
+      ],
+      "description": "Số liên hệ trong Danh bạ",
+      "label": "{n} liên hệ"
+    },
+    {
+      "id": "notes",
+      "group": "list",
+      "name": "Ghi chép",
+      "icon": "clipboard",
+      "metric": "notes",
+      "thresholds": [
+        10,
+        50,
+        200
+      ],
+      "description": "Số hoạt động có ghi chú",
+      "label": "{n} ghi chú"
+    },
+    {
+      "id": "task-contact",
+      "group": "work",
+      "name": "Liên hệ",
+      "icon": "phone",
+      "metric": "task:contact",
+      "thresholds": [
+        10,
+        50,
+        200,
+        500,
+        1000
+      ],
+      "description": "Số lần Liên hệ",
+      "label": "{n} lần liên hệ"
+    },
+    {
+      "id": "task-demo",
+      "group": "work",
+      "name": "Demo",
+      "icon": "hand",
+      "metric": "task:demo",
+      "thresholds": [
+        1,
+        10,
+        50,
+        100,
+        250
+      ],
+      "description": "Số lần Demo",
+      "label": "{n} lần demo"
+    },
+    {
+      "id": "task-opp",
+      "group": "work",
+      "name": "OPP",
+      "icon": "presentation",
+      "metric": "task:opp",
+      "thresholds": [
+        1,
+        10,
+        50,
+        100,
+        250
+      ],
+      "description": "Số lần trình bày OPP",
+      "label": "{n} lần OPP"
+    },
+    {
+      "id": "task-expo",
+      "group": "work",
+      "name": "Expo/Hội thảo",
+      "icon": "users",
+      "metric": "task:expo",
+      "thresholds": [
+        1,
+        5,
+        20,
+        50
+      ],
+      "description": "Số lần Expo/Hội thảo",
+      "label": "{n} lần Expo"
+    },
+    {
+      "id": "customers",
+      "group": "work",
+      "name": "Bán hàng",
+      "icon": "store",
+      "metric": "customersDistinct",
+      "thresholds": [
+        1,
+        5,
+        15,
+        30,
+        50,
+        100
+      ],
+      "description": "Số khách hàng khác nhau đã chốt",
+      "label": "{n} khách hàng"
+    },
+    {
+      "id": "task-care",
+      "group": "work",
+      "name": "Chăm sóc",
+      "icon": "heart",
+      "metric": "task:follow_up",
+      "thresholds": [
+        10,
+        50,
+        200,
+        500
+      ],
+      "description": "Số lần Chăm sóc",
+      "label": "{n} lần chăm sóc"
+    },
+    {
+      "id": "sponsored",
+      "group": "work",
+      "name": "Bảo trợ",
+      "icon": "crown",
+      "metric": "sponsoredDistinct",
+      "thresholds": [
+        1,
+        3,
+        10,
+        30
+      ],
+      "description": "Số NPP đã bảo trợ",
+      "label": "{n} NPP"
+    },
+    {
+      "id": "multi-task",
+      "group": "work",
+      "name": "Đa năng",
+      "icon": "layers",
+      "metric": "multiTaskDays",
+      "thresholds": [
+        1,
+        10,
+        30
+      ],
+      "description": "Số ngày làm từ 3 loại việc",
+      "label": "{n} ngày đa năng"
+    },
+    {
+      "id": "learn-do",
+      "group": "work",
+      "name": "Học và Làm",
+      "icon": "compass",
+      "metric": "learnAndDoDays",
+      "thresholds": [
+        10,
+        50,
+        150
+      ],
+      "description": "Số ngày vừa học vừa làm",
+      "label": "{n} ngày học và làm"
+    },
+    {
+      "id": "quick-close",
+      "group": "work",
+      "name": "Chốt nhanh",
+      "icon": "target",
+      "metric": "quickCloses",
+      "thresholds": [
+        1,
+        5,
+        20
+      ],
+      "description": "Số khách chốt trong 7 ngày kể từ lúc thêm tên",
+      "label": "{n} lần chốt nhanh"
+    },
+    {
+      "id": "loyal-care",
+      "group": "work",
+      "name": "Chăm sóc bền bỉ",
+      "icon": "shield",
+      "metric": "loyalCare",
+      "thresholds": [
+        1,
+        5,
+        10
+      ],
+      "description": "Số người được chăm sóc từ 5 lần",
+      "label": "{n} người được chăm sóc bền bỉ"
+    },
+    {
+      "id": "customers-now",
+      "group": "team",
+      "name": "Khách hàng hiện có",
+      "icon": "store",
+      "metric": "customersNow",
+      "thresholds": [
+        10,
+        30,
+        50,
+        100
+      ],
+      "description": "Số liên hệ đang có nhãn KH",
+      "label": "{n} khách hàng"
+    },
+    {
+      "id": "f1-now",
+      "group": "team",
+      "name": "NPP F1",
+      "icon": "users",
+      "metric": "f1Now",
+      "thresholds": [
+        5,
+        15,
+        30
+      ],
+      "description": "Số liên hệ đang có nhãn NPP",
+      "label": "{n} NPP F1"
+    },
+    {
+      "id": "thirty",
+      "group": "team",
+      "name": "Đạt 30x30",
+      "icon": "gem",
+      "metric": "achieved30x30",
+      "thresholds": [
+        1
+      ],
+      "description": "Đủ 30 khách hàng và 30 NPP F1",
+      "label": "Đạt 30x30"
+    },
+    {
+      "id": "couple",
+      "group": "team",
+      "name": "Bộ đôi",
+      "icon": "handshake",
+      "metric": "householdMembers",
+      "thresholds": [
+        1
+      ],
+      "description": "Hộ có đủ hai vợ chồng",
+      "label": "Bộ đôi"
+    }
+  ]
+}

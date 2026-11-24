@@ -185,6 +185,15 @@ export const STRINGS = {
   sponsorCancelDone: 'Đã huỷ bảo trợ.',
   sponsorCancelHistory: 'Huỷ bảo trợ',
   cheerGroupTitle: 'Cổ vũ nhóm',
+  tabBadges: 'Huy hiệu',
+  badgesTitle: 'Huy hiệu',
+  badgesEarned: 'huy hiệu đã có',
+  badgesGoldPlus: 'huy hiệu Vàng trở lên',
+  badgesRecent: 'Mới đạt',
+  badgesFilterLabel: 'Lọc huy hiệu',
+  badgesFilters: { all: 'Tất cả', done: 'Đã có', todo: 'Chưa có' },
+  badgesDone: 'Đã đạt hết',
+  badgesNow: 'hiện tại',
   f1BoxTitle: 'Hộ F1',
   nppSortLabel: 'Sắp xếp NPP',
   nppSortNames: { newest: 'Mới bảo trợ', xpTotal: 'Tổng XP', xp7d: 'XP 7 ngày' },
@@ -882,4 +891,14 @@ export function adminCancelReason(reason: string): string {
 /** Aria label of the reset button of one member. */
 export function adminResetAria(name: string): string {
   return `Đặt lại mật khẩu của ${name}`;
+}
+
+/** "23/150" (story 047). */
+export function badgesSummaryLabel(earned: number, total: number): string {
+  return `${earned}/${total}`;
+}
+
+/** Badge card accessible progress, e.g. "đã đạt 2/5 mốc". */
+export function badgeProgressLabel(reached: number, total: number): string {
+  return `đã đạt ${reached}/${total} mốc`;
 }

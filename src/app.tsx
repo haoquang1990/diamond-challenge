@@ -23,7 +23,6 @@ import type { NotificationPlatform } from './notifications/reminders';
 import { AchievementsOverlay, ACHIEVEMENTS_CONFIG } from './ui/achievements-overlay';
 import { createObservedStore, readSoundEnabled } from './ui/achievements-helpers';
 import { setSoundEnabled } from './ui/play-ting';
-import { AchievementsScreen } from './ui/screens/achievements-screen';
 import { createAggregatesSync } from './data/aggregates-sync';
 import type { AggregatesSync } from './data/aggregates-sync';
 import { computeShareProgress, otherMemberIds } from './domain/progress';
@@ -34,7 +33,7 @@ import { AdminScreen } from './ui/screens/admin-screen';
 import { ChangePasswordScreen, DisplayNameScreen } from './ui/screens/change-password-screen';
 import { CreateAccountScreen } from './ui/screens/create-account-screen';
 import { ConsentScreen } from './ui/screens/consent-screen';
-import { DiamondPathScreen } from './ui/screens/diamond-path-screen';
+import { BadgesScreen } from './ui/screens/badges-screen';
 import { LessonScreen } from './ui/screens/lesson-screen';
 import { HouseholdScreen } from './ui/screens/household-screen';
 import { GroupCheerCard } from './ui/screens/group-cheer-card';
@@ -87,13 +86,13 @@ function realNow(): Date {
  * merged person list (Danh bạ). `settings` (opened from Hôm nay) is not in the tab bar.
  * Bảng 30x30 and Nhóm của tôi were removed in story 042.
  */
-type Tab = 'today' | 'learn' | 'people' | 'path' | 'settings' | 'achievements' | 'household' | 'admin' | 'duplicates';
+type Tab = 'today' | 'learn' | 'people' | 'badges' | 'settings' | 'household' | 'admin' | 'duplicates';
 
-const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'achievements' | 'household' | 'admin' | 'duplicates'>; readonly label: string }[] = [
+const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'household' | 'admin' | 'duplicates'>; readonly label: string }[] = [
   { id: 'today', label: STRINGS.tabToday },
   { id: 'learn', label: STRINGS.tabLearn },
   { id: 'people', label: STRINGS.tabPeople },
-  { id: 'path', label: STRINGS.tabPath },
+  { id: 'badges', label: STRINGS.tabBadges },
 ];
 
 /**
@@ -423,6 +422,9 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
     if (progressStatus.kind !== 'synced') return;
     progressPulledRef.current = true;
     memberShare?.schedule();
+    // Story 046: progress pulled from the server (a new device, another device of mine) holds
+    // milestones already celebrated elsewhere: acknowledge them silently, no popup flood.
+    if (progressStatus.pulled > 0) void silentAcknowledgeRef.current?.().catch((error: unknown) => console.error('[achievements] silent acknowledge after pull failed', error));
   }, [progressStatus, memberShare]);
   useEffect(() => {
     // A new day changes the 7-day XP and the streak without any new event.
@@ -660,14 +662,6 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
     );
   }
 
-  if (tab === 'achievements') {
-    return (
-      <div className="app-shell">
-        <AchievementsScreen eventStore={eventStore} memberIds={memberIds} onBack={() => setTab('path')} />
-      </div>
-    );
-  }
-
   if (tab === 'settings') {
     return (
       <div className="app-shell">
@@ -724,7 +718,7 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
           {...(startLessonId === null ? {} : { initialLessonId: startLessonId })}
         />
       )}
-      {tab === 'path' && <DiamondPathScreen eventStore={eventStore} memberIds={memberIds} onOpenAchievements={() => setTab('achievements')} />}
+      {tab === 'badges' && <BadgesScreen eventStore={eventStore} memberIds={memberIds} dataVersion={dataVersion} />}
       {tab === 'people' && (
         <PeopleScreen
           eventStore={eventStore}
