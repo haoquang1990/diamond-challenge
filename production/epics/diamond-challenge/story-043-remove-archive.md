@@ -1,7 +1,7 @@
 # Story 043: Bỏ Lưu trữ liên hệ
 
 > **Epic**: diamond-challenge
-> **Status**: Ready
+> **Status**: Complete
 > **Layer**: Feature
 > **Type**: UI
 > **Estimate**: S
@@ -35,3 +35,17 @@
 
 - Depends on: None
 - Unlocks: None
+
+## Files
+
+- `src/domain/people.ts` (`person_archived` / `person_restored` ignored; `archived` always false)
+- `src/ui/people-helpers.ts` (`ContactsFilter` without `archived`), `src/ui/screens/people-screen.tsx` (chip and restore rows removed), `src/ui/screens/person-form.tsx` (archive section removed)
+- `tests/unit/people/no-archive.test.ts` (3 tests, seen failing first); 7 existing tests updated to the new rule in `people.test.ts`, `people-tasks.test.ts`, `household-board.test.ts`, `contacts-helpers.test.ts` (none skipped)
+- `production/qa/evidence/story-043-remove-archive/`
+
+## Completion Notes
+**Completed**: 2026-11-24
+**Criteria**: 4/4 passing (none deferred)
+**Deviations**: Advisory: (1) the `archived` field and the archive event types stay in the code and the database so old logs read without error; (2) contacts that were archived now count again in Thành tích and the Hộ F1 totals sent to the sponsor; (3) unused archive strings remain in `strings.ts`
+**Test Evidence**: unit tests above; screenshots of Làm with a previously archived contact and its detail page at 390 and 320px; full suite 622/622
+**Reviewed by**: self, no independent review

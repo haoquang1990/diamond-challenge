@@ -61,10 +61,9 @@ const ADD_NAME_ACTIVITY_ID = 'add_name';
 
 /**
  * Tab "Làm" (the person list, merged with the old Danh bạ in story 015):
- * add form, name search, filter chips (Tất cả / Khách hàng / NPP / Đã lưu trữ)
- * over one derived list, person detail (where tasks are completed), restore
- * of archived people and the section for activities not yet linked to a
- * person. The search narrows the rows of the active chip; chip counts stay
+ * add form, name search, filter chips (Tất cả / Khách hàng / NPP; Lưu trữ removed in story 043)
+ * over one derived list, person detail (where tasks are completed) and the section for
+ * activities not yet linked to a person. The search narrows the rows of the active chip; chip counts stay
  * the per-filter totals and ignore the search. Re-reads the event log on
  * mount and after every write; keeps no copy of truth.
  */
@@ -76,7 +75,6 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
   const [filter, setFilter] = useState<ContactsFilter>(initialFilter);
   /** null = automatic: open while the list is empty, collapsed once there are people. */
   const [showAdd, setShowAdd] = useState<boolean | null>(null);
-  const [restoringId, setRestoringId] = useState<string | null>(null);
   /** Name search text; kept while a person detail is open so the list returns as it was. */
   const [query, setQuery] = useState('');
 
@@ -175,20 +173,6 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
     setShowAdd(false);
   }
 
-  async function restore(personId: string): Promise<void> {
-    setError(null);
-    setRestoringId(personId);
-    try {
-      await eventStore.append({ type: 'person_restored', payload: { personId } });
-      await reload();
-    } catch (e) {
-      console.error('[people] restore failed', e);
-      setError(STRINGS.restoreError);
-    } finally {
-      setRestoringId(null);
-    }
-  }
-
   const dupCodes = findDuplicateCodes(people);
   const counts = countContacts(allPeople);
   const inFilter = filterContacts(allPeople, filter);
@@ -197,13 +181,11 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
     all: STRINGS.filterAll,
     kh: STRINGS.filterKh,
     npp: STRINGS.filterNpp,
-    archived: STRINGS.filterArchived,
   };
   const emptyText: Record<ContactsFilter, { title: string; body: string }> = {
     all: { title: STRINGS.emptyAllTitle, body: STRINGS.peopleEmptyBody },
     kh: { title: STRINGS.filterKh, body: STRINGS.emptyKhBody },
     npp: { title: STRINGS.filterNpp, body: STRINGS.emptyNppBody },
-    archived: { title: STRINGS.filterArchived, body: STRINGS.emptyArchivedBody },
   };
   const pendingPairs = pendingDuplicates(allPeople, events, PEOPLE_CONFIG);
   const unassigned = listUnassignedActivities(events, deriveActivityOwners(events));
@@ -294,21 +276,6 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
       ) : (
         <ul className="people-list">
           {shown.map((person) =>
-            filter === 'archived' ? (
-              <li key={person.personId} className="person-row person-row--static">
-                <span className="person-row__main">
-                  <span className="person-row__name">{person.name}</span>
-                </span>
-                <button
-                  type="button"
-                  className="button button--secondary person-row__action"
-                  onClick={() => void restore(person.personId)}
-                  disabled={restoringId !== null}
-                >
-                  {STRINGS.restore}
-                </button>
-              </li>
-            ) : (
               <li key={person.personId}>
                 <button type="button" className="person-row" onClick={() => setOpenId(person.personId)}>
                   <span className="person-row__main">
@@ -326,7 +293,6 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
                   {person.label != null && <LabelBadge label={person.label} />}
                 </button>
               </li>
-            ),
           )}
         </ul>
       )}

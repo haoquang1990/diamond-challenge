@@ -511,7 +511,7 @@ interface TaskUndo {
  * one activity_logged event after a confirm popup with note and date/time, undo
  * by compensating event), an always-open info form (name/phone/code/note; Save
  * enabled only when a field differs from the saved person), a "Lịch sử" button
- * opening a summary + list popup (story 034) and archive (with confirm). State
+ * opening a summary + list popup (story 034). Lưu trữ was removed (story 043). State
  * of record is the event log; this only holds form state.
  */
 export function PersonDetail({ eventStore, person, people, events, activityTypes, config = PEOPLE_CONFIG, authorLabel, createAccount, extra, onChanged, onBack }: PersonDetailProps) {
@@ -522,7 +522,6 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
   const [phoneError, setPhoneError] = useState<string | null>(null);
   const [code, setCode] = useState(person.amwayCode ?? '');
   const [codeError, setCodeError] = useState<string | null>(null);
-  const [confirmArchive, setConfirmArchive] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
@@ -639,13 +638,6 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
     run(async () => {
       for (const event of buildSplitEvents(mergeEventId, person.personId, otherId)) await eventStore.append(event);
       await onChanged();
-    });
-
-  const archive = () =>
-    run(async () => {
-      await eventStore.append({ type: 'person_archived', payload: { personId: person.personId } });
-      await onChanged();
-      onBack();
     });
 
   return (
@@ -772,7 +764,6 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
             {STRINGS.historyTitle}
           </button>
         </div>
-        {person.archived && <p className="message">{STRINGS.activityArchivedNote}</p>}
         {taskUndo !== null && (
           <div className="person-result" role="status" aria-live="polite">
             <p className="message">
@@ -960,26 +951,6 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
         </Dialog>
       )}
 
-      <section className="card person-section">
-        {confirmArchive ? (
-          <>
-            <h2 className="person-section__heading">{STRINGS.personArchiveConfirmTitle}</h2>
-            <p className="message">{STRINGS.personArchiveConfirmBody}</p>
-            <div className="button-row">
-              <button type="button" className="button button--secondary" onClick={() => setConfirmArchive(false)} disabled={busy}>
-                {STRINGS.cancel}
-              </button>
-              <button type="button" className="button button--danger" onClick={() => void archive()} disabled={busy}>
-                {STRINGS.personArchiveConfirm}
-              </button>
-            </div>
-          </>
-        ) : (
-          <button type="button" className="button button--secondary" onClick={() => setConfirmArchive(true)} disabled={busy}>
-            {STRINGS.personArchive}
-          </button>
-        )}
-      </section>
     </main>
   );
 }

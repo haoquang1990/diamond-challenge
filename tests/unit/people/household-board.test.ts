@@ -28,16 +28,16 @@ const household = (): LogEvent[] => {
   ];
 };
 
-it('counts a merged pair once and leaves archived contacts out', () => {
+it('counts a merged pair once; an old archive event no longer hides a contact (story 043)', () => {
   const ev = household();
-  expect(buildAggregatePayload(ev, PEOPLE_CONFIG)).toEqual({ customers: 1, f1: 1, contacts: 2, achieved_30x30: false, pending_duplicates: 1 });
+  expect(buildAggregatePayload(ev, PEOPLE_CONFIG)).toEqual({ customers: 1, f1: 1, contacts: 3, achieved_30x30: false, pending_duplicates: 1 });
   const people = derivePeople(ev, PEOPLE_CONFIG);
   const plan = planMerge(people.find((p) => p.personId === 'a')!, people.find((p) => p.personId === 'b')!);
   if (!plan.ok) throw new Error('plan');
   const r = buildMergeEvent(plan);
   if (!r.ok) throw new Error('merge');
   const merged = [...ev, mk(r.event.type, '2026-11-05T01:00:00.000Z', 'lan', r.event.payload as never)];
-  expect(buildAggregatePayload(merged, PEOPLE_CONFIG)).toEqual({ customers: 0, f1: 1, contacts: 1, achieved_30x30: false, pending_duplicates: 0 });
+  expect(buildAggregatePayload(merged, PEOPLE_CONFIG)).toEqual({ customers: 0, f1: 1, contacts: 2, achieved_30x30: false, pending_duplicates: 0 });
 });
 
 it('gives equal numbers to two members holding the same synced log', () => {

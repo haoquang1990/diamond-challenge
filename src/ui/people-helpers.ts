@@ -83,17 +83,16 @@ export function listUnassignedActivities(
 }
 
 /** Filter chips of the Làm tab (person list). */
-export type ContactsFilter = 'all' | 'kh' | 'npp' | 'archived';
+export type ContactsFilter = 'all' | 'kh' | 'npp';
 
 /** Chip order in the UI; the first is the default. */
-export const CONTACTS_FILTERS: readonly ContactsFilter[] = ['all', 'kh', 'npp', 'archived'];
+export const CONTACTS_FILTERS: readonly ContactsFilter[] = ['all', 'kh', 'npp'];
 
 /**
  * People shown under one filter chip (no separate lists, one source).
  * - all: non-archived, newest added first (derivePeople yields add order, so reversed; stable).
  * - kh: label KH, longest without contact first.
  * - npp: label NPP, newest NPP first.
- * - archived: archived people, newest added first.
  */
 export function filterContacts(people: readonly Person[], filter: ContactsFilter): Person[] {
   const newestFirst = (list: readonly Person[]): Person[] => [...list].reverse();
@@ -104,8 +103,6 @@ export function filterContacts(people: readonly Person[], filter: ContactsFilter
       return sortCustomersByLastContact(people.filter((p) => !p.archived && p.label === 'KH'));
     case 'npp':
       return sortNppByDate(people.filter((p) => !p.archived && p.label === 'NPP'));
-    case 'archived':
-      return newestFirst(people.filter((p) => p.archived));
   }
 }
 
@@ -141,7 +138,6 @@ export function countContacts(people: readonly Person[]): Record<ContactsFilter,
     all: filterContacts(people, 'all').length,
     kh: filterContacts(people, 'kh').length,
     npp: filterContacts(people, 'npp').length,
-    archived: filterContacts(people, 'archived').length,
   };
 }
 

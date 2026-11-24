@@ -681,8 +681,8 @@ function setLabel(person: MutablePerson, next: PersonLabel | null, timestamp: st
  *   changes never touch it.
  * - `linkedUserId` (story 024): latest non-empty string on a `person_updated` wins; anything else
  *   is ignored; null when never set. Label and archive changes never touch it.
- * - Name, note, phone: latest `person_updated` wins; archived: latest of
- *   `person_archived` / `person_restored`.
+ * - Name, note, phone: latest `person_updated` wins. Lưu trữ was removed (story 043): old
+ *   `person_archived` / `person_restored` events are ignored, so `archived` is always false.
  * - Stage (legacy): `to` of the latest non-compensated `person_stage_changed`.
  * - Label: iterate active events in log order. Legacy stage `customer` -> KH,
  *   `downline` -> NPP, any other known stage -> none. An `activity_logged`
@@ -798,10 +798,6 @@ export function derivePeople(events: readonly LogEvent[], config: PeopleConfig):
       const code = readCode(p.amwayCode);
       if (code !== undefined) person.amwayCode = code;
       if (isNonEmptyString(p.linkedUserId)) person.linkedUserId = p.linkedUserId.trim();
-    } else if (e.type === 'person_archived') {
-      person.archived = true;
-    } else if (e.type === 'person_restored') {
-      person.archived = false;
     } else if (e.type === 'person_stage_changed') {
       const to = p.to;
       const target = people.get(rootOf.get(personId) ?? personId);
