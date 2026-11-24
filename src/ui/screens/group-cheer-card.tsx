@@ -5,7 +5,7 @@ import { loadGroup, parseGroupConfig, readGroupCache, sendCheer, writeGroupCache
 import type { GroupData } from '../../data/group-service';
 import type { EventStore } from '../../data/event-store';
 import { derivePeople } from '../../domain/people';
-import { cheerCandidates, householdActivityNote, householdNames, linkedContactNames } from '../group-helpers';
+import { cheerCandidates, codeContactNames, householdActivityNote, householdNames, linkedContactNames } from '../group-helpers';
 import { PEOPLE_CONFIG } from '../people-config';
 import { STRINGS, groupCheerAria } from '../strings';
 
@@ -40,6 +40,7 @@ export function GroupCheerCard({ clientPromise, accountId, eventStore, now = rea
   const [cheering, setCheering] = useState<string | null>(null);
   const [notice, setNotice] = useState<{ readonly text: string; readonly error: boolean } | null>(null);
   const [contactNames, setContactNames] = useState<ReadonlyMap<string, string>>(() => new Map());
+  const [codeNames, setCodeNames] = useState<ReadonlyMap<string, string>>(() => new Map());
   const reload = useCallback(() => setReloadKey((k) => k + 1), []);
 
   useEffect(() => {
@@ -58,7 +59,10 @@ export function GroupCheerCard({ clientPromise, accountId, eventStore, now = rea
     eventStore
       .list()
       .then((events) => {
-        if (!cancelled) setContactNames(linkedContactNames(derivePeople(events, PEOPLE_CONFIG)));
+        if (cancelled) return;
+        const people = derivePeople(events, PEOPLE_CONFIG);
+        setContactNames(linkedContactNames(people));
+        setCodeNames(codeContactNames(people));
       })
       .catch((error: unknown) => console.error('[cheer-card] could not read contact names', error));
     return () => {
@@ -127,7 +131,7 @@ export function GroupCheerCard({ clientPromise, accountId, eventStore, now = rea
       {candidates.length > 0 && (
         <ul className="cheer-group__list">
           {candidates.map((h) => {
-            const names = householdNames(h, contactNames);
+            const names = householdNames(h, contactNames, codeNames);
             const activity = householdActivityNote(h, now(), GROUP_CONFIG.inactiveDays);
             return (
               <li key={h.householdId} className="cheer-group__row">

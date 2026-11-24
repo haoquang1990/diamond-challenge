@@ -1,7 +1,7 @@
 # Story 042: Bỏ màn Bảng 30x30 và Nhóm của tôi; khung "Hộ F1" trong chi tiết NPP
 
 > **Epic**: diamond-challenge
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Feature
 > **Type**: UI
 > **Estimate**: M
@@ -41,3 +41,21 @@
 
 - Depends on: `production/epics/diamond-challenge/story-041-cheer-card-today.md`
 - Unlocks: None
+
+## Files
+
+- Deleted: `src/ui/screens/board-30x30-screen.tsx`, `src/ui/screens/my-group-screen.tsx`
+- `src/app.tsx` (routes `board`, `group` and the board filter/back plumbing removed; `renderPersonExtra`), `src/ui/screens/diamond-path-screen.tsx` (two buttons removed)
+- `src/ui/screens/f1-household-box.tsx` (new: "Hộ F1"), `src/ui/screens/person-form.tsx` (`extra` slot), `src/ui/screens/people-screen.tsx` (`renderPersonExtra`)
+- `src/ui/group-helpers.ts` (`findF1Household`, `f1TotalsLabel`, `codeContactNames`; `householdNames` joins spouses with " & ")
+- Small fixes asked on 2026-11-24 while this story was open: Hôm nay loses the big Học / Làm buttons (`today-screen.tsx`); "Cổ vũ nhóm" names each household by both spouses, using my contact name for the household code when a member has no name (`group-cheer-card.tsx`)
+- `src/ui/strings.ts`, `src/ui/styles.css`
+- `tests/unit/people-ui/f1-household.test.ts` (3 tests), `tests/unit/people-ui/cheer-candidates.test.ts` (+4 name tests)
+- `production/qa/evidence/story-042-remove-board-and-group/`
+
+## Completion Notes
+**Completed**: 2026-11-24
+**Criteria**: 6/6 passing (none deferred)
+**Deviations**: Advisory: (1) the duplicates entry already existed on Làm, so nothing moved; (2) the aggregate upload to the server stays (it feeds the Hộ F1 box); (3) unused board strings remain in `strings.ts`; (4) the Hộ F1 box shows only for an NPP contact whose code matches an F1 household code
+**Test Evidence**: unit tests above; screenshots of Hôm nay, the NPP detail with Hộ F1, Con đường and Thành tích at 390 and 320px; full suite 620/620
+**Reviewed by**: self, no independent review

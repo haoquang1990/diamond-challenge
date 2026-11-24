@@ -55,7 +55,7 @@ Theo Build order của brief: nhật ký sự kiện + XP/streak → Làm + Hôm
 | 039 | Thẻ "Bài nên học tiếp" trên Hôm nay | UI | Complete | N/A |
 | 040 | Huỷ bảo trợ | Integration | Complete | N/A |
 | 041 | Thẻ "Cổ vũ nhóm" trên Hôm nay | UI | Complete | N/A |
-| 042 | Bỏ màn Bảng 30x30 và Nhóm của tôi; khung "Hộ F1" trong chi tiết NPP | UI | Ready | N/A |
+| 042 | Bỏ màn Bảng 30x30 và Nhóm của tôi; khung "Hộ F1" trong chi tiết NPP | UI | Complete | N/A |
 | 043 | Bỏ Lưu trữ liên hệ | UI | Ready | N/A |
 
 > 012–014 thay mô hình giai đoạn bằng việc cần làm + nhãn KH/NPP theo phản hồi dùng thử (2026-11-04, `design/gdd/crm.md`). Thứ tự gợi ý: 012 → 013 → 014 → 011.

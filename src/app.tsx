@@ -648,7 +648,6 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
             setStartLessonId(lessonId);
             setTab('learn');
           }}
-          onDo={() => setTab('people')}
           onOpenSettings={() => setTab('settings')}
           notificationPermission={notificationPlatform.permission}
           cheer={unseenCheer}

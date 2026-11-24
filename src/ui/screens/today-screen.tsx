@@ -32,8 +32,6 @@ export interface TodayScreenProps {
   readonly eventStore: EventStore;
   /** Opens Học (story 005). */
   readonly onLearn: () => void;
-  /** Opens the Làm tab: the person list where tasks are done (story 015). */
-  readonly onDo: () => void;
   /** Name of the current Con đường stage (story 006); a neutral placeholder is shown when absent. */
   readonly currentStageName?: string;
   /** Stages used to derive the current stage when `currentStageName` is absent; defaults to game-config.json. */
@@ -103,7 +101,6 @@ function realNow(): Date {
 export function TodayScreen({
   eventStore,
   onLearn,
-  onDo,
   currentStageName,
   stages = DEFAULT_STAGES,
   config = DEFAULT_CONFIG,
@@ -267,14 +264,6 @@ export function TodayScreen({
         </span>
       </section>
 
-      <div className="action-bar today-actions">
-        <button type="button" className="button button--primary button--big" onClick={onLearn}>
-          {STRINGS.learnButton}
-        </button>
-        <button type="button" className="button button--primary button--big" onClick={onDo}>
-          {STRINGS.doButton}
-        </button>
-      </div>
     </main>
   );
 }
