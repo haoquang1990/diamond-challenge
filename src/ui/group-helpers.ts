@@ -41,3 +41,17 @@ export function householdActivityNote(h: GroupHousehold, now: Date, inactiveDays
   if (status.kind === 'never') return STRINGS.groupNeverActive;
   return status.kind === 'inactive' ? `${status.days} ngày chưa hoạt động` : null;
 }
+
+/**
+ * The F1 household a contact stands for (story 042): the one whose active code equals the
+ * contact's Amway code. Null when the contact has no code or no F1 household has it.
+ */
+export function findF1Household(households: readonly GroupHousehold[], amwayCode: string | null | undefined): GroupHousehold | null {
+  if (amwayCode == null || amwayCode === '') return null;
+  return households.find((h) => h.code === amwayCode) ?? null;
+}
+
+/** "KH 12 · NPP 3": the totals of an F1 household, no target (story 042). */
+export function f1TotalsLabel(customers: number, f1: number): string {
+  return `KH ${customers} · NPP ${f1}`;
+}

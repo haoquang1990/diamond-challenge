@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import type { HouseholdMember } from '../../data/contact-sync';
 import type { EventStore, LogEvent } from '../../data/event-store';
@@ -44,6 +45,8 @@ export interface PeopleScreenProps {
   readonly dataVersion?: number;
   /** Opens the "Kiểm tra liên hệ trùng" screen (story 026); the entry shows only when pairs are pending. */
   readonly onOpenDuplicates?: () => void;
+  /** Extra section for an opened person (story 042: "Hộ F1" for an NPP contact); nothing when it returns null. */
+  readonly renderPersonExtra?: (person: Person) => ReactNode;
 }
 
 type LoadState =
@@ -65,7 +68,7 @@ const ADD_NAME_ACTIVITY_ID = 'add_name';
  * the per-filter totals and ignore the search. Re-reads the event log on
  * mount and after every write; keeps no copy of truth.
  */
-export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initialFilter = 'all', onBack, members = null, memberIds = NO_MEMBERS, dataVersion = 0, initialOpenId = null, onCreateAccount, onOpenDuplicates }: PeopleScreenProps) {
+export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initialFilter = 'all', onBack, members = null, memberIds = NO_MEMBERS, dataVersion = 0, initialOpenId = null, onCreateAccount, onOpenDuplicates, renderPersonExtra }: PeopleScreenProps) {
   const [load, setLoad] = useState<LoadState>({ kind: 'loading' });
   const [openId, setOpenId] = useState<string | null>(initialOpenId);
   const [addedXp, setAddedXp] = useState<number | null>(null);
@@ -130,6 +133,7 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
         config={PEOPLE_CONFIG}
         authorLabel={(userId) => historyAuthorLabel(userId, others, members)}
         {...(onCreateAccount === undefined ? {} : { createAccount: { onOpen: () => onCreateAccount(opened.personId) } })}
+        extra={renderPersonExtra?.(opened) ?? null}
         onChanged={reload}
         onBack={() => setOpenId(null)}
       />

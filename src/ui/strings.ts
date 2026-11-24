@@ -185,6 +185,8 @@ export const STRINGS = {
   sponsorCancelDone: 'Đã huỷ bảo trợ.',
   sponsorCancelHistory: 'Huỷ bảo trợ',
   cheerGroupTitle: 'Cổ vũ nhóm',
+  f1BoxTitle: 'Hộ F1',
+  f1BoxOffline: 'đang không có mạng',
   groupCheerButton: 'Cổ vũ',
   groupCheeredToday: 'Đã cổ vũ hôm nay',
   groupCheerOfflineReason: 'Cần có mạng để cổ vũ.',

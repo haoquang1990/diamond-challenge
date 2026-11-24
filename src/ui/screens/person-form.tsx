@@ -491,6 +491,8 @@ export interface PersonDetailProps {
    * signed out: the "Tạo tài khoản" button is then not shown.
    */
   readonly createAccount?: { readonly onOpen: () => void };
+  /** Extra section shown under Thông tin (story 042: "Hộ F1" for an NPP contact). */
+  readonly extra?: ReactNode;
   /** Re-read the log after any write. */
   readonly onChanged: () => Promise<void>;
   readonly onBack: () => void;
@@ -512,7 +514,7 @@ interface TaskUndo {
  * opening a summary + list popup (story 034) and archive (with confirm). State
  * of record is the event log; this only holds form state.
  */
-export function PersonDetail({ eventStore, person, people, events, activityTypes, config = PEOPLE_CONFIG, authorLabel, createAccount, onChanged, onBack }: PersonDetailProps) {
+export function PersonDetail({ eventStore, person, people, events, activityTypes, config = PEOPLE_CONFIG, authorLabel, createAccount, extra, onChanged, onBack }: PersonDetailProps) {
   const [name, setName] = useState(person.name);
   const [note, setNote] = useState(person.note);
   const [country, setCountry] = useState(person.phone?.country ?? DEFAULT_COUNTRY);
@@ -750,6 +752,8 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
           </p>
         )}
       </section>
+
+      {extra}
 
       <section className="card person-section" aria-label={STRINGS.activitySectionTitle}>
         <div className="person-actions">

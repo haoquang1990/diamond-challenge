@@ -27,7 +27,6 @@ import { AchievementsScreen } from './ui/screens/achievements-screen';
 import { createAggregatesSync } from './data/aggregates-sync';
 import type { AggregatesSync } from './data/aggregates-sync';
 import { PEOPLE_CONFIG } from './ui/people-config';
-import { Board30x30Screen } from './ui/screens/board-30x30-screen';
 import { AdminScreen } from './ui/screens/admin-screen';
 import { ChangePasswordScreen, DisplayNameScreen } from './ui/screens/change-password-screen';
 import { CreateAccountScreen } from './ui/screens/create-account-screen';
@@ -35,13 +34,13 @@ import { ConsentScreen } from './ui/screens/consent-screen';
 import { DiamondPathScreen } from './ui/screens/diamond-path-screen';
 import { LessonScreen } from './ui/screens/lesson-screen';
 import { HouseholdScreen } from './ui/screens/household-screen';
-import { MyGroupScreen } from './ui/screens/my-group-screen';
 import { GroupCheerCard } from './ui/screens/group-cheer-card';
+import type { Person } from './domain/people';
+import { F1HouseholdBox } from './ui/screens/f1-household-box';
 import { DuplicatesScreen } from './ui/screens/duplicates-screen';
 import { PeopleScreen } from './ui/screens/people-screen';
 import { SettingsScreen } from './ui/screens/settings-screen';
 import { TodayScreen } from './ui/screens/today-screen';
-import type { ContactsFilter } from './ui/people-helpers';
 import { STRINGS } from './ui/strings';
 
 /** Props for {@link App}. */
@@ -80,12 +79,12 @@ function realNow(): Date {
 /**
  * Top-level destinations. The tab bar shows exactly four (story 015):
  * Hôm nay · Học · Làm · Con đường. Làm keeps the id `people`: it is the
- * merged person list (Danh bạ). `settings` (opened from Hôm nay) and `board`
- * (opened from Con đường) are not in the tab bar.
+ * merged person list (Danh bạ). `settings` (opened from Hôm nay) is not in the tab bar.
+ * Bảng 30x30 and Nhóm của tôi were removed in story 042.
  */
-type Tab = 'today' | 'learn' | 'people' | 'path' | 'settings' | 'board' | 'achievements' | 'household' | 'admin' | 'duplicates' | 'group';
+type Tab = 'today' | 'learn' | 'people' | 'path' | 'settings' | 'achievements' | 'household' | 'admin' | 'duplicates';
 
-const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'board' | 'achievements' | 'household' | 'admin' | 'duplicates' | 'group'>; readonly label: string }[] = [
+const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'achievements' | 'household' | 'admin' | 'duplicates'>; readonly label: string }[] = [
   { id: 'today', label: STRINGS.tabToday },
   { id: 'learn', label: STRINGS.tabLearn },
   { id: 'people', label: STRINGS.tabPeople },
@@ -99,8 +98,7 @@ const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'board' | 'achieve
  *
  * Làm (tab id 'people', story 015) is the person list: filters, name search,
  * add person, restore and legacy activity assignment; tasks are completed on
- * the person detail page. Hôm nay's Làm button opens it. From Bảng 30x30 it
- * opens with a filter preselected and a back control to the board. Cài đặt
+ * the person detail page. Hôm nay's Làm button opens it. Cài đặt
  * has no tab bar ("Quay lại" to Hôm nay).
  *
  * Reminders (story 007): one scheduler is refreshed on app start, when the
@@ -126,10 +124,6 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
   /** Person detail to reopen in Làm after the account screen. */
   const [reopenPerson, setReopenPerson] = useState<string | null>(null);
   const [lessonActive, setLessonActive] = useState(false);
-  /** The duplicates screen was opened from Bảng 30x30 (its back control returns there). */
-  const [duplicatesFromBoard, setDuplicatesFromBoard] = useState(false);
-  /** Set when Làm was opened from Bảng 30x30 (preselected filter + back control); null otherwise. */
-  const [fromBoard, setFromBoard] = useState<ContactsFilter | null>(null);
   /** Lesson Hôm nay asked Học to start (story 039); cleared when leaving Học. */
   const [startLessonId, setStartLessonId] = useState<string | null>(null);
   useEffect(() => {
@@ -597,37 +591,10 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
     );
   }
 
-  if (tab === 'group' && clientPromise !== null && account !== null) {
-    return (
-      <div className="app-shell">
-        <MyGroupScreen clientPromise={clientPromise} accountId={account.accountId} onBack={() => setTab('path')} eventStore={eventStore} />
-      </div>
-    );
-  }
-
   if (tab === 'duplicates') {
     return (
       <div className="app-shell">
-        <DuplicatesScreen eventStore={eventStore} memberIds={memberIds} members={members} dataVersion={dataVersion} onBack={() => setTab(duplicatesFromBoard ? 'board' : 'people')} />
-      </div>
-    );
-  }
-
-  if (tab === 'board') {
-    return (
-      <div className="app-shell">
-        <Board30x30Screen eventStore={eventStore} onBack={() => setTab('path')}
-          onOpenPeople={() => setTab('people')}
-          onOpenDuplicates={() => {
-            setDuplicatesFromBoard(true);
-            setTab('duplicates');
-          }}
-          dataVersion={dataVersion}
-          onOpenContacts={(filter) => {
-            setFromBoard(filter);
-            setTab('people');
-          }}
-        />
+        <DuplicatesScreen eventStore={eventStore} memberIds={memberIds} members={members} dataVersion={dataVersion} onBack={() => setTab('people')} />
       </div>
     );
   }
@@ -681,10 +648,7 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
             setStartLessonId(lessonId);
             setTab('learn');
           }}
-          onDo={() => {
-            setFromBoard(null);
-            setTab('people');
-          }}
+          onDo={() => setTab('people')}
           onOpenSettings={() => setTab('settings')}
           notificationPermission={notificationPlatform.permission}
           cheer={unseenCheer}
@@ -700,29 +664,24 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
           {...(startLessonId === null ? {} : { initialLessonId: startLessonId })}
         />
       )}
-      {tab === 'path' && <DiamondPathScreen eventStore={eventStore} memberIds={memberIds} onOpenBoard={() => setTab('board')} {...(clientPromise === null ? {} : { onOpenGroup: () => setTab('group'), groupLocked: account === null })} onOpenAchievements={() => setTab('achievements')} />}
+      {tab === 'path' && <DiamondPathScreen eventStore={eventStore} memberIds={memberIds} onOpenAchievements={() => setTab('achievements')} />}
       {tab === 'people' && (
         <PeopleScreen
-          key={fromBoard ?? 'tab'}
           eventStore={eventStore}
           members={members}
           memberIds={memberIds}
           dataVersion={dataVersion}
-          onOpenDuplicates={() => {
-            setDuplicatesFromBoard(false);
-            setTab('duplicates');
-          }}
-          initialOpenId={reopenPerson}
-          {...(clientPromise === null || account === null ? {} : { onCreateAccount: setCreateAccountFor })}
-          {...(fromBoard === null
+          onOpenDuplicates={() => setTab('duplicates')}
+          {...(clientPromise === null || account === null
             ? {}
             : {
-                initialFilter: fromBoard,
-                onBack: () => {
-                  setFromBoard(null);
-                  setTab('board');
-                },
+                renderPersonExtra: (person: Person) =>
+                  person.label === 'NPP' && person.amwayCode != null && person.amwayCode !== '' ? (
+                    <F1HouseholdBox clientPromise={clientPromise} accountId={account.accountId} amwayCode={person.amwayCode} />
+                  ) : null,
               })}
+          initialOpenId={reopenPerson}
+          {...(clientPromise === null || account === null ? {} : { onCreateAccount: setCreateAccountFor })}
         />
       )}
       {!(tab === 'learn' && lessonActive) && (
@@ -733,10 +692,7 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
             type="button"
             className={id === tab ? 'tab-bar__tab tab-bar__tab--active' : 'tab-bar__tab'}
             aria-current={id === tab ? 'page' : undefined}
-            onClick={() => {
-              setFromBoard(null);
-              setTab(id);
-            }}
+            onClick={() => setTab(id)}
           >
             {label}
           </button>
