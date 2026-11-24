@@ -154,8 +154,8 @@ export function formatPhone(phone: PersonPhone | null | undefined): string {
 export interface HistoryEntry {
   readonly id: string;
   readonly timestamp: string;
-  readonly kind: 'activity' | 'stage';
-  /** Activity/task name (kind 'activity', '' when unknown) or stage name (kind 'stage'). */
+  readonly kind: 'activity' | 'stage' | 'cancel';
+  /** Activity/task name (kind 'activity', '' when unknown), stage name (kind 'stage'), '' for 'cancel' (Huỷ bảo trợ). */
   readonly name: string;
   /** `userId` of the event (who did it). */
   readonly userId: string;
@@ -266,6 +266,9 @@ export function buildPersonHistory(
     } else if (e.type === 'person_stage_changed' && typeof e.payload.personId === 'string' && (rootOf.get(e.payload.personId) ?? e.payload.personId) === personId) {
       const stage = config.stages.find((s) => s.id === e.payload.to);
       if (stage !== undefined) entries.push({ id: e.id, timestamp: e.timestamp, kind: 'stage', name: stage.name, userId: e.userId });
+    } else if (e.type === 'sponsorship_cancelled' && typeof e.payload.personId === 'string' && (rootOf.get(e.payload.personId) ?? e.payload.personId) === personId) {
+      const note = typeof e.payload.note === 'string' ? e.payload.note.trim() : '';
+      entries.push({ id: e.id, timestamp: e.timestamp, kind: 'cancel', name: '', userId: e.userId, ...(note !== '' ? { note } : {}) });
     }
   }
   return entries.reverse().sort((a, b) => (a.timestamp < b.timestamp ? 1 : a.timestamp > b.timestamp ? -1 : 0));

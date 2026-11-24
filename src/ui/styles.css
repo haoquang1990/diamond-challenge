@@ -1032,3 +1032,4 @@ body.dialog-open { overflow: hidden; }
 .next-lesson__name { margin: 0; font-size: 1.15rem; font-weight: 800; overflow-wrap: anywhere; }
 .next-lesson__facts { margin: 0 0 4px; font-weight: 700; color: var(--color-diamond-dark); }
 .next-lesson .button { min-height: 48px; }
+.task-row--cancellable .task-row__times { color: var(--color-danger); font-weight: 700; }

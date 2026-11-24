@@ -36,6 +36,7 @@ export const EVENT_SCHEMA_VERSION = 1;
  * - `person_not_duplicate`: `{ personIds: [a, b] }` ("Không phải cùng người"; a later one than a merge of the pair
  *   undoes that merge). Neither ever carries xp.
  * - `person_transferred_out`: written by the server only (pulled, never sent; story 023)
+ * - `sponsorship_cancelled`: `{ personId, note? }` (Huỷ bảo trợ, story 040; no xp, not an activity)
  */
 export const EVENT_TYPES = [
   'activity_logged',
@@ -50,6 +51,7 @@ export const EVENT_TYPES = [
   'person_merged',
   'person_not_duplicate',
   'person_transferred_out',
+  'sponsorship_cancelled',
 ] as const;
 
 /** Discriminator for an event. */

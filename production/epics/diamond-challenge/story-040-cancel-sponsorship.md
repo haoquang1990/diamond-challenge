@@ -1,7 +1,7 @@
 # Story 040: Huỷ bảo trợ
 
 > **Epic**: diamond-challenge
-> **Status**: Ready
+> **Status**: Complete
 > **Layer**: Feature
 > **Type**: Integration
 > **Estimate**: M
@@ -41,3 +41,19 @@
 
 - Depends on: `production/epics/diamond-challenge/story-035-activity-button-repeatable-tasks.md`
 - Unlocks: None
+
+## Files
+
+- `src/data/event-store.ts` (`sponsorship_cancelled` type), `src/data/contact-sync.ts` (synced in the household book)
+- `src/domain/people.ts` (`buildSponsorshipCancelEvent`; `derivePeople` reverts NPP to KH or none, frees the NPP task, keeps XP)
+- `src/ui/people-helpers.ts` (history row kind `cancel`), `src/ui/screens/person-form.tsx` (`CancelSponsorDialog`, Bảo trợ row opens it), `src/ui/strings.ts`, `src/ui/styles.css`
+- `supabase/migrations/20261124000000_sponsorship_cancelled.sql` (widens `contact_events_type_check`)
+- `tests/unit/people/cancel-sponsorship.test.ts` (7 tests), `tests/integration/supabase/sponsorship-cancelled.test.ts` (2 tests; seen failing without the migration)
+- `production/qa/evidence/story-040-cancel-sponsorship/`
+
+## Completion Notes
+**Completed**: 2026-11-24
+**Criteria**: 6/6 passing (none deferred)
+**Deviations**: Advisory: (1) the migration runs on the live Supabase database when merged; devices on an older app version ignore the new event until updated, so their label stays NPP until then; (2) after cancelling, the Bảo trợ row shows "đã làm 1 lần" (count of past sponsorships) and is selectable again
+**Test Evidence**: unit + integration tests above; screenshots at 390 and 320px; full suite 610/610
+**Reviewed by**: self, no independent review
