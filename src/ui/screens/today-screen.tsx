@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import type { ReactNode } from 'react';
 import gameConfig from '../../config/game-config.json';
 import type { EventStore } from '../../data/event-store';
 import { computeProgress, otherMemberIds } from '../../domain/progress';
@@ -55,6 +56,8 @@ export interface TodayScreenProps {
   readonly notificationPermission?: () => ReminderPermission;
   /** Starts a lesson in Học (story 039); the "Bài nên học tiếp" card is hidden when absent. */
   readonly onStartLesson?: (lessonId: string) => void;
+  /** Hôm nay "Cổ vũ nhóm" card (story 041); hidden when absent (signed out or no server). */
+  readonly cheerGroup?: ReactNode;
   /** Lessons and stages for the suggestion; default to content/lessons.json. */
   readonly lessons?: readonly Lesson[];
   readonly lessonStages?: readonly LessonStage[];
@@ -113,6 +116,7 @@ export function TodayScreen({
   cheer = null,
   onDismissCheer,
   onStartLesson,
+  cheerGroup,
   lessons = LOADED_LESSONS.lessons,
   lessonStages = LOADED_STAGES,
 }: TodayScreenProps) {
@@ -249,6 +253,8 @@ export function TodayScreen({
       )}
 
       {state.kind === 'ready' && (goalMet ? <GoalMetCard streak={streak} /> : <GoalProgressCard progress={state.progress} />)}
+
+      {cheerGroup}
 
       {state.kind === 'ready' && onStartLesson !== undefined && state.next.total > 0 && (
         <NextLessonCard next={state.next} onStart={onStartLesson} onLearn={onLearn} />

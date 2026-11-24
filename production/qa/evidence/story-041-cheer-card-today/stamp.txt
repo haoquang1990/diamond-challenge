@@ -1,0 +1,7 @@
+Reviewed-Content-Hash: src/ui/screens/group-cheer-card.tsx 7817bfc8c2040d489c6cb9ac11ea878f05d0e341
+Reviewed-Content-Hash: src/ui/group-helpers.ts 51512db9cde8b06a32ac352dfafbdcb6ffa0aa61
+Reviewed-Content-Hash: src/ui/screens/today-screen.tsx 09485cb3dc20796ae0a0e6807cf8e0b566b94557
+Reviewed-Content-Hash: src/ui/screens/my-group-screen.tsx fa75c239b33e4b608c2ee676b01789927a781323
+Reviewed-Content-Hash: src/app.tsx afdd862e992d7d2abcb8592c2e8591d57cce652a
+Reviewed-Content-Hash: src/ui/strings.ts facc5edb27d92368c9fa5387d9201bda40e96653
+Reviewed-Content-Hash: src/ui/styles.css 5443e8bdf9851afdd3dd759ae09cc48a216e32b7

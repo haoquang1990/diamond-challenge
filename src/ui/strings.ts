@@ -184,6 +184,7 @@ export const STRINGS = {
   sponsorCancelKeep: 'Giữ bảo trợ',
   sponsorCancelDone: 'Đã huỷ bảo trợ.',
   sponsorCancelHistory: 'Huỷ bảo trợ',
+  cheerGroupTitle: 'Cổ vũ nhóm',
   groupCheerButton: 'Cổ vũ',
   groupCheeredToday: 'Đã cổ vũ hôm nay',
   groupCheerOfflineReason: 'Cần có mạng để cổ vũ.',

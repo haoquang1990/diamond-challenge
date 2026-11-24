@@ -2,10 +2,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import gameConfig from '../../config/game-config.json';
 import { activityStatus, loadGroup, parseGroupConfig, readGroupCache, sendCheer, sortGroup, writeGroupCache } from '../../data/group-service';
-import type { GroupData, GroupHousehold, GroupMember } from '../../data/group-service';
+import type { GroupData, GroupHousehold } from '../../data/group-service';
 import type { EventStore } from '../../data/event-store';
 import { derivePeople } from '../../domain/people';
-import type { Person } from '../../domain/people';
 import { PEOPLE_CONFIG } from '../people-config';
 import {
   STRINGS,
@@ -16,6 +15,7 @@ import {
   groupUpdatedLabel,
 } from '../strings';
 import { AddMemberForm } from './add-member-form';
+import { groupMemberName, householdNames, linkedContactNames } from '../group-helpers';
 
 const GROUP_CONFIG = parseGroupConfig(gameConfig);
 
@@ -47,26 +47,9 @@ function realNow(): Date {
   return new Date();
 }
 
-/**
- * Account id → the name I saved in my own Danh bạ for the contact linked to that account
- * (`linkedUserId`, set by "Tạo tài khoản"). Archived contacts are included: still that person.
- */
-export function linkedContactNames(people: readonly Person[]): ReadonlyMap<string, string> {
-  const names = new Map<string, string>();
-  for (const p of people) if (p.linkedUserId != null && p.linkedUserId !== '' && !names.has(p.linkedUserId)) names.set(p.linkedUserId, p.name);
-  return names;
-}
+export { groupMemberName, linkedContactNames };
 
-/** A member's name: the display name they set, else my contact name for that account, else phone, else a placeholder. */
-export function groupMemberName(member: Pick<GroupMember, 'userId' | 'displayName' | 'phone'>, contactNames: ReadonlyMap<string, string>): string {
-  return member.displayName ?? contactNames.get(member.userId) ?? member.phone ?? STRINGS.groupMemberUnnamed;
-}
-
-/** Member names of a household, joined; a placeholder when it has none. */
-function memberNames(h: GroupHousehold, contactNames: ReadonlyMap<string, string>): string {
-  const names = h.members.map((m) => groupMemberName(m, contactNames));
-  return names.length === 0 ? STRINGS.groupMemberUnnamed : names.join(', ');
-}
+const memberNames = householdNames;
 
 /** Member phones shown under the names, only those not already used as the name. */
 function memberPhones(h: GroupHousehold, contactNames: ReadonlyMap<string, string>): string | null {

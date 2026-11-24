@@ -36,6 +36,7 @@ import { DiamondPathScreen } from './ui/screens/diamond-path-screen';
 import { LessonScreen } from './ui/screens/lesson-screen';
 import { HouseholdScreen } from './ui/screens/household-screen';
 import { MyGroupScreen } from './ui/screens/my-group-screen';
+import { GroupCheerCard } from './ui/screens/group-cheer-card';
 import { DuplicatesScreen } from './ui/screens/duplicates-screen';
 import { PeopleScreen } from './ui/screens/people-screen';
 import { SettingsScreen } from './ui/screens/settings-screen';
@@ -673,6 +674,9 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
           eventStore={eventStore}
           memberIds={memberIds}
           onLearn={() => setTab('learn')}
+          {...(clientPromise !== null && account !== null
+            ? { cheerGroup: <GroupCheerCard clientPromise={clientPromise} accountId={account.accountId} eventStore={eventStore} /> }
+            : {})}
           onStartLesson={(lessonId) => {
             setStartLessonId(lessonId);
             setTab('learn');

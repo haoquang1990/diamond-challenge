@@ -54,7 +54,7 @@ Theo Build order của brief: nhật ký sự kiện + XP/streak → Làm + Hôm
 | 038 | Chia lại tab Học thành 18 chặng, mỗi chặng 5–7 bài | Config/Data | Complete | N/A |
 | 039 | Thẻ "Bài nên học tiếp" trên Hôm nay | UI | Complete | N/A |
 | 040 | Huỷ bảo trợ | Integration | Complete | N/A |
-| 041 | Thẻ "Cổ vũ nhóm" trên Hôm nay | UI | Ready | N/A |
+| 041 | Thẻ "Cổ vũ nhóm" trên Hôm nay | UI | Complete | N/A |
 | 042 | Bỏ màn Bảng 30x30 và Nhóm của tôi; khung "Hộ F1" trong chi tiết NPP | UI | Ready | N/A |
 | 043 | Bỏ Lưu trữ liên hệ | UI | Ready | N/A |
 

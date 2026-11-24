@@ -1,7 +1,7 @@
 # Story 041: Thẻ "Cổ vũ nhóm" trên Hôm nay
 
 > **Epic**: diamond-challenge
-> **Status**: Ready
+> **Status**: Complete
 > **Layer**: Feature
 > **Type**: UI
 > **Estimate**: M
@@ -40,3 +40,19 @@
 
 - Depends on: None
 - Unlocks: `production/epics/diamond-challenge/story-042-remove-board-and-group.md`
+
+## Files
+
+- `src/ui/screens/group-cheer-card.tsx` (new: `GroupCheerCard`)
+- `src/ui/group-helpers.ts` (new: `cheerCandidates`, `householdActivityNote`, `householdNames`; name helpers moved from `my-group-screen.tsx`)
+- `src/ui/screens/today-screen.tsx` (`cheerGroup` slot), `src/app.tsx`, `src/ui/screens/my-group-screen.tsx` (imports the moved helpers)
+- `src/ui/strings.ts`, `src/ui/styles.css`
+- `tests/unit/people-ui/cheer-candidates.test.ts` (3 tests), `tests/unit/people-ui/group-member-name.test.ts` (import path)
+- `production/qa/evidence/story-041-cheer-card-today/`
+
+## Completion Notes
+**Completed**: 2026-11-24
+**Criteria**: 5/5 passing (none deferred)
+**Deviations**: Advisory: after the last cheer the card stays with "Đã gửi lời cổ vũ." until Hôm nay is opened again, then hides; the offline state was checked in code, not captured
+**Test Evidence**: `tests/unit/people-ui/cheer-candidates.test.ts`; screenshots at 390 and 320px; full suite 613/613
+**Reviewed by**: self, no independent review
