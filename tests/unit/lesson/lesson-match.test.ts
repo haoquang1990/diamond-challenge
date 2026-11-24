@@ -28,7 +28,8 @@ const MATCH: MatchQuestion = {
 };
 
 function lessonWith(questions: readonly unknown[]): unknown {
-  return { lessons: [{ id: 'x', title: 'T', xp: 10, questions }] };
+  // Story 036: a lesson needs 5–7 questions; pad with choice questions after the ones under test.
+  return { lessons: [{ id: 'x', title: 'T', xp: 10, questions: [...questions, CHOICE, CHOICE] }] };
 }
 
 function pairs(n: number): { left: string; right: string }[] {

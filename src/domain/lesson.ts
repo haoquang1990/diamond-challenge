@@ -85,6 +85,8 @@ export interface Lesson {
   readonly xp: number;
   /** Id of the lesson group (see lesson-stages.ts); absent = "other". */
   readonly stage?: string;
+  /** Icon name on the Học path; absent = the stage's icon (story 037). */
+  readonly icon?: string;
   readonly questions: readonly LessonQuestion[];
 }
 
@@ -97,8 +99,8 @@ export interface ParsedLessons {
 }
 
 /** Bounds of the question count and option count per the content schema. */
-export const MIN_QUESTIONS = 3;
-export const MAX_QUESTIONS = 5;
+export const MIN_QUESTIONS = 5;
+export const MAX_QUESTIONS = 7;
 export const MIN_OPTIONS = 2;
 export const MAX_OPTIONS = 4;
 /** Bounds of the step count of an order question. */
@@ -197,7 +199,13 @@ export function parseLessons(raw: unknown): ParsedLessons {
       if (problem !== null) return fail(problem);
     }
     seen.add(entry.id);
-    lessons.push(entry as unknown as Lesson);
+    if (entry.icon !== undefined && !isNonEmptyString(entry.icon)) {
+      // A bad icon only loses the icon (story 037); the lesson stays.
+      const { icon: _dropped, ...rest } = entry;
+      lessons.push(rest as unknown as Lesson);
+    } else {
+      lessons.push(entry as unknown as Lesson);
+    }
   });
   if (lessons.length === 0 && problems.length === 0) problems.push('File bài học đang trống.');
   return { lessons, problems };
@@ -314,6 +322,30 @@ export function isLessonCompletedToday(
       typeof e.payload.compensates !== 'string' &&
       localDayKey(formatter, new Date(e.timestamp)) === today,
   );
+}
+
+/**
+ * How often a lesson was learned: non-compensated `lesson_completed` events for `lessonId` that
+ * earned XP (same-day zero-XP replays are not counted), and the latest of their timestamps.
+ *
+ * @example
+ * lessonHistory(events, 'list-1'); // { count: 2, lastAt: '2026-11-22T02:00:00.000Z' }
+ */
+export function lessonHistory(events: readonly LogEvent[], lessonId: string): { readonly count: number; readonly lastAt: string | null } {
+  const compensated = new Set<string>();
+  for (const e of events) {
+    const target = e.payload.compensates;
+    if (typeof target === 'string') compensated.add(target);
+  }
+  let count = 0;
+  let lastAt: string | null = null;
+  for (const e of events) {
+    if (e.type !== 'lesson_completed' || e.payload.lessonId !== lessonId || compensated.has(e.id) || typeof e.payload.compensates === 'string') continue;
+    if (typeof e.payload.xp !== 'number' || e.payload.xp <= 0) continue;
+    count += 1;
+    if (lastAt === null || e.timestamp > lastAt) lastAt = e.timestamp;
+  }
+  return { count, lastAt };
 }
 
 /**

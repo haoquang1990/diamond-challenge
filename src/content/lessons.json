@@ -1,40 +1,820 @@
 {
   "stages": [
     {
+      "id": "start",
+      "title": "Khởi đầu",
+      "icon": "sparkle",
+      "description": "Tư duy và động lực cho người mới"
+    },
+    {
       "id": "list",
-      "title": "Danh sách"
+      "title": "Danh sách",
+      "icon": "list",
+      "description": "Biết mình sẽ nói chuyện với ai"
     },
     {
       "id": "invite",
-      "title": "Mời hẹn"
+      "title": "Mời hẹn",
+      "icon": "send",
+      "description": "Mời hẹn tự nhiên, không nài ép"
     },
     {
       "id": "demo",
-      "title": "Demo"
+      "title": "Demo",
+      "icon": "presentation",
+      "description": "Cho khách tự trải nghiệm"
     },
     {
       "id": "opp",
-      "title": "Opp"
+      "title": "Opp",
+      "icon": "lightbulb",
+      "description": "Chia sẻ cơ hội rõ ràng, đơn giản"
     },
     {
       "id": "followup",
-      "title": "Follow-up"
+      "title": "Follow-up",
+      "icon": "refresh",
+      "description": "Giữ liên lạc sau cuộc gặp"
     },
     {
       "id": "care",
-      "title": "Chăm sóc KH"
+      "title": "Chăm sóc KH",
+      "icon": "heart",
+      "description": "Chăm sóc để khách dùng lâu dài"
     },
     {
       "id": "support",
-      "title": "Hỗ trợ NPP"
+      "title": "Hỗ trợ NPP",
+      "icon": "users",
+      "description": "Đồng hành cùng người mới"
     }
   ],
   "lessons": [
+    {
+      "id": "why-start",
+      "title": "Vì sao bắt đầu",
+      "xp": 10,
+      "stage": "start",
+      "icon": "rocket",
+      "questions": [
+        {
+          "prompt": "Tài sản quan trọng nhất của mỗi người là gì?",
+          "options": [
+            "Thời gian",
+            "Tiền tiết kiệm",
+            "Bằng cấp"
+          ],
+          "correctIndex": 0,
+          "explanation": "Mọi thứ đều được đổi bằng thời gian, nên cách mình dùng thời gian quyết định kết quả."
+        },
+        {
+          "prompt": "Câu hỏi \"5 năm tới nếu vẫn làm như hiện nay thì mình sẽ có gì?\" dùng để làm gì?",
+          "options": [
+            "Để chê công việc đang làm",
+            "Để tự nhìn lại lựa chọn của mình",
+            "Để so mình với người khác"
+          ],
+          "correctIndex": 1,
+          "explanation": "Đây là câu hỏi để tự suy nghĩ, không phải để phán xét công việc hiện tại."
+        },
+        {
+          "prompt": "Lý do bắt đầu tốt nhất đến từ đâu?",
+          "options": [
+            "Vì người khác bảo nên làm",
+            "Vì sợ bỏ lỡ cơ hội",
+            "Điều mình thật sự mong muốn cho bản thân và gia đình"
+          ],
+          "correctIndex": 2,
+          "explanation": "Lý do của chính mình mới giữ được động lực lâu dài."
+        },
+        {
+          "prompt": "Vì sao nên viết lý do của mình ra giấy?",
+          "options": [
+            "Để nhớ lại và giữ động lực khi gặp khó khăn",
+            "Để khoe với mọi người",
+            "Viết ra cũng không có tác dụng gì"
+          ],
+          "correctIndex": 0,
+          "explanation": "Lý do được viết ra giúp mình quay về mục đích ban đầu khi nản lòng."
+        },
+        {
+          "prompt": "Nên bắt đầu vào lúc nào?",
+          "options": [
+            "Đợi khi rảnh hẳn mới bắt đầu",
+            "Từ hôm nay, với những gì mình đang có",
+            "Đợi có thật nhiều tiền rồi mới làm"
+          ],
+          "correctIndex": 1,
+          "explanation": "Những gì có hôm nay là kết quả của việc đã làm trước đây; muốn tương lai khác thì phải bắt đầu từ bây giờ."
+        }
+      ]
+    },
+    {
+      "id": "owner-mindset",
+      "title": "Tư duy chủ kinh doanh",
+      "xp": 10,
+      "stage": "start",
+      "icon": "crown",
+      "questions": [
+        {
+          "prompt": "Người làm chủ khác người làm thuê ở điểm nào?",
+          "options": [
+            "Không cần học thêm gì",
+            "Chỉ giao việc cho người khác",
+            "Tự cam kết, tự tạo việc và tự chịu trách nhiệm kết quả"
+          ],
+          "correctIndex": 2,
+          "explanation": "Làm chủ nghĩa là kết quả do mình quyết định, không chờ ai giao việc."
+        },
+        {
+          "prompt": "Trong công việc này, tuyến trên đóng vai trò gì?",
+          "options": [
+            "Huấn luyện viên, người cố vấn",
+            "Sếp giao việc hằng ngày",
+            "Người quyết định thu nhập của bạn"
+          ],
+          "correctIndex": 0,
+          "explanation": "Không ai là sếp của ai. Tuyến trên hướng dẫn, còn việc làm là của bạn."
+        },
+        {
+          "prompt": "Hôm nay không ai nhắc bạn làm gì. Bạn nên làm gì?",
+          "options": [
+            "Chờ tuyến trên nhắc",
+            "Xem kế hoạch của mình và làm việc đã đặt ra",
+            "Nghỉ một hôm"
+          ],
+          "correctIndex": 1,
+          "explanation": "Người làm chủ tự tạo việc cho mình mỗi ngày."
+        },
+        {
+          "prompt": "Muốn đạt mốc thành tích nào là do ai quyết định?",
+          "options": [
+            "Tuyến trên",
+            "May mắn",
+            "Chính bạn"
+          ],
+          "correctIndex": 2,
+          "explanation": "Bạn đặt mục tiêu và hành động; tuyến trên chỉ hỗ trợ."
+        },
+        {
+          "prompt": "Thói quen nào từ công việc làm thuê cần thay đổi?",
+          "options": [
+            "Ngồi chờ được giao việc",
+            "Đi làm đúng giờ",
+            "Học hỏi người giỏi hơn"
+          ],
+          "correctIndex": 0,
+          "explanation": "Ở đây không ai giao việc, nên phải chủ động."
+        }
+      ]
+    },
+    {
+      "id": "eight-keys",
+      "title": "Tổng quan 8 chìa khoá",
+      "xp": 10,
+      "stage": "start",
+      "icon": "key",
+      "questions": [
+        {
+          "prompt": "8 chìa khoá được chia thành 4 phần nào?",
+          "options": [
+            "Sản phẩm – Giá – Khuyến mãi – Kênh bán",
+            "Kế hoạch – Định vị – Tổ chức – Thành tích",
+            "Học – Làm – Dạy – Nghỉ"
+          ],
+          "correctIndex": 1,
+          "explanation": "Bốn phần này đi theo vòng: lên kế hoạch, định vị người mới, tổ chức đội nhóm, rồi đạt thành tích."
+        },
+        {
+          "prompt": "Chìa 1 và chìa 2 (10 + 3 + 1 và 1 + 1 + 1) thuộc phần nào?",
+          "options": [
+            "Tổ chức",
+            "Thành tích",
+            "Kế hoạch"
+          ],
+          "correctIndex": 2,
+          "explanation": "Hai chìa đầu là kế hoạch làm việc mỗi ngày."
+        },
+        {
+          "prompt": "Bài 1 và Bài 2 (chìa 3, chìa 4) thuộc phần nào?",
+          "options": [
+            "Định vị",
+            "Kế hoạch",
+            "Thành tích"
+          ],
+          "correctIndex": 0,
+          "explanation": "Bài 1 và Bài 2 giúp người mới định vị mình muốn tiêu dùng, làm thêm hay làm sự nghiệp."
+        },
+        {
+          "prompt": "3 × 3 × 3 và kết cấu 4 × 4 (chìa 5, chìa 6) thuộc phần nào?",
+          "options": [
+            "Định vị",
+            "Tổ chức",
+            "Kế hoạch"
+          ],
+          "correctIndex": 1,
+          "explanation": "Hai chìa này nói về cách tổ chức và hỗ trợ đội nhóm."
+        },
+        {
+          "prompt": "Câu \"Đằng sau sự đơn giản có sự phức tạp cao độ\" nhắc điều gì?",
+          "options": [
+            "Công việc quá phức tạp nên khó làm",
+            "Không cần học vẫn làm được",
+            "Việc đơn giản cần được lặp lại đều và đúng cách"
+          ],
+          "correctIndex": 2,
+          "explanation": "Các chìa khoá trông đơn giản, nhưng hiệu quả đến từ việc làm đều đặn và đúng."
+        }
+      ]
+    },
+    {
+      "id": "power-of-doubling",
+      "title": "Sức mạnh nhân đôi",
+      "xp": 10,
+      "stage": "start",
+      "icon": "trend",
+      "questions": [
+        {
+          "prompt": "Bắt đầu từ 1 và nhân đôi 10 lần thì được bao nhiêu?",
+          "options": [
+            "1.024",
+            "20",
+            "100"
+          ],
+          "correctIndex": 0,
+          "explanation": "1, 2, 4, 8… sau 10 lần nhân đôi là 1.024. Đó là sức mạnh của sự lặp lại."
+        },
+        {
+          "prompt": "Ý chính của phép nhân đôi là gì?",
+          "options": [
+            "Tuyển thật nhiều người cùng một lúc",
+            "Mỗi người giúp thêm một người làm được như mình",
+            "Một người làm thật nhiều việc"
+          ],
+          "correctIndex": 1,
+          "explanation": "Phát triển đến từ việc sao chép từng người một, không phải từ một người làm hết."
+        },
+        {
+          "prompt": "Vì sao cách làm cần đơn giản?",
+          "options": [
+            "Để làm nhanh rồi nghỉ",
+            "Để không cần học",
+            "Để nhiều người cùng lặp lại được"
+          ],
+          "correctIndex": 2,
+          "explanation": "Cách làm đơn giản thì người mới mới làm theo được."
+        },
+        {
+          "prompt": "\"Sao chép\" trong đội nhóm nghĩa là gì?",
+          "options": [
+            "Người mới làm được đúng cách mình đã làm",
+            "Chép lại tài liệu",
+            "Bắt chước giọng nói của tuyến trên"
+          ],
+          "correctIndex": 0,
+          "explanation": "Sao chép là truyền lại cách làm để người kia tự làm được."
+        },
+        {
+          "prompt": "Nhân đôi có thành hiện thực ngay trong tuần đầu không?",
+          "options": [
+            "Có, chỉ cần tuyển thật nhiều",
+            "Không, cần thời gian và kiên trì",
+            "Không bao giờ thành hiện thực"
+          ],
+          "correctIndex": 1,
+          "explanation": "Phép tính cho thấy tiềm năng; kết quả thật cần thời gian và sự đều đặn."
+        }
+      ]
+    },
+    {
+      "id": "model-differences",
+      "title": "Điểm khác biệt của mô hình",
+      "xp": 10,
+      "stage": "start",
+      "icon": "layers",
+      "questions": [
+        {
+          "prompt": "So với tự mở một cửa hàng, điểm khác biệt của mô hình này là gì?",
+          "options": [
+            "Phải thuê mặt bằng",
+            "Phải tự sản xuất hàng",
+            "Không phải bỏ vốn lớn ban đầu nên ít rủi ro"
+          ],
+          "correctIndex": 2,
+          "explanation": "Công ty lo sản xuất, kho bãi, giao hàng; người làm tập trung vào khách hàng."
+        },
+        {
+          "prompt": "\"Không phụ thuộc điểm xuất phát\" nghĩa là gì?",
+          "options": [
+            "Ai bắt đầu từ đâu cũng có thể học và làm",
+            "Chỉ người có bằng cấp mới làm được",
+            "Người đến trước luôn hơn người đến sau"
+          ],
+          "correctIndex": 0,
+          "explanation": "Kết quả phụ thuộc vào việc học và làm, không phụ thuộc xuất phát điểm."
+        },
+        {
+          "prompt": "Công việc này có thể làm ở đâu?",
+          "options": [
+            "Chỉ ở văn phòng công ty",
+            "Tại nhà, mọi lúc mọi nơi",
+            "Chỉ vào cuối tuần"
+          ],
+          "correctIndex": 1,
+          "explanation": "Bạn tự sắp xếp thời gian và nơi làm việc."
+        },
+        {
+          "prompt": "\"Giúp người giúp mình\" nghĩa là gì?",
+          "options": [
+            "Nhờ người khác làm thay mình",
+            "Chỉ lo cho bản thân",
+            "Giúp người khác thành công thì mình cũng phát triển"
+          ],
+          "correctIndex": 2,
+          "explanation": "Thành công của đội nhóm gắn với thành công của từng người."
+        },
+        {
+          "prompt": "Ngoài thu nhập, công việc này còn giúp phát triển điều gì?",
+          "options": [
+            "Bản thân: kỹ năng và kinh nghiệm được tích luỹ",
+            "Không có gì thêm",
+            "Chỉ thêm quen biết"
+          ],
+          "correctIndex": 0,
+          "explanation": "Kinh nghiệm học được không mất đi mà tích luỹ dần."
+        }
+      ]
+    },
+    {
+      "id": "business-values",
+      "title": "Giá trị của công việc",
+      "xp": 10,
+      "stage": "start",
+      "icon": "gem",
+      "questions": [
+        {
+          "prompt": "Giá trị \"làm chủ\" ở đây là gì?",
+          "options": [
+            "Có nhân viên làm thay",
+            "Tự quyết định thời gian, mục tiêu và cách làm",
+            "Không phải làm gì"
+          ],
+          "correctIndex": 1,
+          "explanation": "Bạn là chủ công việc của mình."
+        },
+        {
+          "prompt": "Giá trị \"làm lớn\" nghĩa là gì?",
+          "options": [
+            "Mở một cửa hàng thật to",
+            "Làm thêm thật nhiều giờ",
+            "Có thể mở rộng nhờ hợp tác với nhiều người"
+          ],
+          "correctIndex": 2,
+          "explanation": "Hợp tác giúp quy mô lớn hơn sức một người."
+        },
+        {
+          "prompt": "\"Công bằng\" ở đây nghĩa là gì?",
+          "options": [
+            "Ai nỗ lực và đạt kết quả hơn được ghi nhận xứng đáng, kể cả hơn người đến trước",
+            "Ai đến trước luôn được nhiều hơn",
+            "Mọi người nhận như nhau"
+          ],
+          "correctIndex": 0,
+          "explanation": "Kết quả theo thành tích, không theo thứ tự tham gia."
+        },
+        {
+          "prompt": "Giá trị \"bảo đảm\" nói đến điều gì?",
+          "options": [
+            "Chắc chắn có thu nhập mà không cần làm",
+            "Sự nghiệp xây dựng được có thể trở thành tài sản để lại cho gia đình",
+            "Được công ty trả lương cố định"
+          ],
+          "correctIndex": 1,
+          "explanation": "Theo quy định của công ty, sự nghiệp có thể cho tặng, thừa kế; còn kết quả vẫn do mình làm ra."
+        },
+        {
+          "prompt": "Học vấn hay kinh nghiệm cũ có phải điều kiện bắt buộc không?",
+          "options": [
+            "Có, phải có bằng đại học",
+            "Có, phải từng bán hàng",
+            "Không, quan trọng là học và làm"
+          ],
+          "correctIndex": 2,
+          "explanation": "Ai cũng có thể bắt đầu nếu chịu học và hành động."
+        }
+      ]
+    },
+    {
+      "id": "what-to-learn",
+      "title": "10 nội dung cần học",
+      "xp": 10,
+      "stage": "start",
+      "icon": "book",
+      "questions": [
+        {
+          "prompt": "Người mới cần học hai nhóm nội dung nào?",
+          "options": [
+            "Sản phẩm và kinh doanh",
+            "Chỉ sản phẩm",
+            "Chỉ cách mời người"
+          ],
+          "correctIndex": 0,
+          "explanation": "Hiểu sản phẩm để tư vấn, hiểu kinh doanh để xây dựng đội nhóm."
+        },
+        {
+          "prompt": "Nhóm nào KHÔNG thuộc 5 dòng sản phẩm cần học?",
+          "options": [
+            "Gia dụng",
+            "Bảo hiểm",
+            "Làm đẹp"
+          ],
+          "correctIndex": 1,
+          "explanation": "5 dòng gồm: chăm sóc cá nhân, gia dụng, dinh dưỡng, làm đẹp và công nghệ."
+        },
+        {
+          "prompt": "3S là gì?",
+          "options": [
+            "Sản phẩm, sức khoẻ, sắc đẹp",
+            "Sáng, trưa, chiều",
+            "Bán hàng, chăm sóc khách hàng, bảo trợ"
+          ],
+          "correctIndex": 2,
+          "explanation": "3S là ba việc cốt lõi của người kinh doanh."
+        },
+        {
+          "prompt": "Kỹ năng nào thuộc phần kinh doanh cần học?",
+          "options": [
+            "Xử lý từ chối",
+            "Sửa chữa máy móc",
+            "Kế toán thuế"
+          ],
+          "correctIndex": 0,
+          "explanation": "Phần kinh doanh gồm OPP, tư tưởng và mục tiêu, 3S, xử lý từ chối và 8 chìa khoá."
+        },
+        {
+          "prompt": "Vì sao nên học demo sản phẩm từ sớm?",
+          "options": [
+            "Để bán được giá cao hơn",
+            "Để tự tin giới thiệu bằng trải nghiệm thật",
+            "Không cần học demo"
+          ],
+          "correctIndex": 1,
+          "explanation": "Demo giúp khách tự thấy, và giúp bạn nói có căn cứ."
+        }
+      ]
+    },
+    {
+      "id": "use-know-tell",
+      "title": "Thay – Dùng – Biết – Nói",
+      "xp": 10,
+      "stage": "start",
+      "icon": "chat",
+      "questions": [
+        {
+          "prompt": "Bước đầu tiên của \"Thay – Dùng – Biết – Nói\" là gì?",
+          "options": [
+            "Nói: kể ngay cho bạn bè",
+            "Biết: đọc hết tài liệu",
+            "Thay: đổi sang dùng sản phẩm"
+          ],
+          "correctIndex": 2,
+          "explanation": "Phải đổi sang dùng thì mới có trải nghiệm."
+        },
+        {
+          "prompt": "Vì sao nên tự dùng trước khi giới thiệu?",
+          "options": [
+            "Có trải nghiệm thật nên chia sẻ tự tin, chân thật",
+            "Để được giảm giá",
+            "Không cần dùng vẫn giới thiệu được"
+          ],
+          "correctIndex": 0,
+          "explanation": "Người nghe tin câu chuyện thật hơn lời quảng cáo."
+        },
+        {
+          "prompt": "\"Biết\" trong nguyên lý này nghĩa là gì?",
+          "options": [
+            "Biết giá của hãng khác",
+            "Hiểu sản phẩm: thành phần, cách dùng",
+            "Biết thật nhiều người"
+          ],
+          "correctIndex": 1,
+          "explanation": "Hiểu sản phẩm giúp trả lời đúng và hướng dẫn khách dùng đúng."
+        },
+        {
+          "prompt": "Bạn chưa dùng một sản phẩm thì có người hỏi cảm nhận. Nên làm gì?",
+          "options": [
+            "Kể như mình đã dùng",
+            "Lảng sang chuyện khác",
+            "Nói thật là mình chưa dùng và rủ họ cùng thử"
+          ],
+          "correctIndex": 2,
+          "explanation": "Trung thực giữ được lòng tin."
+        },
+        {
+          "prompt": "Nguyên lý này áp dụng cho những sản phẩm nào?",
+          "options": [
+            "Mọi dòng sản phẩm",
+            "Chỉ mỹ phẩm",
+            "Chỉ thực phẩm bổ sung"
+          ],
+          "correctIndex": 0,
+          "explanation": "Với sản phẩm nào cũng vậy: dùng rồi mới biết, biết rồi mới nói."
+        }
+      ]
+    },
+    {
+      "id": "seven-steps-start",
+      "title": "7 bước cho người mới",
+      "xp": 10,
+      "stage": "start",
+      "icon": "steps",
+      "questions": [
+        {
+          "prompt": "Bước đầu tiên trong 7 bước là gì?",
+          "options": [
+            "Lập danh sách 200 tên",
+            "Tìm lý do và động lực của mình",
+            "Đặt hẹn ngay"
+          ],
+          "correctIndex": 1,
+          "explanation": "Có lý do rõ ràng thì mới đi được đường dài."
+        },
+        {
+          "type": "order",
+          "prompt": "Sau bước \"lý do và động lực\", xếp 6 bước còn lại theo đúng thứ tự.",
+          "steps": [
+            "Xây dựng niềm tin",
+            "Đi học",
+            "Xác định mục tiêu",
+            "Lập danh sách",
+            "Đặt hẹn",
+            "OPP và demo"
+          ],
+          "explanation": "Niềm tin và kiến thức đi trước, rồi mới đặt mục tiêu và hành động."
+        },
+        {
+          "prompt": "Bước \"xây dựng niềm tin\" là niềm tin vào những gì?",
+          "options": [
+            "Chỉ vào tuyến trên",
+            "Chỉ vào thu nhập",
+            "Công ty và sản phẩm, mô hình kinh doanh, chính bản thân"
+          ],
+          "correctIndex": 2,
+          "explanation": "Ba niềm tin này giúp bạn nói chuyện tự tin."
+        },
+        {
+          "prompt": "Khi lập danh sách lần đầu, nên viết bao nhiêu tên?",
+          "options": [
+            "Khoảng 200 tên, rồi cập nhật thường xuyên",
+            "10 người thân nhất",
+            "Chưa cần viết"
+          ],
+          "correctIndex": 0,
+          "explanation": "Danh sách người quen là tài sản quý nhất, càng đầy đủ càng tốt."
+        },
+        {
+          "prompt": "Mục tiêu hành động của tháng đầu gồm gì?",
+          "options": [
+            "Tuyển ngay 50 người",
+            "Học 4 kỹ năng cơ bản và hẹn 10 người",
+            "Chỉ đọc tài liệu"
+          ],
+          "correctIndex": 1,
+          "explanation": "Tháng đầu tập trung vào học và những cuộc hẹn đầu tiên."
+        },
+        {
+          "prompt": "Người đầu danh sách tuần sau mới rảnh. Bạn làm gì?",
+          "options": [
+            "Đợi tới tuần sau",
+            "Bỏ hẳn việc hẹn",
+            "Gọi người tiếp theo, không chờ"
+          ],
+          "correctIndex": 2,
+          "explanation": "Đặt hẹn theo danh sách, không chờ một người nào."
+        }
+      ]
+    },
+    {
+      "id": "four-learning-levels",
+      "title": "Bốn cấp học",
+      "xp": 10,
+      "stage": "start",
+      "icon": "cap",
+      "questions": [
+        {
+          "type": "order",
+          "prompt": "Xếp bốn cấp học từ thấp đến cao.",
+          "steps": [
+            "Học để làm",
+            "Học để dạy",
+            "Học để dạy người khác dạy",
+            "Học để làm gương"
+          ],
+          "explanation": "Mỗi cấp học cao hơn giúp bạn hỗ trợ được nhiều người hơn."
+        },
+        {
+          "prompt": "\"Học để làm\" phù hợp với giai đoạn nào?",
+          "options": [
+            "Mới bắt đầu, cần tự làm được việc",
+            "Khi đã có đội nhóm lớn",
+            "Khi đã đạt danh hiệu cao"
+          ],
+          "correctIndex": 0,
+          "explanation": "Giai đoạn đầu học để tự mình làm được."
+        },
+        {
+          "prompt": "\"Học để dạy\" nghĩa là gì?",
+          "options": [
+            "Học để thi lấy chứng chỉ",
+            "Hiểu đủ để hướng dẫn người mới làm được",
+            "Học để nói thật hay"
+          ],
+          "correctIndex": 1,
+          "explanation": "Khi có người mới, bạn cần hiểu đủ để chỉ lại cho họ."
+        },
+        {
+          "prompt": "\"Học để dạy người khác dạy\" nghĩa là gì?",
+          "options": [
+            "Thuê người dạy thay",
+            "Chỉ dạy một người",
+            "Giúp người mình hướng dẫn tự hướng dẫn được người của họ"
+          ],
+          "correctIndex": 2,
+          "explanation": "Đây là bước để đội nhóm tự nhân rộng."
+        },
+        {
+          "prompt": "\"Học để làm gương\" nghĩa là gì?",
+          "options": [
+            "Cách mình làm việc là tấm gương cho cả đội nhóm",
+            "Chỉ nói, không cần làm",
+            "Làm thay mọi người"
+          ],
+          "correctIndex": 0,
+          "explanation": "Ở cấp cao nhất, hành động của bạn dạy nhiều hơn lời nói."
+        }
+      ]
+    },
+    {
+      "id": "smarter-goals",
+      "title": "Mục tiêu SMARTER",
+      "xp": 10,
+      "stage": "start",
+      "icon": "target",
+      "questions": [
+        {
+          "type": "match",
+          "prompt": "Ghép mỗi chữ cái với ý nghĩa của nó.",
+          "pairs": [
+            {
+              "left": "S",
+              "right": "Cụ thể"
+            },
+            {
+              "left": "M",
+              "right": "Đo lường được"
+            },
+            {
+              "left": "A",
+              "right": "Khả thi"
+            },
+            {
+              "left": "R",
+              "right": "Gắn với ước mơ, mục đích"
+            },
+            {
+              "left": "T",
+              "right": "Có thời hạn"
+            }
+          ],
+          "explanation": "Năm chữ đầu là tiêu chí của một mục tiêu tốt."
+        },
+        {
+          "prompt": "Hai chữ E và R ở cuối SMARTER nghĩa là gì?",
+          "options": [
+            "Dễ dàng và nhanh chóng",
+            "Đánh giá tiến độ và điều chỉnh",
+            "Kinh nghiệm và kết quả"
+          ],
+          "correctIndex": 1,
+          "explanation": "Đặt mục tiêu xong cần theo dõi và điều chỉnh khi cần."
+        },
+        {
+          "prompt": "Câu \"Tôi sẽ lên Silver\" còn thiếu gì?",
+          "options": [
+            "Thiếu cảm xúc",
+            "Không thiếu gì",
+            "Thời hạn và các mốc đo được"
+          ],
+          "correctIndex": 2,
+          "explanation": "Ví dụ tốt hơn: đạt mốc cụ thể vào tháng nào, mỗi tháng đạt mốc nào."
+        },
+        {
+          "prompt": "Mục tiêu \"khả thi\" nghĩa là gì?",
+          "options": [
+            "Hiểu rõ cách đạt được, không hô hào theo cảm hứng",
+            "Càng cao càng tốt",
+            "Dễ tới mức không cần cố gắng"
+          ],
+          "correctIndex": 0,
+          "explanation": "Khả thi là có con đường cụ thể để đi tới."
+        },
+        {
+          "prompt": "Vì sao mục tiêu cần gắn với ước mơ?",
+          "options": [
+            "Để nói cho hay",
+            "Để có cảm xúc và động lực thật",
+            "Không cần gắn"
+          ],
+          "correctIndex": 1,
+          "explanation": "Mục tiêu có cảm xúc mới giữ được khi khó khăn."
+        },
+        {
+          "prompt": "Một mục tiêu lớn nên được chia thế nào?",
+          "options": [
+            "Giữ nguyên, không chia",
+            "Chia cho tuyến trên làm",
+            "Theo tháng, tuần, ngày để lên kế hoạch hành động"
+          ],
+          "correctIndex": 2,
+          "explanation": "Chia nhỏ giúp biết hôm nay cần làm gì."
+        }
+      ]
+    },
+    {
+      "id": "follow-the-system",
+      "title": "Làm theo hệ thống khi mới bắt đầu",
+      "xp": 15,
+      "stage": "start",
+      "icon": "compass",
+      "questions": [
+        {
+          "prompt": "Bạn mới bắt đầu và nghĩ ra một cách làm khác hướng dẫn. Nên làm gì?",
+          "options": [
+            "Hỏi tuyến trên và làm theo cách của hệ thống trước",
+            "Tự làm theo cách mới",
+            "Bỏ qua hướng dẫn"
+          ],
+          "correctIndex": 0,
+          "explanation": "Khi chưa nắm khung, tự sáng tạo dễ làm lệch hướng."
+        },
+        {
+          "prompt": "Bạn từng làm ở một mô hình khác và muốn dùng lại cách cũ. Nên làm gì?",
+          "options": [
+            "Áp dụng nguyên cách cũ",
+            "Học cách làm của đội nhóm hiện tại trước",
+            "Kết hợp tuỳ ý"
+          ],
+          "correctIndex": 1,
+          "explanation": "Mỗi đội nhóm có quy trình riêng; học đúng khung trước rồi mới so sánh."
+        },
+        {
+          "prompt": "Bạn làm khác lời hướng dẫn và mãi chưa có kết quả. Nên làm gì?",
+          "options": [
+            "Đổi sang người hướng dẫn khác",
+            "Bỏ cuộc",
+            "Quay lại đội nhóm, học và làm theo trọn vẹn"
+          ],
+          "correctIndex": 2,
+          "explanation": "Quay lại đội nhóm là cách nhanh nhất để đi đúng đường."
+        },
+        {
+          "prompt": "Vì sao nói \"không cần phát minh lại bánh xe\"?",
+          "options": [
+            "Cách làm đã được người đi trước thử và đúc kết, giúp tiết kiệm thời gian",
+            "Vì không được phép thay đổi gì",
+            "Vì bánh xe đã cũ"
+          ],
+          "correctIndex": 0,
+          "explanation": "Kinh nghiệm của người đi trước giúp mình tránh sai lầm họ từng gặp."
+        },
+        {
+          "prompt": "Đồng bộ trong đội nhóm mang lại điều gì?",
+          "options": [
+            "Mất đi cá tính riêng",
+            "Sức mạnh khi mọi người cùng làm một cách",
+            "Không mang lại gì"
+          ],
+          "correctIndex": 1,
+          "explanation": "Khi cả đội làm cùng một cách, việc hỗ trợ và sao chép dễ hơn."
+        },
+        {
+          "prompt": "Khi nào thì có thể sáng tạo cách làm riêng?",
+          "options": [
+            "Ngay từ ngày đầu",
+            "Không bao giờ được",
+            "Khi đã nắm vững khung, có kết quả và kinh nghiệm dẫn dắt"
+          ],
+          "correctIndex": 2,
+          "explanation": "Sáng tạo dựa trên nền vững thì mới hiệu quả."
+        }
+      ]
+    },
     {
       "id": "prospect-list",
       "title": "Lập danh sách người quen",
       "xp": 10,
       "stage": "list",
+      "icon": "list",
       "questions": [
         {
           "prompt": "Khi bắt đầu lập danh sách, cách nào hiệu quả nhất?",
@@ -65,6 +845,26 @@
           ],
           "correctIndex": 1,
           "explanation": "Danh sách sống nhờ được cập nhật thường xuyên."
+        },
+        {
+          "prompt": "Một người bạn lâu không liên lạc. Có nên ghi tên vào danh sách không?",
+          "options": [
+            "Có, cứ ghi ra trước, chưa vội đánh giá",
+            "Không, vì đã lâu không nói chuyện",
+            "Chỉ ghi nếu chắc chắn họ quan tâm"
+          ],
+          "correctIndex": 0,
+          "explanation": "Danh sách là để không bỏ sót ai. Việc chọn ai để liên hệ trước là bước sau."
+        },
+        {
+          "prompt": "Danh sách người quen nên được xem là gì?",
+          "options": [
+            "Một việc làm một lần cho xong",
+            "Tài sản quý, cập nhật thường xuyên",
+            "Bản nháp, làm xong có thể bỏ"
+          ],
+          "correctIndex": 1,
+          "explanation": "Danh sách người quen là nền tảng của mọi bước sau, nên cần giữ và cập nhật đều."
         }
       ]
     },
@@ -73,6 +873,7 @@
       "title": "Lời mời thân thiện",
       "xp": 10,
       "stage": "invite",
+      "icon": "send",
       "questions": [
         {
           "prompt": "Mở đầu lời mời tốt nhất là gì?",
@@ -103,6 +904,26 @@
           ],
           "correctIndex": 1,
           "explanation": "Tôn trọng thời gian của họ và giữ liên lạc."
+        },
+        {
+          "prompt": "Bạn gọi đúng lúc người kia đang bận. Nên làm gì?",
+          "options": [
+            "Nói nhanh cho xong ý",
+            "Hỏi lúc nào tiện rồi gọi lại",
+            "Gửi tin nhắn dài giải thích"
+          ],
+          "correctIndex": 1,
+          "explanation": "Tôn trọng thời gian của người kia giúp lời mời được đón nhận tốt hơn."
+        },
+        {
+          "prompt": "Điều gì làm lời mời mất thiện cảm?",
+          "options": [
+            "Nói rõ lý do muốn gặp",
+            "Đưa ra hai lựa chọn thời gian",
+            "Nài ép khi người kia đã từ chối"
+          ],
+          "correctIndex": 2,
+          "explanation": "Lời mời thân thiện là để người kia thấy thoải mái. Nài ép làm mất lòng tin."
         }
       ]
     },
@@ -111,6 +932,7 @@
       "title": "Trình bày cơ hội đơn giản",
       "xp": 15,
       "stage": "opp",
+      "icon": "presentation",
       "questions": [
         {
           "prompt": "Một buổi trình bày tốt nên bắt đầu bằng gì?",
@@ -151,6 +973,16 @@
           ],
           "correctIndex": 0,
           "explanation": "Một bước tiếp theo nhỏ giúp cuộc trò chuyện đi tiếp."
+        },
+        {
+          "prompt": "Người nghe hỏi một điều bạn chưa biết. Bạn nên làm gì?",
+          "options": [
+            "Đoán một câu trả lời cho xong",
+            "Nói thật là chưa rõ và hẹn tìm hiểu, hoặc nhờ người hỗ trợ trả lời",
+            "Lảng sang chuyện khác"
+          ],
+          "correctIndex": 1,
+          "explanation": "Trung thực giữ được lòng tin. Không cần biết hết mọi câu trả lời."
         }
       ]
     },
@@ -159,6 +991,7 @@
       "title": "Theo dõi sau cuộc gặp",
       "xp": 10,
       "stage": "followup",
+      "icon": "refresh",
       "questions": [
         {
           "prompt": "Khi nào nên liên hệ lại sau cuộc gặp?",
@@ -189,6 +1022,26 @@
           ],
           "correctIndex": 1,
           "explanation": "Ghi chú giúp bạn lần sau nói đúng điều họ quan tâm."
+        },
+        {
+          "prompt": "Người kia chưa trả lời tin nhắn theo dõi. Bạn nên làm gì?",
+          "options": [
+            "Nhắn liên tục cho tới khi có trả lời",
+            "Chờ vài ngày rồi hỏi thăm nhẹ nhàng một lần nữa",
+            "Xoá tên họ khỏi danh sách"
+          ],
+          "correctIndex": 1,
+          "explanation": "Theo dõi đều đặn nhưng không làm phiền. Người ta có thể đang bận."
+        },
+        {
+          "prompt": "Mục đích chính của việc theo dõi sau cuộc gặp là gì?",
+          "options": [
+            "Thúc người kia quyết định ngay",
+            "Giữ liên lạc và hiểu thêm điều họ quan tâm",
+            "Kể thêm thật nhiều thông tin"
+          ],
+          "correctIndex": 1,
+          "explanation": "Theo dõi là để chăm sóc mối quan hệ và nắm được người kia đang nghĩ gì."
         }
       ]
     },
@@ -197,6 +1050,7 @@
       "title": "Đón nhận lời từ chối",
       "xp": 15,
       "stage": "followup",
+      "icon": "shield",
       "questions": [
         {
           "prompt": "Ai đó nói \"không\". Cách nghĩ nào lành mạnh nhất?",
@@ -237,6 +1091,16 @@
           ],
           "correctIndex": 0,
           "explanation": "Giữ thái độ tử tế, để cửa luôn mở."
+        },
+        {
+          "prompt": "Có ý kiến coi việc gom đủ 100 lời từ chối là một thử thách. Ý nghĩa của nó là gì?",
+          "options": [
+            "Từ chối nhiều nghĩa là mình làm sai",
+            "Mỗi lời từ chối là một lần mình đã dám hành động",
+            "Nên tránh người dễ từ chối"
+          ],
+          "correctIndex": 1,
+          "explanation": "Đổi cách nhìn: lời từ chối là dấu hiệu mình đang hành động, giúp bớt sợ khi liên hệ."
         }
       ]
     },
@@ -245,6 +1109,7 @@
       "title": "FORMHD: hiểu người qua 6 chủ đề",
       "xp": 10,
       "stage": "list",
+      "icon": "chat",
       "questions": [
         {
           "prompt": "Chữ D trong FORMHD là gì?",
@@ -303,6 +1168,7 @@
       "title": "Làm quen người mới",
       "xp": 10,
       "stage": "list",
+      "icon": "userplus",
       "questions": [
         {
           "type": "order",
@@ -347,6 +1213,16 @@
             "Thân thiết"
           ],
           "explanation": "Mối quan hệ lớn dần từng bước; lòng tin cần thời gian."
+        },
+        {
+          "prompt": "Khi xin liên lạc người mới quen, nên kèm theo điều gì?",
+          "options": [
+            "Một lý do chung để giữ liên lạc, ví dụ cùng sở thích",
+            "Lời mời tham gia kinh doanh ngay",
+            "Không cần lý do gì"
+          ],
+          "correctIndex": 0,
+          "explanation": "Một lý do chung tự nhiên giúp người kia thoải mái cho liên lạc."
         }
       ]
     },
@@ -355,6 +1231,7 @@
       "title": "FORMHD: ghép cặp",
       "xp": 10,
       "stage": "list",
+      "icon": "puzzle",
       "questions": [
         {
           "type": "match",
@@ -423,6 +1300,26 @@
           ],
           "correctIndex": 0,
           "explanation": "Chuyện tiền bạc là riêng tư; lắng nghe điều họ tự chia sẻ là đủ."
+        },
+        {
+          "prompt": "Mục đích của 6 chủ đề FORMHD là gì?",
+          "options": [
+            "Để hỏi càng nhiều càng tốt trong một lần gặp",
+            "Để hiểu và quan tâm người kia một cách tự nhiên",
+            "Để tìm cách nói về sản phẩm sớm"
+          ],
+          "correctIndex": 1,
+          "explanation": "FORMHD giúp trò chuyện có chiều sâu và hiểu người kia hơn, không phải để tra hỏi."
+        },
+        {
+          "prompt": "Khi hỏi về Sức khoẻ, nên dừng ở mức nào?",
+          "options": [
+            "Hỏi thăm chung, ví dụ dạo này có hay tập thể dục không",
+            "Hỏi chi tiết bệnh đang mắc",
+            "Gợi ý ngay một sản phẩm"
+          ],
+          "correctIndex": 0,
+          "explanation": "Sức khoẻ chỉ dừng ở mức hỏi thăm, không đi sâu chuyện riêng và không nói như công dụng sản phẩm."
         }
       ]
     },
@@ -431,6 +1328,7 @@
       "title": "Sắp lịch tuần 3 bước",
       "xp": 10,
       "stage": "invite",
+      "icon": "calendar",
       "questions": [
         {
           "type": "order",
@@ -461,6 +1359,26 @@
           ],
           "correctIndex": 0,
           "explanation": "Lịch đã sắp thì cứ chủ động, không chờ đợi ai."
+        },
+        {
+          "prompt": "Vì sao nên so lịch với tuyến trên trước khi hẹn?",
+          "options": [
+            "Để tuyến trên quyết định thay mình",
+            "Để chọn được giờ mà người hỗ trợ cũng tham gia được",
+            "Để có lý do hoãn hẹn"
+          ],
+          "correctIndex": 1,
+          "explanation": "So lịch trước giúp buổi hẹn có người hỗ trợ khi cần."
+        },
+        {
+          "prompt": "Lịch tuần nên được làm khi nào?",
+          "options": [
+            "Đầu mỗi tuần, cập nhật khi có thay đổi",
+            "Chỉ khi có người hẹn",
+            "Mỗi tháng một lần"
+          ],
+          "correctIndex": 0,
+          "explanation": "Lịch tuần đều đặn giúp mình chủ động thay vì chờ việc tới."
         }
       ]
     },
@@ -469,6 +1387,7 @@
       "title": "Cách mời hẹn",
       "xp": 10,
       "stage": "invite",
+      "icon": "phone",
       "questions": [
         {
           "type": "match",
@@ -522,6 +1441,16 @@
           ],
           "correctIndex": 0,
           "explanation": "Người được mời nên thấy buổi gặp có ích cho chính họ."
+        },
+        {
+          "prompt": "Người được mời hỏi chi tiết ngay trên điện thoại. Bạn nên làm gì?",
+          "options": [
+            "Trình bày đầy đủ qua điện thoại",
+            "Nói ngắn gọn và hẹn gặp để nói kỹ hơn",
+            "Từ chối trả lời"
+          ],
+          "correctIndex": 1,
+          "explanation": "Gọi điện là để hẹn gặp. Nội dung chi tiết nói khi gặp mặt mới rõ ràng."
         }
       ]
     },
@@ -530,6 +1459,7 @@
       "title": "Mời theo từng kiểu người",
       "xp": 10,
       "stage": "invite",
+      "icon": "users",
       "questions": [
         {
           "type": "match",
@@ -569,6 +1499,26 @@
           ],
           "correctIndex": 0,
           "explanation": "Không nói dối là nguyên tắc số một khi mời hẹn."
+        },
+        {
+          "prompt": "Với người bạn mới quen, lời mời nên thế nào?",
+          "options": [
+            "Rủ gặp để trò chuyện tiếp, nhẹ nhàng, chưa vội nói chuyện kinh doanh",
+            "Mời ngay vào một buổi trình bày",
+            "Gửi nhiều tài liệu để họ đọc"
+          ],
+          "correctIndex": 0,
+          "explanation": "Với người mới quen, ưu tiên xây mối quan hệ trước."
+        },
+        {
+          "prompt": "Với người nhiều kinh nghiệm hơn, vì sao phải nói thật mục đích?",
+          "options": [
+            "Vì họ dễ đoán ra nếu mình vòng vo",
+            "Vì nói thật giữ được sự tôn trọng và lòng tin",
+            "Không cần nói thật"
+          ],
+          "correctIndex": 1,
+          "explanation": "Mượn cớ \"xin ý kiến\" mà giấu mục đích dễ làm mất lòng tin. Hãy nói rõ là mình đang bắt đầu kinh doanh thêm."
         }
       ]
     },
@@ -577,6 +1527,7 @@
       "title": "Demo máy lọc không khí",
       "xp": 15,
       "stage": "demo",
+      "icon": "wind",
       "questions": [
         {
           "type": "order",
@@ -647,6 +1598,7 @@
       "title": "ABC là ai?",
       "xp": 10,
       "stage": "opp",
+      "icon": "users",
       "questions": [
         {
           "type": "match",
@@ -696,6 +1648,16 @@
           ],
           "correctIndex": 0,
           "explanation": "Phối hợp ngang bằng, không ỷ lại."
+        },
+        {
+          "prompt": "Vì sao B không nên tự trình bày hết mọi thứ?",
+          "options": [
+            "Vì B không được phép nói",
+            "Vì để A hỗ trợ thì C dễ tin hơn và B học được cách làm",
+            "Vì C không thích nghe B"
+          ],
+          "correctIndex": 1,
+          "explanation": "Mượn sức người hỗ trợ giúp buổi gặp hiệu quả hơn, đồng thời B học được qua mỗi lần."
         }
       ]
     },
@@ -704,6 +1666,7 @@
       "title": "Buổi gặp có tuyến trên hỗ trợ",
       "xp": 10,
       "stage": "opp",
+      "icon": "handshake",
       "questions": [
         {
           "type": "order",
@@ -755,6 +1718,16 @@
           ],
           "correctIndex": 0,
           "explanation": "Sự tập trung của bạn cho thấy bạn tôn trọng cả tuyến trên và ứng viên."
+        },
+        {
+          "prompt": "Sau buổi gặp, B nên làm gì với tuyến trên?",
+          "options": [
+            "Không cần trao đổi gì thêm",
+            "Cùng rút kinh nghiệm và thống nhất bước tiếp theo",
+            "Để tuyến trên tự liên hệ ứng viên"
+          ],
+          "correctIndex": 1,
+          "explanation": "Rút kinh nghiệm sau mỗi buổi giúp lần sau tốt hơn và không bỏ sót ứng viên."
         }
       ]
     }
