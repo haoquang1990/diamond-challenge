@@ -1,0 +1,2 @@
+Reviewed-Content-Hash: src/content/lessons.json bc536ff477417eb1848ad0fbab3975df9a050813
+Reviewed-Content-Hash: tests/unit/lesson/lesson-path.test.ts bf971943d5d704efbdf06b5acfcb2f8cd6618b2b
