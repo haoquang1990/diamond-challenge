@@ -129,10 +129,16 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
   const [duplicatesFromBoard, setDuplicatesFromBoard] = useState(false);
   /** Set when Làm was opened from Bảng 30x30 (preselected filter + back control); null otherwise. */
   const [fromBoard, setFromBoard] = useState<ContactsFilter | null>(null);
+  /** Lesson Hôm nay asked Học to start (story 039); cleared when leaving Học. */
+  const [startLessonId, setStartLessonId] = useState<string | null>(null);
   useEffect(() => {
     if (tab !== 'people') setReopenPerson(null);
   }, [tab]);
   const goToday = () => setTab('today');
+  // A lesson started from Hôm nay runs once; coming back to Học later shows the path (story 039).
+  useEffect(() => {
+    if (tab !== 'learn') setStartLessonId(null);
+  }, [tab]);
   const onLessonActive = useCallback((active: boolean) => setLessonActive(active), []);
 
   // Optional account (story 021): the whole feature is hidden when the build has no Supabase config.
@@ -667,6 +673,10 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
           eventStore={eventStore}
           memberIds={memberIds}
           onLearn={() => setTab('learn')}
+          onStartLesson={(lessonId) => {
+            setStartLessonId(lessonId);
+            setTab('learn');
+          }}
           onDo={() => {
             setFromBoard(null);
             setTab('people');
@@ -677,7 +687,15 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
           onDismissCheer={onDismissCheer}
         />
       )}
-      {tab === 'learn' && <LessonScreen eventStore={eventStore} onDone={goToday} onActiveChange={onLessonActive} />}
+      {tab === 'learn' && (
+        <LessonScreen
+          key={startLessonId ?? 'path'}
+          eventStore={eventStore}
+          onDone={goToday}
+          onActiveChange={onLessonActive}
+          {...(startLessonId === null ? {} : { initialLessonId: startLessonId })}
+        />
+      )}
       {tab === 'path' && <DiamondPathScreen eventStore={eventStore} memberIds={memberIds} onOpenBoard={() => setTab('board')} {...(clientPromise === null ? {} : { onOpenGroup: () => setTab('group'), groupLocked: account === null })} onOpenAchievements={() => setTab('achievements')} />}
       {tab === 'people' && (
         <PeopleScreen

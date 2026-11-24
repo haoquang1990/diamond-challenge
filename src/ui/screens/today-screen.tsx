@@ -9,6 +9,11 @@ import type { ReminderConfig, ReminderSettings } from '../../domain/reminders';
 import { browserNotificationPlatform } from '../../notifications/reminders';
 import type { ReminderPermission } from '../../notifications/reminders';
 import { DEFAULT_STAGES, buildStageView } from './diamond-path-screen';
+import type { Lesson } from '../../domain/lesson';
+import { nextLessonSuggestion } from '../../domain/lesson-stages';
+import type { LessonStage, NextLessonSuggestion } from '../../domain/lesson-stages';
+import { LOADED_LESSONS, LOADED_STAGES } from '../lesson-content';
+import { LESSON_STRINGS, nextLessonAllDone, pathLessonFacts, pathStageHeading } from '../lesson-strings';
 import {
   STRINGS,
   keepStreakLabel,
@@ -48,6 +53,11 @@ export interface TodayScreenProps {
   readonly reminderConfig?: ReminderConfig;
   /** Current notification permission; defaults to the browser's. Injected for tests and screenshots. */
   readonly notificationPermission?: () => ReminderPermission;
+  /** Starts a lesson in Học (story 039); the "Bài nên học tiếp" card is hidden when absent. */
+  readonly onStartLesson?: (lessonId: string) => void;
+  /** Lessons and stages for the suggestion; default to content/lessons.json. */
+  readonly lessons?: readonly Lesson[];
+  readonly lessonStages?: readonly LessonStage[];
 }
 
 /**
@@ -61,7 +71,7 @@ export interface TodayScreenProps {
 type ScreenState =
   | { readonly kind: 'loading' }
   | { readonly kind: 'error' }
-  | { readonly kind: 'ready'; readonly progress: Progress; readonly isNewUser: boolean; readonly stageName: string | null; readonly reminder: ReminderSettings; readonly reminderDue: boolean };
+  | { readonly kind: 'ready'; readonly progress: Progress; readonly isNewUser: boolean; readonly stageName: string | null; readonly reminder: ReminderSettings; readonly reminderDue: boolean; readonly next: NextLessonSuggestion };
 
 const NO_MEMBERS: ReadonlySet<string> = new Set();
 const DEFAULT_CONFIG: ProgressConfig = { dailyXpGoal: gameConfig.dailyXpGoal };
@@ -102,6 +112,9 @@ export function TodayScreen({
   memberIds = NO_MEMBERS,
   cheer = null,
   onDismissCheer,
+  onStartLesson,
+  lessons = LOADED_LESSONS.lessons,
+  lessonStages = LOADED_STAGES,
 }: TodayScreenProps) {
   const [state, setState] = useState<ScreenState>({ kind: 'loading' });
   const [reloadKey, setReloadKey] = useState(0);
@@ -124,6 +137,7 @@ export function TodayScreen({
           stageName: view.progress.current?.name ?? null,
           reminder,
           reminderDue: shouldShowReminder(reminder, now(), timeZone, progress.dailyGoal.met),
+          next: nextLessonSuggestion(lessons, lessonStages, events),
         });
       })
       .catch((error: unknown) => {
@@ -236,6 +250,10 @@ export function TodayScreen({
 
       {state.kind === 'ready' && (goalMet ? <GoalMetCard streak={streak} /> : <GoalProgressCard progress={state.progress} />)}
 
+      {state.kind === 'ready' && onStartLesson !== undefined && state.next.total > 0 && (
+        <NextLessonCard next={state.next} onStart={onStartLesson} onLearn={onLearn} />
+      )}
+
       <section className="card stage-slot" aria-label={STRINGS.currentStage}>
         <span className="stage-slot__label">{STRINGS.currentStage}</span>
         <span className={stageName === undefined ? 'stage-slot__name stage-slot__name--pending' : 'stage-slot__name'}>
@@ -252,6 +270,45 @@ export function TodayScreen({
         </button>
       </div>
     </main>
+  );
+}
+
+/** "Bài nên học tiếp" (story 039): the first lesson not learned yet, in path order. */
+function NextLessonCard({
+  next,
+  onStart,
+  onLearn,
+}: {
+  readonly next: NextLessonSuggestion;
+  readonly onStart: (lessonId: string) => void;
+  readonly onLearn: () => void;
+}) {
+  const { lesson } = next;
+  return (
+    <section className="card next-lesson" aria-labelledby="next-lesson-title">
+      <h2 id="next-lesson-title" className="card__title">
+        {LESSON_STRINGS.nextLessonTitle}
+      </h2>
+      {lesson === null ? (
+        <>
+          <p className="card__body">{nextLessonAllDone(next.total)}</p>
+          <button type="button" className="button button--secondary" onClick={onLearn}>
+            {LESSON_STRINGS.nextLessonReview}
+          </button>
+        </>
+      ) : (
+        <>
+          {next.stagePosition !== null && next.stageTitle !== null && (
+            <p className="next-lesson__stage">{pathStageHeading(next.stagePosition, next.stageTitle)}</p>
+          )}
+          <p className="next-lesson__name">{lesson.title}</p>
+          <p className="next-lesson__facts">{pathLessonFacts(lesson.xp, lesson.questions.length)}</p>
+          <button type="button" className="button button--primary" onClick={() => onStart(lesson.id)}>
+            {LESSON_STRINGS.nextLessonStart}
+          </button>
+        </>
+      )}
+    </section>
   );
 }
 

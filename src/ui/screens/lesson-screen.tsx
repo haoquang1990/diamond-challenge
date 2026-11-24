@@ -1,30 +1,24 @@
-import { useEffect, useState } from 'react';
-import lessonsJson from '../../content/lessons.json';
+import { useEffect, useRef, useState } from 'react';
 import type { EventStore, LogEvent } from '../../data/event-store';
 import {
   computeLessonResult,
   gradeAnswer,
   isMatchQuestion,
   isOrderQuestion,
-  parseLessons,
   shuffledStepOrder,
   toggleMatchLink,
   xpForCompletion,
 } from '../../domain/lesson';
 import type { Lesson, LessonAnswer, LessonResult, ParsedLessons } from '../../domain/lesson';
-import { groupLessonsByStage, parseLessonStages } from '../../domain/lesson-stages';
+import { groupLessonsByStage } from '../../domain/lesson-stages';
 import type { LessonStage } from '../../domain/lesson-stages';
 import { LESSON_STRINGS } from '../lesson-strings';
 import { STRINGS, questionProgressLabel, scoreLabel, xpLabel } from '../strings';
+import { LOADED_LESSONS, LOADED_STAGES } from '../lesson-content';
 import { LessonPath } from './lesson-path';
 import { MatchQuestionView } from './match-question';
 import { OrderQuestionView } from './order-question';
 
-/** Lessons from content/lessons.json, validated once at load (never throws). */
-const LOADED_LESSONS: ParsedLessons = parseLessons(lessonsJson);
-
-/** Lesson groups from content/lessons.json, in display order. */
-const LOADED_STAGES: readonly LessonStage[] = parseLessonStages(lessonsJson).stages;
 
 /** Props for {@link LessonScreen}. */
 export interface LessonScreenProps {
@@ -44,6 +38,8 @@ export interface LessonScreenProps {
   readonly timeZone?: string;
   /** Random source in [0, 1) for shuffling order steps and match items; defaults to Math.random. */
   readonly random?: () => number;
+  /** Lesson to start at once instead of showing the path (Hôm nay "Học ngay", story 039). */
+  readonly initialLessonId?: string;
 }
 
 type ViewState =
@@ -82,6 +78,7 @@ export function LessonScreen({
   now = () => new Date(),
   timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone,
   random = Math.random,
+  initialLessonId,
 }: LessonScreenProps) {
   const [view, setView] = useState<ViewState>({ kind: 'list' });
   const [events, setEvents] = useState<readonly LogEvent[]>([]);
@@ -105,6 +102,16 @@ export function LessonScreen({
       cancelled = true;
     };
   }, [eventStore, view.kind]);
+
+  // Hôm nay "Học ngay": start the suggested lesson once, on mount (story 039).
+  const startedInitial = useRef(false);
+  useEffect(() => {
+    if (startedInitial.current || initialLessonId === undefined) return;
+    startedInitial.current = true;
+    const lesson = parsed.lessons.find((l) => l.id === initialLessonId);
+    if (lesson !== undefined) setView(questionView(lesson, 0, []));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- runs once for the initial lesson only
+  }, []);
 
   if (parsed.lessons.length === 0) {
     return (

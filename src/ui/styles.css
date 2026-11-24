@@ -1025,3 +1025,10 @@ body.dialog-open { overflow: hidden; }
 .lesson-path__bar-count { padding: 4px 10px; border-radius: 12px; background: rgba(255, 255, 255, 0.25); font-weight: 800; white-space: nowrap; }
 .lesson-sheet__facts { margin: 0; font-weight: 800; color: var(--color-diamond-dark); }
 .lesson-sheet__learned { margin: 0; font-weight: 600; color: var(--color-muted); }
+
+/* Story 039: Hôm nay "Bài nên học tiếp" */
+.next-lesson { display: flex; flex-direction: column; gap: 6px; }
+.next-lesson__stage { margin: 0; font-size: 0.85rem; font-weight: 800; color: var(--color-muted); text-transform: uppercase; letter-spacing: 0.03em; }
+.next-lesson__name { margin: 0; font-size: 1.15rem; font-weight: 800; overflow-wrap: anywhere; }
+.next-lesson__facts { margin: 0 0 4px; font-weight: 700; color: var(--color-diamond-dark); }
+.next-lesson .button { min-height: 48px; }

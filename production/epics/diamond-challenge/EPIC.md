@@ -52,6 +52,11 @@ Theo Build order của brief: nhật ký sự kiện + XP/streak → Làm + Hôm
 | 036 | Bài học 5–7 câu, nhóm Khởi đầu, bổ sung 11 bài cũ | Logic | Complete | N/A |
 | 037 | Tab Học theo chặng: con đường bài học có icon, popup bài | UI | Complete | N/A |
 | 038 | Chia lại tab Học thành 18 chặng, mỗi chặng 5–7 bài | Config/Data | Complete | N/A |
+| 039 | Thẻ "Bài nên học tiếp" trên Hôm nay | UI | Complete | N/A |
+| 040 | Huỷ bảo trợ | Integration | Ready | N/A |
+| 041 | Thẻ "Cổ vũ nhóm" trên Hôm nay | UI | Ready | N/A |
+| 042 | Bỏ màn Bảng 30x30 và Nhóm của tôi; khung "Hộ F1" trong chi tiết NPP | UI | Ready | N/A |
+| 043 | Bỏ Lưu trữ liên hệ | UI | Ready | N/A |
 
 > 012–014 thay mô hình giai đoạn bằng việc cần làm + nhãn KH/NPP theo phản hồi dùng thử (2026-11-04, `design/gdd/crm.md`). Thứ tự gợi ý: 012 → 013 → 014 → 011.
 
@@ -68,3 +73,5 @@ Theo Build order của brief: nhật ký sự kiện + XP/streak → Làm + Hôm
 > 036 (2026-11-24) chuẩn bị đưa 86 bài mới lên app (`design/lessons/outline.md`): giới hạn 5–7 câu mỗi bài, nhóm Khởi đầu đứng đầu, bổ sung 11 bài cũ lên 5 câu. Nội dung 86 bài làm thành 7 đợt, mỗi đợt người dùng duyệt chữ rồi mới deploy.
 
 > 037 (2026-11-24) đổi danh sách bài trong tab Học thành con đường theo chặng (mẫu được duyệt 2026-11-24): icon từng bài, thẻ đầu chặng, cúp trang trí, popup bài; không khoá bài, không đổi XP.
+
+> 039–043 (2026-11-24) theo phản hồi dùng thử: bài nên học tiếp và cổ vũ lên Hôm nay; huỷ bảo trợ (migration thêm loại sự kiện); bỏ Bảng 30x30, Nhóm của tôi và Lưu trữ liên hệ. Thứ tự: 039 → 040 → 041 → 042 → 043. 040 có migration chạy trên Supabase khi merge.
