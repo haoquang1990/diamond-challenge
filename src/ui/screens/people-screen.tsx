@@ -209,12 +209,18 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
         )}
         <div className="today-header">
           <h1 className="screen__title">{STRINGS.peopleTitle}</h1>
-          {/* Small header toggle so the closed "Thêm người" takes no row of its own. */}
-          <button type="button" className="reminder-button" aria-expanded={addOpen} onClick={() => setShowAdd(!addOpen)}>
-            {addOpen ? STRINGS.addPersonToggleClose : `+ ${STRINGS.addPersonToggleOpen}`}
-          </button>
+          {/* Filter as a dropdown in the header (2026-11-24): the list starts higher on the phone. */}
+          <label className="filter-select">
+            <span className="visually-hidden">{STRINGS.filterBarLabel}</span>
+            <select value={filter} onChange={(e) => setFilter(e.target.value as ContactsFilter)} aria-label={STRINGS.filterBarLabel}>
+              {CONTACTS_FILTERS.map((f) => (
+                <option key={f} value={f}>
+                  {filterChipLabel(filterNames[f], counts[f])}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
-        <p className="screen__prompt">{STRINGS.peoplePrompt}</p>
       </header>
 
       {pendingPairs > 0 && onOpenDuplicates !== undefined && (
@@ -244,33 +250,33 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
         </section>
       )}
 
-      {allPeople.length > 0 && (
-        <div className="search-field" role="search">
-          <input
-            className="note__input search-field__input"
-            type="search"
-            enterKeyHint="search"
-            value={query}
-            placeholder={STRINGS.searchPlaceholder}
-            onChange={(e) => setQuery(e.target.value)}
-            autoComplete="off"
-            aria-label={STRINGS.searchLabel}
-          />
-        </div>
-      )}
-
-      <div className="filter-bar" role="group" aria-label={STRINGS.filterBarLabel}>
-        {CONTACTS_FILTERS.map((f) => (
-          <button
-            key={f}
-            type="button"
-            className={f === filter ? 'chip chip--selected' : 'chip'}
-            aria-pressed={f === filter}
-            onClick={() => setFilter(f)}
-          >
-            {filterChipLabel(filterNames[f], counts[f])}
-          </button>
-        ))}
+      <div className="search-row">
+        {allPeople.length > 0 && (
+          <div className="search-field" role="search">
+            <input
+              className="note__input search-field__input"
+              type="search"
+              enterKeyHint="search"
+              value={query}
+              placeholder={STRINGS.searchPlaceholder}
+              onChange={(e) => setQuery(e.target.value)}
+              autoComplete="off"
+              aria-label={STRINGS.searchLabel}
+            />
+          </div>
+        )}
+        <button
+          type="button"
+          className={addOpen ? 'icon-button icon-button--open' : 'icon-button'}
+          aria-expanded={addOpen}
+          aria-label={addOpen ? STRINGS.addPersonToggleClose : STRINGS.addPersonToggleOpen}
+          title={addOpen ? STRINGS.addPersonToggleClose : STRINGS.addPersonToggleOpen}
+          onClick={() => setShowAdd(!addOpen)}
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            {addOpen ? <path d="M6 6l12 12M18 6 6 18" /> : <><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M19 8v6" /><path d="M22 11h-6" /></>}
+          </svg>
+        </button>
       </div>
 
       {filter === 'npp' && nppProgress !== undefined && (

@@ -40,7 +40,7 @@ const STAGE_COLOURS = 8;
 type Popup = { readonly kind: 'lesson'; readonly lesson: Lesson } | { readonly kind: 'trophy'; readonly group: LessonGroup };
 
 /** Stroke-only SVG icon on a 24×24 grid. */
-function PathIcon({ shapes, className }: { readonly shapes: readonly IconShape[]; readonly className?: string }) {
+export function PathIcon({ shapes, className }: { readonly shapes: readonly IconShape[]; readonly className?: string }) {
   return (
     <svg className={className ?? 'path-icon'} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
       {shapes.map((s, i) =>

@@ -29,15 +29,18 @@ import { ACTIVITY_TYPES } from './activity-types';
 import { PEOPLE_CONFIG, PERSON_TASKS } from './people-config';
 import { playTing } from './play-ting';
 import { DEFAULT_STAGES, buildStageView } from './screens/diamond-path-screen';
+import { evaluateBadges } from './badges-content';
 import { STRINGS, popupRestTitle, toastLabel, toastMergedLabel } from './strings';
 
-/** Achievements config from game-config.json, validated once at load. */
-export const ACHIEVEMENTS_CONFIG = parseAchievementsConfig(
-  gameConfig.achievements,
-  PEOPLE_CONFIG.targets,
-  DEFAULT_STAGES.map((s) => s.id),
-);
-if (ACHIEVEMENTS_CONFIG.problems.length > 0) console.warn('[achievements] config problems', ACHIEVEMENTS_CONFIG.problems);
+const PARSED_ACHIEVEMENTS = parseAchievementsConfig(gameConfig.achievements, PEOPLE_CONFIG.targets, DEFAULT_STAGES.map((s) => s.id));
+if (PARSED_ACHIEVEMENTS.problems.length > 0) console.warn('[achievements] config problems', PARSED_ACHIEVEMENTS.problems);
+
+/**
+ * Achievements config from game-config.json, validated once at load. Since story 046 only the
+ * daily-goal item pops up from here: stage, streak and people items are covered by the badges
+ * (`badges-content.ts`), so they are left out to avoid double popups.
+ */
+export const ACHIEVEMENTS_CONFIG = { ...PARSED_ACHIEVEMENTS, items: PARSED_ACHIEVEMENTS.items.filter((i) => i.kind === 'daily_goal') };
 
 const DAILY_XP_GOAL = gameConfig.dailyXpGoal;
 const TIME_ZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -142,8 +145,15 @@ export function AchievementsOverlay({ observed, rawStore, tab, onPopupOpenChange
     const now = new Date();
     const others = otherMemberIds(events, memberIds);
     const deps = { stages: DEFAULT_STAGES, people: PEOPLE_CONFIG, progress: { dailyXpGoal: DAILY_XP_GOAL }, others };
-    const achieved = evaluateAchievements(events, ACHIEVEMENTS_CONFIG, now, TIME_ZONE, deps);
+    const badges = evaluateBadges(events, now, TIME_ZONE, memberIds).achieved;
+    const achieved = [...evaluateAchievements(events, ACHIEVEMENTS_CONFIG, now, TIME_ZONE, deps), ...badges];
     let ack = readAcknowledged(events, DEFAULT_STAGES);
+    if (!ack.badgesSeeded) {
+      // Story 046: badges reached before this version are acknowledged silently, once.
+      for (const e of buildSilentAcknowledgeEvents(badges, ack.ids)) await rawStore.append(e);
+      await rawStore.append({ type: 'settings_changed', payload: { badgesSeeded: true, silent: true } });
+      ack = readAcknowledged(await rawStore.list(), DEFAULT_STAGES);
+    }
     if (!ack.seeded) {
       const celebrate = buildStageView(events, DEFAULT_STAGES, now, TIME_ZONE, others).celebrate;
       const pendingStage = celebrate === null ? null : stageItemId(ACHIEVEMENTS_CONFIG.items, celebrate.id);
@@ -190,11 +200,12 @@ export function AchievementsOverlay({ observed, rawStore, tab, onPopupOpenChange
       setPopup(null);
       const events = await rawStore.list();
       const deps = { stages: DEFAULT_STAGES, people: PEOPLE_CONFIG, progress: { dailyXpGoal: DAILY_XP_GOAL }, others: otherMemberIds(events, memberIds) };
-      const achieved = evaluateAchievements(events, ACHIEVEMENTS_CONFIG, new Date(), TIME_ZONE, deps);
+      const achieved = [...evaluateAchievements(events, ACHIEVEMENTS_CONFIG, new Date(), TIME_ZONE, deps), ...evaluateBadges(events, new Date(), TIME_ZONE, memberIds).achieved];
       const ack = readAcknowledged(events, DEFAULT_STAGES);
       for (const a of achieved) seenIds.current.add(a.id);
       for (const e of buildSilentAcknowledgeEvents(achieved, ack.ids)) await rawStore.append(e);
       if (!ack.seeded) await rawStore.append({ type: 'settings_changed', payload: { achievementsSeeded: true, silent: true } });
+      if (!ack.badgesSeeded) await rawStore.append({ type: 'settings_changed', payload: { badgesSeeded: true, silent: true } });
     } finally {
       running.current = false;
     }

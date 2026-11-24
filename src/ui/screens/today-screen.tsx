@@ -257,12 +257,6 @@ export function TodayScreen({
         <NextLessonCard next={state.next} onStart={onStartLesson} onLearn={onLearn} />
       )}
 
-      <section className="card stage-slot" aria-label={STRINGS.currentStage}>
-        <span className="stage-slot__label">{STRINGS.currentStage}</span>
-        <span className={stageName === undefined ? 'stage-slot__name stage-slot__name--pending' : 'stage-slot__name'}>
-          {stageName ?? STRINGS.stagePending}
-        </span>
-      </section>
 
     </main>
   );

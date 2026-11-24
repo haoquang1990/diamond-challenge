@@ -292,7 +292,6 @@ export function LessonScreen({
       {/* Tab root: no back button, the tab bar navigates (2026-11-23). */}
       <header className="screen__header">
         <h1 className="screen__title">{STRINGS.lessonListTitle}</h1>
-        <p className="screen__prompt">{STRINGS.lessonListPrompt}</p>
       </header>
       {parsed.problems.length > 0 && <p className="message">{STRINGS.lessonSkippedNote}</p>}
       <LessonPath

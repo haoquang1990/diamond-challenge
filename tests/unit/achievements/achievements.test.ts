@@ -217,7 +217,8 @@ describe('acknowledgement', () => {
     );
     expect([...r.ids]).toEqual(['streak:7']);
     expect(r.seeded).toBe(true);
-    expect(readAcknowledged([], STAGES)).toEqual({ ids: new Set(), seeded: false });
+    expect(readAcknowledged([], STAGES)).toEqual({ ids: new Set(), seeded: false, badgesSeeded: false });
+    expect(readAcknowledged([ev('settings_changed', { badgesSeeded: true })], STAGES).badgesSeeded).toBe(true);
   });
 
   it('stageAcknowledged covers that stage and all lower ones', () => {

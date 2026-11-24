@@ -17,10 +17,10 @@ import { computeStageProgress } from './stages';
 import type { StageDef } from './stages';
 
 /** Kind of an achievement item. */
-export type AchievementKind = 'stage' | 'daily_goal' | 'streak' | 'people';
+export type AchievementKind = 'stage' | 'daily_goal' | 'streak' | 'people' | 'badge';
 
 /** Popup/sort order of the kinds. */
-export const KIND_ORDER: readonly AchievementKind[] = ['stage', 'daily_goal', 'streak', 'people'];
+export const KIND_ORDER: readonly AchievementKind[] = ['stage', 'daily_goal', 'streak', 'people', 'badge'];
 
 /** People metric an item reads. */
 export type PeopleMetric = 'customers' | 'f1' | 'contacts' | 'achieved30x30';
@@ -94,6 +94,8 @@ export interface AcknowledgedState {
   readonly ids: ReadonlySet<string>;
   /** True when a non-compensated `achievementsSeeded: true` event exists. */
   readonly seeded: boolean;
+  /** True when a non-compensated `badgesSeeded: true` event exists (story 046: badges acknowledged silently once). */
+  readonly badgesSeeded: boolean;
 }
 
 /** One popup of a plan. */
@@ -350,6 +352,7 @@ export function readAcknowledged(events: readonly LogEvent[], stages: readonly S
   }
   const ids = new Set<string>();
   let seeded = false;
+  let badgesSeeded = false;
   for (const e of events) {
     if (e.type !== 'settings_changed') continue;
     if (compensated.has(e.id) || typeof e.payload.compensates === 'string') continue;
@@ -360,8 +363,9 @@ export function readAcknowledged(events: readonly LogEvent[], stages: readonly S
       for (let i = 0; i <= index; i++) ids.add(`stage:${stages[i]?.id ?? ''}`);
     }
     if (p.achievementsSeeded === true) seeded = true;
+    if (p.badgesSeeded === true) badgesSeeded = true;
   }
-  return { ids, seeded };
+  return { ids, seeded, badgesSeeded };
 }
 
 /**
