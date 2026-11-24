@@ -1,7 +1,7 @@
 # Story 036: Bài học 5–7 câu, nhóm Khởi đầu, bổ sung 11 bài cũ
 
 > **Epic**: diamond-challenge
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Feature
 > **Type**: Logic
 > **Estimate**: S
@@ -67,3 +67,10 @@
 
 - Depends on: None
 - Unlocks: các đợt nội dung bài học
+
+## Completion Notes
+**Completed**: 2026-11-24
+**Criteria**: 5/5 passing (none deferred)
+**Deviations**: Advisory, not logged as tech debt: (1) the 18 added questions were reviewed and approved by the user on 2026-11-24, together with batch 1; (2) the story 036 evidence predates later changes to `lesson.ts`, `lessons.json` and `lesson-stages.test.ts` (batch 1 content, story 037 icons and path); the Học screen with Khởi đầu first is shown again in `production/qa/evidence/story-037-lesson-path/`; (3) old 3-question test fixtures were padded to 5 questions because the rule changed, none skipped
+**Test Evidence**: `tests/unit/lesson/lesson.test.ts`, `lesson-stages.test.ts`, `lesson-order.test.ts`, `lesson-match.test.ts`; screenshots `production/qa/evidence/story-036-lessons-5-7-questions-start-stage/`; full suite 595/595
+**Reviewed by**: self, no independent review

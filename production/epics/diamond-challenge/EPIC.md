@@ -49,8 +49,8 @@ Theo Build order của brief: nhật ký sự kiện + XP/streak → Làm + Hôm
 | 033 | Văn bản đồng ý mới và chặn xoá dữ liệu theo tiến độ chưa đồng bộ | UI | Complete | N/A |
 | 034 | Trang chi tiết người: thông tin mở sẵn, popup hoạt động và popup Lịch sử | UI | Complete | N/A |
 | 035 | Trang chi tiết người: Thông tin lên đầu, nút Hoạt động mở danh sách đủ việc, làm lại mọi việc | UI | Complete | N/A |
-| 036 | Bài học 5–7 câu, nhóm Khởi đầu, bổ sung 11 bài cũ | Logic | In Progress | N/A |
-| 037 | Tab Học theo chặng: con đường bài học có icon, popup bài | UI | In Progress | N/A |
+| 036 | Bài học 5–7 câu, nhóm Khởi đầu, bổ sung 11 bài cũ | Logic | Complete | N/A |
+| 037 | Tab Học theo chặng: con đường bài học có icon, popup bài | UI | Complete | N/A |
 
 > 012–014 thay mô hình giai đoạn bằng việc cần làm + nhãn KH/NPP theo phản hồi dùng thử (2026-11-04, `design/gdd/crm.md`). Thứ tự gợi ý: 012 → 013 → 014 → 011.
 

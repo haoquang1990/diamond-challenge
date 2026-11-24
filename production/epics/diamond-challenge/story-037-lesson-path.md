@@ -1,7 +1,7 @@
 # Story 037: Tab Học theo chặng: con đường bài học có icon, popup bài
 
 > **Epic**: diamond-challenge
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Feature
 > **Type**: UI
 > **Estimate**: M
@@ -86,3 +86,10 @@
 
 - Depends on: `production/epics/diamond-challenge/story-036-lessons-5-7-questions-start-stage.md`
 - Unlocks: None
+
+## Completion Notes
+**Completed**: 2026-11-24
+**Criteria**: 8/8 passing (none deferred)
+**Deviations**: Advisory, not logged as tech debt: (1) the top stage bar shows the last stage whose card has scrolled above the screen, so between two cards it can still name the previous stage; (2) stage colours are a fixed 8-colour palette by stage position in `styles.css`, not a per-stage config field; (3) the old flat-list styles and the `stageHeading` / `stageProgressLabel` helpers were removed as unused
+**Test Evidence**: `tests/unit/lesson/lesson-path.test.ts` (11 tests); screenshots `production/qa/evidence/story-037-lesson-path/` (12 images at 390 and 320px, stamp unchanged); full suite 595/595
+**Reviewed by**: self, no independent review
