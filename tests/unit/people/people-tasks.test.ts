@@ -120,9 +120,9 @@ describe('pendingTasks', () => {
     expect(pendingIds(one([added('a'), done, undo(done)]))).toContain('demo');
   });
 
-  it('gives an archived person no tasks and ignores unknown task ids', () => {
+  it('keeps every task for a person with an old archive event (story 043) and ignores unknown task ids', () => {
     const p = one([added('a'), ev('person_archived', { personId: 'a' })]);
-    expect(pendingIds(p)).toEqual([]);
+    expect(pendingIds(p)).toHaveLength(7);
     const q = one([added('a'), ev('activity_logged', { activityType: 'gone', taskId: 'gone', xp: 1, personId: 'a' })]);
     expect(pendingIds(q)).toHaveLength(7);
   });
@@ -319,10 +319,10 @@ describe('computePeopleStats by label', () => {
     expect(stats([...base, task('k0', 'new_npp', D3)])).toMatchObject({ customers: 30, f1: 30, achieved: true });
   });
 
-  it('does not count archived people, and counts them again after person_restored', () => {
+  it('counts people with old archive / restore events as usual (story 043)', () => {
     const base = [...crowd('k', 30, 'new_customer'), ...crowd('n', 30, 'new_npp')];
     const arch = ev('person_archived', { personId: 'k0' }, D3);
-    expect(stats([...base, arch])).toMatchObject({ customers: 29, contacts: 59, achieved: false });
+    expect(stats([...base, arch])).toMatchObject({ customers: 30, contacts: 60, achieved: true });
     expect(stats([...base, arch, ev('person_restored', { personId: 'k0' }, D4)])).toMatchObject({ customers: 30, achieved: true });
   });
 
@@ -363,12 +363,12 @@ describe('lastContactAt, nppAt and sorting', () => {
 });
 
 describe('person_restored and phone', () => {
-  it('archived state is the latest of person_archived / person_restored', () => {
+  it('old person_archived / person_restored events never archive anyone (story 043)', () => {
     const arch = ev('person_archived', { personId: 'a' }, D2);
     const rest = ev('person_restored', { personId: 'a' }, D3);
-    expect(one([added('a'), arch]).archived).toBe(true);
+    expect(one([added('a'), arch]).archived).toBe(false);
     expect(one([added('a'), arch, rest]).archived).toBe(false);
-    expect(one([added('a'), arch, rest, ev('person_archived', { personId: 'a' }, D4)]).archived).toBe(true);
+    expect(one([added('a'), arch, rest, ev('person_archived', { personId: 'a' }, D4)]).archived).toBe(false);
     expect(pendingIds(one([added('a'), arch, rest]))).toHaveLength(7);
   });
 

@@ -123,10 +123,10 @@ describe('derivePeople', () => {
     expect(derivePeople(events, CONFIG)[0]?.name).toBe('Late');
   });
 
-  it('marks a person archived and keeps them in the list', () => {
+  it('ignores an old archive event: the person stays listed and not archived (story 043)', () => {
     const people = derivePeople([added('a'), ev('person_archived', { personId: 'a' })], CONFIG);
     expect(people).toHaveLength(1);
-    expect(people[0]?.archived).toBe(true);
+    expect(people[0]?.archived).toBe(false);
   });
 
   it('a compensated archive event restores the person', () => {
@@ -274,14 +274,14 @@ describe('validatePersonName and findDuplicateNames', () => {
     expect(validatePersonName('  Nguyễn Lan ')).toEqual({ ok: true, name: 'Nguyễn Lan' });
   });
 
-  it('warns about duplicates case-insensitively and trimmed, among non-archived people only', () => {
+  it('warns about duplicates case-insensitively and trimmed, old archive events ignored (story 043)', () => {
     const people = derivePeople(
       [added('a', 'Nguyễn Lan'), added('b', 'Minh'), added('c', 'Hoa'), ev('person_archived', { personId: 'c' })],
       CONFIG,
     );
     expect(findDuplicateNames(people, '  nguyễn lan ').duplicate).toBe(true);
     expect(findDuplicateNames(people, 'nguyễn lan').matches.map((p) => p.personId)).toEqual(['a']);
-    expect(findDuplicateNames(people, 'Hoa').duplicate).toBe(false);
+    expect(findDuplicateNames(people, 'Hoa').duplicate).toBe(true);
     expect(findDuplicateNames(people, 'Tuấn').duplicate).toBe(false);
   });
 
@@ -370,11 +370,11 @@ describe('computePeopleStats', () => {
     expect(stats([...crowd('c', 'customer', 30), ...crowd('d', 'downline', 29)]).achieved).toBe(false);
   });
 
-  it('excludes archived people from every count', () => {
+  it('still counts a person with an old archive event (story 043)', () => {
     const events = [...crowd('c', 'customer', 30), ...crowd('d', 'downline', 30)];
     const archived = [...events, ev('person_archived', { personId: 'c0' })];
     const result = stats(archived);
-    expect(result).toMatchObject({ customers: 29, f1: 30, contacts: 59, achieved: false });
+    expect(result).toMatchObject({ customers: 30, f1: 30, contacts: 60, achieved: true });
   });
 
   it('a backward move of an NPP lowers f1', () => {

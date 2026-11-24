@@ -83,17 +83,16 @@ export function listUnassignedActivities(
 }
 
 /** Filter chips of the Làm tab (person list). */
-export type ContactsFilter = 'all' | 'kh' | 'npp' | 'archived';
+export type ContactsFilter = 'all' | 'kh' | 'npp';
 
 /** Chip order in the UI; the first is the default. */
-export const CONTACTS_FILTERS: readonly ContactsFilter[] = ['all', 'kh', 'npp', 'archived'];
+export const CONTACTS_FILTERS: readonly ContactsFilter[] = ['all', 'kh', 'npp'];
 
 /**
  * People shown under one filter chip (no separate lists, one source).
  * - all: non-archived, newest added first (derivePeople yields add order, so reversed; stable).
  * - kh: label KH, longest without contact first.
  * - npp: label NPP, newest NPP first.
- * - archived: archived people, newest added first.
  */
 export function filterContacts(people: readonly Person[], filter: ContactsFilter): Person[] {
   const newestFirst = (list: readonly Person[]): Person[] => [...list].reverse();
@@ -104,8 +103,6 @@ export function filterContacts(people: readonly Person[], filter: ContactsFilter
       return sortCustomersByLastContact(people.filter((p) => !p.archived && p.label === 'KH'));
     case 'npp':
       return sortNppByDate(people.filter((p) => !p.archived && p.label === 'NPP'));
-    case 'archived':
-      return newestFirst(people.filter((p) => p.archived));
   }
 }
 
@@ -141,7 +138,6 @@ export function countContacts(people: readonly Person[]): Record<ContactsFilter,
     all: filterContacts(people, 'all').length,
     kh: filterContacts(people, 'kh').length,
     npp: filterContacts(people, 'npp').length,
-    archived: filterContacts(people, 'archived').length,
   };
 }
 
@@ -154,8 +150,8 @@ export function formatPhone(phone: PersonPhone | null | undefined): string {
 export interface HistoryEntry {
   readonly id: string;
   readonly timestamp: string;
-  readonly kind: 'activity' | 'stage';
-  /** Activity/task name (kind 'activity', '' when unknown) or stage name (kind 'stage'). */
+  readonly kind: 'activity' | 'stage' | 'cancel';
+  /** Activity/task name (kind 'activity', '' when unknown), stage name (kind 'stage'), '' for 'cancel' (Huỷ bảo trợ). */
   readonly name: string;
   /** `userId` of the event (who did it). */
   readonly userId: string;
@@ -266,6 +262,9 @@ export function buildPersonHistory(
     } else if (e.type === 'person_stage_changed' && typeof e.payload.personId === 'string' && (rootOf.get(e.payload.personId) ?? e.payload.personId) === personId) {
       const stage = config.stages.find((s) => s.id === e.payload.to);
       if (stage !== undefined) entries.push({ id: e.id, timestamp: e.timestamp, kind: 'stage', name: stage.name, userId: e.userId });
+    } else if (e.type === 'sponsorship_cancelled' && typeof e.payload.personId === 'string' && (rootOf.get(e.payload.personId) ?? e.payload.personId) === personId) {
+      const note = typeof e.payload.note === 'string' ? e.payload.note.trim() : '';
+      entries.push({ id: e.id, timestamp: e.timestamp, kind: 'cancel', name: '', userId: e.userId, ...(note !== '' ? { note } : {}) });
     }
   }
   return entries.reverse().sort((a, b) => (a.timestamp < b.timestamp ? 1 : a.timestamp > b.timestamp ? -1 : 0));

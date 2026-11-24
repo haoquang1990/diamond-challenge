@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import type { HouseholdMember } from '../../data/contact-sync';
 import type { EventStore, LogEvent } from '../../data/event-store';
@@ -21,6 +22,11 @@ import {
 import type { ContactsFilter } from '../people-helpers';
 import { STRINGS, duplicateCodeWarning, duplicatesEntryLabel, filterChipLabel, lastContactLabel, nppSinceLabel, shortDateLabel, xpLabel } from '../strings';
 import { AddPersonForm, LabelBadge, PersonDetail } from './person-form';
+import { householdProgressLabel, sortNppByProgress } from '../group-helpers';
+import type { HouseholdProgress, NppSort } from '../group-helpers';
+
+/** Sort choices of the NPP chip (story 044). */
+const NPP_SORTS: readonly NppSort[] = ['newest', 'xpTotal', 'xp7d'];
 
 /** Props for {@link PeopleScreen}. */
 export interface PeopleScreenProps {
@@ -44,6 +50,10 @@ export interface PeopleScreenProps {
   readonly dataVersion?: number;
   /** Opens the "Kiểm tra liên hệ trùng" screen (story 026); the entry shows only when pairs are pending. */
   readonly onOpenDuplicates?: () => void;
+  /** Extra section for an opened person (story 042: "Hộ F1" for an NPP contact); nothing when it returns null. */
+  readonly renderPersonExtra?: (person: Person) => ReactNode;
+  /** F1 household progress by Amway code (story 044); adds XP sorting and numbers to the NPP chip. */
+  readonly nppProgress?: ReadonlyMap<string, HouseholdProgress>;
 }
 
 type LoadState =
@@ -58,22 +68,21 @@ const ADD_NAME_ACTIVITY_ID = 'add_name';
 
 /**
  * Tab "Làm" (the person list, merged with the old Danh bạ in story 015):
- * add form, name search, filter chips (Tất cả / Khách hàng / NPP / Đã lưu trữ)
- * over one derived list, person detail (where tasks are completed), restore
- * of archived people and the section for activities not yet linked to a
- * person. The search narrows the rows of the active chip; chip counts stay
+ * add form, name search, filter chips (Tất cả / Khách hàng / NPP; Lưu trữ removed in story 043)
+ * over one derived list, person detail (where tasks are completed) and the section for
+ * activities not yet linked to a person. The search narrows the rows of the active chip; chip counts stay
  * the per-filter totals and ignore the search. Re-reads the event log on
  * mount and after every write; keeps no copy of truth.
  */
-export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initialFilter = 'all', onBack, members = null, memberIds = NO_MEMBERS, dataVersion = 0, initialOpenId = null, onCreateAccount, onOpenDuplicates }: PeopleScreenProps) {
+export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initialFilter = 'all', onBack, members = null, memberIds = NO_MEMBERS, dataVersion = 0, initialOpenId = null, onCreateAccount, onOpenDuplicates, renderPersonExtra, nppProgress }: PeopleScreenProps) {
   const [load, setLoad] = useState<LoadState>({ kind: 'loading' });
   const [openId, setOpenId] = useState<string | null>(initialOpenId);
   const [addedXp, setAddedXp] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<ContactsFilter>(initialFilter);
+  const [nppSort, setNppSort] = useState<NppSort>('newest');
   /** null = automatic: open while the list is empty, collapsed once there are people. */
   const [showAdd, setShowAdd] = useState<boolean | null>(null);
-  const [restoringId, setRestoringId] = useState<string | null>(null);
   /** Name search text; kept while a person detail is open so the list returns as it was. */
   const [query, setQuery] = useState('');
 
@@ -130,6 +139,7 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
         config={PEOPLE_CONFIG}
         authorLabel={(userId) => historyAuthorLabel(userId, others, members)}
         {...(onCreateAccount === undefined ? {} : { createAccount: { onOpen: () => onCreateAccount(opened.personId) } })}
+        extra={renderPersonExtra?.(opened) ?? null}
         onChanged={reload}
         onBack={() => setOpenId(null)}
       />
@@ -171,35 +181,20 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
     setShowAdd(false);
   }
 
-  async function restore(personId: string): Promise<void> {
-    setError(null);
-    setRestoringId(personId);
-    try {
-      await eventStore.append({ type: 'person_restored', payload: { personId } });
-      await reload();
-    } catch (e) {
-      console.error('[people] restore failed', e);
-      setError(STRINGS.restoreError);
-    } finally {
-      setRestoringId(null);
-    }
-  }
-
   const dupCodes = findDuplicateCodes(people);
   const counts = countContacts(allPeople);
-  const inFilter = filterContacts(allPeople, filter);
+  const listed = filterContacts(allPeople, filter);
+  const inFilter = filter === 'npp' && nppProgress !== undefined ? sortNppByProgress(listed, nppProgress, nppSort) : listed;
   const shown = searchPeopleByName(inFilter, query);
   const filterNames: Record<ContactsFilter, string> = {
     all: STRINGS.filterAll,
     kh: STRINGS.filterKh,
     npp: STRINGS.filterNpp,
-    archived: STRINGS.filterArchived,
   };
   const emptyText: Record<ContactsFilter, { title: string; body: string }> = {
     all: { title: STRINGS.emptyAllTitle, body: STRINGS.peopleEmptyBody },
     kh: { title: STRINGS.filterKh, body: STRINGS.emptyKhBody },
     npp: { title: STRINGS.filterNpp, body: STRINGS.emptyNppBody },
-    archived: { title: STRINGS.filterArchived, body: STRINGS.emptyArchivedBody },
   };
   const pendingPairs = pendingDuplicates(allPeople, events, PEOPLE_CONFIG);
   const unassigned = listUnassignedActivities(events, deriveActivityOwners(events));
@@ -278,6 +273,22 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
         ))}
       </div>
 
+      {filter === 'npp' && nppProgress !== undefined && (
+        <div className="filter-bar npp-sort" role="group" aria-label={STRINGS.nppSortLabel}>
+          {NPP_SORTS.map((key) => (
+            <button
+              key={key}
+              type="button"
+              className={key === nppSort ? 'chip chip--selected' : 'chip'}
+              aria-pressed={key === nppSort}
+              onClick={() => setNppSort(key)}
+            >
+              {STRINGS.nppSortNames[key]}
+            </button>
+          ))}
+        </div>
+      )}
+
       {inFilter.length > 0 && shown.length === 0 ? (
         <p className="message" role="status">
           {STRINGS.searchNoMatch}
@@ -290,21 +301,6 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
       ) : (
         <ul className="people-list">
           {shown.map((person) =>
-            filter === 'archived' ? (
-              <li key={person.personId} className="person-row person-row--static">
-                <span className="person-row__main">
-                  <span className="person-row__name">{person.name}</span>
-                </span>
-                <button
-                  type="button"
-                  className="button button--secondary person-row__action"
-                  onClick={() => void restore(person.personId)}
-                  disabled={restoringId !== null}
-                >
-                  {STRINGS.restore}
-                </button>
-              </li>
-            ) : (
               <li key={person.personId}>
                 <button type="button" className="person-row" onClick={() => setOpenId(person.personId)}>
                   <span className="person-row__main">
@@ -318,11 +314,13 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
                     {filter === 'npp' && person.nppAt != null && (
                       <span className="person-row__stage">{nppSinceLabel(person.nppAt)}</span>
                     )}
+                    {filter === 'npp' && person.amwayCode != null && nppProgress?.get(person.amwayCode) !== undefined && (
+                      <span className="person-row__progress">{householdProgressLabel(nppProgress.get(person.amwayCode) as HouseholdProgress)}</span>
+                    )}
                   </span>
                   {person.label != null && <LabelBadge label={person.label} />}
                 </button>
               </li>
-            ),
           )}
         </ul>
       )}

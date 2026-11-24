@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import type { EventStore, LogEvent } from '../../data/event-store';
 import { buildSplitEvents } from '../../domain/duplicates';
 import {
+  buildSponsorshipCancelEvent,
   buildTaskCompletionEvent,
   findDuplicateNames,
   pendingTasks,
@@ -21,6 +22,7 @@ import {
   daysSinceLabel,
   duplicateCodeWarning,
   historyStageLabel,
+  sponsorCancelHint,
   noteCounterLabel,
   splitLabel,
   taskButtonLabel,
@@ -152,6 +154,58 @@ function ActivityDialog({ task, noteMaxLength, backdateDays, busy, error, onConf
         </button>
         <button type="button" className="button button--primary" onClick={() => onConfirm(note, activityInstant(when, initialWhen, new Date()))} disabled={busy || problem !== null}>
           {STRINGS.activityConfirm}
+        </button>
+      </div>
+    </Dialog>
+  );
+}
+
+/** Props for {@link CancelSponsorDialog}. */
+interface CancelSponsorDialogProps {
+  readonly noteMaxLength: number;
+  readonly backdateDays: number;
+  readonly busy: boolean;
+  readonly error: string | null;
+  readonly onConfirm: (note: string, when: Date) => void;
+  readonly onCancel: () => void;
+}
+
+/** "Huỷ bảo trợ" popup (story 040): optional reason, date and time (default now), Confirm / Cancel. */
+function CancelSponsorDialog({ noteMaxLength, backdateDays, busy, error, onConfirm, onCancel }: CancelSponsorDialogProps) {
+  const [note, setNote] = useState('');
+  const [initialWhen] = useState(() => toLocalInputValue(new Date()));
+  const [when, setWhen] = useState(initialWhen);
+  const check = validateActivityTime(new Date(when), new Date(), backdateDays);
+  const problem =
+    check === 'future' ? STRINGS.activityTimeFuture : check === 'too_old' ? activityTimeTooOldLabel(backdateDays) : check === 'invalid' ? STRINGS.activityTimeInvalid : null;
+  return (
+    <Dialog title={STRINGS.sponsorCancelTitle} onClose={onCancel}>
+      <p className="popup__body">{STRINGS.sponsorCancelBody}</p>
+      <label className="note popup__field">
+        <span className="note__label">{STRINGS.sponsorCancelNoteLabel}</span>
+        <textarea className="note__input" rows={3} maxLength={noteMaxLength} value={note} onChange={(e) => setNote(e.target.value)} disabled={busy} />
+        <span className="popup__counter">{noteCounterLabel(note.length, noteMaxLength)}</span>
+      </label>
+      <label className="note popup__field">
+        <span className="note__label">{STRINGS.activityDateTimeLabel}</span>
+        <input className="note__input" type="datetime-local" value={when} onChange={(e) => setWhen(e.target.value)} disabled={busy} aria-invalid={problem !== null} />
+      </label>
+      {problem !== null && (
+        <p className="message message--error" role="alert">
+          {problem}
+        </p>
+      )}
+      {error !== null && (
+        <p className="message message--error" role="alert">
+          {error}
+        </p>
+      )}
+      <div className="button-row popup__actions">
+        <button type="button" className="button button--secondary" onClick={onCancel} disabled={busy}>
+          {STRINGS.sponsorCancelKeep}
+        </button>
+        <button type="button" className="button button--danger" onClick={() => onConfirm(note, activityInstant(when, initialWhen, new Date()))} disabled={busy || problem !== null}>
+          {STRINGS.sponsorCancelConfirm}
         </button>
       </div>
     </Dialog>
@@ -437,6 +491,8 @@ export interface PersonDetailProps {
    * signed out: the "Tạo tài khoản" button is then not shown.
    */
   readonly createAccount?: { readonly onOpen: () => void };
+  /** Extra section shown under Thông tin (story 042: "Hộ F1" for an NPP contact). */
+  readonly extra?: ReactNode;
   /** Re-read the log after any write. */
   readonly onChanged: () => Promise<void>;
   readonly onBack: () => void;
@@ -455,10 +511,10 @@ interface TaskUndo {
  * one activity_logged event after a confirm popup with note and date/time, undo
  * by compensating event), an always-open info form (name/phone/code/note; Save
  * enabled only when a field differs from the saved person), a "Lịch sử" button
- * opening a summary + list popup (story 034) and archive (with confirm). State
+ * opening a summary + list popup (story 034). Lưu trữ was removed (story 043). State
  * of record is the event log; this only holds form state.
  */
-export function PersonDetail({ eventStore, person, people, events, activityTypes, config = PEOPLE_CONFIG, authorLabel, createAccount, onChanged, onBack }: PersonDetailProps) {
+export function PersonDetail({ eventStore, person, people, events, activityTypes, config = PEOPLE_CONFIG, authorLabel, createAccount, extra, onChanged, onBack }: PersonDetailProps) {
   const [name, setName] = useState(person.name);
   const [note, setNote] = useState(person.note);
   const [country, setCountry] = useState(person.phone?.country ?? DEFAULT_COUNTRY);
@@ -466,7 +522,6 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
   const [phoneError, setPhoneError] = useState<string | null>(null);
   const [code, setCode] = useState(person.amwayCode ?? '');
   const [codeError, setCodeError] = useState<string | null>(null);
-  const [confirmArchive, setConfirmArchive] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
@@ -474,6 +529,7 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
   const [activeTask, setActiveTask] = useState<PersonTaskDef | null>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [taskListOpen, setTaskListOpen] = useState(false);
+  const [cancelSponsorOpen, setCancelSponsorOpen] = useState(false);
   const backdateDays = config.activityBackdateDays ?? PEOPLE_CONFIG.activityBackdateDays;
   const noteMaxLength = config.activityNoteMaxLength ?? PEOPLE_CONFIG.activityNoteMaxLength;
 
@@ -557,6 +613,18 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
       if (isNpp && createAccount !== undefined && person.linkedUserId == null && navigator.onLine) createAccount.onOpen();
     });
 
+  const cancelSponsorship = (reason: string, when: Date) =>
+    run(async () => {
+      if (validateActivityTime(when, new Date(), backdateDays) !== 'ok') return;
+      const built = buildSponsorshipCancelEvent(person, when.toISOString(), reason);
+      setCancelSponsorOpen(false);
+      if (!built.ok) return;
+      await eventStore.append(built.event);
+      setTaskUndo(null);
+      await onChanged();
+      setInfo(STRINGS.sponsorCancelDone);
+    });
+
   const undoTask = () =>
     run(async () => {
       if (taskUndo === null) return;
@@ -570,13 +638,6 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
     run(async () => {
       for (const event of buildSplitEvents(mergeEventId, person.personId, otherId)) await eventStore.append(event);
       await onChanged();
-    });
-
-  const archive = () =>
-    run(async () => {
-      await eventStore.append({ type: 'person_archived', payload: { personId: person.personId } });
-      await onChanged();
-      onBack();
     });
 
   return (
@@ -684,6 +745,8 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
         )}
       </section>
 
+      {extra}
+
       <section className="card person-section" aria-label={STRINGS.activitySectionTitle}>
         <div className="person-actions">
           <button
@@ -701,7 +764,6 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
             {STRINGS.historyTitle}
           </button>
         </div>
-        {person.archived && <p className="message">{STRINGS.activityArchivedNote}</p>}
         {taskUndo !== null && (
           <div className="person-result" role="status" aria-live="polite">
             <p className="message">
@@ -764,23 +826,27 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
           <ul className="people-list">
             {tasks.map((t) => {
               const times = doneCounts.get(t.id) ?? 0;
-              // One-time task (Chốt NPP) already done: shown greyed out with its date, not selectable.
+              // One-time task already done: greyed out with its date, not selectable. Bảo trợ for a
+              // person still NPP opens "Huỷ bảo trợ" instead (story 040).
               const doneOnce = !t.repeatable && (person.doneTaskIds ?? []).includes(t.id);
+              const cancellable = doneOnce && t.label === 'NPP' && person.label === 'NPP';
               const doneAt = doneOnce ? (t.label === 'NPP' ? person.nppAt ?? null : firstDoneAt(history, t.id)) : null;
-              const note = doneOnce ? taskDoneOnceLabel(t.name, doneAt) : times > 0 ? taskDoneTimesLabel(times) : null;
+              const note = cancellable ? sponsorCancelHint(t.name, doneAt) : doneOnce ? taskDoneOnceLabel(t.name, doneAt) : times > 0 ? taskDoneTimesLabel(times) : null;
+              const locked = doneOnce && !cancellable;
               return (
                 <li key={t.id}>
                   <button
                     type="button"
-                    className={doneOnce ? 'task-row task-row--done' : 'task-row'}
+                    className={locked ? 'task-row task-row--done' : cancellable ? 'task-row task-row--cancellable' : 'task-row'}
                     onClick={() => {
-                      if (doneOnce) return;
+                      if (locked) return;
                       setError(null);
                       setTaskListOpen(false);
-                      setActiveTask(t);
+                      if (cancellable) setCancelSponsorOpen(true);
+                      else setActiveTask(t);
                     }}
-                    disabled={busy || doneOnce}
-                    aria-disabled={doneOnce || undefined}
+                    disabled={busy || locked}
+                    aria-disabled={locked || undefined}
                     aria-label={doneOnce ? `${t.name}, ${note ?? ''}` : taskButtonLabel(t.name, t.xp, times)}
                   >
                     <span className="task-row__main">
@@ -809,6 +875,17 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
           error={error}
           onConfirm={(activityNote, when) => void completeTask(activeTask.id, activityNote, when)}
           onCancel={() => setActiveTask(null)}
+        />
+      )}
+
+      {cancelSponsorOpen && (
+        <CancelSponsorDialog
+          noteMaxLength={noteMaxLength}
+          backdateDays={backdateDays}
+          busy={busy}
+          error={error}
+          onConfirm={(reason, when) => void cancelSponsorship(reason, when)}
+          onCancel={() => setCancelSponsorOpen(false)}
         />
       )}
 
@@ -857,7 +934,7 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
                   return (
                     <li key={h.id} className="history-row history-row--stacked">
                       <span className="history-row__name">
-                        {h.kind === 'stage' ? historyStageLabel(h.name) : h.name === '' ? STRINGS.legacyUnknownActivity : h.name}
+                        {h.kind === 'stage' ? historyStageLabel(h.name) : h.kind === 'cancel' ? STRINGS.sponsorCancelHistory : h.name === '' ? STRINGS.legacyUnknownActivity : h.name}
                         {author !== null && <span className="history-row__author">{author}</span>}
                       </span>
                       <span className="person-row__stage">{dateTimeLabel(h.timestamp)}</span>
@@ -874,26 +951,6 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
         </Dialog>
       )}
 
-      <section className="card person-section">
-        {confirmArchive ? (
-          <>
-            <h2 className="person-section__heading">{STRINGS.personArchiveConfirmTitle}</h2>
-            <p className="message">{STRINGS.personArchiveConfirmBody}</p>
-            <div className="button-row">
-              <button type="button" className="button button--secondary" onClick={() => setConfirmArchive(false)} disabled={busy}>
-                {STRINGS.cancel}
-              </button>
-              <button type="button" className="button button--danger" onClick={() => void archive()} disabled={busy}>
-                {STRINGS.personArchiveConfirm}
-              </button>
-            </div>
-          </>
-        ) : (
-          <button type="button" className="button button--secondary" onClick={() => setConfirmArchive(true)} disabled={busy}>
-            {STRINGS.personArchive}
-          </button>
-        )}
-      </section>
     </main>
   );
 }

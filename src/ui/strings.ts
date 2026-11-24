@@ -177,6 +177,18 @@ export const STRINGS = {
   groupNoNumbers: 'Chưa có số liệu',
   groupAchieved: 'Đạt 30x30',
   groupNeverActive: 'Chưa hoạt động lần nào',
+  sponsorCancelTitle: 'Huỷ bảo trợ',
+  sponsorCancelBody: 'Dùng khi NPP bị huỷ, ví dụ vì không hoạt động. Nhãn NPP sẽ bỏ, XP đã nhận vẫn giữ, sau này bảo trợ lại được.',
+  sponsorCancelNoteLabel: 'Lý do (không bắt buộc)',
+  sponsorCancelConfirm: 'Huỷ bảo trợ',
+  sponsorCancelKeep: 'Giữ bảo trợ',
+  sponsorCancelDone: 'Đã huỷ bảo trợ.',
+  sponsorCancelHistory: 'Huỷ bảo trợ',
+  cheerGroupTitle: 'Cổ vũ nhóm',
+  f1BoxTitle: 'Hộ F1',
+  nppSortLabel: 'Sắp xếp NPP',
+  nppSortNames: { newest: 'Mới bảo trợ', xpTotal: 'Tổng XP', xp7d: 'XP 7 ngày' },
+  f1BoxOffline: 'đang không có mạng',
   groupCheerButton: 'Cổ vũ',
   groupCheeredToday: 'Đã cổ vũ hôm nay',
   groupCheerOfflineReason: 'Cần có mạng để cổ vũ.',
@@ -642,6 +654,11 @@ export function taskButtonLabel(name: string, xp: number, times = 0): string {
 
 /** "đã làm N lần" on a task of the Hoạt động list (story 035), shown when N > 0. */
 /** Note under a one-time task that is done (greyed out, not selectable): "Đã chốt NPP ngày 22/11/2026". */
+/** Bảo trợ row for someone still NPP (story 040): "Đã bảo trợ ngày 02/03 · bấm để huỷ". */
+export function sponsorCancelHint(taskName: string, iso: string | null): string {
+  return `${taskDoneOnceLabel(taskName, iso)} · bấm để huỷ`;
+}
+
 export function taskDoneOnceLabel(taskName: string, iso: string | null): string {
   const date = iso === null ? '' : shortDateLabel(iso);
   const name = taskName.charAt(0).toLocaleLowerCase('vi-VN') + taskName.slice(1);

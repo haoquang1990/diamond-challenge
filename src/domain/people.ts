@@ -475,6 +475,8 @@ interface MutablePerson {
   linkedUserId: string | null;
   done: Set<string>;
   lastContactAt: string;
+  /** First KH closing (or legacy customer stage); where the label returns after a cancelled sponsorship. */
+  khAt: string | null;
 }
 
 function readPhone(raw: unknown): PersonPhone | null | undefined {
@@ -679,8 +681,8 @@ function setLabel(person: MutablePerson, next: PersonLabel | null, timestamp: st
  *   changes never touch it.
  * - `linkedUserId` (story 024): latest non-empty string on a `person_updated` wins; anything else
  *   is ignored; null when never set. Label and archive changes never touch it.
- * - Name, note, phone: latest `person_updated` wins; archived: latest of
- *   `person_archived` / `person_restored`.
+ * - Name, note, phone: latest `person_updated` wins. Lưu trữ was removed (story 043): old
+ *   `person_archived` / `person_restored` events are ignored, so `archived` is always false.
  * - Stage (legacy): `to` of the latest non-compensated `person_stage_changed`.
  * - Label: iterate active events in log order. Legacy stage `customer` -> KH,
  *   `downline` -> NPP, any other known stage -> none. An `activity_logged`
@@ -737,6 +739,7 @@ export function derivePeople(events: readonly LogEvent[], config: PeopleConfig):
         person.done.add(p.taskId);
         const label = tasks.find((t) => t.id === p.taskId)?.label;
         // setLabel is a no-op when the label is unchanged, so a repeated closing keeps the first date.
+        if (label === 'KH' && person.khAt === null) person.khAt = e.timestamp;
         if (label === 'KH' && person.label === null) setLabel(person, 'KH', e.timestamp);
         else if (label === 'NPP' && person.label !== 'NPP') setLabel(person, 'NPP', e.timestamp);
       } else if (LEGACY_ACTIVITY_TASKS.has(activityType)) {
@@ -764,6 +767,7 @@ export function derivePeople(events: readonly LogEvent[], config: PeopleConfig):
         linkedUserId: null,
         done: new Set(),
         lastContactAt: e.timestamp,
+        khAt: null,
       });
       continue;
     }
@@ -772,6 +776,16 @@ export function derivePeople(events: readonly LogEvent[], config: PeopleConfig):
     if (folded.has(personId)) {
       const keeper = people.get(rootOf.get(personId) ?? personId);
       if (e.type === 'person_updated' && keeper !== undefined) applyLateUpdate(keeper, p, readCode);
+      continue;
+    }
+    if (e.type === 'sponsorship_cancelled') {
+      // Huỷ bảo trợ (story 040): an NPP goes back to KH (first KH date) or to no label, and the
+      // NPP tasks can be done again. XP is untouched; a cancel for someone not NPP is ignored.
+      const target = people.get(rootOf.get(personId) ?? personId);
+      if (target === undefined || target.label !== 'NPP') continue;
+      target.label = target.khAt === null ? null : 'KH';
+      target.labelledAt = target.khAt;
+      for (const t of tasks) if (t.label === 'NPP') target.done.delete(t.id);
       continue;
     }
     const person = people.get(personId);
@@ -784,10 +798,6 @@ export function derivePeople(events: readonly LogEvent[], config: PeopleConfig):
       const code = readCode(p.amwayCode);
       if (code !== undefined) person.amwayCode = code;
       if (isNonEmptyString(p.linkedUserId)) person.linkedUserId = p.linkedUserId.trim();
-    } else if (e.type === 'person_archived') {
-      person.archived = true;
-    } else if (e.type === 'person_restored') {
-      person.archived = false;
     } else if (e.type === 'person_stage_changed') {
       const to = p.to;
       const target = people.get(rootOf.get(personId) ?? personId);
@@ -798,6 +808,7 @@ export function derivePeople(events: readonly LogEvent[], config: PeopleConfig):
       if (earned && !target.stageXpAwarded.includes(to)) target.stageXpAwarded.push(to);
       const doneTask = LEGACY_STAGE_TASKS[to];
       if (earned && doneTask !== undefined) target.done.add(doneTask);
+      if (to === CUSTOMER_STAGE_ID && target.khAt === null) target.khAt = e.timestamp;
       setLabel(target, to === CUSTOMER_STAGE_ID ? 'KH' : to === F1_STAGE_ID ? 'NPP' : null, e.timestamp);
     }
   }
@@ -861,6 +872,25 @@ export function buildTaskCompletionEvent(
   if (trimmedNote !== '') payload.note = trimmedNote;
   const event: NewEvent = timestamp === undefined ? { type: 'activity_logged', payload } : { type: 'activity_logged', payload, timestamp };
   return { ok: true, xp: task.xp, event };
+}
+
+/** Result of {@link buildSponsorshipCancelEvent}. */
+export type SponsorshipCancelResult = { readonly ok: true; readonly event: NewEvent } | { readonly ok: false; readonly reason: 'not_npp' };
+
+/**
+ * Builds the "Huỷ bảo trợ" event (story 040) for a person labelled NPP: `sponsorship_cancelled`
+ * `{ personId, note? }` at `timestamp`. It carries no XP and is not an activity. Pure.
+ *
+ * @example
+ * const r = buildSponsorshipCancelEvent(person, new Date().toISOString(), 'không hoạt động');
+ * if (r.ok) await store.append(r.event);
+ */
+export function buildSponsorshipCancelEvent(person: Person, timestamp: string, note = ''): SponsorshipCancelResult {
+  if (person.label !== 'NPP') return { ok: false, reason: 'not_npp' };
+  const trimmed = note.trim();
+  const payload: Record<string, unknown> = { personId: person.personId };
+  if (trimmed !== '') payload.note = trimmed;
+  return { ok: true, event: { type: 'sponsorship_cancelled', timestamp, payload } };
 }
 
 /** Result of {@link validateActivityTime}. */

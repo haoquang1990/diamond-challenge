@@ -1,0 +1,8 @@
+Reviewed-Content-Hash: src/domain/people.ts 8d6ffbb0b1971ceef26ce1a74a2e216d76503581
+Reviewed-Content-Hash: src/data/event-store.ts 80474c195264afe7eea08536fe98ffb7c1dee5f2
+Reviewed-Content-Hash: src/data/contact-sync.ts 6c9ee46ec8ad0d31d5073bd26cc3a68850b0f242
+Reviewed-Content-Hash: src/ui/people-helpers.ts 3741f3c929798f8ef4b928cc8d2134bf22e9a894
+Reviewed-Content-Hash: src/ui/screens/person-form.tsx 00ed9507e397e1b2936ae2dc23514674687d0731
+Reviewed-Content-Hash: src/ui/strings.ts 042b8fddb8612f905c72862b716c3503e4c8a1d3
+Reviewed-Content-Hash: src/ui/styles.css 5bee6a911275728c2521f8098e939f10516a0eb4
+Reviewed-Content-Hash: supabase/migrations/20261124000000_sponsorship_cancelled.sql 87da955f4b7fc76781c3d49cb7cced9dd4447918

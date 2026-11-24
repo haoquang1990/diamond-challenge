@@ -3,6 +3,8 @@
  * and its order live in `src/content/lessons.json` (`stages`), each lesson
  * names its group with `stage`. Pure; never throws.
  */
+import type { LogEvent } from '../data/event-store';
+import { lessonHistory } from './lesson';
 import type { Lesson } from './lesson';
 
 /** One lesson group (a sales-process step such as "Mời hẹn"). */
@@ -93,4 +95,39 @@ export function suggestedNextLesson(groups: readonly LessonGroup[], isLearned: (
     }
   }
   return null;
+}
+
+/** Result of {@link nextLessonSuggestion}. */
+export interface NextLessonSuggestion {
+  /** The lesson to learn next, or null when every lesson has been learned. */
+  readonly lesson: Lesson | null;
+  /** 1-based position of its stage on the path (null with no lesson or for the "other" group). */
+  readonly stagePosition: number | null;
+  /** Title of its stage (null with no lesson or for the "other" group). */
+  readonly stageTitle: string | null;
+  /** Lessons learned at least once, out of `total`. */
+  readonly learned: number;
+  readonly total: number;
+}
+
+/**
+ * The Hôm nay "Bài nên học tiếp" suggestion (story 039): the same lesson the
+ * Học path marks "Học tiếp" ({@link suggestedNextLesson}), with its stage.
+ */
+export function nextLessonSuggestion(
+  lessons: readonly Lesson[],
+  stages: readonly LessonStage[],
+  events: readonly LogEvent[],
+): NextLessonSuggestion {
+  const groups = groupLessonsByStage(lessons, stages);
+  const learnedIds = new Set(lessons.filter((l) => lessonHistory(events, l.id).count > 0).map((l) => l.id));
+  const id = suggestedNextLesson(groups, (lessonId) => learnedIds.has(lessonId));
+  const learned = learnedIds.size;
+  const total = lessons.length;
+  if (id === null) return { lesson: null, stagePosition: null, stageTitle: null, learned, total };
+  const groupIndex = groups.findIndex((g) => g.lessons.some((l) => l.id === id));
+  const group = groups[groupIndex];
+  const lesson = group?.lessons.find((l) => l.id === id) ?? null;
+  const stage = group?.stage ?? null;
+  return { lesson, stagePosition: stage === null ? null : groupIndex + 1, stageTitle: stage?.title ?? null, learned, total };
 }

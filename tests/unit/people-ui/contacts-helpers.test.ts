@@ -38,11 +38,8 @@ describe('filterContacts', () => {
   it('npp: newest NPP first, archived excluded', () => {
     expect(filterContacts(PEOPLE, 'npp').map((p) => p.personId)).toEqual(['4', '2']);
   });
-  it('archived: only archived people', () => {
-    expect(filterContacts(PEOPLE, 'archived').map((p) => p.personId)).toEqual(['5']);
-  });
   it('counts match the lists', () => {
-    expect(countContacts(PEOPLE)).toEqual({ all: 5, kh: 2, npp: 2, archived: 1 });
+    expect(countContacts(PEOPLE)).toEqual({ all: 5, kh: 2, npp: 2 });
   });
 });
 

@@ -1,7 +1,7 @@
 // Nhóm của tôi (2026-11-23): a member is shown by display name, else by the name I saved for
 // that account in my own Danh bạ, else by phone.
 import { describe, expect, it } from 'vitest';
-import { groupMemberName, linkedContactNames } from '../../../src/ui/screens/my-group-screen';
+import { groupMemberName, linkedContactNames } from '../../../src/ui/group-helpers';
 import type { Person } from '../../../src/domain/people';
 
 const member = (displayName: string | null, phone: string | null) => ({ userId: 'u1', displayName, phone });

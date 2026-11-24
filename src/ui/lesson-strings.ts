@@ -23,7 +23,15 @@ export const LESSON_STRINGS = {
   pathReview: 'Ôn lại',
   pathClose: 'Đóng',
   pathTrophy: 'Hoàn thành chặng',
+  nextLessonTitle: 'Bài nên học tiếp',
+  nextLessonStart: 'Học ngay',
+  nextLessonReview: 'Ôn lại bài',
 } as const;
+
+/** Hôm nay card when every lesson has been learned (story 039). */
+export function nextLessonAllDone(total: number): string {
+  return `Bạn đã học đủ ${total} bài. Ôn lại bài cũ để nhớ lâu hơn.`;
+}
 
 /** Stage card heading on the Học path, e.g. "Chặng 2 · Mời hẹn" ("Chặng 2" when title is empty). */
 export function pathStageHeading(position: number, title: string): string {

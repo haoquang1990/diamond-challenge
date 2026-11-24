@@ -60,12 +60,6 @@ export interface DiamondPathScreenProps {
   readonly now?: () => Date;
   /** IANA time zone; defaults to the device's. */
   readonly timeZone?: string;
-  /** Opens the Bảng 30x30 screen; the entry button is shown only when provided. */
-  readonly onOpenBoard?: () => void;
-  /** Opens "Nhóm của tôi" (story 028); the entry button is shown only when provided. */
-  readonly onOpenGroup?: () => void;
-  /** True when signed out: the "Nhóm của tôi" button is locked and shows the reason. */
-  readonly groupLocked?: boolean;
   /** Opens the Thành tích screen; the entry button is shown only when provided. */
   readonly onOpenAchievements?: () => void;
 }
@@ -89,10 +83,7 @@ export function DiamondPathScreen({
   stages = DEFAULT_STAGES,
   now = realNow,
   timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone,
-  onOpenBoard,
   onOpenAchievements,
-  onOpenGroup,
-  groupLocked = false,
   memberIds = NO_MEMBERS,
 }: DiamondPathScreenProps) {
   const [state, setState] = useState<ScreenState>({ kind: 'loading' });
@@ -127,19 +118,6 @@ export function DiamondPathScreen({
         <p className="screen__prompt">{STRINGS.pathPrompt}</p>
       </header>
 
-      {onOpenBoard !== undefined && (
-        <button type="button" className="button button--secondary" onClick={onOpenBoard}>
-          {STRINGS.boardOpen}
-        </button>
-      )}
-      {onOpenGroup !== undefined && (
-        <>
-          <button type="button" className="button button--secondary" onClick={onOpenGroup} disabled={groupLocked}>
-            {STRINGS.groupOpen}
-          </button>
-          {groupLocked && <p className="message">{STRINGS.groupOpenLockedReason}</p>}
-        </>
-      )}
       {onOpenAchievements !== undefined && (
         <button type="button" className="button button--secondary" onClick={onOpenAchievements}>
           {STRINGS.achievementsOpen}
