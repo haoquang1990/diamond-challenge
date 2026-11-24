@@ -1,0 +1,2 @@
+Reviewed-Content-Hash: src/content/lessons.json 67b79edeaa3ba9734010dc499e1cf3573d5ecd6b
+Reviewed-Content-Hash: src/ui/lesson-icons.ts 3a7e987ba427ac32058bebc94ff0a3a5afb57aee

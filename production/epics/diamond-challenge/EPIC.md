@@ -51,6 +51,7 @@ Theo Build order của brief: nhật ký sự kiện + XP/streak → Làm + Hôm
 | 035 | Trang chi tiết người: Thông tin lên đầu, nút Hoạt động mở danh sách đủ việc, làm lại mọi việc | UI | Complete | N/A |
 | 036 | Bài học 5–7 câu, nhóm Khởi đầu, bổ sung 11 bài cũ | Logic | Complete | N/A |
 | 037 | Tab Học theo chặng: con đường bài học có icon, popup bài | UI | Complete | N/A |
+| 038 | Chia lại tab Học thành 18 chặng, mỗi chặng 5–7 bài | Config/Data | Complete | N/A |
 
 > 012–014 thay mô hình giai đoạn bằng việc cần làm + nhãn KH/NPP theo phản hồi dùng thử (2026-11-04, `design/gdd/crm.md`). Thứ tự gợi ý: 012 → 013 → 014 → 011.
 

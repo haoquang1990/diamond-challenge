@@ -86,3 +86,15 @@ describe('resolveLessonIcon', () => {
     for (const name of names) expect(Object.hasOwn(LESSON_ICONS, name ?? ''), String(name)).toBe(true);
   });
 });
+
+describe('lessons.json stage sizes (story 038)', () => {
+  it('has 18 stages of 5-7 lessons each, every lesson in a declared stage', () => {
+    const groups = groupLessonsByStage(parseLessons(lessonsJson).lessons, parseLessonStages(lessonsJson).stages);
+    expect(groups).toHaveLength(18);
+    for (const g of groups) {
+      expect(g.stage, 'no "other" group').not.toBeNull();
+      expect(g.lessons.length, g.stage?.id).toBeGreaterThanOrEqual(5);
+      expect(g.lessons.length, g.stage?.id).toBeLessThanOrEqual(7);
+    }
+  });
+});
