@@ -10,7 +10,7 @@ import { groupLessonsByStage, parseLessonStages } from '../../../src/domain/less
 
 const Q = { prompt: 'Q', options: ['a', 'b'], correctIndex: 0, explanation: 'e' };
 function lesson(id: string, stage?: string): Lesson {
-  return { id, title: id, xp: 10, questions: [Q, Q, Q], ...(stage === undefined ? {} : { stage }) };
+  return { id, title: id, xp: 10, questions: [Q, Q, Q, Q, Q], ...(stage === undefined ? {} : { stage }) };
 }
 const STAGES = [
   { id: 'list', title: 'Danh sách' },
@@ -82,5 +82,9 @@ describe('lessons.json stages', () => {
     expect(problems).toEqual([]);
     const ids = new Set(stages.map((s) => s.id));
     for (const l of parseLessons(lessonsJson).lessons) expect(ids.has(l.stage ?? '')).toBe(true);
+  });
+
+  it('puts Khởi đầu (start) first (story 036)', () => {
+    expect(parseLessonStages(lessonsJson).stages[0]).toEqual({ id: 'start', title: 'Khởi đầu' });
   });
 });

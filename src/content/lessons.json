@@ -1,6 +1,10 @@
 {
   "stages": [
     {
+      "id": "start",
+      "title": "Khởi đầu"
+    },
+    {
       "id": "list",
       "title": "Danh sách"
     },
@@ -65,6 +69,26 @@
           ],
           "correctIndex": 1,
           "explanation": "Danh sách sống nhờ được cập nhật thường xuyên."
+        },
+        {
+          "prompt": "Một người bạn lâu không liên lạc. Có nên ghi tên vào danh sách không?",
+          "options": [
+            "Có, cứ ghi ra trước, chưa vội đánh giá",
+            "Không, vì đã lâu không nói chuyện",
+            "Chỉ ghi nếu chắc chắn họ quan tâm"
+          ],
+          "correctIndex": 0,
+          "explanation": "Danh sách là để không bỏ sót ai. Việc chọn ai để liên hệ trước là bước sau."
+        },
+        {
+          "prompt": "Danh sách người quen nên được xem là gì?",
+          "options": [
+            "Một việc làm một lần cho xong",
+            "Tài sản quý, cập nhật thường xuyên",
+            "Bản nháp, làm xong có thể bỏ"
+          ],
+          "correctIndex": 1,
+          "explanation": "Danh sách người quen là nền tảng của mọi bước sau, nên cần giữ và cập nhật đều."
         }
       ]
     },
@@ -103,6 +127,26 @@
           ],
           "correctIndex": 1,
           "explanation": "Tôn trọng thời gian của họ và giữ liên lạc."
+        },
+        {
+          "prompt": "Bạn gọi đúng lúc người kia đang bận. Nên làm gì?",
+          "options": [
+            "Nói nhanh cho xong ý",
+            "Hỏi lúc nào tiện rồi gọi lại",
+            "Gửi tin nhắn dài giải thích"
+          ],
+          "correctIndex": 1,
+          "explanation": "Tôn trọng thời gian của người kia giúp lời mời được đón nhận tốt hơn."
+        },
+        {
+          "prompt": "Điều gì làm lời mời mất thiện cảm?",
+          "options": [
+            "Nói rõ lý do muốn gặp",
+            "Đưa ra hai lựa chọn thời gian",
+            "Nài ép khi người kia đã từ chối"
+          ],
+          "correctIndex": 2,
+          "explanation": "Lời mời thân thiện là để người kia thấy thoải mái. Nài ép làm mất lòng tin."
         }
       ]
     },
@@ -151,6 +195,16 @@
           ],
           "correctIndex": 0,
           "explanation": "Một bước tiếp theo nhỏ giúp cuộc trò chuyện đi tiếp."
+        },
+        {
+          "prompt": "Người nghe hỏi một điều bạn chưa biết. Bạn nên làm gì?",
+          "options": [
+            "Đoán một câu trả lời cho xong",
+            "Nói thật là chưa rõ và hẹn tìm hiểu, hoặc nhờ người hỗ trợ trả lời",
+            "Lảng sang chuyện khác"
+          ],
+          "correctIndex": 1,
+          "explanation": "Trung thực giữ được lòng tin. Không cần biết hết mọi câu trả lời."
         }
       ]
     },
@@ -189,6 +243,26 @@
           ],
           "correctIndex": 1,
           "explanation": "Ghi chú giúp bạn lần sau nói đúng điều họ quan tâm."
+        },
+        {
+          "prompt": "Người kia chưa trả lời tin nhắn theo dõi. Bạn nên làm gì?",
+          "options": [
+            "Nhắn liên tục cho tới khi có trả lời",
+            "Chờ vài ngày rồi hỏi thăm nhẹ nhàng một lần nữa",
+            "Xoá tên họ khỏi danh sách"
+          ],
+          "correctIndex": 1,
+          "explanation": "Theo dõi đều đặn nhưng không làm phiền. Người ta có thể đang bận."
+        },
+        {
+          "prompt": "Mục đích chính của việc theo dõi sau cuộc gặp là gì?",
+          "options": [
+            "Thúc người kia quyết định ngay",
+            "Giữ liên lạc và hiểu thêm điều họ quan tâm",
+            "Kể thêm thật nhiều thông tin"
+          ],
+          "correctIndex": 1,
+          "explanation": "Theo dõi là để chăm sóc mối quan hệ và nắm được người kia đang nghĩ gì."
         }
       ]
     },
@@ -237,6 +311,16 @@
           ],
           "correctIndex": 0,
           "explanation": "Giữ thái độ tử tế, để cửa luôn mở."
+        },
+        {
+          "prompt": "Có ý kiến coi việc gom đủ 100 lời từ chối là một thử thách. Ý nghĩa của nó là gì?",
+          "options": [
+            "Từ chối nhiều nghĩa là mình làm sai",
+            "Mỗi lời từ chối là một lần mình đã dám hành động",
+            "Nên tránh người dễ từ chối"
+          ],
+          "correctIndex": 1,
+          "explanation": "Đổi cách nhìn: lời từ chối là dấu hiệu mình đang hành động, giúp bớt sợ khi liên hệ."
         }
       ]
     },
@@ -347,6 +431,16 @@
             "Thân thiết"
           ],
           "explanation": "Mối quan hệ lớn dần từng bước; lòng tin cần thời gian."
+        },
+        {
+          "prompt": "Khi xin liên lạc người mới quen, nên kèm theo điều gì?",
+          "options": [
+            "Một lý do chung để giữ liên lạc, ví dụ cùng sở thích",
+            "Lời mời tham gia kinh doanh ngay",
+            "Không cần lý do gì"
+          ],
+          "correctIndex": 0,
+          "explanation": "Một lý do chung tự nhiên giúp người kia thoải mái cho liên lạc."
         }
       ]
     },
@@ -423,6 +517,26 @@
           ],
           "correctIndex": 0,
           "explanation": "Chuyện tiền bạc là riêng tư; lắng nghe điều họ tự chia sẻ là đủ."
+        },
+        {
+          "prompt": "Mục đích của 6 chủ đề FORMHD là gì?",
+          "options": [
+            "Để hỏi càng nhiều càng tốt trong một lần gặp",
+            "Để hiểu và quan tâm người kia một cách tự nhiên",
+            "Để tìm cách nói về sản phẩm sớm"
+          ],
+          "correctIndex": 1,
+          "explanation": "FORMHD giúp trò chuyện có chiều sâu và hiểu người kia hơn, không phải để tra hỏi."
+        },
+        {
+          "prompt": "Khi hỏi về Sức khoẻ, nên dừng ở mức nào?",
+          "options": [
+            "Hỏi thăm chung, ví dụ dạo này có hay tập thể dục không",
+            "Hỏi chi tiết bệnh đang mắc",
+            "Gợi ý ngay một sản phẩm"
+          ],
+          "correctIndex": 0,
+          "explanation": "Sức khoẻ chỉ dừng ở mức hỏi thăm, không đi sâu chuyện riêng và không nói như công dụng sản phẩm."
         }
       ]
     },
@@ -461,6 +575,26 @@
           ],
           "correctIndex": 0,
           "explanation": "Lịch đã sắp thì cứ chủ động, không chờ đợi ai."
+        },
+        {
+          "prompt": "Vì sao nên so lịch với tuyến trên trước khi hẹn?",
+          "options": [
+            "Để tuyến trên quyết định thay mình",
+            "Để chọn được giờ mà người hỗ trợ cũng tham gia được",
+            "Để có lý do hoãn hẹn"
+          ],
+          "correctIndex": 1,
+          "explanation": "So lịch trước giúp buổi hẹn có người hỗ trợ khi cần."
+        },
+        {
+          "prompt": "Lịch tuần nên được làm khi nào?",
+          "options": [
+            "Đầu mỗi tuần, cập nhật khi có thay đổi",
+            "Chỉ khi có người hẹn",
+            "Mỗi tháng một lần"
+          ],
+          "correctIndex": 0,
+          "explanation": "Lịch tuần đều đặn giúp mình chủ động thay vì chờ việc tới."
         }
       ]
     },
@@ -522,6 +656,16 @@
           ],
           "correctIndex": 0,
           "explanation": "Người được mời nên thấy buổi gặp có ích cho chính họ."
+        },
+        {
+          "prompt": "Người được mời hỏi chi tiết ngay trên điện thoại. Bạn nên làm gì?",
+          "options": [
+            "Trình bày đầy đủ qua điện thoại",
+            "Nói ngắn gọn và hẹn gặp để nói kỹ hơn",
+            "Từ chối trả lời"
+          ],
+          "correctIndex": 1,
+          "explanation": "Gọi điện là để hẹn gặp. Nội dung chi tiết nói khi gặp mặt mới rõ ràng."
         }
       ]
     },
@@ -569,6 +713,26 @@
           ],
           "correctIndex": 0,
           "explanation": "Không nói dối là nguyên tắc số một khi mời hẹn."
+        },
+        {
+          "prompt": "Với người bạn mới quen, lời mời nên thế nào?",
+          "options": [
+            "Rủ gặp để trò chuyện tiếp, nhẹ nhàng, chưa vội nói chuyện kinh doanh",
+            "Mời ngay vào một buổi trình bày",
+            "Gửi nhiều tài liệu để họ đọc"
+          ],
+          "correctIndex": 0,
+          "explanation": "Với người mới quen, ưu tiên xây mối quan hệ trước."
+        },
+        {
+          "prompt": "Với người nhiều kinh nghiệm hơn, vì sao phải nói thật mục đích?",
+          "options": [
+            "Vì họ dễ đoán ra nếu mình vòng vo",
+            "Vì nói thật giữ được sự tôn trọng và lòng tin",
+            "Không cần nói thật"
+          ],
+          "correctIndex": 1,
+          "explanation": "Mượn cớ \"xin ý kiến\" mà giấu mục đích dễ làm mất lòng tin. Hãy nói rõ là mình đang bắt đầu kinh doanh thêm."
         }
       ]
     },
@@ -696,6 +860,16 @@
           ],
           "correctIndex": 0,
           "explanation": "Phối hợp ngang bằng, không ỷ lại."
+        },
+        {
+          "prompt": "Vì sao B không nên tự trình bày hết mọi thứ?",
+          "options": [
+            "Vì B không được phép nói",
+            "Vì để A hỗ trợ thì C dễ tin hơn và B học được cách làm",
+            "Vì C không thích nghe B"
+          ],
+          "correctIndex": 1,
+          "explanation": "Mượn sức người hỗ trợ giúp buổi gặp hiệu quả hơn, đồng thời B học được qua mỗi lần."
         }
       ]
     },
@@ -755,6 +929,16 @@
           ],
           "correctIndex": 0,
           "explanation": "Sự tập trung của bạn cho thấy bạn tôn trọng cả tuyến trên và ứng viên."
+        },
+        {
+          "prompt": "Sau buổi gặp, B nên làm gì với tuyến trên?",
+          "options": [
+            "Không cần trao đổi gì thêm",
+            "Cùng rút kinh nghiệm và thống nhất bước tiếp theo",
+            "Để tuyến trên tự liên hệ ứng viên"
+          ],
+          "correctIndex": 1,
+          "explanation": "Rút kinh nghiệm sau mỗi buổi giúp lần sau tốt hơn và không bỏ sót ứng viên."
         }
       ]
     }

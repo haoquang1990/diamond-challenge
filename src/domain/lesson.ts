@@ -97,8 +97,8 @@ export interface ParsedLessons {
 }
 
 /** Bounds of the question count and option count per the content schema. */
-export const MIN_QUESTIONS = 3;
-export const MAX_QUESTIONS = 5;
+export const MIN_QUESTIONS = 5;
+export const MAX_QUESTIONS = 7;
 export const MIN_OPTIONS = 2;
 export const MAX_OPTIONS = 4;
 /** Bounds of the step count of an order question. */

@@ -25,7 +25,7 @@ const YESTERDAY = '2026-11-02T05:00:00.000Z';
 const JUST_BEFORE_MIDNIGHT_LOCAL = '2026-11-02T16:59:00.000Z'; // 23:59 on 2 Nov local
 
 const QUESTION = { prompt: 'Q', options: ['a', 'b'], correctIndex: 1, explanation: 'e' };
-const LESSON: Lesson = { id: 'l1', title: 'T', xp: 10, questions: [QUESTION, QUESTION, QUESTION] };
+const LESSON: Lesson = { id: 'l1', title: 'T', xp: 10, questions: [QUESTION, QUESTION, QUESTION, QUESTION, QUESTION] };
 
 let counter = 0;
 function lessonEvent(timestamp: string, xp: number, extra: Record<string, unknown> = {}, lessonId = 'l1'): LogEvent {
@@ -49,10 +49,10 @@ describe('lessons.json content', () => {
     expect(parsed.lessons.length).toBeGreaterThanOrEqual(5);
   });
 
-  it('has 3-5 questions per lesson with valid correctIndex and unique ids', () => {
+  it('has 5-7 questions per lesson with valid correctIndex and unique ids (story 036)', () => {
     for (const lesson of parsed.lessons) {
-      expect(lesson.questions.length).toBeGreaterThanOrEqual(3);
-      expect(lesson.questions.length).toBeLessThanOrEqual(5);
+      expect(lesson.questions.length).toBeGreaterThanOrEqual(5);
+      expect(lesson.questions.length).toBeLessThanOrEqual(7);
       for (const q of lesson.questions) {
         if (isOrderQuestion(q) || isMatchQuestion(q)) continue; // validated in lesson-order/lesson-match tests
         expect(q.correctIndex).toBeGreaterThanOrEqual(0);
@@ -74,12 +74,20 @@ describe('parseLessons error handling', () => {
     expect(result.problems.length).toBeGreaterThan(0);
   });
 
+  it('accepts 5 and 7 questions and rejects 4 and 8 (story 036)', () => {
+    const withCount = (n: number) => ({ ...LESSON, id: `n${n}`, questions: Array.from({ length: n }, () => QUESTION) });
+    const result = parseLessons({ lessons: [withCount(4), withCount(5), withCount(7), withCount(8)] });
+    expect(result.lessons.map((l) => l.id)).toEqual(['n5', 'n7']);
+    expect(result.problems).toHaveLength(2);
+    expect(result.problems.join(' ')).toContain('5–7');
+  });
+
   it('reports an empty file', () => {
     expect(parseLessons({ lessons: [] }).problems.length).toBeGreaterThan(0);
   });
 
   it('skips invalid lessons, keeps valid ones and reports them', () => {
-    const badIndex = { ...LESSON, id: 'bad', questions: [QUESTION, QUESTION, { ...QUESTION, correctIndex: 5 }] };
+    const badIndex = { ...LESSON, id: 'bad', questions: [QUESTION, QUESTION, QUESTION, QUESTION, { ...QUESTION, correctIndex: 5 }] };
     const missingTitle = { id: 'nt', xp: 10, questions: LESSON.questions };
     const tooFew = { ...LESSON, id: 'few', questions: [QUESTION] };
     const result = parseLessons({ lessons: [LESSON, badIndex, missingTitle, tooFew, null] });
@@ -95,8 +103,8 @@ describe('grading', () => {
   });
 
   it('computes the score; missing answers are wrong', () => {
-    expect(computeLessonResult(LESSON, [1, 0, 1])).toEqual({ correct: 2, total: 3 });
-    expect(computeLessonResult(LESSON, [1])).toEqual({ correct: 1, total: 3 });
+    expect(computeLessonResult(LESSON, [1, 0, 1, 1, 1])).toEqual({ correct: 4, total: 5 });
+    expect(computeLessonResult(LESSON, [1])).toEqual({ correct: 1, total: 5 });
   });
 });
 
