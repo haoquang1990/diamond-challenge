@@ -186,9 +186,8 @@ export function TodayScreen({
         <h1 className="screen__title">{STRINGS.todayTitle}</h1>
         <div className="today-header__actions">
           {onOpenSettings !== undefined && (
-            <button type="button" className="reminder-button" onClick={onOpenSettings} aria-label={STRINGS.reminderButtonLabel}>
+            <button type="button" className="reminder-button reminder-button--icon" onClick={onOpenSettings} aria-label={STRINGS.reminderButtonLabel} title={STRINGS.reminderButton}>
               <GearIcon />
-              <span>{STRINGS.reminderButton}</span>
             </button>
           )}
           {state.kind === 'ready' && (

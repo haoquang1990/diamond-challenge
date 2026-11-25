@@ -1119,3 +1119,6 @@ body.dialog-open { overflow: hidden; }
 .f1-box__login { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
 .f1-box__login span { font-weight: 700; overflow-wrap: anywhere; }
 .f1-box__login .button { width: auto; min-height: 44px; padding: 0 14px; }
+
+/* 2026-11-26: Hôm nay settings button is an icon only */
+.reminder-button--icon { width: 48px; min-width: 48px; padding: 0; justify-content: center; }
