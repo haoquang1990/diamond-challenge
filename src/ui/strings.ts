@@ -195,6 +195,18 @@ export const STRINGS = {
   badgesDone: 'Đã đạt hết',
   badgesNow: 'hiện tại',
   f1BoxTitle: 'NPP F1',
+  f1BoxLogin: 'Tài khoản',
+  appLinkLine: 'Ứng dụng',
+  f1ResendButton: 'Cấp lại mật khẩu tạm',
+  f1ResendTitle: 'Mật khẩu tạm mới',
+  f1ResendOffline: 'Cần có mạng để cấp lại mật khẩu.',
+  f1ResendErrors: {
+    already_active: 'Tài khoản này đã đổi mật khẩu và đang dùng. Nhờ quản trị đặt lại nếu cần.',
+    not_allowed: 'Bạn chỉ cấp lại được cho NPP F1 trực tiếp của mình.',
+    not_found: 'Không tìm thấy tài khoản này.',
+    network: 'Chưa kết nối được máy chủ. Thử lại nhé.',
+    other: 'Chưa cấp lại được mật khẩu. Thử lại sau nhé.',
+  },
   nppSortLabel: 'Sắp xếp NPP',
   nppSortNames: { newest: 'Mới bảo trợ', xpTotal: 'Tổng XP', xp7d: 'XP 7 ngày' },
   f1BoxOffline: 'đang không có mạng',
@@ -775,8 +787,14 @@ export function duplicateCodeWarning(names: string): string {
 }
 
 /** Shared text for Zalo: phone, temporary password and the reminder to change it (story 024). */
-export function createAccountShareText(phone: string, password: string): string {
-  return `Số điện thoại: ${phone}\nMật khẩu tạm: ${password}\nHãy đổi mật khẩu khi đăng nhập lần đầu.`;
+export function createAccountShareText(phone: string, password: string, appUrl?: string): string {
+  const link = appUrl === undefined || appUrl === '' ? '' : `Ứng dụng: ${appUrl}\n`;
+  return `${link}Số điện thoại: ${phone}\nMật khẩu tạm: ${password}\nHãy đổi mật khẩu khi đăng nhập lần đầu.`;
+}
+
+/** The app's own address (origin + path, without index.html, query or hash), for the share text (2026-11-25). */
+export function appLink(location: Pick<Location, 'origin' | 'pathname'>): string {
+  return `${location.origin}${location.pathname.replace(/index\.html$/, '')}`;
 }
 
 /**

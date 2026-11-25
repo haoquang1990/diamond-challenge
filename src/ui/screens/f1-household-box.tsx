@@ -4,7 +4,10 @@ import gameConfig from '../../config/game-config.json';
 import { loadGroup, parseGroupConfig, readGroupCache, writeGroupCache } from '../../data/group-service';
 import type { GroupData } from '../../data/group-service';
 import { f1TotalsLabel, findF1Household, householdActivityNote, householdProgress, householdProgressLabel } from '../group-helpers';
-import { STRINGS, groupUpdatedLabel } from '../strings';
+import { generateTempPassword, resendF1Password } from '../../data/account-service';
+import type { ResendPasswordError } from '../../data/account-service';
+import { STRINGS, appLink, createAccountShareText, groupUpdatedLabel } from '../strings';
+import { Dialog } from './person-form';
 
 const GROUP_CONFIG = parseGroupConfig(gameConfig);
 
@@ -26,11 +29,36 @@ function realNow(): Date {
  * "Hộ F1" on an NPP contact's detail page (story 042): the totals of the F1 household with the
  * contact's code ("KH x · NPP y", no target), "N ngày chưa hoạt động" when inactive, and when the
  * numbers were updated. Uses the cached group first and refreshes online; shows nothing when no F1
- * household matches or nothing could be loaded.
+ * household matches or nothing could be loaded. Story 048: each member's login (phone) with
+ * "Cấp lại mật khẩu tạm" (server-checked: my direct F1, never activated) and a once-only popup
+ * with the app link, phone and new password to copy or share.
  */
 export function F1HouseholdBox({ clientPromise, accountId, amwayCode, now = realNow }: F1HouseholdBoxProps) {
   const [group, setGroup] = useState<GroupData | null>(() => readGroupCache(accountId));
   const [stale, setStale] = useState(true);
+  const [busyUser, setBusyUser] = useState<string | null>(null);
+  const [resendError, setResendError] = useState<ResendPasswordError | null>(null);
+  const [issued, setIssued] = useState<{ readonly phone: string; readonly password: string } | null>(null);
+  const [copyNote, setCopyNote] = useState<string | null>(null);
+
+  /** Story 048: a new temporary password for a never-activated member of this F1 household. */
+  const resend = async (userId: string, phone: string) => {
+    if (busyUser !== null) return;
+    setBusyUser(userId);
+    setResendError(null);
+    try {
+      const password = generateTempPassword();
+      const r = await resendF1Password(await clientPromise, userId, password);
+      if (r.ok) {
+        setCopyNote(null);
+        setIssued({ phone, password });
+      } else setResendError(r.error);
+    } catch (error) {
+      console.error('[f1-box] resend failed', error);
+      setResendError('network');
+    }
+    setBusyUser(null);
+  };
 
   useEffect(() => {
     if (!navigator.onLine) return undefined;
@@ -73,6 +101,77 @@ export function F1HouseholdBox({ clientPromise, accountId, amwayCode, now = real
         {household.numbers === null ? groupUpdatedLabel(group.loadedAt) : groupUpdatedLabel(household.numbers.updatedAt)}
         {stale && !navigator.onLine ? ` · ${STRINGS.f1BoxOffline}` : ''}
       </p>
+      {household.members.some((m) => m.phone !== null) && (
+        <ul className="f1-box__logins" aria-label={STRINGS.f1BoxLogin}>
+          {household.members
+            .filter((m) => m.phone !== null)
+            .map((m) => (
+              <li key={m.userId} className="f1-box__login">
+                <span>
+                  {STRINGS.f1BoxLogin}: {m.phone}
+                </span>
+                <button type="button" className="button button--secondary" disabled={!navigator.onLine || busyUser !== null} onClick={() => void resend(m.userId, m.phone ?? '')}>
+                  {STRINGS.f1ResendButton}
+                </button>
+              </li>
+            ))}
+        </ul>
+      )}
+      {!navigator.onLine && <p className="message">{STRINGS.f1ResendOffline}</p>}
+      {resendError !== null && (
+        <p className="message message--error" role="alert">
+          {STRINGS.f1ResendErrors[resendError]}
+        </p>
+      )}
+      {issued !== null && (
+        <Dialog title={STRINGS.f1ResendTitle} onClose={() => setIssued(null)}>
+          {(() => {
+            const link = appLink(window.location);
+            const text = createAccountShareText(issued.phone, issued.password, link);
+            return (
+              <>
+                <p className="popup__body">{STRINGS.createAccountOnce}</p>
+                <p className="message">
+                  {STRINGS.appLinkLine}: <strong className="temp-link">{link}</strong>
+                </p>
+                <p className="message">
+                  {STRINGS.createAccountPhoneLine}: <strong>{issued.phone}</strong>
+                </p>
+                <p className="message">
+                  {STRINGS.createAccountPasswordLine}: <strong className="temp-password">{issued.password}</strong>
+                </p>
+                <div className="button-row">
+                  <button
+                    type="button"
+                    className="button button--secondary"
+                    onClick={() =>
+                      void navigator.clipboard
+                        .writeText(text)
+                        .then(() => setCopyNote(STRINGS.createAccountCopied))
+                        .catch(() => setCopyNote(STRINGS.createAccountCopyFailed))
+                    }
+                  >
+                    {STRINGS.createAccountCopy}
+                  </button>
+                  {typeof navigator.share === 'function' && (
+                    <button type="button" className="button button--secondary" onClick={() => navigator.share({ text }).catch(() => undefined)}>
+                      {STRINGS.createAccountShare}
+                    </button>
+                  )}
+                </div>
+                {copyNote !== null && (
+                  <p className="message" role="status">
+                    {copyNote}
+                  </p>
+                )}
+                <button type="button" className="button button--primary" onClick={() => setIssued(null)}>
+                  {STRINGS.createAccountFinish}
+                </button>
+              </>
+            );
+          })()}
+        </Dialog>
+      )}
     </section>
   );
 }

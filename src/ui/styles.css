@@ -1112,3 +1112,10 @@ body.dialog-open { overflow: hidden; }
 .badge-sheet__tiers li.todo { color: #aaa; }
 .tier-dot { flex: none; width: 20px; height: 20px; border-radius: 50%; background: #e5e5e5; }
 .tier-dot--t1 { background: #cd7f32; } .tier-dot--t2 { background: #9aa7b4; } .tier-dot--t3 { background: #ffc800; } .tier-dot--t4 { background: #1cb0f6; }
+
+/* Story 048: app link in the share view, F1 logins with "Cấp lại mật khẩu tạm" */
+.temp-link { overflow-wrap: anywhere; }
+.f1-box__logins { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.f1-box__login { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.f1-box__login span { font-weight: 700; overflow-wrap: anywhere; }
+.f1-box__login .button { width: auto; min-height: 44px; padding: 0 14px; }

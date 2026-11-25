@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { STRINGS, createAccountShareText } from '../strings';
+import { STRINGS, appLink, createAccountShareText } from '../strings';
 
 /** Props for {@link TempPasswordView}. */
 export interface TempPasswordViewProps {
@@ -24,7 +24,8 @@ export interface TempPasswordViewProps {
  */
 export function TempPasswordView({ title, phone, password, warning, onFinish }: TempPasswordViewProps) {
   const [copyNote, setCopyNote] = useState<string | null>(null);
-  const text = createAccountShareText(phone, password);
+  const link = appLink(window.location);
+  const text = createAccountShareText(phone, password, link);
 
   const copy = async () => {
     try {
@@ -42,6 +43,9 @@ export function TempPasswordView({ title, phone, password, warning, onFinish }: 
         <p className="screen__prompt">{STRINGS.createAccountOnce}</p>
       </header>
       <section className="card form">
+        <p className="message">
+          {STRINGS.appLinkLine}: <strong className="temp-link">{link}</strong>
+        </p>
         <p className="message">
           {STRINGS.createAccountPhoneLine}: <strong>{phone}</strong>
         </p>
