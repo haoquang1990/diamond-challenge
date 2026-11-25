@@ -234,3 +234,29 @@ export async function loadHousehold(client: SupabaseClient, accountId: string, f
   });
   return { householdId, code: (codeRow.data as { code?: string } | null)?.code ?? null, members, maxMembers };
 }
+
+/** Why {@link resendF1Password} failed (story 048). */
+export type ResendPasswordError = 'already_active' | 'not_allowed' | 'not_found' | 'network' | 'other';
+
+/** Outcome of {@link resendF1Password}. */
+export type ResendPasswordResult = { readonly ok: true } | { readonly ok: false; readonly error: ResendPasswordError };
+
+const KNOWN_RESEND_ERRORS: ReadonlySet<string> = new Set(['already_active', 'not_allowed', 'not_found', 'admin_only', 'change_password_first', 'invalid_password', 'reset_failed']);
+
+/**
+ * Gives a member of my direct F1 household a new temporary password (story 048) through the
+ * Edge Function `reset-password`. The server allows it only while that account has never changed
+ * its first password (`already_active` otherwise) and only for my direct F1 (`not_allowed`). The
+ * password is only sent to the function; it is never logged or stored here.
+ *
+ * @example
+ * const r = await resendF1Password(client, userId, generateTempPassword());
+ */
+export async function resendF1Password(client: Pick<SupabaseClient, 'functions'>, userId: string, password: string): Promise<ResendPasswordResult> {
+  const { error } = await client.functions.invoke('reset-password', { body: { userId, password }, timeout: EDGE_FUNCTION_TIMEOUT_MS });
+  if (error === null || error === undefined) return { ok: true };
+  const key = await readFunctionError(error, KNOWN_RESEND_ERRORS);
+  if (key === 'already_active' || key === 'not_found' || key === 'network') return { ok: false, error: key };
+  if (key === 'not_allowed' || key === 'admin_only' || key === 'change_password_first') return { ok: false, error: 'not_allowed' };
+  return { ok: false, error: 'other' };
+}
