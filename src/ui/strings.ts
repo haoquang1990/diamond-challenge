@@ -185,6 +185,12 @@ export const STRINGS = {
   sponsorCancelDone: 'Đã huỷ bảo trợ.',
   sponsorCancelHistory: 'Huỷ bảo trợ',
   cheerGroupTitle: 'Cổ vũ nhóm',
+  cheerSpouseNote: 'Vợ/chồng trong NPP của bạn',
+  cheerPickTitle: 'Gửi lời cổ vũ',
+  cheerPickLabel: 'Chọn một lời',
+  cheerCustomLabel: 'Hoặc tự viết (tối đa 200 ký tự)',
+  cheerSend: 'Gửi',
+  cheerCancel: 'Huỷ',
   tabBadges: 'Huy hiệu',
   badgesTitle: 'Huy hiệu',
   badgesEarned: 'huy hiệu đã có',
@@ -919,4 +925,9 @@ export function badgesSummaryLabel(earned: number, total: number): string {
 /** Badge card accessible progress, e.g. "đã đạt 2/5 mốc". */
 export function badgeProgressLabel(reached: number, total: number): string {
   return `đã đạt ${reached}/${total} mốc`;
+}
+
+/** Received cheer card title with the sender (story 049), e.g. "Lời cổ vũ từ Anh Bình". */
+export function cheerFromLabel(senderName: string): string {
+  return `Lời cổ vũ từ ${senderName}`;
 }
