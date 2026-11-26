@@ -64,6 +64,8 @@ export interface GroupMember {
   readonly phone: string | null;
   /** Shared progress numbers (story 044); null or absent when the member's app never sent them. */
   readonly progress?: MemberProgress | null;
+  /** Whether the account changed its first password (story 050); absent when unknown. */
+  readonly activated?: boolean;
 }
 
 /** One member's shared progress (`member_progress`, story 044). */
@@ -72,6 +74,15 @@ export interface MemberProgress {
   readonly xp7d: number;
   readonly streak: number;
   readonly updatedAt: string;
+  /** Story 050 (absent before that migration or on an old app): local day the numbers are for. */
+  readonly statsDay?: string | null;
+  readonly goalToday?: boolean;
+  readonly activeDays7d?: number;
+  readonly tasks7d?: Readonly<Record<string, number>>;
+  readonly lessonsDistinct?: number;
+  readonly lastLessonAt?: string | null;
+  readonly badges7d?: number;
+  readonly lastSeenAt?: string | null;
 }
 
 /** Synced 30x30 numbers of one household. */
@@ -80,6 +91,41 @@ export interface GroupNumbers {
   readonly f1: number;
   readonly achieved30x30: boolean;
   readonly updatedAt: string;
+}
+
+const PROGRESS_COLUMNS = 'user_id, xp_total, xp_7d, streak, updated_at';
+const INSIGHT_COLUMNS = 'stats_day, goal_today, active_days_7d, tasks_7d, lessons_distinct, last_lesson_at, badges_7d, last_seen_at';
+
+interface ProgressRow {
+  user_id: string;
+  xp_total: number;
+  xp_7d: number;
+  streak: number;
+  updated_at: string;
+  stats_day?: string | null;
+  goal_today?: boolean;
+  active_days_7d?: number;
+  tasks_7d?: Record<string, number> | null;
+  lessons_distinct?: number;
+  last_lesson_at?: string | null;
+  badges_7d?: number;
+  last_seen_at?: string | null;
+}
+
+function toMemberProgress(r: ProgressRow): MemberProgress {
+  const base = { xpTotal: r.xp_total, xp7d: r.xp_7d, streak: r.streak, updatedAt: r.updated_at };
+  if (r.stats_day === undefined) return base;
+  return {
+    ...base,
+    statsDay: r.stats_day,
+    goalToday: r.goal_today === true,
+    activeDays7d: r.active_days_7d ?? 0,
+    tasks7d: r.tasks_7d ?? {},
+    lessonsDistinct: r.lessons_distinct ?? 0,
+    lastLessonAt: r.last_lesson_at ?? null,
+    badges7d: r.badges_7d ?? 0,
+    lastSeenAt: r.last_seen_at ?? null,
+  };
 }
 
 /** One direct F1 household as listed on "Nhóm của tôi". */
@@ -160,16 +206,23 @@ export async function loadGroup(
   const members = (memberRows.data ?? []) as { household_id: string; user_id: string }[];
   const userIds = members.map((m) => m.user_id);
   let profiles: { id: string; phone: string | null; display_name: string | null }[] = [];
-  let progressRows: { user_id: string; xp_total: number; xp_7d: number; streak: number; updated_at: string }[] = [];
+  let progressRows: ProgressRow[] = [];
+  let activation: { user_id: string; activated: boolean }[] = [];
   if (userIds.length > 0) {
-    const [p, mp] = await Promise.all([
+    const [p, mp, act] = await Promise.all([
       client.from('profiles').select('id, phone, display_name').in('id', userIds),
-      client.from('member_progress').select('user_id, xp_total, xp_7d, streak, updated_at').in('user_id', userIds),
+      client.from('member_progress').select(`${PROGRESS_COLUMNS}, ${INSIGHT_COLUMNS}`).in('user_id', userIds),
+      client.rpc('f1_member_activation', { p_user_ids: userIds }),
     ]);
     if (p.error) return null;
     profiles = (p.data ?? []) as typeof profiles;
-    // Optional (story 044): a server without the table yet still shows the group.
-    if (!mp.error) progressRows = (mp.data ?? []) as typeof progressRows;
+    if (!mp.error) progressRows = (mp.data ?? []) as ProgressRow[];
+    else {
+      // Optional: a server before story 050 has only the story 044 columns, before 044 none.
+      const old = await client.from('member_progress').select(PROGRESS_COLUMNS).in('user_id', userIds);
+      if (!old.error) progressRows = (old.data ?? []) as ProgressRow[];
+    }
+    if (!act.error && Array.isArray(act.data)) activation = act.data as typeof activation;
   }
   const codes = (codeRows.data ?? []) as { household_id: string; code: string }[];
   const numbers = (numberRows.data ?? []) as {
@@ -185,11 +238,13 @@ export async function loadGroup(
       members: mine.map((m) => {
         const p = profiles.find((x) => x.id === m.user_id);
         const mp = progressRows.find((x) => x.user_id === m.user_id);
+        const act = activation.find((x) => x.user_id === m.user_id);
         return {
           userId: m.user_id,
           displayName: p?.display_name ?? null,
           phone: p?.phone ?? null,
-          progress: mp === undefined ? null : { xpTotal: mp.xp_total, xp7d: mp.xp_7d, streak: mp.streak, updatedAt: mp.updated_at },
+          progress: mp === undefined ? null : toMemberProgress(mp),
+          ...(act === undefined ? {} : { activated: act.activated }),
         };
       }),
       memberCount: mine.length,

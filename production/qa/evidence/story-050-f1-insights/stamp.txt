@@ -1,0 +1,8 @@
+Reviewed-Content-Hash: src/ui/group-helpers.ts 6dd6fffe59ecb8a2d2b9ca870cb9b39f9599f298
+Reviewed-Content-Hash: src/ui/screens/f1-household-box.tsx f263dd5448144f59d91cf09c586a7f8c1f2be8e4
+Reviewed-Content-Hash: src/ui/screens/group-cheer-card.tsx 2ab17ebf7ad477bdd3671059ee8f50c1eeea5fb9
+Reviewed-Content-Hash: src/ui/strings.ts 75b48ee471dc3d46fbd2219a92eab57db4ae8599
+Reviewed-Content-Hash: src/ui/styles.css 39029fce039ae62a1b0e7eaa2b59c16dc981d25b
+Reviewed-Content-Hash: src/data/group-service.ts 5b5b71bcc8a9a022168b654e3e6ac60802652c8c
+Reviewed-Content-Hash: src/data/member-progress-sync.ts 21e9d6f4b6da2395163cdcc0e8dd5109aee6c716
+Reviewed-Content-Hash: src/domain/progress.ts 347dcadb1e42726d9bb09b291fbdc918b078a7e0

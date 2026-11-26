@@ -108,6 +108,23 @@ describe('member_progress (story 044)', () => {
     expect(await seen(4, 3)).toBeUndefined(); // downline cannot read its upline
   });
 
+  it('stores the story 050 numbers and rejects bad ones', async () => {
+    await as(3, () => db.query(`update public.member_progress set stats_day = '2026-11-26', goal_today = true, active_days_7d = 3, tasks_7d = '{"demo":2}', lessons_distinct = 12, badges_7d = 1, last_seen_at = now() where user_id = $1`, [U(3)]));
+    expect(await as(2, () => one<number>('select active_days_7d as v from public.member_progress where user_id = $1', [U(3)]))).toBe(3);
+    await expect(as(3, () => db.query('update public.member_progress set active_days_7d = 8 where user_id = $1', [U(3)]))).rejects.toThrow();
+  });
+
+  it('tells the direct sponsor and the household whether accounts are activated, nobody else', async () => {
+    await db.query('update public.profiles set must_change_password = true where id = $1', [U(4)]);
+    await db.query('update public.profiles set must_change_password = false where id = $1', [U(3)]);
+    const asSponsor = await as(2, () => db.query<{ user_id: string; activated: boolean }>('select * from public.f1_member_activation($1)', [[U(3), U(4)]]));
+    expect(asSponsor.rows).toEqual([{ user_id: U(3), activated: true }]); // user 4 is two levels down
+    const asParent = await as(3, () => db.query<{ user_id: string; activated: boolean }>('select * from public.f1_member_activation($1)', [[U(4)]]));
+    expect(asParent.rows).toEqual([{ user_id: U(4), activated: false }]);
+    const asStranger = await as(6, () => db.query('select * from public.f1_member_activation($1)', [[U(3)]]));
+    expect(asStranger.rows).toEqual([]);
+  });
+
   it('sets updated_at on every write', async () => {
     const at = await as(3, () => one<string>('select updated_at::text as v from public.member_progress where user_id = $1', [U(3)]));
     expect(at).not.toBeNull();

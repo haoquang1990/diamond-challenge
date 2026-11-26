@@ -37,11 +37,7 @@ export function codeContactNames(people: readonly Person[]): ReadonlyMap<string,
  * is known that way the first unnamed one takes my contact name for the household code (unless a
  * member already shows it); the rest fall back to phone, then a placeholder.
  */
-export function householdNames(
-  h: GroupHousehold,
-  contactNames: ReadonlyMap<string, string>,
-  codeNames: ReadonlyMap<string, string> = new Map(),
-): string {
+export function householdNames(h: GroupHousehold, contactNames: ReadonlyMap<string, string>, codeNames: ReadonlyMap<string, string> = new Map()): string {
   const known = h.members.map((m) => m.displayName ?? contactNames.get(m.userId) ?? null);
   const byCode = h.code === null ? undefined : codeNames.get(h.code);
   // My contact name for the household code goes to the first member without a name, unless a member already has it.
@@ -114,11 +110,7 @@ export type NppSort = 'newest' | 'xpTotal' | 'xp7d';
  * contacts without numbers keep their given order after the others. `newest` keeps the order.
  * Pure; stable.
  */
-export function sortNppByProgress<T extends { readonly amwayCode?: string | null }>(
-  people: readonly T[],
-  progressByCode: ReadonlyMap<string, HouseholdProgress>,
-  sort: NppSort,
-): T[] {
+export function sortNppByProgress<T extends { readonly amwayCode?: string | null }>(people: readonly T[], progressByCode: ReadonlyMap<string, HouseholdProgress>, sort: NppSort): T[] {
   if (sort === 'newest') return [...people];
   const value = (p: T): number | null => {
     const stats = p.amwayCode == null ? undefined : progressByCode.get(p.amwayCode);
@@ -144,4 +136,126 @@ export function progressByCode(households: readonly GroupHousehold[]): ReadonlyM
 export function householdProgressLabel(p: HouseholdProgress): string {
   const n = (x: number) => x.toLocaleString('vi-VN');
   return `XP 7 ngày ${n(p.xp7d)} · Tổng ${n(p.xpTotal)} XP · Chuỗi ${p.streak} ngày`;
+}
+
+/** What a sponsor needs to cheer or remind one F1 NPP (story 050), members combined. */
+export interface HouseholdInsight {
+  /** Some member met today's goal (numbers computed today). */
+  readonly goalToday: boolean;
+  /** Best member's active days of the last 7. */
+  readonly activeDays7d: number;
+  /** Tasks of the last 7 days, members added up. */
+  readonly tasks7d: Readonly<Record<string, number>>;
+  /** Best member's lessons learned. */
+  readonly lessonsDistinct: number;
+  readonly lastLessonAt: string | null;
+  /** Badges earned in 7 days, members added up. */
+  readonly badges7d: number;
+  /** Latest time any member's app sent its numbers. */
+  readonly lastSeenAt: string | null;
+  /** Best streak (as in {@link householdProgress}). */
+  readonly streak: number;
+  /** Some member never changed the first password. */
+  readonly notActivated: boolean;
+}
+
+/**
+ * Combines the members' story 050 numbers; null when no member's app has sent them yet. Today's
+ * goal only counts when the numbers are from `today` (local YYYY-MM-DD). Pure.
+ */
+export function householdInsight(h: GroupHousehold, today: string): HouseholdInsight | null {
+  const notActivated = h.members.some((m) => m.activated === false);
+  const sent = h.members.map((m) => m.progress).filter((p): p is NonNullable<typeof p> => p != null && p.statsDay !== undefined);
+  if (sent.length === 0)
+    return notActivated
+      ? {
+          goalToday: false,
+          activeDays7d: 0,
+          tasks7d: {},
+          lessonsDistinct: 0,
+          lastLessonAt: null,
+          badges7d: 0,
+          lastSeenAt: null,
+          streak: 0,
+          notActivated,
+        }
+      : null;
+  const latest = (xs: (string | null | undefined)[]) => xs.reduce<string | null>((best, x) => (x != null && (best === null || x > best) ? x : best), null);
+  const tasks: Record<string, number> = {};
+  for (const p of sent) for (const [k, v] of Object.entries(p.tasks7d ?? {})) tasks[k] = (tasks[k] ?? 0) + v;
+  return {
+    goalToday: sent.some((p) => p.statsDay === today && p.goalToday === true),
+    activeDays7d: Math.max(...sent.map((p) => p.activeDays7d ?? 0)),
+    tasks7d: tasks,
+    lessonsDistinct: Math.max(...sent.map((p) => p.lessonsDistinct ?? 0)),
+    lastLessonAt: latest(sent.map((p) => p.lastLessonAt)),
+    badges7d: sent.reduce((sum, p) => sum + (p.badges7d ?? 0), 0),
+    lastSeenAt: latest(sent.map((p) => p.lastSeenAt)),
+    streak: Math.max(...sent.map((p) => p.streak)),
+    notActivated,
+  };
+}
+
+/** The device's local calendar day of `d`, as YYYY-MM-DD (matches story 050's `statsDay`). */
+export function localDayKey(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+/** Whole days from `iso` to `now`, or null. */
+function daysSince(iso: string | null, now: Date): number | null {
+  if (iso === null) return null;
+  return Math.max(0, Math.floor((now.getTime() - Date.parse(iso)) / 86_400_000));
+}
+
+/** "hôm nay" / "hôm qua" / "N ngày trước". */
+export function agoLabel(iso: string | null, now: Date): string | null {
+  const d = daysSince(iso, now);
+  return d === null ? null : d === 0 ? 'hôm nay' : d === 1 ? 'hôm qua' : `${d} ngày trước`;
+}
+
+/** Short task names for the 7-day line, in display order. */
+const TASK_LABELS: readonly (readonly [string, string])[] = [
+  ['contact', 'Liên hệ'],
+  ['demo', 'Demo'],
+  ['opp', 'OPP'],
+  ['new_customer', 'Bán hàng'],
+  ['new_npp', 'Bảo trợ'],
+];
+
+/** "Liên hệ 5 · Demo 2 · OPP 0 · Bán hàng 1 · Bảo trợ 0". */
+export function tasks7dLabel(tasks: Readonly<Record<string, number>>): string {
+  return TASK_LABELS.map(([id, name]) => `${name} ${tasks[id] ?? 0}`).join(' · ');
+}
+
+/**
+ * The most useful reminder line for the cheer card (story 050), or null: not activated, streak
+ * about to break, goal already met today, inactive this week.
+ */
+export function insightNote(i: HouseholdInsight | null): string | null {
+  if (i === null) return null;
+  if (i.notActivated) return 'Chưa đăng nhập tài khoản';
+  if (i.streak >= 3 && !i.goalToday) return `Chuỗi ${i.streak} ngày sắp đứt`;
+  if (i.goalToday) return 'Hôm nay đã đạt mục tiêu';
+  if (i.activeDays7d === 0) return '7 ngày qua chưa hoạt động';
+  return null;
+}
+
+/**
+ * Cheer lines suited to the F1's numbers (story 050), most relevant first; the picker shows them
+ * above the usual lines. Pure.
+ */
+export function suggestCheers(i: HouseholdInsight | null, now: Date): string[] {
+  if (i === null) return [];
+  const out: string[] = [];
+  if (i.notActivated) out.push('Bạn đăng nhập app thử nhé, cần mật khẩu mới thì nhắn mình!');
+  if (i.badges7d > 0) out.push('Chúc mừng bạn có thêm huy hiệu mới!');
+  if ((i.tasks7d.new_customer ?? 0) > 0) out.push('Chúc mừng có khách hàng mới tuần này!');
+  if ((i.tasks7d.new_npp ?? 0) > 0) out.push('Chúc mừng bạn bảo trợ được NPP mới!');
+  if (i.streak >= 3 && !i.goalToday) out.push(`Giữ chuỗi ${i.streak} ngày nhé, hôm nay vẫn còn kịp!`);
+  if (i.goalToday) out.push('Hôm nay bạn đạt mục tiêu rồi, tuyệt vời!');
+  if ((i.tasks7d.demo ?? 0) > 0) out.push(`Tuần này đã ${i.tasks7d.demo} buổi demo, giỏi quá!`);
+  if (!i.notActivated && i.activeDays7d === 0) out.push('Lâu rồi chưa thấy bạn hoạt động, cần mình hỗ trợ gì không?');
+  const lesson = daysSince(i.lastLessonAt, now);
+  if (!i.notActivated && (lesson === null || lesson >= 7)) out.push('Dành 2 phút học một bài hôm nay nhé!');
+  return out;
 }

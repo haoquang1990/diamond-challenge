@@ -1117,8 +1117,8 @@ body.dialog-open { overflow: hidden; }
 .temp-link { overflow-wrap: anywhere; }
 .f1-box__logins { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .f1-box__login { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
-.f1-box__login span { font-weight: 700; overflow-wrap: anywhere; }
-.f1-box__login .button { width: auto; min-height: 44px; padding: 0 14px; }
+.f1-box__login > span { flex: 1 1 160px; min-width: 0; font-weight: 700; overflow-wrap: anywhere; }
+.f1-box__login .button { width: auto; min-height: 44px; padding: 0 14px; white-space: nowrap; }
 
 /* 2026-11-26: Hôm nay settings button is an icon only */
 .reminder-button--icon { width: 48px; min-width: 48px; padding: 0; justify-content: center; }
@@ -1129,3 +1129,8 @@ body.dialog-open { overflow: hidden; }
 .cheer-pick__option { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border: 2px solid var(--color-border); border-radius: 12px; font-weight: 600; cursor: pointer; }
 .cheer-pick__option--on { border-color: var(--color-diamond); background: var(--color-diamond-light); }
 .cheer-pick__option input { margin-top: 3px; }
+.f1-box__insight { list-style: none; margin: 0; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; background: var(--color-diamond-light); border-radius: 12px; }
+.f1-box__fact { font-size: 0.95rem; color: var(--color-text); overflow-wrap: anywhere; }
+.f1-box__fact--ok { color: #2b7a00; font-weight: 700; }
+.f1-box__badge { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; background: #fdecc8; color: #7a4b00; }
+.cheer-pick__group { margin: 4px 0 2px; font-size: 0.85rem; font-weight: 700; color: var(--color-muted); }

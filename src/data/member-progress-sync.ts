@@ -42,7 +42,25 @@ const STORAGE_PREFIX = 'diamond.memberProgress.lastSent.';
 
 /** True when the two snapshots differ in any number. Pure. */
 export function shareProgressChanged(last: ShareProgress | null, next: ShareProgress): boolean {
-  return last === null || last.xpTotal !== next.xpTotal || last.xp7d !== next.xp7d || last.streak !== next.streak;
+  return last === null || JSON.stringify(last) !== JSON.stringify(next);
+}
+
+/** The `member_progress` row of a snapshot (story 044 numbers plus story 050's). */
+export function memberProgressRow(accountId: string, p: ShareProgress, seenAt: string): Record<string, unknown> {
+  return {
+    user_id: accountId,
+    xp_total: p.xpTotal,
+    xp_7d: p.xp7d,
+    streak: p.streak,
+    stats_day: p.statsDay,
+    goal_today: p.goalToday,
+    active_days_7d: p.activeDays7d,
+    tasks_7d: p.tasks7d,
+    lessons_distinct: p.lessonsDistinct,
+    last_lesson_at: p.lastLessonAt,
+    badges_7d: p.badges7d,
+    last_seen_at: seenAt,
+  };
 }
 
 /**
@@ -70,9 +88,11 @@ export function createMemberProgressSync(deps: MemberProgressSyncDeps): MemberPr
     try {
       const next = await deps.compute();
       if (!shareProgressChanged(lastSent, next)) return 'unchanged';
-      const { error } = await deps.client
-        .from('member_progress')
-        .upsert({ user_id: deps.accountId, xp_total: next.xpTotal, xp_7d: next.xp7d, streak: next.streak }, { onConflict: 'user_id' });
+      let { error } = await deps.client.from('member_progress').upsert(memberProgressRow(deps.accountId, next, new Date().toISOString()), { onConflict: 'user_id' });
+      if (error !== null) {
+        // A server before the story 050 migration has only the story 044 columns.
+        ({ error } = await deps.client.from('member_progress').upsert({ user_id: deps.accountId, xp_total: next.xpTotal, xp_7d: next.xp7d, streak: next.streak }, { onConflict: 'user_id' }));
+      }
       if (error !== null) return 'failed';
       lastSent = next;
       writeStored(storage, key, next);
@@ -115,8 +135,8 @@ function readStored(storage: Pick<Storage, 'getItem'> | null, key: string): Shar
     const text = storage?.getItem(key);
     if (typeof text !== 'string') return null;
     const r = JSON.parse(text) as Record<string, unknown>;
-    const ok = (v: unknown): v is number => typeof v === 'number' && Number.isInteger(v) && v >= 0;
-    return ok(r.xpTotal) && ok(r.xp7d) && ok(r.streak) ? { xpTotal: r.xpTotal, xp7d: r.xp7d, streak: r.streak } : null;
+    // Only a full story 050 snapshot counts; an older one is sent again once.
+    return typeof r.xpTotal === 'number' && typeof r.statsDay === 'string' && typeof r.tasks7d === 'object' ? (r as unknown as ShareProgress) : null;
   } catch {
     return null;
   }
