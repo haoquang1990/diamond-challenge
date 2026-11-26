@@ -193,7 +193,7 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
   }, [clientPromise, accountId, passwordPending]);
 
   // Story 028: an unseen cheer from the sponsor household shows as a dismissible card on Hôm nay.
-  const [unseenCheer, setUnseenCheer] = useState<{ readonly message: string; readonly allIds: readonly string[] } | null>(null);
+  const [unseenCheer, setUnseenCheer] = useState<{ readonly message: string; readonly senderName: string | null; readonly allIds: readonly string[] } | null>(null);
   // A cheer belongs to one account's household: drop it when the account changes or signs out.
   useEffect(() => setUnseenCheer(null), [accountId]);
   useEffect(() => {
@@ -202,7 +202,7 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
     clientPromise
       .then((client) => loadUnseenCheer(client, accountId))
       .then((found) => {
-        if (!cancelled) setUnseenCheer(found === null ? null : { message: found.cheer.message, allIds: found.allIds });
+        if (!cancelled) setUnseenCheer(found === null ? null : { message: found.cheer.message, senderName: found.cheer.senderName, allIds: found.allIds });
       })
       .catch((error: unknown) => console.error('[group] could not read cheers', error));
     return () => {

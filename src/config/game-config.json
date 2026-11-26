@@ -112,7 +112,7 @@
   ],
   "amwayCodeDigits": { "min": 4, "max": 15 },
   "duplicateNameMaxDistance": 1,
-  "activityBackdateDays": 7,
+  "activityBackdateDays": null,
   "activityNoteMaxLength": 500,
   "target30x30": {
     "contactsTarget": 250,

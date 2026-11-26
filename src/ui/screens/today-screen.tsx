@@ -17,6 +17,7 @@ import { LOADED_LESSONS, LOADED_STAGES } from '../lesson-content';
 import { LESSON_STRINGS, nextLessonAllDone, pathLessonFacts, pathStageHeading } from '../lesson-strings';
 import {
   STRINGS,
+  cheerFromLabel,
   keepStreakLabel,
   reminderMessage,
   streakLabel,
@@ -45,7 +46,7 @@ export interface TodayScreenProps {
   /** Opens Cài đặt (account, household, sync, reminders, backup); the header button is hidden when absent. */
   readonly onOpenSettings?: () => void;
   /** An unseen cheer from the sponsor household (story 028); the card is shown only when set. */
-  readonly cheer?: { readonly message: string } | null;
+  readonly cheer?: { readonly message: string; readonly senderName?: string | null } | null;
   /** Closes the cheer card for good. */
   readonly onDismissCheer?: () => void;
   /** Reminder defaults; defaults to game-config.json. */
@@ -186,9 +187,8 @@ export function TodayScreen({
         <h1 className="screen__title">{STRINGS.todayTitle}</h1>
         <div className="today-header__actions">
           {onOpenSettings !== undefined && (
-            <button type="button" className="reminder-button" onClick={onOpenSettings} aria-label={STRINGS.reminderButtonLabel}>
+            <button type="button" className="reminder-button reminder-button--icon" onClick={onOpenSettings} aria-label={STRINGS.reminderButtonLabel} title={STRINGS.reminderButton}>
               <GearIcon />
-              <span>{STRINGS.reminderButton}</span>
             </button>
           )}
           {state.kind === 'ready' && (
@@ -212,7 +212,7 @@ export function TodayScreen({
       {cheer !== null && (
         <section className="card cheer-card" role="status" aria-labelledby="cheer-title">
           <h2 id="cheer-title" className="card__title">
-            {STRINGS.cheerCardTitle}
+            {cheer.senderName == null || cheer.senderName === '' ? STRINGS.cheerCardTitle : cheerFromLabel(cheer.senderName)}
           </h2>
           <p className="card__body">{cheer.message}</p>
           {onDismissCheer !== undefined && (

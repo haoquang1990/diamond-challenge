@@ -1119,3 +1119,13 @@ body.dialog-open { overflow: hidden; }
 .f1-box__login { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
 .f1-box__login span { font-weight: 700; overflow-wrap: anywhere; }
 .f1-box__login .button { width: auto; min-height: 44px; padding: 0 14px; }
+
+/* 2026-11-26: Hôm nay settings button is an icon only */
+.reminder-button--icon { width: 48px; min-width: 48px; padding: 0; justify-content: center; }
+
+/* Story 049: pick the cheer text */
+.cheer-pick { border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; text-align: left; }
+.cheer-pick:disabled { opacity: 0.5; }
+.cheer-pick__option { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border: 2px solid var(--color-border); border-radius: 12px; font-weight: 600; cursor: pointer; }
+.cheer-pick__option--on { border-color: var(--color-diamond); background: var(--color-diamond-light); }
+.cheer-pick__option input { margin-top: 3px; }

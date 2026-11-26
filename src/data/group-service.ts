@@ -102,8 +102,16 @@ export interface GroupData {
   /** Member limit from `app_config.max_household_members`. */
   readonly maxMembers: number;
   readonly households: readonly GroupHousehold[];
+  /** The other members of my own NPP (my spouse), for spouse cheers (story 049); absent in old caches. */
+  readonly spouses?: readonly SpouseMember[];
   /** ISO time of the load. */
   readonly loadedAt: string;
+}
+
+/** Another member of my own NPP (story 049). */
+export interface SpouseMember extends GroupMember {
+  /** True when I already sent `cheersPerDay` cheers to this member today (UTC day). */
+  readonly cheeredToday: boolean;
 }
 
 /** UTC calendar date `YYYY-MM-DD`: the day boundary of the server's `cheers.cheer_day`. */
@@ -134,11 +142,12 @@ export async function loadGroup(
   const mine = (own.data as { household_id?: string } | null)?.household_id ?? null;
   const loadedAt = now.toISOString();
   if (mine === null) return { myHouseholdId: null, maxMembers, households: [], loadedAt };
+  const spouses = await loadSpouses(client, mine, accountId, cheersPerDay, now);
 
   const f1 = await client.from('households').select('id, last_activity_at').eq('sponsor_household_id', mine).eq('status', 'active');
   if (f1.error) return null;
   const rows = (f1.data ?? []) as { id: string; last_activity_at: string | null }[];
-  if (rows.length === 0) return { myHouseholdId: mine, maxMembers, households: [], loadedAt };
+  if (rows.length === 0) return { myHouseholdId: mine, maxMembers, households: [], spouses, loadedAt };
   const ids = rows.map((r) => r.id);
 
   const [memberRows, codeRows, numberRows, cheerRows] = await Promise.all([
@@ -194,7 +203,7 @@ export async function loadGroup(
       cheeredToday: cheers.filter((c) => c.to_household_id === r.id).length >= cheersPerDay,
     };
   });
-  return { myHouseholdId: mine, maxMembers, households, loadedAt };
+  return { myHouseholdId: mine, maxMembers, households, spouses, loadedAt };
 }
 
 /**
@@ -221,17 +230,59 @@ export type CheerResult =
  */
 export async function sendCheer(
   client: SupabaseClient,
-  input: { readonly fromHouseholdId: string; readonly toHouseholdId: string; readonly messages: readonly string[]; readonly random?: () => number },
+  input: {
+    readonly fromHouseholdId: string;
+    readonly toHouseholdId: string;
+    /** The spouse receiving a cheer inside my own NPP (story 049); absent for a sponsor cheer. */
+    readonly toUserId?: string;
+    /** The text the sender chose (story 049); a random line of `messages` when absent. */
+    readonly message?: string;
+    readonly messages: readonly string[];
+    readonly random?: () => number;
+  },
 ): Promise<CheerResult> {
-  const message = pickCheerMessage(input.messages, input.random);
+  const message = input.message !== undefined ? cleanCheerMessage(input.message) : pickCheerMessage(input.messages, input.random);
   if (message === null) return { ok: false, error: 'no_message' };
-  const { error } = await client
-    .from('cheers')
-    .insert({ from_household_id: input.fromHouseholdId, to_household_id: input.toHouseholdId, message });
+  const row: Record<string, unknown> = { from_household_id: input.fromHouseholdId, to_household_id: input.toHouseholdId, message };
+  if (input.toUserId !== undefined) row.to_user_id = input.toUserId;
+  const { error } = await client.from('cheers').insert(row);
   if (error === null) return { ok: true };
   if (error.code === '23505') return { ok: false, error: 'already' };
   if (error.code === '42501') return { ok: false, error: 'not_allowed' };
   return { ok: false, error: 'network' };
+}
+
+/** Longest cheer the server accepts (`cheers.message` check). */
+export const CHEER_MAX_LENGTH = 200;
+
+/** A typed cheer trimmed, or null when empty or longer than {@link CHEER_MAX_LENGTH}. Pure. */
+export function cleanCheerMessage(text: string): string | null {
+  const trimmed = text.trim();
+  return trimmed === '' || trimmed.length > CHEER_MAX_LENGTH ? null : trimmed;
+}
+
+/** The other active members of my NPP with today's cheer state; [] when the read fails. */
+async function loadSpouses(client: SupabaseClient, mine: string, accountId: string, cheersPerDay: number, now: Date): Promise<SpouseMember[]> {
+  const members = await client.from('household_members').select('user_id').eq('household_id', mine).is('left_at', null);
+  if (members.error) return [];
+  const ids = ((members.data ?? []) as { user_id: string }[]).map((m) => m.user_id).filter((id) => id !== accountId);
+  if (ids.length === 0) return [];
+  const [p, sent] = await Promise.all([
+    client.from('profiles').select('id, phone, display_name').in('id', ids),
+    client.from('cheers').select('to_user_id').eq('from_household_id', mine).eq('to_household_id', mine).eq('sent_by', accountId).eq('cheer_day', utcDay(now)),
+  ]);
+  const profiles = (p.error ? [] : (p.data ?? [])) as { id: string; phone: string | null; display_name: string | null }[];
+  // A server without `to_user_id` yet (before the story 049 migration) just shows no sent cheers.
+  const sentTo = (sent.error ? [] : (sent.data ?? [])) as { to_user_id: string | null }[];
+  return ids.map((id) => {
+    const profile = profiles.find((x) => x.id === id);
+    return {
+      userId: id,
+      displayName: profile?.display_name ?? null,
+      phone: profile?.phone ?? null,
+      cheeredToday: sentTo.filter((c) => c.to_user_id === id).length >= cheersPerDay,
+    };
+  });
 }
 
 /** A cheer my household received. */
@@ -239,18 +290,33 @@ export interface ReceivedCheer {
   readonly id: string;
   readonly message: string;
   readonly createdAt: string;
+  /** Who sent it (set by the server from the sender's profile, story 049); null on old rows. */
+  readonly senderName: string | null;
+}
+
+/** Cheers meant for me: sponsor cheers to my NPP, and spouse cheers whose receiver is me (story 049). Pure. */
+export function cheersForMe<T extends { readonly toUserId: string | null }>(rows: readonly T[], accountId: string): T[] {
+  return rows.filter((r) => r.toUserId === null || r.toUserId === accountId);
 }
 
 /** Latest cheers received by `householdId` (newest first), or null on a read error. */
-export async function loadReceivedCheers(client: SupabaseClient, householdId: string, limit = 20): Promise<ReceivedCheer[] | null> {
-  const { data, error } = await client
+export async function loadReceivedCheers(client: SupabaseClient, householdId: string, limit = 20, accountId?: string): Promise<ReceivedCheer[] | null> {
+  const full = await client
     .from('cheers')
-    .select('id, message, created_at')
+    .select('id, message, created_at, sender_name, to_user_id')
     .eq('to_household_id', householdId)
     .order('created_at', { ascending: false })
     .limit(limit);
-  if (error) return null;
-  return ((data ?? []) as { id: string; message: string; created_at: string }[]).map((r) => ({ id: r.id, message: r.message, createdAt: r.created_at }));
+  let rows: { id: string; message: string; created_at: string; sender_name?: string | null; to_user_id?: string | null }[];
+  if (full.error) {
+    // Before the story 049 migration: the old columns only.
+    const old = await client.from('cheers').select('id, message, created_at').eq('to_household_id', householdId).order('created_at', { ascending: false }).limit(limit);
+    if (old.error) return null;
+    rows = (old.data ?? []) as typeof rows;
+  } else rows = (full.data ?? []) as typeof rows;
+  const mapped = rows.map((r) => ({ id: r.id, message: r.message, createdAt: r.created_at, senderName: r.sender_name ?? null, toUserId: r.to_user_id ?? null }));
+  const mineOnly = accountId === undefined ? mapped.filter((r) => r.toUserId === null) : cheersForMe(mapped, accountId);
+  return mineOnly.map(({ id, message, createdAt, senderName }) => ({ id, message, createdAt, senderName }));
 }
 
 const GROUP_CACHE_KEY = 'diamond.group.cache.v1';
@@ -329,7 +395,7 @@ export async function loadUnseenCheer(
   const own = await client.from('household_members').select('household_id').eq('user_id', accountId).is('left_at', null).maybeSingle();
   const household = (own.data as { household_id?: string } | null)?.household_id;
   if (own.error || household === undefined) return null;
-  const cheers = await loadReceivedCheers(client, household);
+  const cheers = await loadReceivedCheers(client, household, 20, accountId);
   const unseen = cheers?.find((c) => !dismissed.has(c.id));
   return cheers === null || unseen === undefined ? null : { cheer: unseen, allIds: cheers.map((c) => c.id) };
 }

@@ -328,8 +328,9 @@ export function parseDuplicateNameMaxDistance(raw: unknown): { duplicateNameMaxD
 }
 
 /**
- * Validates raw `activityBackdateDays` (integer 0-30) and `activityNoteMaxLength`
- * (integer 50-2000); an out-of-range value falls back to the default and is reported.
+ * Validates raw `activityBackdateDays` (integer 0-30, or `null` for no limit: 2026-11-26, so
+ * people can fill in their past history) and `activityNoteMaxLength` (integer 50-2000); an
+ * out-of-range value falls back to the default and is reported.
  *
  * @example
  * parseActivityLimits(7, 500); // { activityBackdateDays: 7, activityNoteMaxLength: 500, problems: [] }
@@ -340,7 +341,8 @@ export function parseActivityLimits(
 ): { activityBackdateDays: number; activityNoteMaxLength: number; problems: readonly string[] } {
   const problems: string[] = [];
   let days = FALLBACK_BACKDATE_DAYS;
-  if (typeof rawDays === 'number' && Number.isInteger(rawDays) && rawDays >= 0 && rawDays <= 30) days = rawDays;
+  if (rawDays === null) days = Infinity;
+  else if (typeof rawDays === 'number' && Number.isInteger(rawDays) && rawDays >= 0 && rawDays <= 30) days = rawDays;
   else problems.push('activityBackdateDays: expected an integer 0-30, using fallback');
   let length = FALLBACK_NOTE_MAX_LENGTH;
   if (typeof rawLength === 'number' && Number.isInteger(rawLength) && rawLength >= 50 && rawLength <= 2000) length = rawLength;
