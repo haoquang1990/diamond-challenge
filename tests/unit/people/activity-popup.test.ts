@@ -60,9 +60,15 @@ describe('buildTaskCompletionEvent note', () => {
 });
 
 describe('parseActivityLimits', () => {
-  it('game-config defaults are 7 days and 500 characters', () => {
-    expect(CONFIG.activityBackdateDays).toBe(7);
+  it('game-config has no backdate limit (2026-11-26) and 500 characters', () => {
+    expect(CONFIG.activityBackdateDays).toBe(Infinity);
     expect(CONFIG.activityNoteMaxLength).toBe(500);
+  });
+  it('null means no backdate limit: years back are ok, the future is still refused', () => {
+    expect(parseActivityLimits(null, 500)).toEqual({ activityBackdateDays: Infinity, activityNoteMaxLength: 500, problems: [] });
+    const now = new Date('2026-11-26T05:00:00.000Z');
+    expect(validateActivityTime(new Date('2021-01-01T00:00:00.000Z'), now, Infinity)).toBe('ok');
+    expect(validateActivityTime(new Date('2026-11-26T05:01:00.000Z'), now, Infinity)).toBe('future');
   });
   it('out of range values fall back and are reported', () => {
     const r = parseActivityLimits(31, 10);
