@@ -8,6 +8,7 @@ import HOUSEHOLDS_SQL from '../../../supabase/migrations/20261107000000_househol
 import SYNC_SQL from '../../../supabase/migrations/20261107010000_contact_sync_seq.sql?raw';
 import GROUP_SQL from '../../../supabase/migrations/20261109000000_group_activity_cheers.sql?raw';
 import PERSONAL_SQL from '../../../supabase/migrations/20261118000000_personal_events.sql?raw';
+import SETTINGS_KEYS_SQL from '../../../supabase/migrations/20261127000000_personal_settings_keys.sql?raw';
 
 const SUPABASE_STUB = `
 create role anon nologin; create role authenticated nologin; create role service_role nologin bypassrls;
@@ -101,6 +102,7 @@ beforeAll(async () => {
   await db.exec(SYNC_SQL);
   await db.exec(GROUP_SQL);
   await db.exec(PERSONAL_SQL);
+  await db.exec(SETTINGS_KEYS_SQL);
   await db.exec('grant all on all tables in schema public to service_role;');
   const S = await provision(7, null, '2000007', 1); // sponsor (upline) of A
   A = await provision(2, S, '2000002', 7);
@@ -245,6 +247,10 @@ describe('check constraints', () => {
     ['achievementAcknowledged', { achievementAcknowledged: 'a1' }],
     ['stageAcknowledged', { stageAcknowledged: 's1' }],
     ['achievementsSeeded', { achievementsSeeded: true }],
+    // Bug 2026-11-26: the app writes { badgesSeeded, silent } alone (story 047); refused before, it blocked every later push and the pull.
+    ['badgesSeeded', { badgesSeeded: true, silent: true }],
+    // Story 052: the contact list order follows the account.
+    ['contactSort', { contactSort: 'recent' }],
   ])('accepts settings_changed carrying %s', async (_k, payload) => {
     await add(2, 'settings_changed', payload);
   });
