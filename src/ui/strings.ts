@@ -1,3 +1,4 @@
+import { formatE164 } from '../domain/people';
 import type { AuthFailure, PasswordProblem } from '../data/auth-service';
 import type { SyncFailure } from '../data/contact-sync';
 
@@ -144,10 +145,12 @@ export const STRINGS = {
   addPersonToggleClose: 'Thu gọn',
   phoneCountryLabel: 'Mã nước',
   phoneNumberLabel: 'Số điện thoại',
-  phonePlaceholder: 'Vd. 912345678',
+  phonePlaceholder: 'Vd. 912 345 678',
   phoneUnknownCountry: 'Mã nước không hợp lệ.',
   phoneNotDigits: 'Số điện thoại chỉ gồm chữ số.',
   phoneBadLength: 'Số điện thoại cần từ 6 đến 15 chữ số.',
+  phoneBadVn: 'Số di động Việt Nam có 9 số sau +84, bắt đầu bằng 3, 5, 7, 8 hoặc 9 (vd. 912 345 678).',
+  createAccountLoginPreview: 'Tài khoản đăng nhập',
   amwayCodeLabel: 'Mã số Amway (không bắt buộc)',
   amwayCodePlaceholder: 'Vd. 1234567',
   amwayCodeInvalid: 'Mã số Amway chỉ gồm chữ số (được cách bằng dấu cách, chấm hoặc gạch) và dài từ 4 đến 15 chữ số.',
@@ -871,7 +874,7 @@ export function duplicateCodeWarning(names: string): string {
 /** Shared text for Zalo: phone, temporary password and the reminder to change it (story 024). */
 export function createAccountShareText(phone: string, password: string, appUrl?: string): string {
   const link = appUrl === undefined || appUrl === '' ? '' : `Ứng dụng: ${appUrl}\n`;
-  return `${link}Số điện thoại: ${phone}\nMật khẩu tạm: ${password}\nHãy đổi mật khẩu khi đăng nhập lần đầu.`;
+  return `${link}Số điện thoại: ${formatE164(phone)}\nMật khẩu tạm: ${password}\nHãy đổi mật khẩu khi đăng nhập lần đầu.`;
 }
 
 /** The app's own address (origin + path, without index.html, query or hash), for the share text (2026-11-25). */

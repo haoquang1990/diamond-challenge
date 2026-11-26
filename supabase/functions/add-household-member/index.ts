@@ -8,7 +8,7 @@
 import { adminClient, getCaller } from '../_shared/auth.ts';
 import { rpcError } from '../_shared/errors.ts';
 import { corsHeaders, json } from '../_shared/http.ts';
-import { isValidTempPassword, normalizePhone, phoneToEmail } from '../_shared/phone.ts';
+import { isAllowedNewAccountPhone, isValidTempPassword, normalizePhone, phoneToEmail } from '../_shared/phone.ts';
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders(req) });
@@ -21,7 +21,8 @@ Deno.serve(async (req) => {
 
   const body = await req.json().catch(() => null);
   const phone = typeof body?.phone === 'string' ? normalizePhone(body.phone) : null;
-  if (!phone) return json(req, 400, { error: 'invalid_phone' });
+  // Story 054: a new +84 account must be a Vietnamese mobile number.
+  if (!phone || !isAllowedNewAccountPhone(phone)) return json(req, 400, { error: 'invalid_phone' });
   if (!isValidTempPassword(body?.password)) return json(req, 400, { error: 'invalid_password' });
 
   let householdId: string | null = typeof body?.householdId === 'string' ? body.householdId : null;

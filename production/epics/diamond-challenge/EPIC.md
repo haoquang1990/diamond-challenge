@@ -67,6 +67,7 @@ Theo Build order của brief: nhật ký sự kiện + XP/streak → Làm + Hôm
 | 051 | Trang chi tiết liên hệ: tóm tắt, ghi chú tự lưu, popup sửa | UI | Complete | N/A |
 | 052 | Danh sách Làm hiện số ngày, sắp xếp theo hoạt động hoặc tên | UI | Complete | N/A |
 | 053 | Hướng dẫn đưa app ra màn hình chính trong Cài đặt | UI | Complete | N/A |
+| 054 | Một cách ghi số điện thoại (+84, không có số 0) và quy tắc số di động Việt Nam | Integration | Complete | N/A |
 
 > 012–014 thay mô hình giai đoạn bằng việc cần làm + nhãn KH/NPP theo phản hồi dùng thử (2026-11-04, `design/gdd/crm.md`). Thứ tự gợi ý: 012 → 013 → 014 → 011.
 

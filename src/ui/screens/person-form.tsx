@@ -10,11 +10,13 @@ import {
   validateActivityTime,
   validateAmwayCode,
   validatePersonName,
+  phoneKey,
+  tidyNationalNumber,
   validatePhone,
 } from '../../domain/people';
 import type { PeopleConfig, Person, PersonPhone, PersonTaskDef } from '../../domain/people';
 import { CONTACT_STALE_DAYS, COUNTRY_CODES, NOTE_AUTOSAVE_MS, PEOPLE_CONFIG, PERSON_TASKS } from '../people-config';
-import { activityInstant, buildPersonHistory, calendarDaysSince, countDoneTasks, createNoteAutosave, duplicateCodeNames, findDuplicateCodes, findPeopleWithCode, formatPhone, summarizeHistory, summaryCounts, toLocalInputValue } from '../people-helpers';
+import { activityInstant, buildPersonHistory, calendarDaysSince, countDoneTasks, createNoteAutosave, duplicateCodeNames, findDuplicateCodes, findPeopleWithCode, formatPhone, phoneProblemText, summarizeHistory, summaryCounts, toLocalInputValue } from '../people-helpers';
 import type { NoteAutosave, NoteSaveState } from '../people-helpers';
 import {
   STRINGS,
@@ -217,9 +219,8 @@ function CancelSponsorDialog({ noteMaxLength, backdateDays, busy, error, onConfi
 }
 
 /** Maps a phone validation failure to its message. */
-function phoneErrorText(reason: 'unknown_country' | 'not_digits' | 'bad_length'): string {
-  if (reason === 'unknown_country') return STRINGS.phoneUnknownCountry;
-  return reason === 'not_digits' ? STRINGS.phoneNotDigits : STRINGS.phoneBadLength;
+function phoneErrorText(reason: 'unknown_country' | 'not_digits' | 'bad_length' | 'bad_vn'): string {
+  return phoneProblemText(reason);
 }
 
 /** Props for {@link PhoneInput}. */
@@ -295,6 +296,10 @@ function PhoneInput({ country, number, onChange, disabled, error }: PhoneInputPr
           value={number}
           placeholder={STRINGS.phonePlaceholder}
           onChange={(e) => onChange(country, e.target.value)}
+          onBlur={() => {
+            const tidy = tidyNationalNumber(country, number);
+            if (tidy !== number) onChange(country, tidy);
+          }}
           disabled={disabled}
           autoComplete="off"
           aria-label={STRINGS.phoneNumberLabel}
@@ -566,7 +571,10 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
   const noteMaxLength = config.activityNoteMaxLength ?? PEOPLE_CONFIG.activityNoteMaxLength;
 
   const savedCountry = person.phone?.country ?? DEFAULT_COUNTRY;
-  const dirty = name !== person.name || country !== savedCountry || number !== (person.phone?.number ?? '') || code !== (person.amwayCode ?? '');
+  // Story 054: "0912 345 678" and a stored "912345678" are the same number, not a change.
+  const typedKey = number.trim() === '' ? '' : phoneKey({ country, number: number.replace(/\s+/g, '') });
+  const savedKey = (person.phone?.number ?? '') === '' ? '' : phoneKey({ country: savedCountry, number: person.phone?.number ?? '' });
+  const dirty = name !== person.name || typedKey !== savedKey || (typedKey === '' && country !== savedCountry) || code !== (person.amwayCode ?? '');
   const duplicate = name.trim() !== '' && findDuplicateNames(people, name, person.personId).duplicate;
   const sameCode = findDuplicateCodes(people).get(person.personId);
   const tasks = pendingTasks(person, config);
@@ -605,7 +613,7 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
   const openEdit = () => {
     setName(person.name);
     setCountry(person.phone?.country ?? DEFAULT_COUNTRY);
-    setNumber(person.phone?.number ?? '');
+    setNumber(tidyNationalNumber(person.phone?.country ?? DEFAULT_COUNTRY, person.phone?.number ?? ''));
     setCode(person.amwayCode ?? '');
     setError(null);
     setPhoneError(null);

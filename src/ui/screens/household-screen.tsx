@@ -4,6 +4,7 @@ import gameConfig from '../../config/game-config.json';
 import { loadHousehold } from '../../data/account-service';
 import type { HouseholdInfo } from '../../data/account-service';
 import { STRINGS, householdCountLabel, householdFullNote } from '../strings';
+import { formatE164 } from '../../domain/people';
 import { AddMemberForm } from './add-member-form';
 
 /** Props for {@link HouseholdScreen}. */
@@ -136,7 +137,7 @@ export function HouseholdScreen({ clientPromise, accountId, onBack }: HouseholdS
                 <ul className="member-list">
                   {state.info.members.map((m) => (
                     <li key={m.userId} className="member-list__item">
-                      {m.displayName ?? m.phone ?? STRINGS.householdMemberUnnamed}
+                      {m.displayName ?? (m.phone === null ? null : formatE164(m.phone)) ?? STRINGS.householdMemberUnnamed}
                     </li>
                   ))}
                 </ul>

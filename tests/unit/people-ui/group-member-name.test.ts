@@ -17,7 +17,7 @@ describe('groupMemberName', () => {
   });
 
   it('falls back to the phone, then a placeholder', () => {
-    expect(groupMemberName(member(null, '+84900000444'), new Map())).toBe('+84900000444');
+    expect(groupMemberName(member(null, '+84900000444'), new Map())).toBe('+84 900 000 444');
     expect(groupMemberName(member(null, null), new Map())).toBe('Chưa có tên');
   });
 });

@@ -12,6 +12,7 @@ import {
   sortNppByDate,
 } from '../domain/people';
 import type { PeopleConfig, Person, PersonPhone, PersonStageDef } from '../domain/people';
+import { formatPhoneParts } from '../domain/people';
 
 /** Non-archived people sharing one stage. */
 export interface StageGroup {
@@ -143,7 +144,14 @@ export function countContacts(people: readonly Person[]): Record<ContactsFilter,
 
 /** "+84 912345678", or '' when the person has no phone. */
 export function formatPhone(phone: PersonPhone | null | undefined): string {
-  return phone === null || phone === undefined ? '' : `${phone.country} ${phone.number}`;
+  return phone === null || phone === undefined ? '' : formatPhoneParts(phone.country, phone.number);
+}
+
+/** Error line for a refused phone (story 054 adds the Vietnamese mobile rule). */
+export function phoneProblemText(reason: 'unknown_country' | 'not_digits' | 'bad_length' | 'bad_vn'): string {
+  if (reason === 'unknown_country') return STRINGS.phoneUnknownCountry;
+  if (reason === 'bad_vn') return STRINGS.phoneBadVn;
+  return reason === 'not_digits' ? STRINGS.phoneNotDigits : STRINGS.phoneBadLength;
 }
 
 /** One line of a person's history (read-only). */

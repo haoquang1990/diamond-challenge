@@ -5,9 +5,10 @@ import { normalizePhone } from '../../../supabase/functions/_shared/phone';
 import { createF1Account, generateTempPassword } from '../../data/account-service';
 import { validateDisplayName } from '../../data/auth-service';
 import type { EventStore } from '../../data/event-store';
-import { derivePeople, validateAmwayCode, validatePhone } from '../../domain/people';
+import { derivePeople, formatPhoneParts, tidyNationalNumber, validateAmwayCode, validatePhone } from '../../domain/people';
 import type { Person } from '../../domain/people';
 import { COUNTRY_CODES, PEOPLE_CONFIG } from '../people-config';
+import { phoneProblemText } from '../people-helpers';
 import { STRINGS } from '../strings';
 import { TempPasswordView } from './temp-password-view';
 
@@ -63,7 +64,7 @@ export function CreateAccountScreen({ clientPromise, eventStore, personId, onBac
         setPerson(found);
         if (found?.phone != null) {
           setCountry(found.phone.country);
-          setNumber(found.phone.number);
+          setNumber(tidyNationalNumber(found.phone.country, found.phone.number));
         }
       })
       .catch((e: unknown) => {
@@ -94,7 +95,7 @@ export function CreateAccountScreen({ clientPromise, eventStore, personId, onBac
     }
     const checked = validatePhone(country, number, PEOPLE_CONFIG);
     if (!checked.ok) {
-      setError(checked.reason === 'unknown_country' ? STRINGS.phoneUnknownCountry : checked.reason === 'not_digits' ? STRINGS.phoneNotDigits : STRINGS.phoneBadLength);
+      setError(phoneProblemText(checked.reason));
       return;
     }
     if (checked.phone === null) {
@@ -221,11 +222,22 @@ export function CreateAccountScreen({ clientPromise, eventStore, personId, onBac
                 autoComplete="off"
                 className="note__input form__input"
                 value={number}
+                placeholder={STRINGS.phonePlaceholder}
                 onChange={(e) => setNumber(e.target.value)}
+                onBlur={() => setNumber(tidyNationalNumber(country, number))}
                 disabled={busy}
               />
             </label>
           </div>
+          {(() => {
+            // Story 054: the login the account will get, to check once before creating it.
+            const preview = validatePhone(country, number, PEOPLE_CONFIG);
+            return preview.ok && preview.phone !== null ? (
+              <p className="message create-account__preview" role="status">
+                {STRINGS.createAccountLoginPreview}: <strong>{formatPhoneParts(preview.phone.country, preview.phone.number)}</strong>
+              </p>
+            ) : null;
+          })()}
           <label className="form__field">
             <span className="form__label">{STRINGS.displayNameLabel}</span>
             <input
