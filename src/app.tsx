@@ -697,7 +697,7 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
           memberIds={memberIds}
           onLearn={() => setTab('learn')}
           {...(clientPromise !== null && account !== null
-            ? { cheerGroup: <GroupCheerCard clientPromise={clientPromise} accountId={account.accountId} eventStore={eventStore} /> }
+            ? { cheerGroup: <GroupCheerCard clientPromise={clientPromise} accountId={account.accountId} eventStore={eventStore} dataVersion={dataVersion} /> }
             : {})}
           onStartLesson={(lessonId) => {
             setStartLessonId(lessonId);
