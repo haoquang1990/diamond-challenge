@@ -249,18 +249,14 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
         </button>
       )}
 
-      {(addOpen || addedXp !== null || error !== null) && (
+      {/* "Đã thêm người · +XP" is not repeated here: the XP popup already shows it (2026-11-26). */}
+      {(addOpen || error !== null) && (
         <section className="card person-section" aria-label={STRINGS.addPersonTitle}>
           {addOpen && (
             <>
               <h2 className="person-section__heading">{STRINGS.addPersonTitle}</h2>
               <AddPersonForm people={people} onSubmit={addPerson} />
             </>
-          )}
-          {addedXp !== null && (
-            <p className="message" role="status">
-              {STRINGS.personAddedXp} · {xpLabel(addedXp)}
-            </p>
           )}
           {error !== null && (
             <p className="message message--error" role="alert">
