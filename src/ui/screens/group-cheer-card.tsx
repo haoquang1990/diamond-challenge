@@ -22,6 +22,8 @@ export interface GroupCheerCardProps {
   readonly eventStore?: EventStore;
   /** Clock; defaults to the real one. */
   readonly now?: () => Date;
+  /** Bumped when a sync pulled new events; the contact names are read again. */
+  readonly dataVersion?: number;
 }
 
 function realNow(): Date {
@@ -34,7 +36,7 @@ function realNow(): Date {
  * hides when nobody is left or I have no F1. Offline it shows the last loaded list with the buttons
  * locked; nothing is shown while loading or when nothing was ever loaded.
  */
-export function GroupCheerCard({ clientPromise, accountId, eventStore, now = realNow }: GroupCheerCardProps) {
+export function GroupCheerCard({ clientPromise, accountId, eventStore, now = realNow, dataVersion = 0 }: GroupCheerCardProps) {
   const [data, setData] = useState<{
     readonly group: GroupData;
     readonly stale: boolean;
@@ -84,7 +86,7 @@ export function GroupCheerCard({ clientPromise, accountId, eventStore, now = rea
     return () => {
       cancelled = true;
     };
-  }, [eventStore]);
+  }, [eventStore, dataVersion]);
 
   useEffect(() => {
     const cached = readGroupCache(accountId);
