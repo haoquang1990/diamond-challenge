@@ -283,6 +283,17 @@ export const STRINGS = {
   historyDaysSinceLabel: 'Kể từ lần gần nhất',
   historyListTitle: 'Danh sách',
   personSaveChanges: 'Lưu thay đổi',
+  personEditTitle: 'Sửa thông tin',
+  personEditSave: 'Lưu',
+  personEditCancel: 'Huỷ',
+  personCodeNone: 'Mã số chưa có',
+  summaryTitle: 'Tóm tắt',
+  summaryLastLabel: 'Lần gần nhất',
+  summaryNoActivity: 'Chưa có hoạt động',
+  noteSaving: 'Đang lưu…',
+  noteSavedMark: '✓ Đã lưu',
+  noteSaveError: 'Chưa lưu được, sẽ thử lại khi bạn rời ô ghi chú.',
+  notePlaceholder: 'F O R M H D: gia đình, nghề nghiệp, sở thích, tiền bạc, sức khoẻ, ước mơ…',
   personSaved: 'Đã lưu.',
   personChangeStage: 'Đổi giai đoạn',
   personStageNoXp: 'không có XP',
@@ -719,6 +730,12 @@ export function daysSinceLabel(days: number): string {
 /** Character counter under the note field, e.g. "12/500". */
 export function noteCounterLabel(length: number, max: number): string {
   return `${length}/${max}`;
+}
+
+/** Short local date, e.g. "02/11/26" (story 051 summary). */
+export function compactDateLabel(iso: string): string {
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? '' : d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: '2-digit' });
 }
 
 /** Local date and time for an activity row, e.g. "21/11/2026, 09:30". */

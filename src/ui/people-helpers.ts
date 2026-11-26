@@ -343,3 +343,112 @@ export function historyAuthorLabel(userId: string, others: ReadonlySet<string>, 
 export function activityInstant(value: string, initial: string, now: Date): Date {
   return value === initial ? now : new Date(value);
 }
+
+/**
+ * Whole local calendar days from `iso` to `now` (story 051): 0 for any time today, never
+ * negative; null without a date. Pure.
+ */
+export function calendarDaysSince(iso: string | null, now: Date): number | null {
+  if (iso === null) return null;
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return null;
+  const day = (x: Date) => Date.UTC(x.getFullYear(), x.getMonth(), x.getDate());
+  return Math.max(0, Math.round((day(now) - day(d)) / 86_400_000));
+}
+
+/** Activity id written when a name is added; not worth a chip on the contact page (story 051). */
+const ADD_NAME_ID = 'add_name';
+
+/** The contact page's per-task chips: every count but "Thêm tên" (story 051). Pure. */
+export function summaryCounts(counts: readonly HistoryTaskCount[]): HistoryTaskCount[] {
+  return counts.filter((c) => c.id !== ADD_NAME_ID);
+}
+
+/** State of the note autosave, for the "Đang lưu… / ✓ Đã lưu / Chưa lưu được" line. */
+export type NoteSaveState = 'pending' | 'saving' | 'saved' | 'error';
+
+/** Inputs of {@link createNoteAutosave}. */
+export interface NoteAutosaveDeps {
+  /** The note as stored now. */
+  readonly saved: string;
+  /** Quiet time after the last keystroke before saving. */
+  readonly delayMs: number;
+  /** Writes the (trimmed) note; a rejection keeps it pending for the next flush. */
+  readonly save: (note: string) => Promise<void>;
+  readonly onState?: (state: NoteSaveState) => void;
+}
+
+/** Saves a note some time after typing stops, or at once on {@link NoteAutosave.flush}. */
+export interface NoteAutosave {
+  /** The text in the box changed. */
+  change(value: string): void;
+  /** Saves the pending text now (blur, leaving the page); one save at a time. */
+  flush(): Promise<void>;
+  /** Cancels the timer; a pending text is not saved. */
+  dispose(): void;
+}
+
+/**
+ * Note autosave of the contact page (story 051): trims, skips text equal to what is stored,
+ * restarts the timer on every change. Main thread only.
+ *
+ * @example
+ * const a = createNoteAutosave({ saved: person.note, delayMs: 1000, save });
+ * a.change(text); // saved one second after the last change
+ */
+export function createNoteAutosave(deps: NoteAutosaveDeps): NoteAutosave {
+  let stored = deps.saved.trim();
+  let pending: string | null = null;
+  let timer: ReturnType<typeof setTimeout> | null = null;
+  let running: Promise<void> | null = null;
+  const clear = () => {
+    if (timer !== null) clearTimeout(timer);
+    timer = null;
+  };
+  const flush = async (): Promise<void> => {
+    clear();
+    if (running !== null) await running;
+    if (pending === null) return;
+    const text = pending;
+    if (text === stored) {
+      pending = null;
+      deps.onState?.('saved');
+      return;
+    }
+    deps.onState?.('saving');
+    running = deps
+      .save(text)
+      .then(() => {
+        stored = text;
+        if (pending === text) pending = null;
+        deps.onState?.(pending === null ? 'saved' : 'pending');
+      })
+      .catch((error: unknown) => {
+        console.error('[note] autosave failed', error);
+        deps.onState?.('error');
+      })
+      .finally(() => {
+        running = null;
+      });
+    await running;
+  };
+  return {
+    change(value) {
+      const text = value.trim();
+      pending = text;
+      if (text === stored) {
+        clear();
+        pending = null;
+        return;
+      }
+      deps.onState?.('pending');
+      clear();
+      timer = setTimeout(() => {
+        timer = null;
+        void flush();
+      }, deps.delayMs);
+    },
+    flush,
+    dispose: clear,
+  };
+}

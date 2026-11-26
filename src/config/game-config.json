@@ -154,6 +154,8 @@
   "contactConsentVersion": 2,
   "maxHouseholdMembers": 2,
   "inactiveDays": 3,
+  "contactStaleDays": 14,
+  "noteAutosaveMs": 1000,
   "cheersPerDay": 1,
   "cheerMessages": [
     "Cố lên, mình tin bạn làm được!",

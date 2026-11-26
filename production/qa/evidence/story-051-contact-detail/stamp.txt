@@ -1,0 +1,6 @@
+Reviewed-Content-Hash: src/ui/screens/person-form.tsx 07d62adcca344734b030a55a032d3007e34178fb
+Reviewed-Content-Hash: src/ui/people-helpers.ts 75144e9d0ae728f1cd7da4ef3ff77f12a71d6f1d
+Reviewed-Content-Hash: src/ui/people-config.ts f04fb5685668a3a20b09340f56b42fa9a1e9e0f7
+Reviewed-Content-Hash: src/ui/strings.ts ebd14d3ed43b51f6da337e4f08d46d62b0ffc8dd
+Reviewed-Content-Hash: src/ui/styles.css 33d5488cfd00ed98294b1bf1734e9d3825a8a6d7
+Reviewed-Content-Hash: src/config/game-config.json c2ab99169ad66870177d51535de778012dc5f91f

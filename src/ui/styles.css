@@ -1134,3 +1134,20 @@ body.dialog-open { overflow: hidden; }
 .f1-box__fact--ok { color: #2b7a00; font-weight: 700; }
 .f1-box__badge { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; background: #fdecc8; color: #7a4b00; }
 .cheer-pick__group { margin: 4px 0 2px; font-size: 0.85rem; font-weight: 700; color: var(--color-muted); }
+/* Story 051: contact page — summary with inline note, edit popup. */
+.person-detail__head { display: flex; align-items: flex-start; gap: 12px; }
+.person-detail__head .person-detail__name { flex: 1; min-width: 0; }
+.person-detail__edit svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.person-detail__contact { margin: 0; color: var(--color-muted); font-weight: 700; overflow-wrap: anywhere; }
+.person-detail__contact a { color: var(--color-diamond-dark); text-decoration: none; }
+.person-summary__row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.person-summary__key { color: var(--color-muted); font-weight: 700; }
+.person-summary__value { font-weight: 800; text-align: right; }
+.person-summary__value--stale { color: #b26b00; }
+.person-summary__chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.person-summary__chip { background: #f3f3f3; border-radius: 999px; padding: 5px 10px; font-weight: 700; font-size: 0.92rem; }
+.person-summary__chip strong { color: var(--color-diamond-dark); }
+.person-summary__note { margin-top: 4px; }
+.person-summary__saved { margin: -4px 0 0; min-height: 1.2em; text-align: right; font-size: 0.85rem; font-weight: 800; color: #2b7a00; }
+.person-summary__saved--error { color: var(--color-error); text-align: left; }
+.person-actions-block { display: flex; flex-direction: column; gap: 10px; }

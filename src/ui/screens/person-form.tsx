@@ -13,11 +13,13 @@ import {
   validatePhone,
 } from '../../domain/people';
 import type { PeopleConfig, Person, PersonPhone, PersonTaskDef } from '../../domain/people';
-import { COUNTRY_CODES, PEOPLE_CONFIG, PERSON_TASKS } from '../people-config';
-import { activityInstant, buildPersonHistory, countDoneTasks, duplicateCodeNames, findDuplicateCodes, findPeopleWithCode, formatPhone, summarizeHistory, toLocalInputValue } from '../people-helpers';
+import { CONTACT_STALE_DAYS, COUNTRY_CODES, NOTE_AUTOSAVE_MS, PEOPLE_CONFIG, PERSON_TASKS } from '../people-config';
+import { activityInstant, buildPersonHistory, calendarDaysSince, countDoneTasks, createNoteAutosave, duplicateCodeNames, findDuplicateCodes, findPeopleWithCode, formatPhone, summarizeHistory, summaryCounts, toLocalInputValue } from '../people-helpers';
+import type { NoteAutosave, NoteSaveState } from '../people-helpers';
 import {
   STRINGS,
   activityTimeTooOldLabel,
+  compactDateLabel,
   dateTimeLabel,
   daysSinceLabel,
   duplicateCodeWarning,
@@ -228,7 +230,21 @@ interface PhoneInputProps {
 }
 
 /** Note field that grows with its text so the whole note is visible (no inner scrolling). */
-function NoteTextarea({ value, onChange, disabled }: { readonly value: string; readonly onChange: (value: string) => void; readonly disabled: boolean }) {
+function NoteTextarea({
+  value,
+  onChange,
+  disabled,
+  placeholder,
+  onBlur,
+  ariaLabel,
+}: {
+  readonly value: string;
+  readonly onChange: (value: string) => void;
+  readonly disabled: boolean;
+  readonly placeholder?: string;
+  readonly onBlur?: () => void;
+  readonly ariaLabel?: string;
+}) {
   const ref = useRef<HTMLTextAreaElement>(null);
   useLayoutEffect(() => {
     const el = ref.current;
@@ -236,7 +252,19 @@ function NoteTextarea({ value, onChange, disabled }: { readonly value: string; r
     el.style.height = 'auto';
     el.style.height = `${el.scrollHeight + el.offsetHeight - el.clientHeight}px`;
   }, [value]);
-  return <textarea ref={ref} className="note__input note__input--grow" rows={2} value={value} onChange={(e) => onChange(e.target.value)} disabled={disabled} />;
+  return (
+    <textarea
+      ref={ref}
+      className="note__input note__input--grow"
+      rows={2}
+      value={value}
+      placeholder={placeholder}
+      aria-label={ariaLabel}
+      onChange={(e) => onChange(e.target.value)}
+      onBlur={onBlur}
+      disabled={disabled}
+    />
+  );
 }
 
 /** Country-code select (default first) plus a tel input. */
@@ -506,17 +534,19 @@ interface TaskUndo {
 }
 
 /**
- * Detail view of one person, top to bottom (story 015): header (name as the
- * title, KH/NPP badge, phone), to-do tasks ("Hoạt động", completed through
- * one activity_logged event after a confirm popup with note and date/time, undo
- * by compensating event), an always-open info form (name/phone/code/note; Save
- * enabled only when a field differs from the saved person), a "Lịch sử" button
- * opening a summary + list popup (story 034). Lưu trữ was removed (story 043). State
- * of record is the event log; this only holds form state.
+ * Detail view of one person, top to bottom (story 051): header (name, KH/NPP badge, edit icon,
+ * phone to call and Amway code), "Tóm tắt" (days since the last activity, orange past
+ * CONTACT_STALE_DAYS; per-task counts without "Thêm tên"; first contact; the FORMHD note,
+ * edited in place and saved by itself), "Hoạt động" and "Lịch sử" buttons (task popup with
+ * confirm and undo; history popup of story 034), then `extra` (F1 box). Name, phone and code
+ * change in the "Sửa thông tin" popup. State of record is the event log; this only holds form
+ * state.
  */
 export function PersonDetail({ eventStore, person, people, events, activityTypes, config = PEOPLE_CONFIG, authorLabel, createAccount, extra, onChanged, onBack }: PersonDetailProps) {
   const [name, setName] = useState(person.name);
   const [note, setNote] = useState(person.note);
+  const [noteState, setNoteState] = useState<NoteSaveState | null>(null);
+  const [editOpen, setEditOpen] = useState(false);
   const [country, setCountry] = useState(person.phone?.country ?? DEFAULT_COUNTRY);
   const [number, setNumber] = useState(person.phone?.number ?? '');
   const [phoneError, setPhoneError] = useState<string | null>(null);
@@ -534,14 +564,51 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
   const noteMaxLength = config.activityNoteMaxLength ?? PEOPLE_CONFIG.activityNoteMaxLength;
 
   const savedCountry = person.phone?.country ?? DEFAULT_COUNTRY;
-  const dirty =
-    name !== person.name || note !== person.note || country !== savedCountry || number !== (person.phone?.number ?? '') || code !== (person.amwayCode ?? '');
+  const dirty = name !== person.name || country !== savedCountry || number !== (person.phone?.number ?? '') || code !== (person.amwayCode ?? '');
   const duplicate = name.trim() !== '' && findDuplicateNames(people, name, person.personId).duplicate;
   const sameCode = findDuplicateCodes(people).get(person.personId);
   const tasks = pendingTasks(person, config);
   const history = buildPersonHistory(events, person.personId, config, [...PERSON_TASKS, ...activityTypes]);
   const doneCounts = countDoneTasks(history);
   const summary = summarizeHistory(history, new Date());
+  const lastDays = calendarDaysSince(summary.lastAt, new Date());
+  const chips = summaryCounts(summary.counts);
+
+  // Story 051: the note saves itself (after NOTE_AUTOSAVE_MS of quiet, on blur, when leaving).
+  const autosave = useRef<NoteAutosave | null>(null);
+  const writeNote = useRef<(text: string) => Promise<void>>(async () => undefined);
+  writeNote.current = async (text: string) => {
+    await eventStore.append({ type: 'person_updated', payload: { personId: person.personId, note: text } });
+    await onChanged();
+  };
+  useEffect(() => {
+    const a = createNoteAutosave({ saved: person.note, delayMs: NOTE_AUTOSAVE_MS, save: (text) => writeNote.current(text), onState: setNoteState });
+    autosave.current = a;
+    return () => {
+      void a.flush();
+      a.dispose();
+    };
+    // Recreated only for another contact; the stored note is tracked inside.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [person.personId]);
+  const changeNote = (text: string) => {
+    setNote(text);
+    autosave.current?.change(text);
+  };
+  const leave = () => {
+    void autosave.current?.flush();
+    onBack();
+  };
+  const openEdit = () => {
+    setName(person.name);
+    setCountry(person.phone?.country ?? DEFAULT_COUNTRY);
+    setNumber(person.phone?.number ?? '');
+    setCode(person.amwayCode ?? '');
+    setError(null);
+    setPhoneError(null);
+    setCodeError(null);
+    setEditOpen(true);
+  };
 
   async function run(action: () => Promise<void>): Promise<void> {
     setBusy(true);
@@ -581,7 +648,6 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
         payload: {
           personId: person.personId,
           name: checked.name,
-          note: note.trim(),
           phone: phone.phone ?? { country, number: '' },
           amwayCode: amway.code ?? '',
         },
@@ -589,9 +655,9 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
       await onChanged();
       // Show what was stored (trimmed name, digits only) so the form is clean again.
       setName(checked.name);
-      setNote(note.trim());
       setNumber(phone.phone?.number ?? '');
       setCode(amway.code ?? '');
+      setEditOpen(false);
       setInfo(STRINGS.personSaved);
     });
 
@@ -643,26 +709,39 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
   return (
     <main className="screen screen--tabbed">
       <header className="screen__header">
-        <button type="button" className="back-button" onClick={onBack} disabled={busy}>
+        <button type="button" className="back-button" onClick={leave} disabled={busy}>
           ‹ {STRINGS.back}
         </button>
-        <h1 className="screen__title person-detail__name">
-          {person.name}
-          {person.label != null && <LabelBadge label={person.label} />}
-        </h1>
-        {person.phone != null && (
-          <p className="screen__prompt">
-            {STRINGS.personDetailPhone}: <strong>{formatPhone(person.phone)}</strong>
-          </p>
-        )}
+        <div className="person-detail__head">
+          <h1 className="screen__title person-detail__name">
+            {person.name}
+            {person.label != null && <LabelBadge label={person.label} />}
+          </h1>
+          <button type="button" className="icon-button person-detail__edit" aria-label={STRINGS.personEditTitle} onClick={openEdit} disabled={busy}>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 20h4L19 9l-4-4L4 16z" />
+              <path d="M13.5 6.5l4 4" />
+            </svg>
+          </button>
+        </div>
+        <p className="person-detail__contact">
+          {person.phone != null && person.phone.number !== '' ? (
+            <a href={`tel:${person.phone.country}${person.phone.number}`} aria-label={`${STRINGS.personDetailPhone} ${formatPhone(person.phone)}`}>
+              {formatPhone(person.phone)}
+            </a>
+          ) : null}
+          {person.phone != null && person.phone.number !== '' ? ' · ' : ''}
+          {person.amwayCode != null ? (
+            <>
+              {STRINGS.personDetailAmwayCode} <strong>{person.amwayCode}</strong>
+            </>
+          ) : (
+            STRINGS.personCodeNone
+          )}
+        </p>
         {(person.phones ?? []).length > 0 && (
           <p className="screen__prompt">
             {STRINGS.dupOtherPhones}: <strong>{(person.phones ?? []).map((p) => formatPhone(p)).join(', ')}</strong>
-          </p>
-        )}
-        {person.amwayCode != null && (
-          <p className="screen__prompt">
-            {STRINGS.personDetailAmwayCode}: <strong>{person.amwayCode}</strong>
           </p>
         )}
         {person.linkedUserId != null && (
@@ -682,72 +761,52 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
         )}
       </header>
 
-      <section className="card person-section" aria-label={STRINGS.personInfoSectionTitle}>
-        <h2 className="person-section__heading">{STRINGS.personInfoSectionTitle}</h2>
-        <div id="person-edit-form" className="person-form">
-            <label className="note">
-              <span className="note__label">{STRINGS.personNameLabel}</span>
-              <input
-                className="note__input"
-                type="text"
-                value={name}
-                onChange={(e) => {
-                  setName(e.target.value);
-                  setError(null);
-                }}
-                disabled={busy}
-                autoComplete="off"
-              />
-            </label>
-            <PhoneInput
-              country={country}
-              number={number}
-              onChange={(c, n) => {
-                setCountry(c);
-                setNumber(n);
-                setPhoneError(null);
-              }}
-              disabled={busy}
-              error={phoneError}
-            />
-            <AmwayCodeInput
-              value={code}
-              onChange={(v) => {
-                setCode(v);
-                setCodeError(null);
-              }}
-              disabled={busy}
-              error={codeError}
-              warning={typedCodeWarning(people, code, person.personId)}
-            />
-            <label className="note">
-              <span className="note__label">{STRINGS.noteLabel}</span>
-              <NoteTextarea value={note} onChange={setNote} disabled={busy} />
-            </label>
-            {duplicate && (
-              <p className="message message--warn" role="status">
-                {STRINGS.personDuplicateWarning}
-              </p>
-            )}
-            <button type="button" className="button button--secondary" onClick={() => void saveEdits()} disabled={busy || !dirty}>
-              {STRINGS.personSaveChanges}
-            </button>
-            {error !== null && activeTask === null && (
-              <p className="message message--error" role="alert">
-                {error}
-              </p>
-            )}
+      <section className="card person-section person-summary" aria-labelledby="person-summary-title">
+        <h2 id="person-summary-title" className="person-section__heading">
+          {STRINGS.summaryTitle}
+        </h2>
+        <div className="person-summary__row">
+          <span className="person-summary__key">{STRINGS.summaryLastLabel}</span>
+          <span className={lastDays !== null && lastDays >= CONTACT_STALE_DAYS ? 'person-summary__value person-summary__value--stale' : 'person-summary__value'}>
+            {lastDays === null ? STRINGS.summaryNoActivity : daysSinceLabel(lastDays)}
+            {lastDays !== null && lastDays >= CONTACT_STALE_DAYS ? ' ⚠' : ''}
+          </span>
         </div>
+        {chips.length > 0 && (
+          <ul className="person-summary__chips">
+            {chips.map((c) => (
+              <li key={c.id} className="person-summary__chip">
+                {c.name === '' ? STRINGS.legacyUnknownActivity : c.name} <strong>{c.count}</strong>
+              </li>
+            ))}
+          </ul>
+        )}
+        {summary.firstAt !== null && (
+          <div className="person-summary__row">
+            <span className="person-summary__key">{STRINGS.historyFirstLabel}</span>
+            <span className="person-summary__value">{compactDateLabel(summary.firstAt)}</span>
+          </div>
+        )}
+        <label className="note person-summary__note">
+          <span className="note__label">{STRINGS.noteLabel}</span>
+          <NoteTextarea value={note} onChange={changeNote} onBlur={() => void autosave.current?.flush()} disabled={false} placeholder={STRINGS.notePlaceholder} />
+        </label>
+        <p className={noteState === 'error' ? 'person-summary__saved person-summary__saved--error' : 'person-summary__saved'} role="status" aria-live="polite">
+          {noteState === 'saving' ? STRINGS.noteSaving : noteState === 'saved' ? STRINGS.noteSavedMark : noteState === 'error' ? STRINGS.noteSaveError : ''}
+        </p>
         {info !== null && (
           <p className="message" role="status">
             {info}
           </p>
         )}
+        {error !== null && !editOpen && activeTask === null && (
+          <p className="message message--error" role="alert">
+            {error}
+          </p>
+        )}
       </section>
 
-      {extra}
-
-      <section className="card person-section" aria-label={STRINGS.activitySectionTitle}>
+      <section className="person-section person-actions-block" aria-label={STRINGS.activitySectionTitle}>
         <div className="person-actions">
           <button
             type="button"
@@ -775,6 +834,8 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
           </div>
         )}
       </section>
+
+      {extra}
 
       {createAccount !== undefined && person.label === 'NPP' && !person.archived && person.linkedUserId == null && (
         <section className="card person-section" aria-label={STRINGS.createAccountTitle}>
@@ -887,6 +948,66 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
           onConfirm={(reason, when) => void cancelSponsorship(reason, when)}
           onCancel={() => setCancelSponsorOpen(false)}
         />
+      )}
+
+      {editOpen && (
+        <Dialog title={STRINGS.personEditTitle} onClose={() => setEditOpen(false)}>
+          <div id="person-edit-form" className="person-form">
+            <label className="note">
+              <span className="note__label">{STRINGS.personNameLabel}</span>
+              <input
+                className="note__input"
+                type="text"
+                value={name}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  setError(null);
+                }}
+                disabled={busy}
+                autoComplete="off"
+              />
+            </label>
+            <PhoneInput
+              country={country}
+              number={number}
+              onChange={(c, n) => {
+                setCountry(c);
+                setNumber(n);
+                setPhoneError(null);
+              }}
+              disabled={busy}
+              error={phoneError}
+            />
+            <AmwayCodeInput
+              value={code}
+              onChange={(v) => {
+                setCode(v);
+                setCodeError(null);
+              }}
+              disabled={busy}
+              error={codeError}
+              warning={typedCodeWarning(people, code, person.personId)}
+            />
+            {duplicate && (
+              <p className="message message--warn" role="status">
+                {STRINGS.personDuplicateWarning}
+              </p>
+            )}
+            {error !== null && activeTask === null && (
+              <p className="message message--error" role="alert">
+                {error}
+              </p>
+            )}
+            <div className="button-row popup__actions">
+              <button type="button" className="button button--secondary" onClick={() => setEditOpen(false)} disabled={busy}>
+                {STRINGS.personEditCancel}
+              </button>
+              <button type="button" className="button button--primary" onClick={() => void saveEdits()} disabled={busy || !dirty}>
+                {STRINGS.personEditSave}
+              </button>
+            </div>
+          </div>
+        </Dialog>
       )}
 
       {historyOpen && (
