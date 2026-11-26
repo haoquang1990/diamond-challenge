@@ -452,3 +452,66 @@ export function createNoteAutosave(deps: NoteAutosaveDeps): NoteAutosave {
     dispose: clear,
   };
 }
+
+/** Orders of the Làm list (story 052); the last three only apply while the NPP filter is on. */
+export const CONTACT_SORTS = ['recent', 'stale', 'name', 'added', 'nppNewest', 'xpTotal', 'xp7d'] as const;
+/** One order of the Làm list. */
+export type ContactSort = (typeof CONTACT_SORTS)[number];
+/** Orders offered only while the NPP filter is on. */
+export const NPP_ONLY_SORTS: readonly ContactSort[] = ['nppNewest', 'xpTotal', 'xp7d'];
+/** Order used before the user picks one, and instead of an NPP order outside the NPP filter. */
+export const DEFAULT_CONTACT_SORT: ContactSort = 'recent';
+
+/**
+ * Orders `shown` by `sort` (story 052). `all` is every contact in log order (first added
+ * first): it breaks ties, newest added first. XP orders read `progress` by Amway code; a
+ * contact without numbers goes last. Pure; does not change its input.
+ */
+export function sortContacts(
+  shown: readonly Person[],
+  all: readonly Person[],
+  sort: ContactSort,
+  progress: ReadonlyMap<string, { readonly xpTotal: number; readonly xp7d: number }> = new Map(),
+): Person[] {
+  const added = new Map(all.map((x, i) => [x.personId, i]));
+  const newer = (a: Person, b: Person) => (added.get(b.personId) ?? -1) - (added.get(a.personId) ?? -1);
+  const time = (iso: string | null | undefined) => (iso == null ? null : Date.parse(iso));
+  const byTime = (pick: (x: Person) => string | null | undefined, dir: 1 | -1, missingFirst: boolean) => (a: Person, b: Person) => {
+    const ta = time(pick(a));
+    const tb = time(pick(b));
+    if (ta === null || tb === null) return ta === tb ? newer(a, b) : (ta === null) === missingFirst ? -1 : 1;
+    return (ta - tb) * dir || newer(a, b);
+  };
+  const xp = (key: 'xpTotal' | 'xp7d') => (a: Person, b: Person) => {
+    const va = a.amwayCode == null ? undefined : progress.get(a.amwayCode)?.[key];
+    const vb = b.amwayCode == null ? undefined : progress.get(b.amwayCode)?.[key];
+    if (va === undefined || vb === undefined) return va === vb ? newer(a, b) : va === undefined ? 1 : -1;
+    return vb - va || newer(a, b);
+  };
+  const cmp: Record<ContactSort, (a: Person, b: Person) => number> = {
+    recent: byTime((x) => x.lastContactAt, -1, false),
+    stale: byTime((x) => x.lastContactAt, 1, true),
+    name: (a, b) => a.name.localeCompare(b.name, 'vi', { sensitivity: 'base' }) || newer(a, b),
+    added: newer,
+    nppNewest: byTime((x) => x.nppAt, -1, false),
+    xpTotal: xp('xpTotal'),
+    xp7d: xp('xp7d'),
+  };
+  return [...shown].sort(cmp[sort]);
+}
+
+/**
+ * My chosen Làm order: the latest `settings_changed { contactSort }` with a known value, not
+ * written by a household member in `others` and not undone (story 052). Pure.
+ */
+export function readContactSort(events: readonly LogEvent[], others: ReadonlySet<string>): ContactSort {
+  const undone = new Set<string>();
+  for (const e of events) if (typeof e.payload.compensates === 'string') undone.add(e.payload.compensates);
+  let found: ContactSort = DEFAULT_CONTACT_SORT;
+  for (const e of events) {
+    if (e.type !== 'settings_changed' || undone.has(e.id) || others.has(e.userId)) continue;
+    const v = e.payload.contactSort;
+    if (typeof v === 'string' && (CONTACT_SORTS as readonly string[]).includes(v)) found = v as ContactSort;
+  }
+  return found;
+}

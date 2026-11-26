@@ -8,10 +8,16 @@ import { deriveActivityOwners, derivePeople } from '../../domain/people';
 import type { Person, PersonPhone } from '../../domain/people';
 import { ACTIVITY_TYPES } from '../activity-types';
 import type { ActivityType } from '../activity-types';
-import { PEOPLE_CONFIG } from '../people-config';
+import { CONTACT_STALE_DAYS, PEOPLE_CONFIG } from '../people-config';
 import {
   CONTACTS_FILTERS,
+  CONTACT_SORTS,
+  DEFAULT_CONTACT_SORT,
+  NPP_ONLY_SORTS,
+  calendarDaysSince,
   countContacts,
+  readContactSort,
+  sortContacts,
   duplicateCodeNames,
   filterContacts,
   findDuplicateCodes,
@@ -19,14 +25,11 @@ import {
   listUnassignedActivities,
   searchPeopleByName,
 } from '../people-helpers';
-import type { ContactsFilter } from '../people-helpers';
-import { STRINGS, duplicateCodeWarning, duplicatesEntryLabel, filterChipLabel, lastContactLabel, nppSinceLabel, shortDateLabel, xpLabel } from '../strings';
-import { AddPersonForm, LabelBadge, PersonDetail } from './person-form';
-import { householdProgressLabel, sortNppByProgress } from '../group-helpers';
-import type { HouseholdProgress, NppSort } from '../group-helpers';
-
-/** Sort choices of the NPP chip (story 044). */
-const NPP_SORTS: readonly NppSort[] = ['newest', 'xpTotal', 'xp7d'];
+import type { ContactSort, ContactsFilter } from '../people-helpers';
+import { STRINGS, contactDaysAria, contactSortAria, duplicateCodeWarning, duplicatesEntryLabel, filterChipLabel, nppSinceLabel, shortDateLabel, xpLabel } from '../strings';
+import { AddPersonForm, Dialog, LabelBadge, PersonDetail } from './person-form';
+import { householdProgressLabel } from '../group-helpers';
+import type { HouseholdProgress } from '../group-helpers';
 
 /** Props for {@link PeopleScreen}. */
 export interface PeopleScreenProps {
@@ -80,7 +83,8 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
   const [addedXp, setAddedXp] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<ContactsFilter>(initialFilter);
-  const [nppSort, setNppSort] = useState<NppSort>('newest');
+  /** Story 052: the sort sheet is open. */
+  const [sortOpen, setSortOpen] = useState(false);
   /** null = automatic: open while the list is empty, collapsed once there are people. */
   const [showAdd, setShowAdd] = useState<boolean | null>(null);
   /** Name search text; kept while a person detail is open so the list returns as it was. */
@@ -184,7 +188,23 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
   const dupCodes = findDuplicateCodes(people);
   const counts = countContacts(allPeople);
   const listed = filterContacts(allPeople, filter);
-  const inFilter = filter === 'npp' && nppProgress !== undefined ? sortNppByProgress(listed, nppProgress, nppSort) : listed;
+  // Story 052: my chosen order (synced with my account); an NPP-only order outside NPP falls back.
+  const chosenSort = readContactSort(events, others);
+  const sortOptions = CONTACT_SORTS.filter((k) => filter === 'npp' || !NPP_ONLY_SORTS.includes(k)).filter((k) => nppProgress !== undefined || (k !== 'xpTotal' && k !== 'xp7d'));
+  const activeSort: ContactSort = sortOptions.includes(chosenSort) ? chosenSort : DEFAULT_CONTACT_SORT;
+  const inFilter = sortContacts(listed, allPeople, activeSort, nppProgress);
+  const now = new Date();
+  const chooseSort = async (key: ContactSort) => {
+    setSortOpen(false);
+    if (key === chosenSort) return;
+    try {
+      await eventStore.append({ type: 'settings_changed', payload: { contactSort: key } });
+      await reload();
+    } catch (e) {
+      console.error('[people] could not save the sort', e);
+      setError(STRINGS.personSaveError);
+    }
+  };
   const shown = searchPeopleByName(inFilter, query);
   const filterNames: Record<ContactsFilter, string> = {
     all: STRINGS.filterAll,
@@ -265,6 +285,20 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
             />
           </div>
         )}
+        {allPeople.length > 0 && (
+          <button
+            type="button"
+            className="icon-button"
+            aria-haspopup="dialog"
+            aria-label={contactSortAria(STRINGS.contactSortNames[activeSort])}
+            title={contactSortAria(STRINGS.contactSortNames[activeSort])}
+            onClick={() => setSortOpen(true)}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M7 4v16M3 16l4 4 4-4M17 20V4M13 8l4-4 4 4" />
+            </svg>
+          </button>
+        )}
         <button
           type="button"
           className={addOpen ? 'icon-button icon-button--open' : 'icon-button'}
@@ -279,20 +313,23 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
         </button>
       </div>
 
-      {filter === 'npp' && nppProgress !== undefined && (
-        <div className="filter-bar npp-sort" role="group" aria-label={STRINGS.nppSortLabel}>
-          {NPP_SORTS.map((key) => (
-            <button
-              key={key}
-              type="button"
-              className={key === nppSort ? 'chip chip--selected' : 'chip'}
-              aria-pressed={key === nppSort}
-              onClick={() => setNppSort(key)}
-            >
-              {STRINGS.nppSortNames[key]}
-            </button>
-          ))}
-        </div>
+      {sortOpen && (
+        <Dialog title={STRINGS.contactSortTitle} onClose={() => setSortOpen(false)} variant="sheet">
+          <ul className="sort-options">
+            {sortOptions.map((key, i) => (
+              <li key={key}>
+                {i > 0 && NPP_ONLY_SORTS.includes(key) && !NPP_ONLY_SORTS.includes(sortOptions[i - 1] as ContactSort) && <p className="sort-options__group">{STRINGS.contactSortNppGroup}</p>}
+                <button type="button" className={key === activeSort ? 'sort-option sort-option--on' : 'sort-option'} aria-pressed={key === activeSort} onClick={() => void chooseSort(key)}>
+                  <span className="sort-option__text">
+                    <span className="sort-option__name">{STRINGS.contactSortNames[key]}</span>
+                    {STRINGS.contactSortHints[key] !== '' && <span className="sort-option__hint">{STRINGS.contactSortHints[key]}</span>}
+                  </span>
+                  {key === activeSort && <span aria-hidden="true">✓</span>}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </Dialog>
       )}
 
       {inFilter.length > 0 && shown.length === 0 ? (
@@ -314,9 +351,6 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
                     {dupCodes.has(person.personId) && (
                       <span className="person-row__warn">{duplicateCodeWarning(duplicateCodeNames(dupCodes.get(person.personId) ?? []))}</span>
                     )}
-                    {filter === 'kh' && person.lastContactAt !== undefined && (
-                      <span className="person-row__stage">{lastContactLabel(person.lastContactAt)}</span>
-                    )}
                     {filter === 'npp' && person.nppAt != null && (
                       <span className="person-row__stage">{nppSinceLabel(person.nppAt)}</span>
                     )}
@@ -325,6 +359,21 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
                     )}
                   </span>
                   {person.label != null && <LabelBadge label={person.label} />}
+                  {(() => {
+                    const days = calendarDaysSince(person.lastContactAt ?? null, now);
+                    const cls = days === null ? 'person-row__days person-row__days--none' : days >= CONTACT_STALE_DAYS ? 'person-row__days person-row__days--stale' : 'person-row__days';
+                    return (
+                      <span className={cls} aria-label={contactDaysAria(days)} title={contactDaysAria(days)}>
+                        {days !== null && (
+                          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                            <circle cx="12" cy="12" r="9" />
+                            <path d="M12 7v5l3 2" />
+                          </svg>
+                        )}
+                        <span aria-hidden="true">{days === null ? '—' : days}</span>
+                      </span>
+                    );
+                  })()}
                 </button>
               </li>
           )}

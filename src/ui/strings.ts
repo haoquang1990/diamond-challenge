@@ -224,6 +224,27 @@ export const STRINGS = {
     other: 'Chưa cấp lại được mật khẩu. Thử lại sau nhé.',
   },
   nppSortLabel: 'Sắp xếp NPP',
+  contactSortTitle: 'Sắp xếp',
+  contactSortNppGroup: 'Chỉ khi lọc NPP',
+  contactSortNames: {
+    recent: 'Hoạt động gần nhất',
+    stale: 'Lâu chưa liên hệ',
+    name: 'Tên A → Z',
+    added: 'Mới thêm',
+    nppNewest: 'Mới bảo trợ',
+    xpTotal: 'Tổng XP',
+    xp7d: 'XP 7 ngày',
+  },
+  contactSortHints: {
+    recent: 'Người vừa làm việc cùng lên đầu',
+    stale: 'Ai bị bỏ quên lâu nhất lên đầu',
+    name: '',
+    added: '',
+    nppNewest: '',
+    xpTotal: '',
+    xp7d: '',
+  },
+  contactDaysNone: 'Chưa có hoạt động',
   nppSortNames: { newest: 'Mới bảo trợ', xpTotal: 'Tổng XP', xp7d: 'XP 7 ngày' },
   f1BoxOffline: 'đang không có mạng',
   groupCheerButton: 'Cổ vũ',
@@ -730,6 +751,16 @@ export function daysSinceLabel(days: number): string {
 /** Character counter under the note field, e.g. "12/500". */
 export function noteCounterLabel(length: number, max: number): string {
   return `${length}/${max}`;
+}
+
+/** Screen-reader text of a row's day count (story 052). */
+export function contactDaysAria(days: number | null): string {
+  return days === null ? 'Chưa có hoạt động' : days === 0 ? 'Hôm nay có hoạt động' : `${days} ngày chưa hoạt động`;
+}
+
+/** Button label of the sort choice: "Sắp xếp: Hoạt động gần nhất" (screen readers only). */
+export function contactSortAria(name: string): string {
+  return `Sắp xếp: ${name}`;
 }
 
 /** Short local date, e.g. "02/11/26" (story 051 summary). */

@@ -40,6 +40,8 @@ export interface DialogProps {
   readonly title: string;
   readonly onClose: () => void;
   readonly children: ReactNode;
+  /** "sheet": slides up from the bottom of the screen (story 052 sort choices). */
+  readonly variant?: 'sheet';
 }
 
 /**
@@ -48,7 +50,7 @@ export interface DialogProps {
  * backdrop call `onClose`; the page behind does not scroll (body class) and the focus returns to
  * the opener on close. The content scrolls inside (max-height ~90vh).
  */
-export function Dialog({ title, onClose, children }: DialogProps) {
+export function Dialog({ title, onClose, children, variant }: DialogProps) {
   const titleId = useId();
   const panelRef = useRef<HTMLDivElement>(null);
   const onCloseRef = useRef(onClose);
@@ -91,12 +93,12 @@ export function Dialog({ title, onClose, children }: DialogProps) {
 
   return (
     <div
-      className="popup-backdrop"
+      className={variant === 'sheet' ? 'popup-backdrop popup-backdrop--sheet' : 'popup-backdrop'}
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div ref={panelRef} className="popup popup--dialog" role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1}>
+      <div ref={panelRef} className={variant === 'sheet' ? 'popup popup--dialog popup--sheet' : 'popup popup--dialog'} role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1}>
         <h2 id={titleId} className="popup__title">
           {title}
         </h2>
@@ -571,7 +573,8 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
   const history = buildPersonHistory(events, person.personId, config, [...PERSON_TASKS, ...activityTypes]);
   const doneCounts = countDoneTasks(history);
   const summary = summarizeHistory(history, new Date());
-  const lastDays = calendarDaysSince(summary.lastAt, new Date());
+  // Same "last activity" as the Làm list row (story 052): "Thêm tên" alone is not an activity.
+  const lastDays = calendarDaysSince(person.lastContactAt ?? null, new Date());
   const chips = summaryCounts(summary.counts);
 
   // Story 051: the note saves itself (after NOTE_AUTOSAVE_MS of quiet, on blur, when leaving).

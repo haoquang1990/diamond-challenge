@@ -1151,3 +1151,20 @@ body.dialog-open { overflow: hidden; }
 .person-summary__saved { margin: -4px 0 0; min-height: 1.2em; text-align: right; font-size: 0.85rem; font-weight: 800; color: #2b7a00; }
 .person-summary__saved--error { color: var(--color-error); text-align: left; }
 .person-actions-block { display: flex; flex-direction: column; gap: 10px; }
+/* Story 052: day count on each Làm row, sort sheet. */
+.person-row__main { flex: 1; }
+.person-row > .person-row__main .person-row__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; overflow-wrap: normal; }
+.person-row .badge { flex: none; }
+.person-row__days { flex: none; display: inline-flex; align-items: center; gap: 4px; min-width: 2.2em; justify-content: flex-end; color: var(--color-muted); font-weight: 800; font-size: 0.95rem; font-variant-numeric: tabular-nums; }
+.person-row__days svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
+.person-row__days--stale { color: #b26b00; }
+.person-row__days--none { color: #b5b5b5; }
+.popup-backdrop--sheet { align-items: flex-end; padding: 0; }
+.popup--sheet { max-width: 480px; border-radius: 20px 20px 0 0; border-width: 0; padding: 18px 16px calc(20px + env(safe-area-inset-bottom)); }
+.sort-options { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.sort-options__group { margin: 6px 0 8px; color: var(--color-muted); font-weight: 800; font-size: 0.85rem; }
+.sort-option { width: 100%; min-height: 48px; display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 2px solid var(--color-border); border-radius: 14px; background: var(--color-surface); color: inherit; font: inherit; font-weight: 700; text-align: left; cursor: pointer; }
+.sort-option--on { border-color: var(--color-diamond); background: var(--color-diamond-light); }
+.sort-option:focus-visible { outline: 3px solid var(--color-diamond-dark); outline-offset: 2px; }
+.sort-option__text { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.sort-option__hint { color: var(--color-muted); font-weight: 600; font-size: 0.88rem; }
