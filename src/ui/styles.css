@@ -1168,3 +1168,10 @@ body.dialog-open { overflow: hidden; }
 .sort-option:focus-visible { outline: 3px solid var(--color-diamond-dark); outline-offset: 2px; }
 .sort-option__text { flex: 1; display: flex; flex-direction: column; gap: 2px; }
 .sort-option__hint { color: var(--color-muted); font-weight: 600; font-size: 0.88rem; }
+/* Story 053: add to home screen guide in Cài đặt. */
+.install-guide__tabs { display: flex; gap: 6px; }
+.install-guide__tab { flex: 1; min-height: 44px; border: 2px solid var(--color-border); border-radius: 12px; background: var(--color-surface); color: var(--color-muted); font: inherit; font-weight: 800; cursor: pointer; }
+.install-guide__tab--on { border-color: var(--color-diamond); background: var(--color-diamond-light); color: var(--color-diamond-dark); }
+.install-guide__tab:focus-visible { outline: 3px solid var(--color-diamond-dark); outline-offset: 2px; }
+.install-guide__steps { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 6px; line-height: 1.45; }
+.install-guide__done { margin: 0; font-weight: 800; color: #2b7a00; }

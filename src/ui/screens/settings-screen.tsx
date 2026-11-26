@@ -11,6 +11,7 @@ import type { NotificationPlatform, ReminderPermission } from '../../notificatio
 import { readSoundEnabled } from '../achievements-helpers';
 import { ACHIEVEMENTS_CONFIG } from '../achievements-overlay';
 import { setSoundEnabled } from '../play-ting';
+import { InstallGuideCard } from './install-guide-card';
 import { authFailureText, contactSyncLastSyncedLabel, STRINGS, syncFailureText } from '../strings';
 import { selectEventsToPush } from '../../data/contact-sync';
 import { selectProgressToPush } from '../../data/progress-sync';
@@ -520,6 +521,7 @@ export function SettingsScreen({
 
       {state.kind === 'ready' && (
         <>
+          <InstallGuideCard />
           <section className="card">
             <div className="setting-row">
               <span id="reminder-toggle-label" className="setting-row__label">
