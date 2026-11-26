@@ -1,11 +1,11 @@
-import { useCallback, useEffect, useState } from 'react';
+import { Fragment, useCallback, useEffect, useState } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import gameConfig from '../../config/game-config.json';
 import { CHEER_MAX_LENGTH, cleanCheerMessage, loadGroup, parseGroupConfig, readGroupCache, sendCheer, writeGroupCache } from '../../data/group-service';
 import type { GroupData } from '../../data/group-service';
 import type { EventStore } from '../../data/event-store';
 import { derivePeople } from '../../domain/people';
-import { cheerCandidates, codeContactNames, householdActivityNote, householdNames, linkedContactNames } from '../group-helpers';
+import { cheerCandidates, codeContactNames, householdActivityNote, householdInsight, householdNames, insightNote, linkedContactNames, localDayKey, suggestCheers } from '../group-helpers';
 import { PEOPLE_CONFIG } from '../people-config';
 import { STRINGS, groupCheerAria, noteCounterLabel } from '../strings';
 import { Dialog } from './person-form';
@@ -35,15 +35,26 @@ function realNow(): Date {
  * locked; nothing is shown while loading or when nothing was ever loaded.
  */
 export function GroupCheerCard({ clientPromise, accountId, eventStore, now = realNow }: GroupCheerCardProps) {
-  const [data, setData] = useState<{ readonly group: GroupData; readonly stale: boolean } | null>(null);
+  const [data, setData] = useState<{
+    readonly group: GroupData;
+    readonly stale: boolean;
+  } | null>(null);
   const [online, setOnline] = useState(() => navigator.onLine);
   const [reloadKey, setReloadKey] = useState(0);
   const [cheering, setCheering] = useState<string | null>(null);
-  const [notice, setNotice] = useState<{ readonly text: string; readonly error: boolean } | null>(null);
+  const [notice, setNotice] = useState<{
+    readonly text: string;
+    readonly error: boolean;
+  } | null>(null);
   const [contactNames, setContactNames] = useState<ReadonlyMap<string, string>>(() => new Map());
   const [codeNames, setCodeNames] = useState<ReadonlyMap<string, string>>(() => new Map());
   /** Who the open "Gửi lời cổ vũ" popup is for (story 049). */
-  const [picking, setPicking] = useState<{ readonly toHouseholdId: string; readonly toUserId?: string; readonly name: string } | null>(null);
+  const [picking, setPicking] = useState<{
+    readonly toHouseholdId: string;
+    readonly toUserId?: string;
+    readonly name: string;
+    readonly suggested: readonly string[];
+  } | null>(null);
   const [choice, setChoice] = useState(0);
   const [custom, setCustom] = useState('');
   const reload = useCallback(() => setReloadKey((k) => k + 1), []);
@@ -108,11 +119,12 @@ export function GroupCheerCard({ clientPromise, accountId, eventStore, now = rea
   if (candidates.length === 0 && spouses.length === 0 && notice === null) return null;
   const myId = data.group.myHouseholdId;
   const canCheer = online && !data.stale && GROUP_CONFIG.cheerMessages.length > 0;
-  const options = GROUP_CONFIG.cheerMessages;
+  const options = [...(picking?.suggested ?? []), ...GROUP_CONFIG.cheerMessages.filter((m) => !(picking?.suggested ?? []).includes(m))];
+  const suggestedCount = picking?.suggested.length ?? 0;
   const typed = custom.trim() === '' ? null : cleanCheerMessage(custom);
   const chosen = custom.trim() !== '' ? typed : (options[choice] ?? null);
 
-  const open = (target: { readonly toHouseholdId: string; readonly toUserId?: string; readonly name: string }) => {
+  const open = (target: { readonly toHouseholdId: string; readonly toUserId?: string; readonly name: string; readonly suggested: readonly string[] }) => {
     setChoice(0);
     setCustom('');
     setNotice(null);
@@ -130,7 +142,7 @@ export function GroupCheerCard({ clientPromise, accountId, eventStore, now = rea
         toHouseholdId: target.toHouseholdId,
         ...(target.toUserId === undefined ? {} : { toUserId: target.toUserId }),
         message: chosen,
-        messages: options,
+        messages: GROUP_CONFIG.cheerMessages,
       });
       setNotice(result.ok ? { text: STRINGS.groupCheerSent, error: false } : { text: STRINGS.groupCheerErrors[result.error], error: true });
       if (result.ok || result.error === 'already') {
@@ -170,11 +182,27 @@ export function GroupCheerCard({ clientPromise, accountId, eventStore, now = rea
         <ul className="cheer-group__list">
           {spouses.map((m) => {
             const name = m.displayName ?? contactNames.get(m.userId) ?? m.phone ?? STRINGS.groupMemberUnnamed;
-            return row(`spouse-${m.userId}`, name, STRINGS.cheerSpouseNote, () => open({ toHouseholdId: myId, toUserId: m.userId, name }));
+            return row(`spouse-${m.userId}`, name, STRINGS.cheerSpouseNote, () =>
+              open({
+                toHouseholdId: myId,
+                toUserId: m.userId,
+                name,
+                suggested: [],
+              }),
+            );
           })}
           {candidates.map((h) => {
             const names = householdNames(h, contactNames, codeNames);
-            return row(h.householdId, names, householdActivityNote(h, now(), GROUP_CONFIG.inactiveDays), () => open({ toHouseholdId: h.householdId, name: names }));
+            const at = now();
+            const insight = householdInsight(h, localDayKey(at));
+            const note = householdActivityNote(h, at, GROUP_CONFIG.inactiveDays) ?? insightNote(insight);
+            return row(h.householdId, names, note, () =>
+              open({
+                toHouseholdId: h.householdId,
+                name: names,
+                suggested: suggestCheers(insight, at),
+              }),
+            );
           })}
         </ul>
       )}
@@ -188,10 +216,14 @@ export function GroupCheerCard({ clientPromise, accountId, eventStore, now = rea
           <fieldset className="cheer-pick" disabled={custom.trim() !== '' || cheering !== null}>
             <legend className="note__label">{STRINGS.cheerPickLabel}</legend>
             {options.map((text, i) => (
-              <label key={text} className={i === choice && custom.trim() === '' ? 'cheer-pick__option cheer-pick__option--on' : 'cheer-pick__option'}>
-                <input type="radio" name="cheer-pick" checked={i === choice} onChange={() => setChoice(i)} />
-                <span>{text}</span>
-              </label>
+              <Fragment key={text}>
+                {i === 0 && suggestedCount > 0 && <p className="cheer-pick__group">{STRINGS.cheerSuggestedLabel}</p>}
+                {i === suggestedCount && suggestedCount > 0 && <p className="cheer-pick__group">{STRINGS.cheerStandardLabel}</p>}
+                <label className={i === choice && custom.trim() === '' ? 'cheer-pick__option cheer-pick__option--on' : 'cheer-pick__option'}>
+                  <input type="radio" name="cheer-pick" checked={i === choice} onChange={() => setChoice(i)} />
+                  <span>{text}</span>
+                </label>
+              </Fragment>
             ))}
           </fieldset>
           <label className="note popup__field">

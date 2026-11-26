@@ -3,7 +3,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import gameConfig from '../../config/game-config.json';
 import { loadGroup, parseGroupConfig, readGroupCache, writeGroupCache } from '../../data/group-service';
 import type { GroupData } from '../../data/group-service';
-import { f1TotalsLabel, findF1Household, householdActivityNote, householdProgress, householdProgressLabel } from '../group-helpers';
+import { agoLabel, localDayKey, f1TotalsLabel, findF1Household, householdActivityNote, householdInsight, householdProgress, householdProgressLabel, tasks7dLabel } from '../group-helpers';
 import { generateTempPassword, resendF1Password } from '../../data/account-service';
 import type { ResendPasswordError } from '../../data/account-service';
 import { STRINGS, appLink, createAccountShareText, groupUpdatedLabel } from '../strings';
@@ -38,7 +38,10 @@ export function F1HouseholdBox({ clientPromise, accountId, amwayCode, now = real
   const [stale, setStale] = useState(true);
   const [busyUser, setBusyUser] = useState<string | null>(null);
   const [resendError, setResendError] = useState<ResendPasswordError | null>(null);
-  const [issued, setIssued] = useState<{ readonly phone: string; readonly password: string } | null>(null);
+  const [issued, setIssued] = useState<{
+    readonly phone: string;
+    readonly password: string;
+  } | null>(null);
   const [copyNote, setCopyNote] = useState<string | null>(null);
 
   /** Story 048: a new temporary password for a never-activated member of this F1 household. */
@@ -81,17 +84,34 @@ export function F1HouseholdBox({ clientPromise, accountId, amwayCode, now = real
   if (group === null || household === null) return null;
   const activity = householdActivityNote(household, now(), GROUP_CONFIG.inactiveDays);
   const progress = householdProgress(household);
+  const nowDate = now();
+  const insight = householdInsight(household, localDayKey(nowDate));
   return (
     <section className="card person-section f1-box" aria-labelledby="f1-box-title">
       <h2 id="f1-box-title" className="person-section__heading">
         {STRINGS.f1BoxTitle}
       </h2>
-      {household.numbers === null ? (
-        <p className="message">{STRINGS.groupNoNumbers}</p>
-      ) : (
-        <p className="f1-box__totals">{f1TotalsLabel(household.numbers.customers, household.numbers.f1)}</p>
-      )}
+      {household.numbers === null ? <p className="message">{STRINGS.groupNoNumbers}</p> : <p className="f1-box__totals">{f1TotalsLabel(household.numbers.customers, household.numbers.f1)}</p>}
       {progress !== null && <p className="f1-box__progress">{householdProgressLabel(progress)}</p>}
+      {insight !== null && insight.lastSeenAt !== null && (
+        <ul className="f1-box__insight" aria-label={STRINGS.f1InsightTasks}>
+          <li className={insight.goalToday ? 'f1-box__fact f1-box__fact--ok' : 'f1-box__fact'}>{insight.goalToday ? STRINGS.f1InsightGoalMet : STRINGS.f1InsightGoalNot}</li>
+          <li className="f1-box__fact">
+            {STRINGS.f1InsightActiveDays} <strong>{insight.activeDays7d}/7</strong> ngày
+          </li>
+          <li className="f1-box__fact">
+            {STRINGS.f1InsightTasks}: {tasks7dLabel(insight.tasks7d)}
+          </li>
+          <li className="f1-box__fact">
+            {STRINGS.f1InsightLessons} <strong>{insight.lessonsDistinct}</strong> bài
+            {insight.lastLessonAt !== null ? ` · gần nhất ${agoLabel(insight.lastLessonAt, nowDate)}` : ''}
+            {` · ${STRINGS.f1InsightBadges}: ${insight.badges7d}`}
+          </li>
+          <li className="f1-box__fact">
+            {STRINGS.f1InsightSeen}: {agoLabel(insight.lastSeenAt, nowDate)}
+          </li>
+        </ul>
+      )}
       {activity !== null && (
         <p className="message message--warn" role="status">
           {activity}
@@ -109,10 +129,13 @@ export function F1HouseholdBox({ clientPromise, accountId, amwayCode, now = real
               <li key={m.userId} className="f1-box__login">
                 <span>
                   {STRINGS.f1BoxLogin}: {m.phone}
+                  {m.activated === false && <span className="f1-box__badge">{STRINGS.f1NotActivated}</span>}
                 </span>
-                <button type="button" className="button button--secondary" disabled={!navigator.onLine || busyUser !== null} onClick={() => void resend(m.userId, m.phone ?? '')}>
-                  {STRINGS.f1ResendButton}
-                </button>
+                {m.activated !== true && (
+                  <button type="button" className="button button--secondary" disabled={!navigator.onLine || busyUser !== null} onClick={() => void resend(m.userId, m.phone ?? '')}>
+                    {STRINGS.f1ResendButton}
+                  </button>
+                )}
               </li>
             ))}
         </ul>

@@ -167,7 +167,25 @@ export interface ShareProgress {
   readonly xp7d: number;
   /** Same as {@link Progress.streak}. */
   readonly streak: number;
+  /** Local date (YYYY-MM-DD) the numbers were computed for (story 050). */
+  readonly statsDay: string;
+  /** Today's daily goal met. */
+  readonly goalToday: boolean;
+  /** Local days with XP among the last 7 (today included). */
+  readonly activeDays7d: number;
+  /** Tasks of the last 7 days by type (story 050). */
+  readonly tasks7d: Readonly<Record<ShareTask, number>>;
+  /** Lessons learned at least once (xp > 0). */
+  readonly lessonsDistinct: number;
+  /** ISO time of the latest lesson completion, or null. */
+  readonly lastLessonAt: string | null;
+  /** Badges that popped up (non-silent acknowledgements) in the last 7 days. */
+  readonly badges7d: number;
 }
+
+/** Task types counted in {@link ShareProgress.tasks7d}. */
+export const SHARE_TASKS = ['contact', 'demo', 'opp', 'new_customer', 'new_npp'] as const;
+export type ShareTask = (typeof SHARE_TASKS)[number];
 
 /** Local days counted by {@link ShareProgress.xp7d}. */
 export const SHARE_XP_DAYS = 7;
@@ -193,14 +211,48 @@ export function computeShareProgress(
     const target = e.payload.compensates;
     if (typeof target === 'string') compensated.add(target);
   }
-  const firstDay = localDayNumber(formatter, now) - (SHARE_XP_DAYS - 1);
+  const today = localDayNumber(formatter, now);
+  const firstDay = today - (SHARE_XP_DAYS - 1);
   let xp7d = 0;
+  const activeDays = new Set<number>();
+  const tasks7d: Record<ShareTask, number> = { contact: 0, demo: 0, opp: 0, new_customer: 0, new_npp: 0 };
+  const lessons = new Set<string>();
+  let lastLessonAt: string | null = null;
+  let badges7d = 0;
   for (const e of events) {
-    const xp = e.payload.xp;
-    if (typeof xp !== 'number' || !Number.isFinite(xp)) continue;
     if (compensated.has(e.id) || typeof e.payload.compensates === 'string') continue;
     if (others?.has(e.userId) === true) continue;
-    if (localDayNumber(formatter, new Date(e.timestamp)) >= firstDay) xp7d += xp;
+    const day = localDayNumber(formatter, new Date(e.timestamp));
+    const recent = day >= firstDay;
+    if (e.type === 'settings_changed') {
+      const id = e.payload.achievementAcknowledged;
+      if (recent && typeof id === 'string' && id.startsWith('badge:') && e.payload.silent !== true) badges7d += 1;
+      continue;
+    }
+    const xp = e.payload.xp;
+    if (typeof xp !== 'number' || !Number.isFinite(xp)) continue;
+    if (e.type === 'lesson_completed') {
+      if (xp > 0 && typeof e.payload.lessonId === 'string') lessons.add(e.payload.lessonId);
+      if (lastLessonAt === null || e.timestamp > lastLessonAt) lastLessonAt = e.timestamp;
+    }
+    if (!recent) continue;
+    xp7d += xp;
+    if (xp > 0) activeDays.add(day);
+    const task = e.type === 'activity_logged' ? e.payload.taskId : undefined;
+    if (typeof task === 'string' && (SHARE_TASKS as readonly string[]).includes(task)) tasks7d[task as ShareTask] += 1;
   }
-  return { xpTotal: Math.max(0, progress.totalXp), xp7d: Math.max(0, xp7d), streak: progress.streak };
+  const date = new Date(today * MS_PER_DAY);
+  const statsDay = `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}-${String(date.getUTCDate()).padStart(2, '0')}`;
+  return {
+    xpTotal: Math.max(0, progress.totalXp),
+    xp7d: Math.max(0, xp7d),
+    streak: progress.streak,
+    statsDay,
+    goalToday: progress.dailyGoal.met,
+    activeDays7d: activeDays.size,
+    tasks7d,
+    lessonsDistinct: lessons.size,
+    lastLessonAt,
+    badges7d,
+  };
 }
