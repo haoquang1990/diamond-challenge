@@ -1,0 +1,6 @@
+Reviewed-Content-Hash: src/ui/install-guide.ts a8f4efba90cfa58a3aa771b1216366e37deedf59
+Reviewed-Content-Hash: src/ui/screens/install-guide-card.tsx 766c99b7920885f127919ade0553d10e55cebd21
+Reviewed-Content-Hash: src/ui/screens/settings-screen.tsx adc9752244b37d25bd0082829878d5517bf32ec0
+Reviewed-Content-Hash: src/main.tsx cd039c978ac24c999bbc092742104ef4575f3a55
+Reviewed-Content-Hash: src/ui/strings.ts 45c8e4a428a6101d4f2ebe91261f6de260a1a918
+Reviewed-Content-Hash: src/ui/styles.css 2b2ca8620713519de117f9e48005948e64c45622

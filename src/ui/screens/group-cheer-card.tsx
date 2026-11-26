@@ -4,7 +4,7 @@ import gameConfig from '../../config/game-config.json';
 import { CHEER_MAX_LENGTH, cleanCheerMessage, loadGroup, parseGroupConfig, readGroupCache, sendCheer, writeGroupCache } from '../../data/group-service';
 import type { GroupData } from '../../data/group-service';
 import type { EventStore } from '../../data/event-store';
-import { derivePeople } from '../../domain/people';
+import { derivePeople, formatE164 } from '../../domain/people';
 import { cheerCandidates, codeContactNames, householdActivityNote, householdInsight, householdNames, insightNote, linkedContactNames, localDayKey, suggestCheers } from '../group-helpers';
 import { PEOPLE_CONFIG } from '../people-config';
 import { STRINGS, groupCheerAria, noteCounterLabel } from '../strings';
@@ -183,7 +183,7 @@ export function GroupCheerCard({ clientPromise, accountId, eventStore, now = rea
       {(spouses.length > 0 || candidates.length > 0) && (
         <ul className="cheer-group__list">
           {spouses.map((m) => {
-            const name = m.displayName ?? contactNames.get(m.userId) ?? m.phone ?? STRINGS.groupMemberUnnamed;
+            const name = m.displayName ?? contactNames.get(m.userId) ?? (m.phone === null ? null : formatE164(m.phone)) ?? STRINGS.groupMemberUnnamed;
             return row(`spouse-${m.userId}`, name, STRINGS.cheerSpouseNote, () =>
               open({
                 toHouseholdId: myId,

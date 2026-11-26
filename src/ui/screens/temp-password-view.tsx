@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { formatE164 } from '../../domain/people';
 import { STRINGS, appLink, createAccountShareText } from '../strings';
 
 /** Props for {@link TempPasswordView}. */
@@ -47,7 +48,7 @@ export function TempPasswordView({ title, phone, password, warning, onFinish }: 
           {STRINGS.appLinkLine}: <strong className="temp-link">{link}</strong>
         </p>
         <p className="message">
-          {STRINGS.createAccountPhoneLine}: <strong>{phone}</strong>
+          {STRINGS.createAccountPhoneLine}: <strong>{formatE164(phone)}</strong>
         </p>
         <p className="message">
           {STRINGS.createAccountPasswordLine}: <strong className="temp-password">{password}</strong>

@@ -12,6 +12,7 @@ import {
   sortNppByDate,
 } from '../domain/people';
 import type { PeopleConfig, Person, PersonPhone, PersonStageDef } from '../domain/people';
+import { formatPhoneParts } from '../domain/people';
 
 /** Non-archived people sharing one stage. */
 export interface StageGroup {
@@ -143,7 +144,14 @@ export function countContacts(people: readonly Person[]): Record<ContactsFilter,
 
 /** "+84 912345678", or '' when the person has no phone. */
 export function formatPhone(phone: PersonPhone | null | undefined): string {
-  return phone === null || phone === undefined ? '' : `${phone.country} ${phone.number}`;
+  return phone === null || phone === undefined ? '' : formatPhoneParts(phone.country, phone.number);
+}
+
+/** Error line for a refused phone (story 054 adds the Vietnamese mobile rule). */
+export function phoneProblemText(reason: 'unknown_country' | 'not_digits' | 'bad_length' | 'bad_vn'): string {
+  if (reason === 'unknown_country') return STRINGS.phoneUnknownCountry;
+  if (reason === 'bad_vn') return STRINGS.phoneBadVn;
+  return reason === 'not_digits' ? STRINGS.phoneNotDigits : STRINGS.phoneBadLength;
 }
 
 /** One line of a person's history (read-only). */
@@ -342,4 +350,176 @@ export function historyAuthorLabel(userId: string, others: ReadonlySet<string>, 
  */
 export function activityInstant(value: string, initial: string, now: Date): Date {
   return value === initial ? now : new Date(value);
+}
+
+/**
+ * Whole local calendar days from `iso` to `now` (story 051): 0 for any time today, never
+ * negative; null without a date. Pure.
+ */
+export function calendarDaysSince(iso: string | null, now: Date): number | null {
+  if (iso === null) return null;
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return null;
+  const day = (x: Date) => Date.UTC(x.getFullYear(), x.getMonth(), x.getDate());
+  return Math.max(0, Math.round((day(now) - day(d)) / 86_400_000));
+}
+
+/** Activity id written when a name is added; not worth a chip on the contact page (story 051). */
+const ADD_NAME_ID = 'add_name';
+
+/** The contact page's per-task chips: every count but "Thêm tên" (story 051). Pure. */
+export function summaryCounts(counts: readonly HistoryTaskCount[]): HistoryTaskCount[] {
+  return counts.filter((c) => c.id !== ADD_NAME_ID);
+}
+
+/** State of the note autosave, for the "Đang lưu… / ✓ Đã lưu / Chưa lưu được" line. */
+export type NoteSaveState = 'pending' | 'saving' | 'saved' | 'error';
+
+/** Inputs of {@link createNoteAutosave}. */
+export interface NoteAutosaveDeps {
+  /** The note as stored now. */
+  readonly saved: string;
+  /** Quiet time after the last keystroke before saving. */
+  readonly delayMs: number;
+  /** Writes the (trimmed) note; a rejection keeps it pending for the next flush. */
+  readonly save: (note: string) => Promise<void>;
+  readonly onState?: (state: NoteSaveState) => void;
+}
+
+/** Saves a note some time after typing stops, or at once on {@link NoteAutosave.flush}. */
+export interface NoteAutosave {
+  /** The text in the box changed. */
+  change(value: string): void;
+  /** Saves the pending text now (blur, leaving the page); one save at a time. */
+  flush(): Promise<void>;
+  /** Cancels the timer; a pending text is not saved. */
+  dispose(): void;
+}
+
+/**
+ * Note autosave of the contact page (story 051): trims, skips text equal to what is stored,
+ * restarts the timer on every change. Main thread only.
+ *
+ * @example
+ * const a = createNoteAutosave({ saved: person.note, delayMs: 1000, save });
+ * a.change(text); // saved one second after the last change
+ */
+export function createNoteAutosave(deps: NoteAutosaveDeps): NoteAutosave {
+  let stored = deps.saved.trim();
+  let pending: string | null = null;
+  let timer: ReturnType<typeof setTimeout> | null = null;
+  let running: Promise<void> | null = null;
+  const clear = () => {
+    if (timer !== null) clearTimeout(timer);
+    timer = null;
+  };
+  const flush = async (): Promise<void> => {
+    clear();
+    if (running !== null) await running;
+    if (pending === null) return;
+    const text = pending;
+    if (text === stored) {
+      pending = null;
+      deps.onState?.('saved');
+      return;
+    }
+    deps.onState?.('saving');
+    running = deps
+      .save(text)
+      .then(() => {
+        stored = text;
+        if (pending === text) pending = null;
+        deps.onState?.(pending === null ? 'saved' : 'pending');
+      })
+      .catch((error: unknown) => {
+        console.error('[note] autosave failed', error);
+        deps.onState?.('error');
+      })
+      .finally(() => {
+        running = null;
+      });
+    await running;
+  };
+  return {
+    change(value) {
+      const text = value.trim();
+      pending = text;
+      if (text === stored) {
+        clear();
+        pending = null;
+        return;
+      }
+      deps.onState?.('pending');
+      clear();
+      timer = setTimeout(() => {
+        timer = null;
+        void flush();
+      }, deps.delayMs);
+    },
+    flush,
+    dispose: clear,
+  };
+}
+
+/** Orders of the Làm list (story 052); the last three only apply while the NPP filter is on. */
+export const CONTACT_SORTS = ['recent', 'stale', 'name', 'added', 'nppNewest', 'xpTotal', 'xp7d'] as const;
+/** One order of the Làm list. */
+export type ContactSort = (typeof CONTACT_SORTS)[number];
+/** Orders offered only while the NPP filter is on. */
+export const NPP_ONLY_SORTS: readonly ContactSort[] = ['nppNewest', 'xpTotal', 'xp7d'];
+/** Order used before the user picks one, and instead of an NPP order outside the NPP filter. */
+export const DEFAULT_CONTACT_SORT: ContactSort = 'recent';
+
+/**
+ * Orders `shown` by `sort` (story 052). `all` is every contact in log order (first added
+ * first): it breaks ties, newest added first. XP orders read `progress` by Amway code; a
+ * contact without numbers goes last. Pure; does not change its input.
+ */
+export function sortContacts(
+  shown: readonly Person[],
+  all: readonly Person[],
+  sort: ContactSort,
+  progress: ReadonlyMap<string, { readonly xpTotal: number; readonly xp7d: number }> = new Map(),
+): Person[] {
+  const added = new Map(all.map((x, i) => [x.personId, i]));
+  const newer = (a: Person, b: Person) => (added.get(b.personId) ?? -1) - (added.get(a.personId) ?? -1);
+  const time = (iso: string | null | undefined) => (iso == null ? null : Date.parse(iso));
+  const byTime = (pick: (x: Person) => string | null | undefined, dir: 1 | -1, missingFirst: boolean) => (a: Person, b: Person) => {
+    const ta = time(pick(a));
+    const tb = time(pick(b));
+    if (ta === null || tb === null) return ta === tb ? newer(a, b) : (ta === null) === missingFirst ? -1 : 1;
+    return (ta - tb) * dir || newer(a, b);
+  };
+  const xp = (key: 'xpTotal' | 'xp7d') => (a: Person, b: Person) => {
+    const va = a.amwayCode == null ? undefined : progress.get(a.amwayCode)?.[key];
+    const vb = b.amwayCode == null ? undefined : progress.get(b.amwayCode)?.[key];
+    if (va === undefined || vb === undefined) return va === vb ? newer(a, b) : va === undefined ? 1 : -1;
+    return vb - va || newer(a, b);
+  };
+  const cmp: Record<ContactSort, (a: Person, b: Person) => number> = {
+    recent: byTime((x) => x.lastContactAt, -1, false),
+    stale: byTime((x) => x.lastContactAt, 1, true),
+    name: (a, b) => a.name.localeCompare(b.name, 'vi', { sensitivity: 'base' }) || newer(a, b),
+    added: newer,
+    nppNewest: byTime((x) => x.nppAt, -1, false),
+    xpTotal: xp('xpTotal'),
+    xp7d: xp('xp7d'),
+  };
+  return [...shown].sort(cmp[sort]);
+}
+
+/**
+ * My chosen Làm order: the latest `settings_changed { contactSort }` with a known value, not
+ * written by a household member in `others` and not undone (story 052). Pure.
+ */
+export function readContactSort(events: readonly LogEvent[], others: ReadonlySet<string>): ContactSort {
+  const undone = new Set<string>();
+  for (const e of events) if (typeof e.payload.compensates === 'string') undone.add(e.payload.compensates);
+  let found: ContactSort = DEFAULT_CONTACT_SORT;
+  for (const e of events) {
+    if (e.type !== 'settings_changed' || undone.has(e.id) || others.has(e.userId)) continue;
+    const v = e.payload.contactSort;
+    if (typeof v === 'string' && (CONTACT_SORTS as readonly string[]).includes(v)) found = v as ContactSort;
+  }
+  return found;
 }

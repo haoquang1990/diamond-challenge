@@ -3,6 +3,7 @@ import type { FormEvent } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import gameConfig from '../../config/game-config.json';
 import { signInWithPhone } from '../../data/auth-service';
+import { tidyNationalNumber } from '../../domain/people';
 import type { AccountInfo } from '../../data/auth-service';
 import { PasswordInput } from '../password-input';
 import { authFailureText, STRINGS } from '../strings';
@@ -90,7 +91,9 @@ export function LoginScreen({ clientPromise, needsNetwork = false, onSignedIn }:
               autoComplete="tel-national"
               className="note__input form__input"
               value={phone}
+              placeholder={STRINGS.phonePlaceholder}
               onChange={(e) => setPhone(e.target.value)}
+              onBlur={() => setPhone(tidyNationalNumber(country, phone))}
               disabled={busy || needsNetwork}
             />
           </label>

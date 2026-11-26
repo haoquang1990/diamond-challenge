@@ -4,6 +4,7 @@
 import { activityStatus, sortGroup } from '../data/group-service';
 import type { GroupHousehold, GroupMember } from '../data/group-service';
 import type { Person } from '../domain/people';
+import { formatE164 } from '../domain/people';
 import { STRINGS } from './strings';
 
 /**
@@ -18,7 +19,7 @@ export function linkedContactNames(people: readonly Person[]): ReadonlyMap<strin
 
 /** A member's name: the display name they set, else my contact name for that account, else phone, else a placeholder. */
 export function groupMemberName(member: Pick<GroupMember, 'userId' | 'displayName' | 'phone'>, contactNames: ReadonlyMap<string, string>): string {
-  return member.displayName ?? contactNames.get(member.userId) ?? member.phone ?? STRINGS.groupMemberUnnamed;
+  return member.displayName ?? contactNames.get(member.userId) ?? (member.phone === null ? null : formatE164(member.phone)) ?? STRINGS.groupMemberUnnamed;
 }
 
 /**
@@ -49,7 +50,7 @@ export function householdNames(h: GroupHousehold, contactNames: ReadonlyMap<stri
       codeUsed = true;
       return byCode;
     }
-    return m.phone ?? STRINGS.groupMemberUnnamed;
+    return m.phone === null ? STRINGS.groupMemberUnnamed : formatE164(m.phone);
   });
   if (names.length === 0) return byCode ?? STRINGS.groupMemberUnnamed;
   return names.join(' & ');

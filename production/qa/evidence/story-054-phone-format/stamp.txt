@@ -1,0 +1,8 @@
+Reviewed-Content-Hash: src/domain/people.ts b8294167ea10062c4726e53eab62aeec8df112cc
+Reviewed-Content-Hash: src/ui/people-helpers.ts 403071249f65c82b84e29f249154aa60bdf439da
+Reviewed-Content-Hash: src/ui/strings.ts c8ab961c54b61ecfabfa29d46d5721a3a120abb6
+Reviewed-Content-Hash: src/ui/screens/person-form.tsx 0988548c8b0717cd663bc4282f03411544a7ee1d
+Reviewed-Content-Hash: src/ui/screens/login-screen.tsx 731024396f8e8ae72df552d1e6cb5b0e0db4a85b
+Reviewed-Content-Hash: src/ui/screens/create-account-screen.tsx be5bb0157b20de4975d8636203880bd988dcf749
+Reviewed-Content-Hash: src/ui/screens/f1-household-box.tsx ae64ed6d24e0082a881ddc4233436b1ccc19fa11
+Reviewed-Content-Hash: supabase/functions/_shared/phone.ts 2b2c961283174c777733e0c8332e91cf304238ee

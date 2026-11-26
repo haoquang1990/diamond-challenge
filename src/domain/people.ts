@@ -158,7 +158,7 @@ export type TaskCompletionResult =
 /** Result of {@link validatePhone}. `phone` is null for an empty number (no phone). */
 export type PhoneValidation =
   | { readonly ok: true; readonly phone: PersonPhone | null }
-  | { readonly ok: false; readonly reason: 'unknown_country' | 'not_digits' | 'bad_length' };
+  | { readonly ok: false; readonly reason: 'unknown_country' | 'not_digits' | 'bad_length' | 'bad_vn' };
 
 /** Result of {@link validateAmwayCode}. `code` is null for an empty input (no code). */
 export type AmwayCodeValidation = { readonly ok: true; readonly code: string | null } | { readonly ok: false };
@@ -952,11 +952,55 @@ function cmp(a: string, b: string): number {
  */
 export function validatePhone(country: string, number: string, config: PeopleConfig): PhoneValidation {
   if (!(config.countryCodes ?? []).some((c) => c.code === country)) return { ok: false, reason: 'unknown_country' };
-  const digits = number.replace(/\s+/g, '');
-  if (digits === '') return { ok: true, phone: null };
-  if (!/^[0-9]+$/.test(digits)) return { ok: false, reason: 'not_digits' };
+  const typed = number.replace(/\s+/g, '');
+  if (typed === '') return { ok: true, phone: null };
+  if (!/^[0-9]+$/.test(typed)) return { ok: false, reason: 'not_digits' };
+  // Story 054: one way to write a Vietnamese number: +84 and 9 digits, no trunk 0.
+  const digits = country === VN_COUNTRY ? typed.replace(/^0/, '') : typed;
+  if (country === VN_COUNTRY) return VN_MOBILE.test(digits) ? { ok: true, phone: { country, number: digits } } : { ok: false, reason: 'bad_vn' };
   if (digits.length < PHONE_MIN_DIGITS || digits.length > PHONE_MAX_DIGITS) return { ok: false, reason: 'bad_length' };
   return { ok: true, phone: { country, number: digits } };
+}
+
+/** Calling code whose numbers follow the Vietnamese mobile rule (story 054). */
+export const VN_COUNTRY = '+84';
+/** A Vietnamese mobile number after +84: 9 digits starting with 3, 5, 7, 8 or 9. */
+const VN_MOBILE = /^[35789][0-9]{8}$/;
+
+/** True for an E.164 Vietnamese mobile number (`+84` + 9 digits starting with 3, 5, 7, 8, 9). */
+export function isVnMobileE164(e164: string): boolean {
+  return e164.startsWith(VN_COUNTRY) && VN_MOBILE.test(e164.slice(VN_COUNTRY.length));
+}
+
+/** National digits as stored: +84 numbers lose a leading trunk 0 (old entries may have one). */
+function nationalDigits(country: string, number: string): string {
+  const digits = number.replace(/\s+/g, '');
+  return country === VN_COUNTRY ? digits.replace(/^0/, '') : digits;
+}
+
+/** "912 345 678" for 9 Vietnamese digits, else the digits unchanged. */
+function groupVn(digits: string): string {
+  return /^[0-9]{9}$/.test(digits) ? `${digits.slice(0, 3)} ${digits.slice(3, 6)} ${digits.slice(6)}` : digits;
+}
+
+/**
+ * How a phone is written everywhere (story 054): "+84 912 345 678" (no trunk 0, also for old
+ * entries stored with one); other countries "+1 4155550100". Pure.
+ */
+export function formatPhoneParts(country: string, number: string): string {
+  const digits = nationalDigits(country, number);
+  return `${country} ${country === VN_COUNTRY ? groupVn(digits) : digits}`;
+}
+
+/** An account phone (E.164, e.g. "+84912345678") written as {@link formatPhoneParts} does. */
+export function formatE164(e164: string): string {
+  return e164.startsWith(VN_COUNTRY) && /^[0-9]{9}$/.test(e164.slice(VN_COUNTRY.length)) ? formatPhoneParts(VN_COUNTRY, e164.slice(VN_COUNTRY.length)) : e164;
+}
+
+/** The number box after it loses focus: +84 drops the trunk 0 and groups 9 digits; others unchanged. */
+export function tidyNationalNumber(country: string, number: string): string {
+  if (country !== VN_COUNTRY || !/^[0-9\s]*$/.test(number)) return number;
+  return groupVn(nationalDigits(country, number));
 }
 
 /**

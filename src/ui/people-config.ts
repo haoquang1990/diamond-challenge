@@ -30,3 +30,15 @@ export const PEOPLE_CONFIG: PeopleConfig & { readonly tasks: readonly PersonTask
 export const PERSON_TASKS: readonly PersonTaskDef[] = PARSED.tasks;
 /** Country calling codes; the first is the default. */
 export const COUNTRY_CODES: readonly CountryCodeDef[] = PARSED.countryCodes;
+
+/** Positive whole number from the config, else the fallback (with a warning). */
+function positiveInt(raw: unknown, fallback: number, key: string): number {
+  if (typeof raw === 'number' && Number.isInteger(raw) && raw > 0) return raw;
+  console.warn(`[people] config ${key} is not a positive whole number; using ${fallback}`);
+  return fallback;
+}
+
+/** Days without activity after which a contact's day count turns orange (story 051). */
+export const CONTACT_STALE_DAYS = positiveInt((gameConfig as Record<string, unknown>).contactStaleDays, 14, 'contactStaleDays');
+/** Quiet time before the contact note saves itself (story 051). */
+export const NOTE_AUTOSAVE_MS = positiveInt((gameConfig as Record<string, unknown>).noteAutosaveMs, 1000, 'noteAutosaveMs');

@@ -1134,3 +1134,44 @@ body.dialog-open { overflow: hidden; }
 .f1-box__fact--ok { color: #2b7a00; font-weight: 700; }
 .f1-box__badge { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; background: #fdecc8; color: #7a4b00; }
 .cheer-pick__group { margin: 4px 0 2px; font-size: 0.85rem; font-weight: 700; color: var(--color-muted); }
+/* Story 051: contact page — summary with inline note, edit popup. */
+.person-detail__head { display: flex; align-items: flex-start; gap: 12px; }
+.person-detail__head .person-detail__name { flex: 1; min-width: 0; }
+.person-detail__edit svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.person-detail__contact { margin: 0; color: var(--color-muted); font-weight: 700; overflow-wrap: anywhere; }
+.person-detail__contact a { color: var(--color-diamond-dark); text-decoration: none; }
+.person-summary__row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.person-summary__key { color: var(--color-muted); font-weight: 700; }
+.person-summary__value { font-weight: 800; text-align: right; }
+.person-summary__value--stale { color: #b26b00; }
+.person-summary__chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.person-summary__chip { background: #f3f3f3; border-radius: 999px; padding: 5px 10px; font-weight: 700; font-size: 0.92rem; }
+.person-summary__chip strong { color: var(--color-diamond-dark); }
+.person-summary__note { margin-top: 4px; }
+.person-summary__saved { margin: -4px 0 0; min-height: 1.2em; text-align: right; font-size: 0.85rem; font-weight: 800; color: #2b7a00; }
+.person-summary__saved--error { color: var(--color-error); text-align: left; }
+.person-actions-block { display: flex; flex-direction: column; gap: 10px; }
+/* Story 052: day count on each Làm row, sort sheet. */
+.person-row__main { flex: 1; }
+.person-row > .person-row__main .person-row__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; overflow-wrap: normal; }
+.person-row .badge { flex: none; }
+.person-row__days { flex: none; display: inline-flex; align-items: center; gap: 4px; min-width: 2.2em; justify-content: flex-end; color: var(--color-muted); font-weight: 800; font-size: 0.95rem; font-variant-numeric: tabular-nums; }
+.person-row__days svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
+.person-row__days--stale { color: #b26b00; }
+.person-row__days--none { color: #b5b5b5; }
+.popup-backdrop--sheet { align-items: flex-end; padding: 0; }
+.popup--sheet { max-width: 480px; border-radius: 20px 20px 0 0; border-width: 0; padding: 18px 16px calc(20px + env(safe-area-inset-bottom)); }
+.sort-options { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.sort-options__group { margin: 6px 0 8px; color: var(--color-muted); font-weight: 800; font-size: 0.85rem; }
+.sort-option { width: 100%; min-height: 48px; display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 2px solid var(--color-border); border-radius: 14px; background: var(--color-surface); color: inherit; font: inherit; font-weight: 700; text-align: left; cursor: pointer; }
+.sort-option--on { border-color: var(--color-diamond); background: var(--color-diamond-light); }
+.sort-option:focus-visible { outline: 3px solid var(--color-diamond-dark); outline-offset: 2px; }
+.sort-option__text { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.sort-option__hint { color: var(--color-muted); font-weight: 600; font-size: 0.88rem; }
+/* Story 053: add to home screen guide in Cài đặt. */
+.install-guide__tabs { display: flex; gap: 6px; }
+.install-guide__tab { flex: 1; min-height: 44px; border: 2px solid var(--color-border); border-radius: 12px; background: var(--color-surface); color: var(--color-muted); font: inherit; font-weight: 800; cursor: pointer; }
+.install-guide__tab--on { border-color: var(--color-diamond); background: var(--color-diamond-light); color: var(--color-diamond-dark); }
+.install-guide__tab:focus-visible { outline: 3px solid var(--color-diamond-dark); outline-offset: 2px; }
+.install-guide__steps { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 6px; line-height: 1.45; }
+.install-guide__done { margin: 0; font-weight: 800; color: #2b7a00; }

@@ -34,7 +34,7 @@ describe('resendF1Password', () => {
 describe('share text with the app link', () => {
   it('starts with the app address when given', () => {
     expect(createAccountShareText('+84900000444', 'Abc12345', 'https://example.test/app/')).toBe(
-      'Ứng dụng: https://example.test/app/\nSố điện thoại: +84900000444\nMật khẩu tạm: Abc12345\nHãy đổi mật khẩu khi đăng nhập lần đầu.',
+      'Ứng dụng: https://example.test/app/\nSố điện thoại: +84 900 000 444\nMật khẩu tạm: Abc12345\nHãy đổi mật khẩu khi đăng nhập lần đầu.',
     );
     expect(createAccountShareText('+849', 'x')).not.toContain('Ứng dụng');
   });

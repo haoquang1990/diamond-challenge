@@ -45,7 +45,7 @@ describe('filterContacts', () => {
 
 describe('formatPhone', () => {
   it('formats country and number, empty when none', () => {
-    expect(formatPhone({ country: '+84', number: '912345678' })).toBe('+84 912345678');
+    expect(formatPhone({ country: '+84', number: '912345678' })).toBe('+84 912 345 678');
     expect(formatPhone(null)).toBe('');
     expect(formatPhone(undefined)).toBe('');
   });

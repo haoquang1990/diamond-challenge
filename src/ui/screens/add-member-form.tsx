@@ -4,8 +4,9 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { normalizePhone } from '../../../supabase/functions/_shared/phone';
 import { addHouseholdMember, generateTempPassword } from '../../data/account-service';
 import { validateDisplayName } from '../../data/auth-service';
-import { validatePhone } from '../../domain/people';
+import { tidyNationalNumber, validatePhone } from '../../domain/people';
 import { COUNTRY_CODES, PEOPLE_CONFIG } from '../people-config';
+import { phoneProblemText } from '../people-helpers';
 import { STRINGS } from '../strings';
 import { TempPasswordView } from './temp-password-view';
 
@@ -51,7 +52,7 @@ export function AddMemberForm({ clientPromise, householdId, onAdded, onClose }: 
     if (busy) return;
     const checked = validatePhone(country, number, PEOPLE_CONFIG);
     if (!checked.ok) {
-      setError(checked.reason === 'unknown_country' ? STRINGS.phoneUnknownCountry : checked.reason === 'not_digits' ? STRINGS.phoneNotDigits : STRINGS.phoneBadLength);
+      setError(phoneProblemText(checked.reason));
       return;
     }
     if (checked.phone === null) {
@@ -130,7 +131,9 @@ export function AddMemberForm({ clientPromise, householdId, onAdded, onClose }: 
               autoComplete="off"
               className="note__input form__input"
               value={number}
+              placeholder={STRINGS.phonePlaceholder}
               onChange={(e) => setNumber(e.target.value)}
+              onBlur={() => setNumber(tidyNationalNumber(country, number))}
               disabled={busy}
             />
           </label>

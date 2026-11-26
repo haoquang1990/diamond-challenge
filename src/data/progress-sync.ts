@@ -21,7 +21,7 @@ import type { EventPayload, EventStore, EventType, LogEvent, SyncStateStore } fr
 export const PERSONAL_EVENT_TYPES: readonly EventType[] = ['lesson_completed', 'activity_logged', 'settings_changed'];
 
 /** `settings_changed` payload keys that mark an achievement / stage acknowledgement (synced); every other settings key stays on the device. */
-export const PROGRESS_SETTINGS_KEYS: readonly string[] = ['achievementAcknowledged', 'stageAcknowledged', 'achievementsSeeded', 'badgesSeeded'];
+export const PROGRESS_SETTINGS_KEYS: readonly string[] = ['achievementAcknowledged', 'stageAcknowledged', 'achievementsSeeded', 'badgesSeeded', 'contactSort'];
 
 /** Prefix of the pull cursor id. Household ids are UUIDs, so `progressCursor:<account id>` never equals one. */
 export const PROGRESS_CURSOR_PREFIX = 'progressCursor:';

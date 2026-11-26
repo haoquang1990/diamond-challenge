@@ -5,8 +5,9 @@ import { normalizePhone } from '../../../supabase/functions/_shared/phone';
 import { generateTempPassword } from '../../data/account-service';
 import { loadAdminHouseholds, resetPassword, searchHouseholds, setHouseholdCode } from '../../data/admin-service';
 import type { AdminHousehold, AdminMember, AdminQuery } from '../../data/admin-service';
-import { validateAmwayCode, validatePhone } from '../../domain/people';
+import { formatE164, validateAmwayCode, validatePhone } from '../../domain/people';
 import { COUNTRY_CODES, PEOPLE_CONFIG } from '../people-config';
+import { phoneProblemText } from '../people-helpers';
 import { adminCancelledLabel, adminCancelReason, adminResetAria, STRINGS } from '../strings';
 import { TempPasswordView } from './temp-password-view';
 
@@ -131,11 +132,11 @@ function HouseholdCard({ household, clientPromise, online, onRefreshed, onResetD
       ) : (
         <ul className="member-list">
           {household.members.map((m) => {
-            const name = m.displayName ?? m.phone ?? STRINGS.householdMemberUnnamed;
+            const name = m.displayName ?? (m.phone === null ? null : formatE164(m.phone)) ?? STRINGS.householdMemberUnnamed;
             return (
               <li key={m.userId} className="member-list__item admin-member">
                 <span className="account-name">{name}</span>
-                {m.displayName !== null && m.phone !== null && <span className="card__body">{m.phone}</span>}
+                {m.displayName !== null && m.phone !== null && <span className="card__body">{formatE164(m.phone)}</span>}
                 <button
                   type="button"
                   className="button button--secondary"
@@ -217,9 +218,11 @@ export function AdminScreen({ clientPromise, onBack }: AdminScreenProps) {
     if (search.kind === 'busy') return;
     let query: AdminQuery;
     if (mode === 'phone') {
-      const checked = validatePhone(country, number, PEOPLE_CONFIG);
+      // Searching finds existing accounts too, so a +84 number outside the mobile rule (story 054) still searches.
+      const validated = validatePhone(country, number, PEOPLE_CONFIG);
+      const checked = !validated.ok && validated.reason === 'bad_vn' ? { ok: true as const, phone: { country, number: number.replace(/\s+/g, '') } } : validated;
       if (!checked.ok) {
-        setSearch({ kind: 'error', text: checked.reason === 'unknown_country' ? STRINGS.phoneUnknownCountry : checked.reason === 'not_digits' ? STRINGS.phoneNotDigits : STRINGS.phoneBadLength });
+        setSearch({ kind: 'error', text: phoneProblemText(checked.reason) });
         return;
       }
       if (checked.phone === null) {

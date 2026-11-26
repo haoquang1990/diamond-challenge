@@ -8,6 +8,7 @@ import { generateTempPassword, resendF1Password } from '../../data/account-servi
 import type { ResendPasswordError } from '../../data/account-service';
 import { STRINGS, appLink, createAccountShareText, groupUpdatedLabel } from '../strings';
 import { Dialog } from './person-form';
+import { formatE164 } from '../../domain/people';
 
 const GROUP_CONFIG = parseGroupConfig(gameConfig);
 
@@ -128,7 +129,7 @@ export function F1HouseholdBox({ clientPromise, accountId, amwayCode, now = real
             .map((m) => (
               <li key={m.userId} className="f1-box__login">
                 <span>
-                  {STRINGS.f1BoxLogin}: {m.phone}
+                  {STRINGS.f1BoxLogin}: {formatE164(m.phone ?? '')}
                   {m.activated === false && <span className="f1-box__badge">{STRINGS.f1NotActivated}</span>}
                 </span>
                 {m.activated !== true && (
@@ -158,7 +159,7 @@ export function F1HouseholdBox({ clientPromise, accountId, amwayCode, now = real
                   {STRINGS.appLinkLine}: <strong className="temp-link">{link}</strong>
                 </p>
                 <p className="message">
-                  {STRINGS.createAccountPhoneLine}: <strong>{issued.phone}</strong>
+                  {STRINGS.createAccountPhoneLine}: <strong>{formatE164(issued.phone)}</strong>
                 </p>
                 <p className="message">
                   {STRINGS.createAccountPasswordLine}: <strong className="temp-password">{issued.password}</strong>

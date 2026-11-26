@@ -389,10 +389,12 @@ describe('person_restored and phone', () => {
     expect(validatePhone('+999', '123456', CONFIG)).toEqual({ ok: false, reason: 'unknown_country' });
     expect(validatePhone('+84', '12a456', CONFIG)).toEqual({ ok: false, reason: 'not_digits' });
     expect(validatePhone('+84', '+84123456', CONFIG)).toEqual({ ok: false, reason: 'not_digits' });
-    expect(validatePhone('+84', '12345', CONFIG)).toEqual({ ok: false, reason: 'bad_length' });
-    expect(validatePhone('+84', '123456', CONFIG).ok).toBe(true);
-    expect(validatePhone('+84', '123456789012345', CONFIG).ok).toBe(true);
-    expect(validatePhone('+84', '1234567890123456', CONFIG)).toEqual({ ok: false, reason: 'bad_length' });
+    // Story 054: +84 follows the Vietnamese mobile rule; the 6–15 digit rule stays for other countries.
+    expect(validatePhone('+84', '12345', CONFIG)).toEqual({ ok: false, reason: 'bad_vn' });
+    expect(validatePhone('+1', '12345', CONFIG)).toEqual({ ok: false, reason: 'bad_length' });
+    expect(validatePhone('+1', '123456', CONFIG).ok).toBe(true);
+    expect(validatePhone('+1', '123456789012345', CONFIG).ok).toBe(true);
+    expect(validatePhone('+1', '1234567890123456', CONFIG)).toEqual({ ok: false, reason: 'bad_length' });
   });
 });
 

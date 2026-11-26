@@ -1,7 +1,11 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { AuthGate } from './ui/auth-gate';
+import { listenForInstallPrompt } from './ui/install-guide';
 import './ui/styles.css';
+
+// Story 053: keep Chrome's install prompt for the "Cài app" button in Cài đặt.
+listenForInstallPrompt();
 
 const rootElement = document.getElementById('root');
 if (rootElement === null) throw new Error('#root element missing from index.html');

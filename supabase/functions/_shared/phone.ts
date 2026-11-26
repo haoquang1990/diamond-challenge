@@ -30,6 +30,17 @@ export function normalizePhone(input: string): string | null {
   return /^[1-9][0-9]{8,14}$/.test(digits) ? `+${digits}` : null;
 }
 
+/**
+ * True when a NEW account may use this E.164 phone (story 054): a +84 number must be a
+ * Vietnamese mobile number (9 digits after +84, starting with 3, 5, 7, 8 or 9); other countries
+ * as {@link normalizePhone} allows. Signing in is not checked, so older accounts keep working.
+ * The same rule as `isVnMobileE164` in src/domain/people.ts.
+ */
+export function isAllowedNewAccountPhone(e164: string): boolean {
+  if (!e164.startsWith(`+${DEFAULT_COUNTRY_CODE}`)) return true;
+  return /^[35789][0-9]{8}$/.test(e164.slice(DEFAULT_COUNTRY_CODE.length + 1));
+}
+
 /** The internal Supabase Auth email for an E.164 phone: `84912345678@phone.diamond-challenge.app`. */
 export function phoneToEmail(e164: string): string {
   return `${e164.replace(/^\+/, '')}@${PHONE_EMAIL_DOMAIN}`;

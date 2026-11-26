@@ -1,3 +1,4 @@
+import { formatE164 } from '../domain/people';
 import type { AuthFailure, PasswordProblem } from '../data/auth-service';
 import type { SyncFailure } from '../data/contact-sync';
 
@@ -144,10 +145,12 @@ export const STRINGS = {
   addPersonToggleClose: 'Thu gọn',
   phoneCountryLabel: 'Mã nước',
   phoneNumberLabel: 'Số điện thoại',
-  phonePlaceholder: 'Vd. 912345678',
+  phonePlaceholder: 'Vd. 912 345 678',
   phoneUnknownCountry: 'Mã nước không hợp lệ.',
   phoneNotDigits: 'Số điện thoại chỉ gồm chữ số.',
   phoneBadLength: 'Số điện thoại cần từ 6 đến 15 chữ số.',
+  phoneBadVn: 'Số di động Việt Nam có 9 số sau +84, bắt đầu bằng 3, 5, 7, 8 hoặc 9 (vd. 912 345 678).',
+  createAccountLoginPreview: 'Tài khoản đăng nhập',
   amwayCodeLabel: 'Mã số Amway (không bắt buộc)',
   amwayCodePlaceholder: 'Vd. 1234567',
   amwayCodeInvalid: 'Mã số Amway chỉ gồm chữ số (được cách bằng dấu cách, chấm hoặc gạch) và dài từ 4 đến 15 chữ số.',
@@ -224,6 +227,45 @@ export const STRINGS = {
     other: 'Chưa cấp lại được mật khẩu. Thử lại sau nhé.',
   },
   nppSortLabel: 'Sắp xếp NPP',
+  contactSortTitle: 'Sắp xếp',
+  installTitle: 'Đưa app ra màn hình chính',
+  installIntro: 'Mở app bằng một chạm như app thường, toàn màn hình, không cần gõ địa chỉ.',
+  installButton: 'Cài app',
+  installDone: '✓ App đã ở màn hình chính của máy này.',
+  installTabIos: 'iPhone',
+  installTabAndroid: 'Android',
+  installStepsIos: [
+    'Mở app bằng Safari.',
+    'Bấm nút Chia sẻ (ô vuông có mũi tên lên) ở thanh dưới.',
+    'Kéo xuống, chọn "Thêm vào MH chính".',
+    'Bấm "Thêm". Biểu tượng Diamond Challenge hiện trên màn hình chính.',
+  ],
+  installStepsAndroid: [
+    'Mở app bằng Chrome.',
+    'Bấm nút ⋮ ở góc trên bên phải.',
+    'Chọn "Thêm vào màn hình chính" hoặc "Cài đặt ứng dụng".',
+    'Bấm "Cài đặt" (hoặc "Thêm"). Biểu tượng Diamond Challenge hiện trên màn hình chính.',
+  ],
+  contactSortNppGroup: 'Chỉ khi lọc NPP',
+  contactSortNames: {
+    recent: 'Hoạt động gần nhất',
+    stale: 'Lâu chưa liên hệ',
+    name: 'Tên A → Z',
+    added: 'Mới thêm',
+    nppNewest: 'Mới bảo trợ',
+    xpTotal: 'Tổng XP',
+    xp7d: 'XP 7 ngày',
+  },
+  contactSortHints: {
+    recent: 'Người vừa làm việc cùng lên đầu',
+    stale: 'Ai bị bỏ quên lâu nhất lên đầu',
+    name: '',
+    added: '',
+    nppNewest: '',
+    xpTotal: '',
+    xp7d: '',
+  },
+  contactDaysNone: 'Chưa có hoạt động',
   nppSortNames: { newest: 'Mới bảo trợ', xpTotal: 'Tổng XP', xp7d: 'XP 7 ngày' },
   f1BoxOffline: 'đang không có mạng',
   groupCheerButton: 'Cổ vũ',
@@ -283,6 +325,17 @@ export const STRINGS = {
   historyDaysSinceLabel: 'Kể từ lần gần nhất',
   historyListTitle: 'Danh sách',
   personSaveChanges: 'Lưu thay đổi',
+  personEditTitle: 'Sửa thông tin',
+  personEditSave: 'Lưu',
+  personEditCancel: 'Huỷ',
+  personCodeNone: 'Mã số chưa có',
+  summaryTitle: 'Tóm tắt',
+  summaryLastLabel: 'Lần gần nhất',
+  summaryNoActivity: 'Chưa có hoạt động',
+  noteSaving: 'Đang lưu…',
+  noteSavedMark: '✓ Đã lưu',
+  noteSaveError: 'Chưa lưu được, sẽ thử lại khi bạn rời ô ghi chú.',
+  notePlaceholder: 'F O R M H D: gia đình, nghề nghiệp, sở thích, tiền bạc, sức khoẻ, ước mơ…',
   personSaved: 'Đã lưu.',
   personChangeStage: 'Đổi giai đoạn',
   personStageNoXp: 'không có XP',
@@ -721,6 +774,22 @@ export function noteCounterLabel(length: number, max: number): string {
   return `${length}/${max}`;
 }
 
+/** Screen-reader text of a row's day count (story 052). */
+export function contactDaysAria(days: number | null): string {
+  return days === null ? 'Chưa có hoạt động' : days === 0 ? 'Hôm nay có hoạt động' : `${days} ngày chưa hoạt động`;
+}
+
+/** Button label of the sort choice: "Sắp xếp: Hoạt động gần nhất" (screen readers only). */
+export function contactSortAria(name: string): string {
+  return `Sắp xếp: ${name}`;
+}
+
+/** Short local date, e.g. "02/11/26" (story 051 summary). */
+export function compactDateLabel(iso: string): string {
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? '' : d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: '2-digit' });
+}
+
 /** Local date and time for an activity row, e.g. "21/11/2026, 09:30". */
 export function dateTimeLabel(iso: string): string {
   const d = new Date(iso);
@@ -805,7 +874,7 @@ export function duplicateCodeWarning(names: string): string {
 /** Shared text for Zalo: phone, temporary password and the reminder to change it (story 024). */
 export function createAccountShareText(phone: string, password: string, appUrl?: string): string {
   const link = appUrl === undefined || appUrl === '' ? '' : `Ứng dụng: ${appUrl}\n`;
-  return `${link}Số điện thoại: ${phone}\nMật khẩu tạm: ${password}\nHãy đổi mật khẩu khi đăng nhập lần đầu.`;
+  return `${link}Số điện thoại: ${formatE164(phone)}\nMật khẩu tạm: ${password}\nHãy đổi mật khẩu khi đăng nhập lần đầu.`;
 }
 
 /** The app's own address (origin + path, without index.html, query or hash), for the share text (2026-11-25). */

@@ -11,11 +11,13 @@ import type { NotificationPlatform, ReminderPermission } from '../../notificatio
 import { readSoundEnabled } from '../achievements-helpers';
 import { ACHIEVEMENTS_CONFIG } from '../achievements-overlay';
 import { setSoundEnabled } from '../play-ting';
+import { InstallGuideCard } from './install-guide-card';
 import { authFailureText, contactSyncLastSyncedLabel, STRINGS, syncFailureText } from '../strings';
 import { selectEventsToPush } from '../../data/contact-sync';
 import { selectProgressToPush } from '../../data/progress-sync';
 import type { ContactConsent, SyncStatus } from '../../data/contact-sync';
 import { validateDisplayName } from '../../data/auth-service';
+import { formatE164 } from '../../domain/people';
 import type { AccountInfo, AuthResult } from '../../data/auth-service';
 
 /**
@@ -164,8 +166,8 @@ function AccountCard({ account, onSignOut, onSaveDisplayName, onOpenHousehold, o
       ) : (
         <>
           <p className="card__body">{STRINGS.accountSignedInAs}</p>
-          <p className="account-name">{account.displayName ?? account.phone ?? ''}</p>
-          {account.displayName !== null && account.phone !== null && <p className="card__body">{account.phone}</p>}
+          <p className="account-name">{account.displayName ?? (account.phone === null ? '' : formatE164(account.phone))}</p>
+          {account.displayName !== null && account.phone !== null && <p className="card__body">{formatE164(account.phone)}</p>}
           <label className="form__field">
             <span className="form__label">{STRINGS.displayNameLabel}</span>
             <input type="text" maxLength={120} className="note__input form__input" value={name} onChange={(e) => setName(e.target.value)} disabled={busy} />
@@ -520,6 +522,7 @@ export function SettingsScreen({
 
       {state.kind === 'ready' && (
         <>
+          <InstallGuideCard />
           <section className="card">
             <div className="setting-row">
               <span id="reminder-toggle-label" className="setting-row__label">
