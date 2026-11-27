@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react';
 import gameConfig from '../../config/game-config.json';
 import type { EventStore } from '../../data/event-store';
-import { XP_GOAL_RANGE, buildXpGoalEvent, otherMemberIds, readXpGoal } from '../../domain/progress';
-import { STRINGS, goalFromTomorrowLabel, goalTodayLabel } from '../strings';
-
-/** Quick picks shown under the number. */
-const QUICK_GOALS: readonly number[] = [20, 30, 50, 100];
+import { DAILY_COUNT_LIMITS, XP_GOAL_RANGE, buildXpGoalEvent, otherMemberIds, readXpGoal } from '../../domain/progress';
+import type { DailyGoal } from '../../domain/progress';
+import { STRINGS, goalChangeLabel } from '../strings';
 
 /** Props for {@link GoalCard}. */
 export interface GoalCardProps {
@@ -16,14 +14,24 @@ export interface GoalCardProps {
   readonly timeZone?: string;
 }
 
+/** One stepper row of the card. */
+interface RowDef {
+  readonly key: keyof DailyGoal;
+  readonly name: string;
+  readonly hint: string;
+  readonly min: number;
+  readonly max: number;
+  readonly step: number;
+}
+
 /**
- * Cài đặt "Mục tiêu hằng ngày" (story 056): pick the daily XP goal (range and step from
- * `xpGoalRange`) with − / + or a quick pick, then "Đặt mục tiêu". The new goal counts from
- * tomorrow; today's goal and a waiting change are shown. Each day still needs a lesson and a task.
+ * Cài đặt "Mục tiêu hằng ngày" (stories 056, 062): XP, lessons and tasks a day needs, each with
+ * − / +, saved together with "Lưu mục tiêu". A change counts from tomorrow; a changed row says
+ * "Hôm nay 1 → từ mai 2". 0 lessons or 0 tasks drops that part of the goal.
  */
 export function GoalCard({ eventStore, memberIds, now = () => new Date(), timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone }: GoalCardProps) {
-  const [goal, setGoal] = useState<{ readonly today: number; readonly next: { readonly xp: number; readonly from: string } | null } | null>(null);
-  const [draft, setDraft] = useState<number>(gameConfig.dailyXpGoal);
+  const [goal, setGoal] = useState<{ readonly today: DailyGoal; readonly next: { readonly goal: DailyGoal; readonly from: string } | null } | null>(null);
+  const [draft, setDraft] = useState<DailyGoal>({ xp: gameConfig.dailyXpGoal, lessons: 1, tasks: 1 });
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [reloadKey, setReloadKey] = useState(0);
 
@@ -35,7 +43,7 @@ export function GoalCard({ eventStore, memberIds, now = () => new Date(), timeZo
         if (cancelled) return;
         const g = readXpGoal(events, now(), { dailyXpGoal: gameConfig.dailyXpGoal }, timeZone, otherMemberIds(events, memberIds));
         setGoal(g);
-        setDraft(g.next?.xp ?? g.today);
+        setDraft(g.next?.goal ?? g.today);
       })
       .catch((error: unknown) => console.error('[goal] could not read the goal', error));
     return () => {
@@ -45,11 +53,16 @@ export function GoalCard({ eventStore, memberIds, now = () => new Date(), timeZo
   }, [eventStore, memberIds, reloadKey]);
 
   if (goal === null) return null;
-  const { min, max, step } = XP_GOAL_RANGE;
-  const current = goal.next?.xp ?? goal.today;
-  const set = (xp: number) => {
+  const rows: readonly RowDef[] = [
+    { key: 'xp', name: STRINGS.goalCardLabel, hint: STRINGS.goalXpHint, min: XP_GOAL_RANGE.min, max: XP_GOAL_RANGE.max, step: XP_GOAL_RANGE.step },
+    { key: 'lessons', name: STRINGS.goalLessonsName, hint: STRINGS.goalLessonsHint, min: 0, max: DAILY_COUNT_LIMITS.lessons, step: 1 },
+    { key: 'tasks', name: STRINGS.goalTasksName, hint: STRINGS.goalTasksHint, min: 0, max: DAILY_COUNT_LIMITS.tasks, step: 1 },
+  ];
+  const current = goal.next?.goal ?? goal.today;
+  const unchanged = draft.xp === current.xp && draft.lessons === current.lessons && draft.tasks === current.tasks;
+  const set = (key: keyof DailyGoal, value: number, row: RowDef) => {
     setStatus('idle');
-    setDraft(Math.min(max, Math.max(min, xp)));
+    setDraft({ ...draft, [key]: Math.min(row.max, Math.max(row.min, value)) });
   };
   const save = async () => {
     setStatus('saving');
@@ -64,44 +77,35 @@ export function GoalCard({ eventStore, memberIds, now = () => new Date(), timeZo
   };
 
   return (
-    <section className="card form goal-card" aria-label={STRINGS.goalCardLabel}>
-      <p className="card__body">{goalTodayLabel(goal.today)}</p>
-      {goal.next !== null && <p className="message goal-card__next">{goalFromTomorrowLabel(goal.next.xp)}</p>}
-      <div className="goal-card__stepper">
-        <button type="button" className="icon-button" aria-label={STRINGS.goalLess} onClick={() => set(draft - step)} disabled={draft <= min}>
-          −
-        </button>
-        <label className="goal-card__value">
-          <span className="visually-hidden">{STRINGS.goalCardLabel}</span>
-          <input
-            type="number"
-            inputMode="numeric"
-            className="note__input goal-card__input"
-            min={min}
-            max={max}
-            step={step}
-            value={draft}
-            onChange={(e) => {
-              setStatus('idle');
-              setDraft(Number(e.target.value));
-            }}
-            onBlur={() => set(min + Math.round((draft - min) / step) * step)}
-          />
-          <span className="goal-card__unit">XP</span>
-        </label>
-        <button type="button" className="icon-button" aria-label={STRINGS.goalMore} onClick={() => set(draft + step)} disabled={draft >= max}>
-          +
-        </button>
-      </div>
-      <div className="goal-card__quick">
-        {QUICK_GOALS.filter((x) => x >= min && x <= max).map((x) => (
-          <button key={x} type="button" className={x === draft ? 'chip chip--selected' : 'chip'} aria-pressed={x === draft} onClick={() => set(x)}>
-            {x}
-          </button>
-        ))}
-      </div>
+    <section className="card form goal-card" aria-label={STRINGS.settingsGroupGoal}>
+      <ul className="goal-card__rows">
+        {rows.map((row) => {
+          const value = draft[row.key];
+          const today = goal.today[row.key];
+          return (
+            <li key={row.key} className="goal-card__row">
+              <span className="goal-card__text">
+                <span className="goal-card__name">{row.name}</span>
+                <span className="goal-card__hint">{row.hint}</span>
+                {value !== today && <span className="goal-card__soon">{goalChangeLabel(today, value)}</span>}
+              </span>
+              <span className="goal-card__stepper">
+                <button type="button" className="goal-card__btn" aria-label={`${row.name} −${row.step}`} onClick={() => set(row.key, value - row.step, row)} disabled={value <= row.min}>
+                  −
+                </button>
+                <span className={value === 0 ? 'goal-card__value goal-card__value--zero' : 'goal-card__value'} aria-live="polite">
+                  {value}
+                </span>
+                <button type="button" className="goal-card__btn" aria-label={`${row.name} +${row.step}`} onClick={() => set(row.key, value + row.step, row)} disabled={value >= row.max}>
+                  +
+                </button>
+              </span>
+            </li>
+          );
+        })}
+      </ul>
       <p className="message">{STRINGS.goalRule}</p>
-      <button type="button" className="button button--primary" onClick={() => void save()} disabled={status === 'saving' || draft === current || draft < min || draft > max}>
+      <button type="button" className="button button--primary" onClick={() => void save()} disabled={status === 'saving' || unchanged}>
         {STRINGS.goalSave}
       </button>
       {status === 'saved' && (

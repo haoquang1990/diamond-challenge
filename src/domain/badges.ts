@@ -13,7 +13,7 @@ import type { LessonStage } from './lesson-stages';
 import { computePeopleStats, derivePeople } from './people';
 import type { PeopleConfig } from './people';
 import type { ProgressConfig } from './progress';
-import { xpGoalByDay } from './progress';
+import { dailyGoalByDay, meetsGoal } from './progress';
 
 /** One badge group (a section of the Huy hiệu screen). */
 export interface BadgeGroup {
@@ -142,6 +142,9 @@ interface DayInfo {
   xp: number;
   lesson: boolean;
   activity: boolean;
+  /** Story 062: how many lessons / tasks that day. */
+  lessonCount: number;
+  activityCount: number;
   tasks: Set<string>;
 }
 
@@ -162,7 +165,7 @@ export function computeBadgeMetrics(events: readonly LogEvent[], now: Date, time
   const dayOf = (d: number): DayInfo => {
     let info = days.get(d);
     if (info === undefined) {
-      info = { xp: 0, lesson: false, activity: false, tasks: new Set() };
+      info = { xp: 0, lesson: false, activity: false, lessonCount: 0, activityCount: 0, tasks: new Set() };
       days.set(d, info);
     }
     return info;
@@ -190,6 +193,7 @@ export function computeBadgeMetrics(events: readonly LogEvent[], now: Date, time
     if (at.hour >= 22) add('lateEvents');
     if (e.type === 'lesson_completed') {
       info.lesson = true;
+      info.lessonCount += 1;
       lessonDays.add(at.day);
       lessonEvents += 1;
       const total = typeof e.payload.lessonId === 'string' ? lessonQuestions.get(e.payload.lessonId) : undefined;
@@ -197,6 +201,7 @@ export function computeBadgeMetrics(events: readonly LogEvent[], now: Date, time
       continue;
     }
     info.activity = true;
+    info.activityCount += 1;
     const taskId = typeof e.payload.taskId === 'string' ? e.payload.taskId : typeof e.payload.activityType === 'string' ? e.payload.activityType : null;
     if (taskId === null) continue;
     info.tasks.add(taskId);
@@ -220,8 +225,8 @@ export function computeBadgeMetrics(events: readonly LogEvent[], now: Date, time
 
   // Days: goal, streaks, weeks, months, weekends, combos.
   // Story 056: a day is met against the goal I had picked for that day.
-  const goalFor = xpGoalByDay(events, deps.progress.dailyXpGoal, deps.others);
-  const metDay = (d: DayInfo | undefined, day: number) => d !== undefined && d.xp >= goalFor(day) && d.lesson && d.activity;
+  const goalFor = dailyGoalByDay(events, deps.progress.dailyXpGoal, deps.others);
+  const metDay = (d: DayInfo | undefined, day: number) => d !== undefined && meetsGoal(d.xp, d.lessonCount, d.activityCount, goalFor(day));
   const sorted = [...days.keys()].sort((a, b) => a - b);
   let best = 0;
   let run = 0;

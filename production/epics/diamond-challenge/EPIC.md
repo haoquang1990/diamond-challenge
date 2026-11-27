@@ -75,6 +75,7 @@ Theo Build order của brief: nhật ký sự kiện + XP/streak → Làm + Hôm
 | 059 | Liên kết thông tin giữa liên hệ và tài khoản F1 | UI | Complete | N/A |
 | 060 | Dòng NPP hiện mục tiêu hôm nay và chuỗi ngày; ô NPP F1 gọn hơn | UI | Complete | N/A |
 | 061 | Theo dõi tình hình vợ/chồng cùng mã số | UI | Complete | N/A |
+| 062 | Mục tiêu hằng ngày gồm XP, số bài học và số việc làm | Logic | Complete | N/A |
 
 > 012–014 thay mô hình giai đoạn bằng việc cần làm + nhãn KH/NPP theo phản hồi dùng thử (2026-11-04, `design/gdd/crm.md`). Thứ tự gợi ý: 012 → 013 → 014 → 011.
 

@@ -469,10 +469,15 @@ export const STRINGS = {
   settingsGroupCode: 'Mã số của tôi',
   settingsGroupGoal: 'Mục tiêu hằng ngày',
   goalCardLabel: 'XP mỗi ngày',
+  goalXpHint: 'Tổng điểm cần đạt',
+  goalLessonsName: 'Bài học',
+  goalLessonsHint: 'Số bài học xong trong ngày',
+  goalTasksName: 'Việc làm',
+  goalTasksHint: 'Liên hệ, demo, chăm sóc… bất kỳ',
   goalLess: 'Giảm 5 XP',
   goalMore: 'Tăng 5 XP',
-  goalRule: 'Mỗi ngày: đủ XP, học 1 bài và làm 1 việc. Đạt mục tiêu thì giữ được chuỗi ngày. Mức mới áp dụng từ ngày mai.',
-  goalSave: 'Đặt mục tiêu',
+  goalRule: 'Đặt 0 để bỏ mục tiêu bài học hoặc việc làm. Đạt khi đủ cả ba. Thay đổi áp dụng từ ngày mai.',
+  goalSave: 'Lưu mục tiêu',
   goalSaved: 'Đã đặt. Mục tiêu mới áp dụng từ ngày mai.',
   goalSaveError: 'Chưa lưu được mục tiêu. Thử lại nhé.',
   settingsGroupApp: 'Ứng dụng',
@@ -823,6 +828,25 @@ export function daysSinceLabel(days: number): string {
 /** Character counter under the note field, e.g. "12/500". */
 export function noteCounterLabel(length: number, max: number): string {
   return `${length}/${max}`;
+}
+
+/** "Bài học 1/2" (story 062). */
+export function goalCountLabel(name: string, done: number, needed: number): string {
+  return `${name} ${Math.min(done, needed)}/${needed}`;
+}
+
+/** "Hôm nay 1 → từ mai 2" (story 062). */
+export function goalChangeLabel(today: number, next: number): string {
+  return `Hôm nay ${today} → từ mai ${next}`;
+}
+
+/** "Từ mai: 40 XP · 2 bài học · 3 việc làm" (story 062): only the parts that change. */
+export function goalTomorrowLabel(today: { xp: number; lessons: number; tasks: number }, next: { xp: number; lessons: number; tasks: number }): string {
+  const parts: string[] = [];
+  if (next.xp !== today.xp) parts.push(`${next.xp} XP`);
+  if (next.lessons !== today.lessons) parts.push(`${next.lessons} bài học`);
+  if (next.tasks !== today.tasks) parts.push(`${next.tasks} việc làm`);
+  return `Từ mai: ${parts.join(' · ')}`;
 }
 
 /** "Hôm nay: 30 XP" (story 056). */

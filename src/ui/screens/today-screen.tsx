@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import gameConfig from '../../config/game-config.json';
 import type { EventStore } from '../../data/event-store';
-import { computeProgress, otherMemberIds } from '../../domain/progress';
+import { computeProgress, otherMemberIds, readXpGoal } from '../../domain/progress';
 import type { Progress, ProgressConfig } from '../../domain/progress';
 import type { StageDef } from '../../domain/stages';
 import { nextReminderAt, parseReminderConfig, readReminderSettings, reminderMissing, shouldShowReminder } from '../../domain/reminders';
@@ -23,6 +23,8 @@ import {
   streakLabel,
   xpProgressLabel,
   xpRemainingLabel,
+  goalCountLabel,
+  goalTomorrowLabel,
 } from '../strings';
 
 /** Props for {@link TodayScreen}. */
@@ -73,7 +75,7 @@ export interface TodayScreenProps {
 type ScreenState =
   | { readonly kind: 'loading' }
   | { readonly kind: 'error' }
-  | { readonly kind: 'ready'; readonly progress: Progress; readonly isNewUser: boolean; readonly stageName: string | null; readonly reminder: ReminderSettings; readonly reminderDue: boolean; readonly next: NextLessonSuggestion };
+  | { readonly kind: 'ready'; readonly progress: Progress; readonly isNewUser: boolean; readonly stageName: string | null; readonly reminder: ReminderSettings; readonly reminderDue: boolean; readonly next: NextLessonSuggestion; readonly goalChange: string | null };
 
 const NO_MEMBERS: ReadonlySet<string> = new Set();
 const DEFAULT_CONFIG: ProgressConfig = { dailyXpGoal: gameConfig.dailyXpGoal };
@@ -140,6 +142,11 @@ export function TodayScreen({
           reminder,
           reminderDue: shouldShowReminder(reminder, now(), timeZone, progress.dailyGoal.met),
           next: nextLessonSuggestion(lessons, lessonStages, events),
+          goalChange: (() => {
+            // Story 062: a goal picked for tomorrow is shown under today's.
+            const g = readXpGoal(events, now(), config, timeZone, others);
+            return g.next === null ? null : goalTomorrowLabel(g.today, g.next.goal);
+          })(),
         });
       })
       .catch((error: unknown) => {
@@ -249,7 +256,7 @@ export function TodayScreen({
         </section>
       )}
 
-      {state.kind === 'ready' && (goalMet ? <GoalMetCard streak={streak} /> : <GoalProgressCard progress={state.progress} />)}
+      {state.kind === 'ready' && (goalMet ? <GoalMetCard streak={streak} /> : <GoalProgressCard progress={state.progress} goalChange={state.goalChange} />)}
 
       {cheerGroup}
 
@@ -302,8 +309,8 @@ function NextLessonCard({
 }
 
 /** In-progress view: XP bar plus a checklist of what is still missing today. */
-function GoalProgressCard({ progress }: { readonly progress: Progress }) {
-  const { xp, threshold, hasLesson, hasActivity } = progress.dailyGoal;
+function GoalProgressCard({ progress, goalChange }: { readonly progress: Progress; readonly goalChange: string | null }) {
+  const { xp, threshold, lessons, lessonsNeeded, tasks, tasksNeeded } = progress.dailyGoal;
   const xpRemaining = Math.max(0, threshold - xp);
   const ratio = threshold > 0 ? Math.min(1, xp / threshold) : 1;
   return (
@@ -326,10 +333,12 @@ function GoalProgressCard({ progress }: { readonly progress: Progress }) {
       <p className="checklist__heading">{STRINGS.stillNeeded}</p>
       <ul className="checklist">
         <ChecklistItem done={xpRemaining === 0} label={xpRemaining === 0 ? xpProgressLabel(xp, threshold) : xpRemainingLabel(xpRemaining)} />
-        <ChecklistItem done={hasLesson} label={hasLesson ? STRINGS.lessonDone : STRINGS.lessonMissing} />
-        <ChecklistItem done={hasActivity} label={hasActivity ? STRINGS.activityDone : STRINGS.activityMissing} />
+        {/* Story 062: counts, and a part with 0 needed is not shown. */}
+        {lessonsNeeded > 0 && <ChecklistItem done={lessons >= lessonsNeeded} label={goalCountLabel(STRINGS.goalLessonsName, lessons, lessonsNeeded)} />}
+        {tasksNeeded > 0 && <ChecklistItem done={tasks >= tasksNeeded} label={goalCountLabel(STRINGS.goalTasksName, tasks, tasksNeeded)} />}
       </ul>
       {progress.streak > 0 && <p className="message">{keepStreakLabel(progress.streak)}</p>}
+      {goalChange !== null && <p className="goal-card__soon">{goalChange}</p>}
     </section>
   );
 }

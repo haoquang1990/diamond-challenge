@@ -1,0 +1,8 @@
+Reviewed-Content-Hash: src/domain/progress.ts e6afe5a0d575647caf837b2ff10f08b85cf8345d
+Reviewed-Content-Hash: src/domain/badges.ts 31cae078a2c22fc9b0cfd815997be0805f483118
+Reviewed-Content-Hash: src/domain/reminders.ts e768c474f5ecbc8747701cc1284b1a19e569bb9c
+Reviewed-Content-Hash: src/ui/screens/goal-card.tsx f6db9d617479e7bd124c52824c22ba486570fe19
+Reviewed-Content-Hash: src/ui/screens/today-screen.tsx 8a2dfdcd19c2e208a9f84d0aca14e22958a0d631
+Reviewed-Content-Hash: src/ui/strings.ts 898fb41ecee5ad19d248854ab00ba7cfd726a956
+Reviewed-Content-Hash: src/ui/styles.css 774f3f287b970a265a839eaa2b6bd692fdec6373
+Reviewed-Content-Hash: src/config/game-config.json b874e7187db20be765c2757821a6d3b2d29129d2

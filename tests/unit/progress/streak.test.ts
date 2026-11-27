@@ -126,6 +126,6 @@ describe('computeProgress', () => {
     expect(p.streak).toBe(0);
     expect(p.totalXp).toBe(0);
     expect(p.xpToday).toBe(0);
-    expect(p.dailyGoal).toEqual({ met: false, xp: 0, threshold: 30, hasLesson: false, hasActivity: false });
+    expect(p.dailyGoal).toEqual({ met: false, xp: 0, threshold: 30, hasLesson: false, hasActivity: false, lessons: 0, lessonsNeeded: 1, tasks: 0, tasksNeeded: 1 });
   });
 });

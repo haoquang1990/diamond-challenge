@@ -1229,3 +1229,17 @@ body.dialog-open { overflow: hidden; }
 .household-card__summary strong { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .household-card__summary span { color: var(--color-muted); font-weight: 700; font-size: 0.9rem; }
 .member-numbers { margin-top: 10px; display: flex; flex-direction: column; gap: 10px; }
+/* Story 062: XP, lessons and tasks of the daily goal. */
+.goal-card__rows { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.goal-card__row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 2px solid var(--color-border); }
+.goal-card__row:first-child { border-top: 0; padding-top: 0; }
+.goal-card__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.goal-card__name { font-weight: 800; }
+.goal-card__hint { color: var(--color-muted); font-size: 0.85rem; font-weight: 600; }
+.goal-card__soon { color: var(--color-diamond-dark); font-size: 0.82rem; font-weight: 800; }
+.goal-card__stepper { flex: none; display: flex; align-items: center; gap: 6px; }
+.goal-card__btn { width: 40px; height: 40px; border: 2px solid var(--color-border); border-bottom-width: 4px; border-radius: 10px; background: var(--color-surface); color: var(--color-diamond-dark); font: inherit; font-size: 1.15rem; font-weight: 900; cursor: pointer; }
+.goal-card__btn:disabled { color: #c8c8c8; cursor: default; }
+.goal-card__btn:focus-visible { outline: 3px solid var(--color-diamond-dark); outline-offset: 2px; }
+.goal-card__value { min-width: 40px; text-align: center; font-size: 1.15rem; font-weight: 800; }
+.goal-card__value--zero { color: #b5b5b5; }
