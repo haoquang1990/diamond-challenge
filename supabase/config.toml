@@ -13,3 +13,9 @@ verify_jwt = false
 
 [functions.add-household-member]
 verify_jwt = false
+
+[functions.notify-cheer]
+verify_jwt = false
+
+[functions.push-public-key]
+verify_jwt = false

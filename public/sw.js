@@ -13,6 +13,8 @@
  *
  * - notificationclick (story 007): close the reminder and focus an open app
  *   window (and ask it to show Hôm nay), or open './' (Hôm nay is the default screen).
+ * - push (story 057): show the notification the server sent ({ title, body, tag }),
+ *   e.g. "💎 Chị Hoa cổ vũ bạn"; a tap opens Hôm nay like a reminder.
  *
  * All URLs are relative to this file, so it works under a GitHub Pages
  * subpath. Hand-written on purpose: no build plugin, no dependencies.
@@ -97,4 +99,18 @@ self.addEventListener('notificationclick', (event) => {
       await self.clients.openWindow(new URL('./', scope).href);
     })(),
   );
+});
+
+/** Server push (story 057): { title, body, tag }; a bad payload still shows a generic line. */
+self.addEventListener('push', (event) => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch {
+    data = {};
+  }
+  const title = typeof data.title === 'string' ? data.title : 'Diamond Challenge';
+  const body = typeof data.body === 'string' ? data.body : '';
+  const tag = typeof data.tag === 'string' ? data.tag : 'push';
+  event.waitUntil(self.registration.showNotification(title, { body, tag, icon: './icon.svg', badge: './icon.svg' }));
 });

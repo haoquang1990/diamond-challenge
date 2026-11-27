@@ -70,6 +70,7 @@ Theo Build order của brief: nhật ký sự kiện + XP/streak → Làm + Hôm
 | 054 | Một cách ghi số điện thoại (+84, không có số 0) và quy tắc số di động Việt Nam | Integration | Complete | N/A |
 | 055 | Sắp xếp lại Cài đặt, gọi "hộ" là "mã số" (mã số kép) | UI | Complete | N/A |
 | 056 | Mỗi người tự chọn mục tiêu XP hằng ngày | Integration | Complete | N/A |
+| 057 | Thông báo đẩy khi được cổ vũ | Integration | In Progress | N/A |
 
 > 012–014 thay mô hình giai đoạn bằng việc cần làm + nhãn KH/NPP theo phản hồi dùng thử (2026-11-04, `design/gdd/crm.md`). Thứ tự gợi ý: 012 → 013 → 014 → 011.
 

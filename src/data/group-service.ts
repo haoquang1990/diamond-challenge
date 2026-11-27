@@ -286,6 +286,19 @@ export type CheerResult =
   | { readonly ok: false; readonly error: 'already' | 'not_allowed' | 'no_message' | 'network' };
 
 /**
+ * Asks the server to push the cheer just sent to its receivers (story 057). Best effort: a
+ * failure (no keys configured yet, offline) is logged and never shown.
+ */
+export async function notifyCheer(client: Pick<SupabaseClient, 'functions'>, target: { readonly toHouseholdId: string; readonly toUserId?: string }): Promise<void> {
+  try {
+    const { error } = await client.functions.invoke('notify-cheer', { body: target });
+    if (error) console.warn('[cheer] push not sent', error.message);
+  } catch (error) {
+    console.warn('[cheer] push not sent', error);
+  }
+}
+
+/**
  * Sends one cheer with a random line from `messages`. The server decides: a second cheer the
  * same UTC day fails with Postgres 23505 (`already`), a non-sponsor with 42501 (`not_allowed`).
  * No event and no XP are created.

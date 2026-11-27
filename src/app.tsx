@@ -36,6 +36,7 @@ import { ConsentScreen } from './ui/screens/consent-screen';
 import { BadgesScreen } from './ui/screens/badges-screen';
 import { LessonScreen } from './ui/screens/lesson-screen';
 import { GoalCard } from './ui/screens/goal-card';
+import { PushCard } from './ui/screens/push-card';
 import { HouseholdCard, HouseholdScreen } from './ui/screens/household-screen';
 import { GroupCheerCard } from './ui/screens/group-cheer-card';
 import type { Person } from './domain/people';
@@ -685,6 +686,7 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
                 },
                 onEraseDevice,
                 goalSlot: <GoalCard eventStore={eventStore} memberIds={memberIds} />,
+                ...(account !== null ? { pushSlot: <PushCard clientPromise={clientPromise} /> } : {}),
                 ...(account !== null ? { householdSlot: <HouseholdCard clientPromise={clientPromise} accountId={account.accountId} onAddMember={() => setTab('household')} /> } : {}),
               })}
         />

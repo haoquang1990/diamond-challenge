@@ -1,7 +1,7 @@
 import { Fragment, useCallback, useEffect, useState } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import gameConfig from '../../config/game-config.json';
-import { CHEER_MAX_LENGTH, cleanCheerMessage, loadGroup, parseGroupConfig, readGroupCache, sendCheer, writeGroupCache } from '../../data/group-service';
+import { CHEER_MAX_LENGTH, cleanCheerMessage, loadGroup, notifyCheer, parseGroupConfig, readGroupCache, sendCheer, writeGroupCache } from '../../data/group-service';
 import type { GroupData } from '../../data/group-service';
 import type { EventStore } from '../../data/event-store';
 import { derivePeople, formatE164 } from '../../domain/people';
@@ -148,6 +148,7 @@ export function GroupCheerCard({ clientPromise, accountId, eventStore, now = rea
         messages: GROUP_CONFIG.cheerMessages,
       });
       setNotice(result.ok ? { text: STRINGS.groupCheerSent, error: false } : { text: STRINGS.groupCheerErrors[result.error], error: true });
+      if (result.ok) void notifyCheer(await clientPromise, { toHouseholdId: target.toHouseholdId, ...(target.toUserId === undefined ? {} : { toUserId: target.toUserId }) });
       if (result.ok || result.error === 'already') {
         setPicking(null);
         reload();

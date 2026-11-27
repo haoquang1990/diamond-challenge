@@ -42,5 +42,24 @@ jobs:
         run: supabase link --project-ref "$SUPABASE_PROJECT_ID" --yes
       - name: Apply migrations
         run: supabase db push --remote --password "$SUPABASE_DB_PASSWORD" --include-all --yes
+      - name: Ensure push keys (story 057)
+        # Web push needs a VAPID key pair. Created once, straight into the function secrets, when
+        # none is set; never printed, never in the repository. An existing pair is kept, so
+        # browsers that already turned notifications on keep receiving them.
+        run: |
+          names="$(supabase secrets list --project-ref "$SUPABASE_PROJECT_ID")"
+          if printf '%s\n' "$names" | grep -q 'VAPID_PRIVATE_KEY'; then
+            echo "Push keys already set."
+          else
+            keys="$(npx --yes web-push@3.6.7 generate-vapid-keys --json)"
+            pub="$(printf '%s' "$keys" | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>process.stdout.write(JSON.parse(s).publicKey))")"
+            priv="$(printf '%s' "$keys" | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>process.stdout.write(JSON.parse(s).privateKey))")"
+            echo "::add-mask::$priv"
+            env_file="$(mktemp)"
+            printf 'VAPID_PUBLIC_KEY=%s\nVAPID_PRIVATE_KEY=%s\n' "$pub" "$priv" > "$env_file"
+            supabase secrets set --env-file "$env_file" --project-ref "$SUPABASE_PROJECT_ID"
+            rm -f "$env_file"
+            echo "Push keys created."
+          fi
       - name: Deploy Edge Functions
-        run: supabase functions deploy create-f1-account add-household-member reset-password --use-api --yes
+        run: supabase functions deploy create-f1-account add-household-member reset-password notify-cheer push-public-key --use-api --yes
