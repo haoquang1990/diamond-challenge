@@ -120,21 +120,23 @@
         {
           "prompt": "Tài sản quan trọng nhất của mỗi người là gì?",
           "options": [
+            "Mối quan hệ quen biết",
             "Thời gian",
             "Tiền tiết kiệm",
             "Bằng cấp"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Mọi thứ đều được đổi bằng thời gian, nên cách mình dùng thời gian quyết định kết quả."
         },
         {
           "prompt": "Câu hỏi \"5 năm tới nếu vẫn làm như hiện nay thì mình sẽ có gì?\" dùng để làm gì?",
           "options": [
             "Để chê công việc đang làm",
+            "Để quyết định nghỉ việc ngay",
             "Để tự nhìn lại lựa chọn của mình",
             "Để so mình với người khác"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Đây là câu hỏi để tự suy nghĩ, không phải để phán xét công việc hiện tại."
         },
         {
@@ -142,9 +144,10 @@
           "options": [
             "Vì người khác bảo nên làm",
             "Vì sợ bỏ lỡ cơ hội",
+            "Vì thấy người khác kiếm được nhiều tiền",
             "Điều mình thật sự mong muốn cho bản thân và gia đình"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Lý do của chính mình mới giữ được động lực lâu dài."
         },
         {
@@ -152,7 +155,8 @@
           "options": [
             "Để nhớ lại và giữ động lực khi gặp khó khăn",
             "Để khoe với mọi người",
-            "Viết ra cũng không có tác dụng gì"
+            "Viết ra cũng không có tác dụng gì",
+            "Để nộp cho tuyến trên chấm điểm"
           ],
           "correctIndex": 0,
           "explanation": "Lý do được viết ra giúp mình quay về mục đích ban đầu khi nản lòng."
@@ -160,11 +164,12 @@
         {
           "prompt": "Nên bắt đầu vào lúc nào?",
           "options": [
+            "Đợi học xong hết tài liệu mới làm",
             "Đợi khi rảnh hẳn mới bắt đầu",
             "Từ hôm nay, với những gì mình đang có",
             "Đợi có thật nhiều tiền rồi mới làm"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Những gì có hôm nay là kết quả của việc đã làm trước đây; muốn tương lai khác thì phải bắt đầu từ bây giờ."
         }
       ]
@@ -180,10 +185,11 @@
           "prompt": "Người làm chủ khác người làm thuê ở điểm nào?",
           "options": [
             "Không cần học thêm gì",
+            "Được nghỉ bất cứ khi nào muốn mà vẫn có kết quả",
             "Chỉ giao việc cho người khác",
             "Tự cam kết, tự tạo việc và tự chịu trách nhiệm kết quả"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Làm chủ nghĩa là kết quả do mình quyết định, không chờ ai giao việc."
         },
         {
@@ -191,6 +197,7 @@
           "options": [
             "Huấn luyện viên, người cố vấn",
             "Sếp giao việc hằng ngày",
+            "Người làm thay phần việc khó cho bạn",
             "Người quyết định thu nhập của bạn"
           ],
           "correctIndex": 0,
@@ -201,7 +208,8 @@
           "options": [
             "Chờ tuyến trên nhắc",
             "Xem kế hoạch của mình và làm việc đã đặt ra",
-            "Nghỉ một hôm"
+            "Nghỉ một hôm",
+            "Lướt mạng xem người khác làm gì"
           ],
           "correctIndex": 1,
           "explanation": "Người làm chủ tự tạo việc cho mình mỗi ngày."
@@ -209,17 +217,19 @@
         {
           "prompt": "Muốn đạt mốc thành tích nào là do ai quyết định?",
           "options": [
+            "Công ty",
             "Tuyến trên",
             "May mắn",
             "Chính bạn"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Bạn đặt mục tiêu và hành động; tuyến trên chỉ hỗ trợ."
         },
         {
           "prompt": "Thói quen nào từ công việc làm thuê cần thay đổi?",
           "options": [
             "Ngồi chờ được giao việc",
+            "Ghi chép kế hoạch mỗi ngày",
             "Đi làm đúng giờ",
             "Học hỏi người giỏi hơn"
           ],
@@ -240,6 +250,7 @@
           "options": [
             "1.024",
             "20",
+            "512",
             "100"
           ],
           "correctIndex": 0,
@@ -250,7 +261,8 @@
           "options": [
             "Tuyển thật nhiều người cùng một lúc",
             "Mỗi người giúp thêm một người làm được như mình",
-            "Một người làm thật nhiều việc"
+            "Một người làm thật nhiều việc",
+            "Mỗi người tự làm một mình cho nhanh"
           ],
           "correctIndex": 1,
           "explanation": "Phát triển đến từ việc sao chép từng người một, không phải từ một người làm hết."
@@ -258,17 +270,19 @@
         {
           "prompt": "Vì sao cách làm cần đơn giản?",
           "options": [
+            "Để không ai phải hỏi tuyến trên",
             "Để làm nhanh rồi nghỉ",
             "Để không cần học",
             "Để nhiều người cùng lặp lại được"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Cách làm đơn giản thì người mới mới làm theo được."
         },
         {
           "prompt": "\"Sao chép\" trong đội nhóm nghĩa là gì?",
           "options": [
             "Người mới làm được đúng cách mình đã làm",
+            "Làm y hệt người khác mà không cần hiểu",
             "Chép lại tài liệu",
             "Bắt chước giọng nói của tuyến trên"
           ],
@@ -280,6 +294,7 @@
           "options": [
             "Có, chỉ cần tuyển thật nhiều",
             "Không, cần thời gian và kiên trì",
+            "Có, nếu chọn đúng người giỏi",
             "Không bao giờ thành hiện thực"
           ],
           "correctIndex": 1,
@@ -299,7 +314,8 @@
           "options": [
             "Có nhân viên làm thay",
             "Tự quyết định thời gian, mục tiêu và cách làm",
-            "Không phải làm gì"
+            "Không phải làm gì",
+            "Được chọn làm việc gì cũng được mà không cần kế hoạch"
           ],
           "correctIndex": 1,
           "explanation": "Bạn là chủ công việc của mình."
@@ -307,17 +323,19 @@
         {
           "prompt": "Giá trị \"làm lớn\" nghĩa là gì?",
           "options": [
+            "Bán thật nhiều cho một khách hàng",
             "Mở một cửa hàng thật to",
             "Làm thêm thật nhiều giờ",
             "Có thể mở rộng nhờ hợp tác với nhiều người"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Hợp tác giúp quy mô lớn hơn sức một người."
         },
         {
           "prompt": "\"Công bằng\" ở đây nghĩa là gì?",
           "options": [
             "Ai nỗ lực và đạt kết quả hơn được ghi nhận xứng đáng, kể cả hơn người đến trước",
+            "Người lớn tuổi hơn được nhiều hơn",
             "Ai đến trước luôn được nhiều hơn",
             "Mọi người nhận như nhau"
           ],
@@ -329,6 +347,7 @@
           "options": [
             "Chắc chắn có thu nhập mà không cần làm",
             "Sự nghiệp xây dựng được có thể trở thành tài sản để lại cho gia đình",
+            "Không bao giờ phải chịu rủi ro nào",
             "Được công ty trả lương cố định"
           ],
           "correctIndex": 1,
@@ -339,7 +358,8 @@
           "options": [
             "Có, phải có bằng đại học",
             "Có, phải từng bán hàng",
-            "Không, quan trọng là học và làm"
+            "Không, quan trọng là học và làm",
+            "Có, phải có vốn lớn"
           ],
           "correctIndex": 2,
           "explanation": "Ai cũng có thể bắt đầu nếu chịu học và hành động."
@@ -356,17 +376,19 @@
         {
           "prompt": "Bước đầu tiên của \"Thay – Dùng – Biết – Nói\" là gì?",
           "options": [
+            "Dùng: mượn sản phẩm của người khác",
             "Nói: kể ngay cho bạn bè",
             "Biết: đọc hết tài liệu",
             "Thay: đổi sang dùng sản phẩm"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Phải đổi sang dùng thì mới có trải nghiệm."
         },
         {
           "prompt": "Vì sao nên tự dùng trước khi giới thiệu?",
           "options": [
             "Có trải nghiệm thật nên chia sẻ tự tin, chân thật",
+            "Vì công ty bắt buộc",
             "Để được giảm giá",
             "Không cần dùng vẫn giới thiệu được"
           ],
@@ -378,6 +400,7 @@
           "options": [
             "Biết giá của hãng khác",
             "Hiểu sản phẩm: thành phần, cách dùng",
+            "Biết cách chụp ảnh sản phẩm đẹp",
             "Biết thật nhiều người"
           ],
           "correctIndex": 1,
@@ -388,7 +411,8 @@
           "options": [
             "Kể như mình đã dùng",
             "Lảng sang chuyện khác",
-            "Nói thật là mình chưa dùng và rủ họ cùng thử"
+            "Nói thật là mình chưa dùng và rủ họ cùng thử",
+            "Đọc nhận xét trên mạng rồi kể lại"
           ],
           "correctIndex": 2,
           "explanation": "Trung thực giữ được lòng tin."
@@ -396,11 +420,12 @@
         {
           "prompt": "Nguyên lý này áp dụng cho những sản phẩm nào?",
           "options": [
+            "Chỉ sản phẩm đắt tiền",
             "Mọi dòng sản phẩm",
             "Chỉ mỹ phẩm",
             "Chỉ thực phẩm bổ sung"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Với sản phẩm nào cũng vậy: dùng rồi mới biết, biết rồi mới nói."
         }
       ]
@@ -416,6 +441,7 @@
           "prompt": "Người mới cần học hai nhóm nội dung nào?",
           "options": [
             "Sản phẩm và kinh doanh",
+            "Chỉ cách nói chuyện cho hay",
             "Chỉ sản phẩm",
             "Chỉ cách mời người"
           ],
@@ -427,6 +453,7 @@
           "options": [
             "Gia dụng",
             "Bảo hiểm",
+            "Chăm sóc sức khoẻ",
             "Làm đẹp"
           ],
           "correctIndex": 1,
@@ -437,7 +464,8 @@
           "options": [
             "Sản phẩm, sức khoẻ, sắc đẹp",
             "Sáng, trưa, chiều",
-            "Bán hàng, chăm sóc khách hàng, bảo trợ"
+            "Bán hàng, chăm sóc khách hàng, bảo trợ",
+            "Sẵn sàng, siêng năng, say mê"
           ],
           "correctIndex": 2,
           "explanation": "3S là ba việc cốt lõi của người kinh doanh."
@@ -445,21 +473,23 @@
         {
           "prompt": "Kỹ năng nào thuộc phần kinh doanh cần học?",
           "options": [
+            "Thiết kế trang web",
             "Xử lý từ chối",
             "Sửa chữa máy móc",
             "Kế toán thuế"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Phần kinh doanh gồm OPP, tư tưởng và mục tiêu, 3S, xử lý từ chối và 8 chìa khoá."
         },
         {
           "prompt": "Vì sao nên học demo sản phẩm từ sớm?",
           "options": [
             "Để bán được giá cao hơn",
+            "Để khỏi phải học sản phẩm",
             "Để tự tin giới thiệu bằng trải nghiệm thật",
             "Không cần học demo"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Demo giúp khách tự thấy, và giúp bạn nói có căn cứ."
         }
       ]
@@ -476,6 +506,7 @@
           "options": [
             "Lập danh sách 200 tên",
             "Tìm lý do và động lực của mình",
+            "Mua thật nhiều sản phẩm",
             "Đặt hẹn ngay"
           ],
           "correctIndex": 1,
@@ -499,7 +530,8 @@
           "options": [
             "Chỉ vào tuyến trên",
             "Chỉ vào thu nhập",
-            "Công ty và sản phẩm, mô hình kinh doanh, chính bản thân"
+            "Công ty và sản phẩm, mô hình kinh doanh, chính bản thân",
+            "Chỉ vào may mắn"
           ],
           "correctIndex": 2,
           "explanation": "Ba niềm tin này giúp bạn nói chuyện tự tin."
@@ -507,21 +539,23 @@
         {
           "prompt": "Khi lập danh sách lần đầu, nên viết bao nhiêu tên?",
           "options": [
+            "Đúng 50 tên",
             "Khoảng 200 tên, rồi cập nhật thường xuyên",
             "10 người thân nhất",
             "Chưa cần viết"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Danh sách người quen là tài sản quý nhất, càng đầy đủ càng tốt."
         },
         {
           "prompt": "Mục tiêu hành động của tháng đầu gồm gì?",
           "options": [
             "Tuyển ngay 50 người",
+            "Chỉ học sản phẩm, chưa cần hẹn ai",
             "Học 4 kỹ năng cơ bản và hẹn 10 người",
             "Chỉ đọc tài liệu"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Tháng đầu tập trung vào học và những cuộc hẹn đầu tiên."
         },
         {
@@ -529,9 +563,10 @@
           "options": [
             "Đợi tới tuần sau",
             "Bỏ hẳn việc hẹn",
+            "Nhắn tin hỏi lại mỗi ngày đến khi họ rảnh",
             "Gọi người tiếp theo, không chờ"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Đặt hẹn theo danh sách, không chờ một người nào."
         }
       ]
@@ -559,7 +594,8 @@
           "options": [
             "Mới bắt đầu, cần tự làm được việc",
             "Khi đã có đội nhóm lớn",
-            "Khi đã đạt danh hiệu cao"
+            "Khi đã đạt danh hiệu cao",
+            "Khi chỉ muốn đọc cho biết"
           ],
           "correctIndex": 0,
           "explanation": "Giai đoạn đầu học để tự mình làm được."
@@ -567,21 +603,23 @@
         {
           "prompt": "\"Học để dạy\" nghĩa là gì?",
           "options": [
+            "Học để giảng lý thuyết thật dài",
             "Học để thi lấy chứng chỉ",
             "Hiểu đủ để hướng dẫn người mới làm được",
             "Học để nói thật hay"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Khi có người mới, bạn cần hiểu đủ để chỉ lại cho họ."
         },
         {
           "prompt": "\"Học để dạy người khác dạy\" nghĩa là gì?",
           "options": [
             "Thuê người dạy thay",
+            "Dạy một lần cho thật nhiều người nghe",
             "Chỉ dạy một người",
             "Giúp người mình hướng dẫn tự hướng dẫn được người của họ"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Đây là bước để đội nhóm tự nhân rộng."
         },
         {
@@ -589,6 +627,7 @@
           "options": [
             "Cách mình làm việc là tấm gương cho cả đội nhóm",
             "Chỉ nói, không cần làm",
+            "Làm thật nhiều việc một mình",
             "Làm thay mọi người"
           ],
           "correctIndex": 0,
@@ -608,7 +647,8 @@
           "options": [
             "Hỏi tuyến trên và làm theo cách của hệ thống trước",
             "Tự làm theo cách mới",
-            "Bỏ qua hướng dẫn"
+            "Bỏ qua hướng dẫn",
+            "Làm cả hai cách cùng lúc cho chắc"
           ],
           "correctIndex": 0,
           "explanation": "Khi chưa nắm khung, tự sáng tạo dễ làm lệch hướng."
@@ -616,21 +656,23 @@
         {
           "prompt": "Bạn từng làm ở một mô hình khác và muốn dùng lại cách cũ. Nên làm gì?",
           "options": [
+            "Dạy cách cũ cho cả đội nhóm",
             "Áp dụng nguyên cách cũ",
             "Học cách làm của đội nhóm hiện tại trước",
             "Kết hợp tuỳ ý"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Mỗi đội nhóm có quy trình riêng; học đúng khung trước rồi mới so sánh."
         },
         {
           "prompt": "Bạn làm khác lời hướng dẫn và mãi chưa có kết quả. Nên làm gì?",
           "options": [
             "Đổi sang người hướng dẫn khác",
+            "Tiếp tục cách của mình thêm vài tháng",
             "Bỏ cuộc",
             "Quay lại đội nhóm, học và làm theo trọn vẹn"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Quay lại đội nhóm là cách nhanh nhất để đi đúng đường."
         },
         {
@@ -638,6 +680,7 @@
           "options": [
             "Cách làm đã được người đi trước thử và đúc kết, giúp tiết kiệm thời gian",
             "Vì không được phép thay đổi gì",
+            "Vì làm theo người khác thì không cần cố gắng",
             "Vì bánh xe đã cũ"
           ],
           "correctIndex": 0,
@@ -648,7 +691,8 @@
           "options": [
             "Mất đi cá tính riêng",
             "Sức mạnh khi mọi người cùng làm một cách",
-            "Không mang lại gì"
+            "Không mang lại gì",
+            "Mọi người phải làm giống hệt nhau từng câu chữ"
           ],
           "correctIndex": 1,
           "explanation": "Khi cả đội làm cùng một cách, việc hỗ trợ và sao chép dễ hơn."
@@ -656,11 +700,12 @@
         {
           "prompt": "Khi nào thì có thể sáng tạo cách làm riêng?",
           "options": [
+            "Khi tuyến trên không để ý",
             "Ngay từ ngày đầu",
             "Không bao giờ được",
             "Khi đã nắm vững khung, có kết quả và kinh nghiệm dẫn dắt"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Sáng tạo dựa trên nền vững thì mới hiệu quả."
         }
       ]
@@ -676,10 +721,11 @@
           "prompt": "8 chìa khoá được chia thành 4 phần nào?",
           "options": [
             "Sản phẩm – Giá – Khuyến mãi – Kênh bán",
+            "Mời – Gặp – Bán – Thu tiền",
             "Kế hoạch – Định vị – Tổ chức – Thành tích",
             "Học – Làm – Dạy – Nghỉ"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Bốn phần này đi theo vòng: lên kế hoạch, định vị người mới, tổ chức đội nhóm, rồi đạt thành tích."
         },
         {
@@ -687,9 +733,10 @@
           "options": [
             "Tổ chức",
             "Thành tích",
+            "Định vị",
             "Kế hoạch"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Hai chìa đầu là kế hoạch làm việc mỗi ngày."
         },
         {
@@ -697,7 +744,8 @@
           "options": [
             "Định vị",
             "Kế hoạch",
-            "Thành tích"
+            "Thành tích",
+            "Tổ chức"
           ],
           "correctIndex": 0,
           "explanation": "Bài 1 và Bài 2 giúp người mới định vị mình muốn tiêu dùng, làm thêm hay làm sự nghiệp."
@@ -705,21 +753,23 @@
         {
           "prompt": "3 × 3 × 3 và kết cấu 4 × 4 (chìa 5, chìa 6) thuộc phần nào?",
           "options": [
+            "Thành tích",
             "Định vị",
             "Tổ chức",
             "Kế hoạch"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Hai chìa này nói về cách tổ chức và hỗ trợ đội nhóm."
         },
         {
           "prompt": "Câu \"Đằng sau sự đơn giản có sự phức tạp cao độ\" nhắc điều gì?",
           "options": [
             "Công việc quá phức tạp nên khó làm",
+            "Chỉ người giỏi mới làm được",
             "Không cần học vẫn làm được",
             "Việc đơn giản cần được lặp lại đều và đúng cách"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Các chìa khoá trông đơn giản, nhưng hiệu quả đến từ việc làm đều đặn và đúng."
         }
       ]
@@ -736,6 +786,7 @@
           "options": [
             "10 cuộc gọi mỗi ngày",
             "10 người mới mỗi tuần",
+            "10 tin nhắn mỗi tuần",
             "10 giờ làm mỗi ngày"
           ],
           "correctIndex": 0,
@@ -746,7 +797,8 @@
           "options": [
             "3 cuộc gọi mỗi tuần",
             "3 cuộc gặp mỗi ngày",
-            "3 sản phẩm mỗi lần"
+            "3 sản phẩm mỗi lần",
+            "3 giờ học mỗi ngày"
           ],
           "correctIndex": 1,
           "explanation": "Cuộc gọi để hẹn, cuộc gặp mới là nơi trao đổi thật."
@@ -754,17 +806,19 @@
         {
           "prompt": "Số 1 là gì?",
           "options": [
+            "Mỗi ngày 1 cuộc gọi",
             "Mỗi ngày 1 khách mua hàng",
             "Mỗi tháng 1 buổi học",
             "Mỗi tuần làm quen 1 người mới"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Danh sách cần được bổ sung người mới đều đặn, ghi vào form tiếp cận."
         },
         {
           "prompt": "Mỗi cuộc gọi trong 10 cuộc nên kéo dài bao lâu?",
           "options": [
             "Không quá 3 phút",
+            "Đúng 10 phút",
             "Khoảng nửa tiếng",
             "Không giới hạn"
           ],
@@ -776,6 +830,7 @@
           "options": [
             "Chỉ ghi số máy",
             "Tên, mục đích, kết quả",
+            "Ghi số tiền họ có thể mua",
             "Không cần ghi"
           ],
           "correctIndex": 1,
@@ -786,7 +841,8 @@
           "options": [
             "Giữ nguyên như người làm thêm",
             "Giảm một nửa",
-            "Nhân đôi các con số"
+            "Nhân đôi các con số",
+            "Chỉ cần gọi, không cần gặp"
           ],
           "correctIndex": 2,
           "explanation": "Có nhiều thời gian hơn thì làm nhiều hơn theo cùng công thức."
@@ -822,21 +878,23 @@
         {
           "prompt": "\"Đối tượng chủ yếu\" là cuộc gặp để làm gì?",
           "options": [
+            "Nhờ người kia giới thiệu khách",
             "Làm bài 1 hoặc bài 2 với người mới",
             "Uống cà phê chuyện phiếm",
             "Giao hàng"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Đây là cuộc gặp chính, cần nhiều thời gian nhất."
         },
         {
           "prompt": "\"Đối tượng thứ yếu\" là ai?",
           "options": [
             "Người chưa quen biết",
+            "Người đã là nhà phân phối lâu năm",
             "Người đã nghe bài 1 hoặc bài 2, cần theo tiếp",
             "Người đã từ chối hẳn"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Gặp lại để trả lời thắc mắc và hỗ trợ bước tiếp theo."
         },
         {
@@ -844,9 +902,10 @@
           "options": [
             "Người mình thấy dễ nói chuyện nhất",
             "Người chưa bao giờ gặp",
+            "Người có thu nhập cao nhất",
             "Người muốn làm sự nghiệp hoặc khách thích sản phẩm"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Gặp ngắn để động viên, giữ nhịp. Có thể là người sẽ dẫn dắt sau này."
         },
         {
@@ -854,7 +913,8 @@
           "options": [
             "Mỗi ngày đều có cả gặp mới, gặp lại và nuôi dưỡng người tích cực",
             "Mỗi ngày chỉ gặp 1 người",
-            "Mỗi tuần gặp 3 người"
+            "Mỗi tuần gặp 3 người",
+            "Mỗi ngày gặp càng nhiều người mới càng tốt"
           ],
           "correctIndex": 0,
           "explanation": "Ba vai cân bằng giúp công việc vừa mở rộng vừa đi sâu."
@@ -898,21 +958,23 @@
         {
           "prompt": "Hai chữ E và R ở cuối SMARTER nghĩa là gì?",
           "options": [
+            "Năng lượng và may rủi",
             "Dễ dàng và nhanh chóng",
             "Đánh giá tiến độ và điều chỉnh",
             "Kinh nghiệm và kết quả"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Đặt mục tiêu xong cần theo dõi và điều chỉnh khi cần."
         },
         {
           "prompt": "Câu \"Tôi sẽ lên Silver\" còn thiếu gì?",
           "options": [
             "Thiếu cảm xúc",
+            "Thiếu người cùng làm",
             "Không thiếu gì",
             "Thời hạn và các mốc đo được"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Ví dụ tốt hơn: đạt mốc cụ thể vào tháng nào, mỗi tháng đạt mốc nào."
         },
         {
@@ -920,6 +982,7 @@
           "options": [
             "Hiểu rõ cách đạt được, không hô hào theo cảm hứng",
             "Càng cao càng tốt",
+            "Đặt theo mục tiêu của người khác",
             "Dễ tới mức không cần cố gắng"
           ],
           "correctIndex": 0,
@@ -930,7 +993,8 @@
           "options": [
             "Để nói cho hay",
             "Để có cảm xúc và động lực thật",
-            "Không cần gắn"
+            "Không cần gắn",
+            "Để tuyến trên vui lòng"
           ],
           "correctIndex": 1,
           "explanation": "Mục tiêu có cảm xúc mới giữ được khi khó khăn."
@@ -938,11 +1002,12 @@
         {
           "prompt": "Một mục tiêu lớn nên được chia thế nào?",
           "options": [
+            "Chỉ chia theo năm",
             "Giữ nguyên, không chia",
             "Chia cho tuyến trên làm",
             "Theo tháng, tuần, ngày để lên kế hoạch hành động"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Chia nhỏ giúp biết hôm nay cần làm gì."
         }
       ]
@@ -958,10 +1023,11 @@
           "prompt": "Một mục tiêu lớn nên được chia thế nào?",
           "options": [
             "Giữ nguyên một con số",
+            "Chỉ đặt mốc cuối năm",
             "Chia cho tuyến trên",
             "Thành mốc tháng, tuần, ngày"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Mốc nhỏ giúp biết hôm nay làm gì."
         },
         {
@@ -969,6 +1035,7 @@
           "options": [
             "Học 4 kỹ năng cơ bản và hẹn 10 người",
             "Đạt danh hiệu cao ngay",
+            "Đọc xong toàn bộ tài liệu",
             "Tuyển 100 người"
           ],
           "correctIndex": 0,
@@ -979,7 +1046,8 @@
           "options": [
             "Chỉ bán thật nhiều",
             "Thêm nhánh mới và giúp nhánh sao chép demo, OPP",
-            "Nghỉ ngơi"
+            "Nghỉ ngơi",
+            "Đổi sang mục tiêu khác mỗi tháng"
           ],
           "correctIndex": 1,
           "explanation": "Phát triển cả rộng lẫn sâu."
@@ -987,17 +1055,19 @@
         {
           "prompt": "Khi đặt mốc tháng, nên dùng thước đo nào?",
           "options": [
+            "Số giờ đã làm",
             "Số tiền muốn kiếm",
             "Số bạn bè trên mạng",
             "Mốc điểm PV của nhóm theo bảng hoa hồng"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Theo kế hoạch trả thưởng hiện hành, có thể thay đổi."
         },
         {
           "prompt": "Hết tháng mà chưa đạt mốc. Nên làm gì?",
           "options": [
             "Xem lại nguyên nhân cùng tuyến trên và điều chỉnh kế hoạch",
+            "Giữ nguyên kế hoạch, không cần xem lại",
             "Bỏ mục tiêu",
             "Tự trách mình"
           ],
@@ -1018,6 +1088,7 @@
           "options": [
             "Chỉ số điện thoại",
             "Động cơ và mục tiêu từng năm",
+            "Danh sách món ăn yêu thích",
             "Chi tiêu hằng ngày"
           ],
           "correctIndex": 1,
@@ -1028,7 +1099,8 @@
           "options": [
             "2 tiếng",
             "Không cần",
-            "5–10 phút"
+            "5–10 phút",
+            "Cả buổi tối"
           ],
           "correctIndex": 2,
           "explanation": "Ngắn nhưng đều đặn."
@@ -1036,21 +1108,23 @@
         {
           "prompt": "Câu hỏi nào nên tự hỏi cuối ngày?",
           "options": [
+            "Hôm nay ai kiếm được nhiều hơn mình",
             "Hôm nay gặp bao nhiêu người, việc gì làm tốt, làm sao tốt hơn",
             "Hôm nay ai làm phiền mình",
             "Ngày mai có nên nghỉ không"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Nhìn lại để cải thiện ngày mai."
         },
         {
           "prompt": "Kế hoạch ngày mai cần có gì?",
           "options": [
             "Chỉ ghi \"cố gắng\"",
+            "Chỉ ghi giờ thức dậy",
             "Nhiệm vụ cụ thể và những thứ cần chuẩn bị",
             "Không cần kế hoạch"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Chuẩn bị trước thì ngày mai làm được ngay."
         },
         {
@@ -1058,9 +1132,10 @@
           "options": [
             "Cất đi",
             "Vứt bỏ khi hết trang",
+            "Chỉ xem khi cuối năm",
             "Đánh giá và đối chiếu cùng huấn luyện viên"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Có người cùng nhìn lại giúp mình thấy rõ hơn."
         }
       ]
@@ -1077,7 +1152,8 @@
           "options": [
             "Mục tiêu mơ hồ",
             "Mục tiêu quá rõ ràng",
-            "Có quá nhiều kế hoạch"
+            "Có quá nhiều kế hoạch",
+            "Có người cùng làm"
           ],
           "correctIndex": 0,
           "explanation": "Mục tiêu không cụ thể thì không biết bắt đầu từ đâu."
@@ -1085,21 +1161,23 @@
         {
           "prompt": "\"Để mai làm\" thể hiện lý do nào?",
           "options": [
+            "Quá nhiều mục tiêu rõ ràng",
             "Thiếu vốn",
             "Chưa đổi cách nghĩ, cách làm",
             "Thiếu may mắn"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Trì hoãn là thói quen cần thay đổi."
         },
         {
           "prompt": "Làm nhiều việc cùng lúc, việc nào cũng dở dang là lý do nào?",
           "options": [
             "Mục tiêu quá nhỏ",
+            "Có kế hoạch theo tuần",
             "Quá chăm chỉ",
             "Thiếu tập trung"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Tập trung vào việc quan trọng nhất trước."
         },
         {
@@ -1107,6 +1185,7 @@
           "options": [
             "Bỏ cuộc giữa chừng",
             "Đạt mục tiêu quá sớm",
+            "Học quá nhiều kỹ năng",
             "Có người hỗ trợ"
           ],
           "correctIndex": 0,
@@ -1117,7 +1196,8 @@
           "options": [
             "Không thiếu gì",
             "Mục tiêu cụ thể, đo được",
-            "Thiếu cảm xúc"
+            "Thiếu cảm xúc",
+            "Thiếu thời gian rảnh"
           ],
           "correctIndex": 1,
           "explanation": "Cần con số và thời hạn cụ thể."
@@ -1125,17 +1205,19 @@
         {
           "prompt": "Bạn đã bỏ lỡ kế hoạch 3 ngày liền. Nên làm gì?",
           "options": [
+            "Đặt mục tiêu khó hơn để bù lại",
             "Chờ đầu tháng sau",
             "Bỏ hẳn mục tiêu",
             "Bắt đầu lại ngay hôm nay với một việc nhỏ"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Quay lại nhịp càng sớm càng tốt."
         },
         {
           "prompt": "Ai có thể giúp bạn giữ mục tiêu?",
           "options": [
             "Huấn luyện viên, người cùng nhìn lại tiến độ mỗi tuần",
+            "Người lạ trên mạng",
             "Không ai cả",
             "Chỉ bản thân"
           ],
@@ -1156,6 +1238,7 @@
           "options": [
             "Chia sẻ cơ hội với một người mới",
             "Gọi cho tất cả mọi người",
+            "Lướt mạng xã hội thật lâu",
             "Nghỉ ngơi cả ngày"
           ],
           "correctIndex": 0,
@@ -1166,7 +1249,8 @@
           "options": [
             "Không cần",
             "Ít nhất một người",
-            "Hai mươi người"
+            "Hai mươi người",
+            "Chỉ khi có thời gian"
           ],
           "correctIndex": 1,
           "explanation": "Danh sách cần được bổ sung đều đặn."
@@ -1174,17 +1258,19 @@
         {
           "prompt": "Vì sao nên cho khách so sánh, trải nghiệm sản phẩm nhiều lần trong tuần?",
           "options": [
+            "Để khách mua ngay lần đầu",
             "Để bán được giá cao",
             "Không cần thiết",
             "Để luyện kỹ năng demo và để nhiều người trải nghiệm"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Làm nhiều thì thành thạo."
         },
         {
           "prompt": "Danh sách người quen nên được cập nhật thế nào?",
           "options": [
             "Đều đặn sau mỗi lần gặp hoặc quen người mới",
+            "Chỉ khi tuyến trên nhắc",
             "Một lần duy nhất",
             "Khi nhớ ra"
           ],
@@ -1196,6 +1282,7 @@
           "options": [
             "Không giúp gì",
             "Mở rộng hiểu biết và tư duy",
+            "Để có chuyện kể cho vui",
             "Chỉ để giải trí"
           ],
           "correctIndex": 1,
@@ -1215,7 +1302,8 @@
           "options": [
             "Danh sách 100 khách đã mua hàng",
             "Bảng 100 ô, mỗi ô ghi một cuộc hẹn mình đã làm",
-            "Bảng xếp hạng 100 người giỏi nhất"
+            "Bảng xếp hạng 100 người giỏi nhất",
+            "Lịch học 100 buổi"
           ],
           "correctIndex": 1,
           "explanation": "Mỗi cuộc hẹn đã làm được tô một ô, để thấy mình đã hành động bao nhiêu lần."
@@ -1223,17 +1311,19 @@
         {
           "prompt": "Bách chiến đồ đo điều gì?",
           "options": [
+            "Số người trong đội nhóm",
             "Số người đã đồng ý",
             "Số tiền đã bán được",
             "Số lần mình đã hành động"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Kết quả từng lần không do mình quyết định hết, còn số lần hành động thì do mình."
         },
         {
           "prompt": "Một cuộc hẹn mà người kia từ chối có được tô ô không?",
           "options": [
             "Có, vì mình đã thực hiện cuộc hẹn",
+            "Không, phải xoá ô đó đi",
             "Không, chỉ tô khi người kia đồng ý",
             "Chỉ tô nửa ô"
           ],
@@ -1245,6 +1335,7 @@
           "options": [
             "Vì không cần quan tâm người khác",
             "Không còn coi một lần bị từ chối là thất bại",
+            "Vì chỉ tính những người đồng ý",
             "Vì sẽ không bao giờ bị từ chối"
           ],
           "correctIndex": 1,
@@ -1255,7 +1346,8 @@
           "options": [
             "Tô một lần cho đủ 100 ô",
             "Chỉ tô khi có kết quả tốt",
-            "Tô ô ngay sau mỗi cuộc hẹn và xem lại mỗi tuần"
+            "Tô ô ngay sau mỗi cuộc hẹn và xem lại mỗi tuần",
+            "Chỉ xem khi tô đủ 100 ô"
           ],
           "correctIndex": 2,
           "explanation": "Ghi đều đặn và xem lại giúp mình thấy nhịp làm việc của bản thân."
@@ -1272,21 +1364,23 @@
         {
           "prompt": "Góc làm việc tại nhà nên có gì?",
           "options": [
+            "Một chiếc ghế thật đắt tiền",
             "Bảng ước mơ – mục tiêu, lịch cố định, sổ ghi chép, tủ sản phẩm, bộ demo, tài liệu",
             "Chỉ một chiếc điện thoại",
             "Không cần gì"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Có góc làm việc riêng giúp làm việc nghiêm túc."
         },
         {
           "prompt": "Bảng ước mơ – mục tiêu dùng để làm gì?",
           "options": [
             "Trang trí cho đẹp",
+            "Ghi số tiền nợ",
             "Nhìn mỗi ngày để giữ động lực",
             "Khoe với khách"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Thấy mục tiêu hằng ngày thì dễ hành động."
         },
         {
@@ -1294,9 +1388,10 @@
           "options": [
             "Để tích trữ bán dần",
             "Không cần",
+            "Để trưng bày cho sang",
             "Để tự dùng và cho khách xem, thử khi ghé thăm"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Sản phẩm thật giúp demo dễ hơn, không cần ôm hàng."
         },
         {
@@ -1304,7 +1399,8 @@
           "options": [
             "Nhìn rõ đội nhóm để biết cần hỗ trợ ai",
             "Để so sánh ai giỏi hơn",
-            "Không giúp gì"
+            "Không giúp gì",
+            "Để biết ai kiếm nhiều tiền nhất"
           ],
           "correctIndex": 0,
           "explanation": "Thấy toàn cảnh thì phân bổ thời gian hợp lý."
@@ -1312,11 +1408,12 @@
         {
           "prompt": "Góc làm việc nên được giữ thế nào?",
           "options": [
+            "Thay đổi vị trí mỗi ngày",
             "Lộn xộn cũng được",
             "Gọn gàng, đủ đồ, dễ dùng",
             "Chỉ dọn khi có khách"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Gọn gàng giúp làm việc hiệu quả."
         }
       ]
@@ -1332,6 +1429,7 @@
           "prompt": "Khi bắt đầu lập danh sách, cách nào hiệu quả nhất?",
           "options": [
             "Ghi ra mọi người bạn quen, chưa vội đánh giá ai",
+            "Chỉ ghi người có thu nhập cao",
             "Chỉ ghi những người bạn nghĩ chắc chắn sẽ đồng ý",
             "Chờ có người hỏi rồi mới ghi"
           ],
@@ -1343,6 +1441,7 @@
           "options": [
             "Chỉ từ gia đình",
             "Từ danh bạ điện thoại, bạn cũ, đồng nghiệp, hàng xóm",
+            "Chỉ từ người lạ trên mạng",
             "Chỉ từ người giàu có"
           ],
           "correctIndex": 1,
@@ -1353,7 +1452,8 @@
           "options": [
             "Làm một lần rồi thôi",
             "Thêm tên mới đều đặn, mỗi khi gặp người mới",
-            "Chỉ khi hết người để liên hệ"
+            "Chỉ khi hết người để liên hệ",
+            "Mỗi năm một lần"
           ],
           "correctIndex": 1,
           "explanation": "Danh sách sống nhờ được cập nhật thường xuyên."
@@ -1361,21 +1461,23 @@
         {
           "prompt": "Một người bạn lâu không liên lạc. Có nên ghi tên vào danh sách không?",
           "options": [
+            "Chỉ ghi khi họ liên lạc lại trước",
             "Có, cứ ghi ra trước, chưa vội đánh giá",
             "Không, vì đã lâu không nói chuyện",
             "Chỉ ghi nếu chắc chắn họ quan tâm"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Danh sách là để không bỏ sót ai. Việc chọn ai để liên hệ trước là bước sau."
         },
         {
           "prompt": "Danh sách người quen nên được xem là gì?",
           "options": [
             "Một việc làm một lần cho xong",
+            "Danh sách bán hàng của công ty",
             "Tài sản quý, cập nhật thường xuyên",
             "Bản nháp, làm xong có thể bỏ"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Danh sách người quen là nền tảng của mọi bước sau, nên cần giữ và cập nhật đều."
         }
       ]
@@ -1419,9 +1521,10 @@
           "options": [
             "Để chọn nhóm nào giàu hơn",
             "Để bỏ bớt nhóm không quen",
+            "Để gửi tin nhắn chung cho từng nhóm",
             "Mỗi nhóm gợi ra thêm những người mình dễ quên"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Một nhóm gợi tiếp nhóm con, nên danh sách dài ra một cách tự nhiên."
         },
         {
@@ -1429,7 +1532,8 @@
           "options": [
             "Chỉ liệt kê, chưa vội đánh giá ai",
             "Gạch ngay những người có vẻ không quan tâm",
-            "Gọi ngay cho từng người vừa nghĩ ra"
+            "Gọi ngay cho từng người vừa nghĩ ra",
+            "Chỉ ghi người mình thân nhất"
           ],
           "correctIndex": 0,
           "explanation": "Đánh giá sớm làm mình bỏ sót người. Chọn người để liên hệ là bước sau."
@@ -1437,21 +1541,23 @@
         {
           "prompt": "Sau khi liệt kê, bước tiếp theo là gì?",
           "options": [
+            "Gạch bớt cho còn 50 người",
             "Gọi lần lượt cả 250 người",
             "Chọn khoảng 10 người ưu tiên",
             "Gửi tin nhắn hàng loạt"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Bắt đầu với một nhóm nhỏ thì làm được ngay và kỹ hơn."
         },
         {
           "prompt": "Người ưu tiên nên là ai?",
           "options": [
             "Người mình ngại nhất",
+            "Người chắc chắn sẽ từ chối",
             "Người ở xa nhất",
             "Người muốn kiếm thêm hoặc có quan hệ rộng"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Những người này thường sẵn lòng nghe hơn và mở ra thêm nhiều mối quan hệ."
         },
         {
@@ -1459,6 +1565,7 @@
           "options": [
             "Xếp lịch làm bài 1 cùng tuyến trên",
             "Tự trình bày hết một mình ngay",
+            "Đăng lên mạng xã hội cho cả 10 người cùng xem",
             "Chờ họ tự liên lạc"
           ],
           "correctIndex": 0,
@@ -1501,7 +1608,8 @@
           "options": [
             "Chấm điểm con người",
             "Sắp xếp thứ tự liên hệ",
-            "Chia người tốt người xấu"
+            "Chia người tốt người xấu",
+            "Để biết ai giàu hơn"
           ],
           "correctIndex": 1,
           "explanation": "Ưu tiên chỉ là thứ tự làm việc, không phải đánh giá con người."
@@ -1509,17 +1617,19 @@
         {
           "prompt": "Vì sao ghi ngày sinh trong bảng?",
           "options": [
+            "Để chọn ngày gọi bán hàng",
             "Để tính tuổi người kia",
             "Không cần thiết",
             "Để nhớ hỏi thăm, chúc mừng đúng dịp"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Một lời chúc đúng dịp giúp giữ quan hệ tự nhiên."
         },
         {
           "prompt": "Cột \"Ngày liên lạc gần nhất\" cho thấy đã lâu chưa hỏi thăm một người. Nên làm gì?",
           "options": [
             "Hỏi thăm nhẹ nhàng để nối lại liên lạc",
+            "Chờ họ tự liên lạc",
             "Xoá họ khỏi danh sách",
             "Mời ngay vào buổi trình bày"
           ],
@@ -1531,6 +1641,7 @@
           "options": [
             "Mỗi năm một lần",
             "Sau mỗi lần liên lạc hoặc gặp mặt",
+            "Khi danh sách đầy trang",
             "Chỉ khi tuyến trên hỏi"
           ],
           "correctIndex": 1,
@@ -1550,7 +1661,8 @@
           "options": [
             "Ghi lại thông tin và các bước đã làm với một người",
             "Để người kia ký cam kết",
-            "Để báo cáo doanh số"
+            "Để báo cáo doanh số",
+            "Để in phát cho khách"
           ],
           "correctIndex": 0,
           "explanation": "Ghi đủ giúp mình nhớ người đó cần gì và đã làm tới đâu."
@@ -1558,21 +1670,23 @@
         {
           "prompt": "Mục nào thường có trong form tiếp cận?",
           "options": [
+            "Số chứng minh nhân dân",
             "Số tài khoản ngân hàng",
             "Tên, nghề nghiệp, cách liên lạc",
             "Mật khẩu mạng xã hội"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Form chỉ ghi những gì cần để liên lạc và hỗ trợ, không hỏi chuyện riêng tư."
         },
         {
           "prompt": "Mục \"loại\" trong form chia người mới thành mấy hướng?",
           "options": [
             "Giàu, trung bình, nghèo",
+            "Đã mua, chưa mua, sẽ mua",
             "Già, trẻ, trung niên",
             "Khách hàng, làm bán thời gian, làm kinh doanh"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Mỗi người có nhu cầu khác nhau, ghi rõ để hỗ trợ đúng hướng."
         },
         {
@@ -1580,6 +1694,7 @@
           "options": [
             "Để biết đã làm bước nào và bước tiếp theo là gì",
             "Để tính tiền công",
+            "Để nhắc họ trả tiền",
             "Để khoe với nhóm"
           ],
           "correctIndex": 0,
@@ -1590,7 +1705,8 @@
           "options": [
             "Để ép mua thêm",
             "Biết người kia đã trải nghiệm gì để hỏi thăm và hướng dẫn",
-            "Không giúp gì"
+            "Không giúp gì",
+            "Để tính hoa hồng"
           ],
           "correctIndex": 1,
           "explanation": "Biết họ đã dùng gì thì cuộc trò chuyện sau có nội dung cụ thể."
@@ -1607,17 +1723,19 @@
         {
           "prompt": "Chữ D trong FORMHD là gì?",
           "options": [
+            "Sức khoẻ",
             "Gia đình",
             "Ước muốn",
             "Thu nhập"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "D là Dream: dự định vài năm tới của người đó."
         },
         {
           "prompt": "Bạn hỏi: \"Dạo này bé nhà mình học hành sao rồi?\" Câu này thuộc chủ đề nào?",
           "options": [
             "Gia đình",
+            "Ước muốn",
             "Công việc",
             "Thời gian rảnh"
           ],
@@ -1629,6 +1747,7 @@
           "options": [
             "Hỏi thẳng lương bao nhiêu",
             "Lắng nghe điều họ tự chia sẻ, không dò hỏi",
+            "Hỏi qua người quen của họ",
             "Bỏ qua người đó"
           ],
           "correctIndex": 1,
@@ -1639,7 +1758,8 @@
           "options": [
             "Họ thích phát triển bản thân",
             "Họ không có thời gian",
-            "Họ không quan tâm gì"
+            "Họ không quan tâm gì",
+            "Họ muốn đổi việc ngay"
           ],
           "correctIndex": 0,
           "explanation": "Cách dùng thời gian rảnh cho thấy mong muốn của người đó."
@@ -1647,11 +1767,12 @@
         {
           "prompt": "Tinh thần chung khi trò chuyện theo FORMHD là gì?",
           "options": [
+            "Ghi lại thật nhiều thông tin để báo cáo",
             "Hỏi thật nhanh cho đủ 6 chủ đề",
             "Quan tâm thật lòng tới người đó trước",
             "Nói về mình trước"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "FORMHD là để hiểu người khác, không phải để lấy thông tin."
         }
       ]
@@ -1725,6 +1846,7 @@
           "prompt": "Vì sao chủ đề Tài chính chỉ nên lắng nghe, không hỏi thẳng?",
           "options": [
             "Để tôn trọng chuyện riêng tư và giữ lòng tin",
+            "Vì hỏi thẳng sẽ nhanh hơn",
             "Vì chủ đề này không quan trọng",
             "Để họ tự nói ra số tiền cụ thể"
           ],
@@ -1736,6 +1858,7 @@
           "options": [
             "Để hỏi càng nhiều càng tốt trong một lần gặp",
             "Để hiểu và quan tâm người kia một cách tự nhiên",
+            "Để chấm điểm ai giàu hơn",
             "Để tìm cách nói về sản phẩm sớm"
           ],
           "correctIndex": 1,
@@ -1746,7 +1869,8 @@
           "options": [
             "Hỏi thăm chung, ví dụ dạo này có hay tập thể dục không",
             "Hỏi chi tiết bệnh đang mắc",
-            "Gợi ý ngay một sản phẩm"
+            "Gợi ý ngay một sản phẩm",
+            "Hỏi về chi phí điều trị"
           ],
           "correctIndex": 0,
           "explanation": "Sức khoẻ chỉ dừng ở mức hỏi thăm, không đi sâu chuyện riêng và không nói như công dụng sản phẩm."
@@ -1775,17 +1899,19 @@
         {
           "prompt": "Mới gặp ai đó, cách mở lời tự nhiên nhất là gì?",
           "options": [
+            "Hỏi ngay về thu nhập của họ",
             "Giới thiệu ngay việc mình đang làm",
             "Khen thật lòng một điểm bạn để ý thấy",
             "Xin số điện thoại luôn"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Một lời khen chân thành giúp người đối diện thấy thoải mái."
         },
         {
           "prompt": "Sau khi xin được liên lạc, nên nhắn lại khi nào?",
           "options": [
             "Trong 24–48 giờ",
+            "Ngay trong đêm đó, nhắn liên tục",
             "Một tháng sau",
             "Chờ họ nhắn trước"
           ],
@@ -1809,6 +1935,7 @@
           "options": [
             "Một lý do chung để giữ liên lạc, ví dụ cùng sở thích",
             "Lời mời tham gia kinh doanh ngay",
+            "Một đường link sản phẩm",
             "Không cần lý do gì"
           ],
           "correctIndex": 0,
@@ -1828,7 +1955,8 @@
           "options": [
             "Hỏi thăm chân thành, rồi mới nói lý do liên hệ",
             "Vào thẳng việc bán hàng ngay câu đầu",
-            "Nhắn một tin dài giải thích mọi thứ"
+            "Nhắn một tin dài giải thích mọi thứ",
+            "Gửi ngay bảng giá sản phẩm"
           ],
           "correctIndex": 0,
           "explanation": "Quan tâm đến người đối diện trước tạo thiện cảm."
@@ -1836,21 +1964,23 @@
         {
           "prompt": "Lời mời nên giữ ở mức nào?",
           "options": [
+            "Thật dài để nói hết mọi thứ",
             "Ngắn gọn, rõ giờ giấc, dễ nói \"có\" hoặc \"không\"",
             "Mập mờ để tạo bất ngờ",
             "Hứa hẹn thật nhiều để họ hào hứng"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Ngắn, rõ và trung thực giúp người nghe thoải mái quyết định."
         },
         {
           "prompt": "Người được mời trả lời \"để mình xem lại\". Bạn nên làm gì?",
           "options": [
             "Nài nỉ họ trả lời ngay",
+            "Gửi thêm nhiều tài liệu để họ đọc",
             "Cảm ơn và hẹn một thời điểm để hỏi lại nhẹ nhàng",
             "Xóa họ khỏi danh sách"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Tôn trọng thời gian của họ và giữ liên lạc."
         },
         {
@@ -1858,6 +1988,7 @@
           "options": [
             "Nói nhanh cho xong ý",
             "Hỏi lúc nào tiện rồi gọi lại",
+            "Gọi lại liên tục cho tới khi họ nghe",
             "Gửi tin nhắn dài giải thích"
           ],
           "correctIndex": 1,
@@ -1868,7 +1999,8 @@
           "options": [
             "Nói rõ lý do muốn gặp",
             "Đưa ra hai lựa chọn thời gian",
-            "Nài ép khi người kia đã từ chối"
+            "Nài ép khi người kia đã từ chối",
+            "Hỏi thăm trước khi mời"
           ],
           "correctIndex": 2,
           "explanation": "Lời mời thân thiện là để người kia thấy thoải mái. Nài ép làm mất lòng tin."
@@ -1908,21 +2040,23 @@
         {
           "prompt": "Cách hỏi giờ nào giúp người kia dễ trả lời?",
           "options": [
+            "\"Bạn có rảnh không?\"",
             "\"Mai bạn rảnh sáng hay chiều?\"",
             "\"Khi nào rảnh thì báo mình nhé\"",
             "\"Hôm nay phải gặp nhé\""
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Hai lựa chọn cụ thể giúp người kia quyết định nhanh và thoải mái."
         },
         {
           "prompt": "Lý do hẹn mập mờ cho người kia tò mò thì có ổn không?",
           "options": [
             "Ổn, càng bí ẩn càng tốt",
+            "Ổn nếu sau đó giải thích lại",
             "Không ổn, lý do phải rõ ràng và không nói dối",
             "Tuỳ người"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Trung thực ngay từ lời mời là nền móng của lòng tin."
         },
         {
@@ -1930,6 +2064,7 @@
           "options": [
             "Thoải mái và thấy có lợi khi gặp",
             "Bị ép phải đồng ý",
+            "Thấy phải trả lời ngay",
             "Tò mò nhưng lo lắng"
           ],
           "correctIndex": 0,
@@ -1940,7 +2075,8 @@
           "options": [
             "Trình bày đầy đủ qua điện thoại",
             "Nói ngắn gọn và hẹn gặp để nói kỹ hơn",
-            "Từ chối trả lời"
+            "Từ chối trả lời",
+            "Gửi một tin nhắn thật dài"
           ],
           "correctIndex": 1,
           "explanation": "Gọi điện là để hẹn gặp. Nội dung chi tiết nói khi gặp mặt mới rõ ràng."
@@ -1976,17 +2112,19 @@
         {
           "prompt": "Người ngang tuổi nghe xong thấy không hợp. Bạn nên làm gì?",
           "options": [
+            "Nhắn tin trách họ",
             "Cảm ơn, và hỏi họ có biết ai có thể phù hợp không",
             "Thuyết phục thêm",
             "Thôi không liên lạc nữa"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Tôn trọng lựa chọn của họ và giữ mối quan hệ tốt."
         },
         {
           "prompt": "Dù mời ai, điều gì tuyệt đối không làm?",
           "options": [
             "Nói dối về lý do hẹn",
+            "Hỏi thăm sức khoẻ trước",
             "Gọi điện trước",
             "Đưa ra 2 lựa chọn giờ"
           ],
@@ -1998,6 +2136,7 @@
           "options": [
             "Rủ gặp để trò chuyện tiếp, nhẹ nhàng, chưa vội nói chuyện kinh doanh",
             "Mời ngay vào một buổi trình bày",
+            "Mời ngay vào nhóm chat kinh doanh",
             "Gửi nhiều tài liệu để họ đọc"
           ],
           "correctIndex": 0,
@@ -2008,7 +2147,8 @@
           "options": [
             "Vì họ dễ đoán ra nếu mình vòng vo",
             "Vì nói thật giữ được sự tôn trọng và lòng tin",
-            "Không cần nói thật"
+            "Không cần nói thật",
+            "Vì họ sẽ bảo người khác"
           ],
           "correctIndex": 1,
           "explanation": "Mượn cớ \"xin ý kiến\" mà giấu mục đích dễ làm mất lòng tin. Hãy nói rõ là mình đang bắt đầu kinh doanh thêm."
@@ -2035,17 +2175,19 @@
         {
           "prompt": "Khi điền lịch tuần, nên đánh dấu \"không tự quyết được\" cho giờ nào?",
           "options": [
+            "Giờ đi ngủ",
             "Giờ đi làm và việc gia đình quan trọng",
             "Mọi buổi tối",
             "Cả cuối tuần"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Những ô còn lại là thời gian bạn tự quyết, dùng để đặt hẹn."
         },
         {
           "prompt": "Bạn có khung giờ trống nhưng chưa ai nhắc. Bạn nên làm gì?",
           "options": [
             "Chủ động đặt hẹn vào khung đó",
+            "Dùng khung đó để nghỉ",
             "Chờ tuyến trên sắp xếp",
             "Để tuần sau"
           ],
@@ -2057,6 +2199,7 @@
           "options": [
             "Để tuyến trên quyết định thay mình",
             "Để chọn được giờ mà người hỗ trợ cũng tham gia được",
+            "Để tuyến trên gọi thay mình",
             "Để có lý do hoãn hẹn"
           ],
           "correctIndex": 1,
@@ -2067,7 +2210,8 @@
           "options": [
             "Đầu mỗi tuần, cập nhật khi có thay đổi",
             "Chỉ khi có người hẹn",
-            "Mỗi tháng một lần"
+            "Mỗi tháng một lần",
+            "Khi nhớ ra"
           ],
           "correctIndex": 0,
           "explanation": "Lịch tuần đều đặn giúp mình chủ động thay vì chờ việc tới."
@@ -2084,21 +2228,23 @@
         {
           "prompt": "Lịch tuần cố định gồm gì?",
           "options": [
+            "Chỉ những cuộc hẹn đã chốt",
             "Chỉ ngày nghỉ",
             "Các hoạt động lặp lại mỗi tuần như họp nhóm, gặp tại nhà, chuyên đề",
             "Chỉ giờ đi làm chính"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Biết trước các hoạt động cố định thì dễ hẹn người tham gia."
         },
         {
           "prompt": "Bảng kế hoạch tuần nên chia ngày theo cách nào?",
           "options": [
             "Chỉ chia theo ngày",
+            "Theo tháng",
             "Không cần chia",
             "Sáng – trưa – chiều – tối"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Chia nhỏ trong ngày giúp thấy ô nào còn trống."
         },
         {
@@ -2106,6 +2252,7 @@
           "options": [
             "Vào ô còn trống trong bảng tuần",
             "Chồng lên giờ họp nhóm",
+            "Vào giờ đi làm chính",
             "Để tuần sau tính"
           ],
           "correctIndex": 0,
@@ -2116,7 +2263,8 @@
           "options": [
             "Để báo cáo với tuyến trên",
             "Để thấy thời gian thật còn trống, tránh hẹn chồng chéo",
-            "Không cần ghi"
+            "Không cần ghi",
+            "Để có cớ từ chối hẹn"
           ],
           "correctIndex": 1,
           "explanation": "Kế hoạch thực tế phải tính cả các việc khác trong cuộc sống."
@@ -2124,11 +2272,12 @@
         {
           "prompt": "Lợi ích của lịch tuần cố định khi mời người là gì?",
           "options": [
+            "Không cần hỏi ý kiến tuyến trên nữa",
             "Không cần hỏi người kia rảnh lúc nào",
             "Mời được nhiều người cùng lúc mà không cần hẹn",
             "Có sẵn thời gian và chương trình để đưa ra lựa chọn"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Có lịch rõ thì lời mời cụ thể, người nghe dễ chọn."
         }
       ]
@@ -2144,10 +2293,11 @@
           "prompt": "Một cuộc gọi hẹn nên dài khoảng bao lâu?",
           "options": [
             "Khoảng 30 phút",
+            "Khoảng 10 phút",
             "Càng lâu càng tốt",
             "Khoảng 1 phút, đủ để hẹn"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Cuộc gọi chỉ để hẹn. Nội dung chính để dành cho lúc gặp."
         },
         {
@@ -2155,6 +2305,7 @@
           "options": [
             "Khi gặp mặt, có đủ thời gian",
             "Ngay trong cuộc gọi",
+            "Trong tin nhắn thoại dài",
             "Qua tin nhắn dài"
           ],
           "correctIndex": 0,
@@ -2165,7 +2316,8 @@
           "options": [
             "Nói thật nhanh cho hết",
             "Hẹn một lúc khác rảnh hơn",
-            "Gửi tài liệu để họ tự đọc"
+            "Gửi tài liệu để họ tự đọc",
+            "Nhờ người khác nói thay"
           ],
           "correctIndex": 1,
           "explanation": "Không đủ thời gian thì chưa nói, để buổi gặp không bị vội."
@@ -2173,17 +2325,19 @@
         {
           "prompt": "Đang ở chỗ ồn ào, đông người. Nên làm gì?",
           "options": [
+            "Nhắn tin trình bày thay vì gọi",
             "Cố nói to cho người kia nghe",
             "Trình bày luôn cho kịp",
             "Chỉ chào hỏi, hẹn chỗ khác phù hợp hơn"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Sai địa điểm thì người nghe khó tập trung."
         },
         {
           "prompt": "Người kia vừa có chuyện buồn trong nhà. Nên làm gì?",
           "options": [
             "Hỏi thăm, chia sẻ, chưa nói chuyện công việc",
+            "Hẹn ngay ngày mai để gặp",
             "Vẫn mời như kế hoạch",
             "Bảo họ cố gắng lên rồi mời"
           ],
@@ -2204,6 +2358,7 @@
           "options": [
             "Hẹn được thời gian và địa điểm gặp",
             "Bán được sản phẩm qua điện thoại",
+            "Kể hết thu nhập của mình",
             "Nói hết thông tin cơ hội"
           ],
           "correctIndex": 0,
@@ -2214,7 +2369,8 @@
           "options": [
             "Nghĩ họ sẽ từ chối",
             "Nghĩ tốt về họ, gọi vì muốn chia sẻ điều có ích",
-            "Nghĩ họ cần mình hơn mình cần họ"
+            "Nghĩ họ cần mình hơn mình cần họ",
+            "Nghĩ đây là việc bắt buộc phải làm"
           ],
           "correctIndex": 1,
           "explanation": "Suy nghĩ tích cực thể hiện qua giọng nói và cách nói."
@@ -2222,17 +2378,19 @@
         {
           "prompt": "Chọn kênh liên lạc thế nào?",
           "options": [
+            "Kênh mình thích nhất",
             "Luôn nhắn tin cho đỡ ngại",
             "Kênh nào cũng như nhau",
             "Kênh người kia hay dùng: điện thoại, Zalo hay Messenger"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Liên lạc qua kênh quen thuộc với họ thì dễ được đón nhận."
         },
         {
           "prompt": "Vì sao nên để người kia tự trải nghiệm thay vì cố thuyết phục bằng lý lẽ?",
           "options": [
             "Trải nghiệm tạo cảm xúc, còn tranh luận lý lẽ thì tốn sức",
+            "Vì người nghe không hiểu được lý lẽ",
             "Vì không cần giải thích gì",
             "Vì lý lẽ luôn sai"
           ],
@@ -2244,6 +2402,7 @@
           "options": [
             "Đùa cợt cho thoải mái",
             "Nghiêm túc, vui vẻ, tôn trọng thời gian người kia",
+            "Nói thật nhỏ cho lịch sự",
             "Gấp gáp cho nhanh"
           ],
           "correctIndex": 1,
@@ -2285,7 +2444,8 @@
           "options": [
             "Trình bày đầy đủ cơ hội",
             "Không nói lý do",
-            "Nói ngắn gọn lý do, không trình bày chi tiết"
+            "Nói ngắn gọn lý do, không trình bày chi tiết",
+            "Hứa hẹn thu nhập để họ đồng ý"
           ],
           "correctIndex": 2,
           "explanation": "Chi tiết để dành cho lúc gặp. Qua điện thoại dễ bị hiểu sai."
@@ -2293,21 +2453,23 @@
         {
           "prompt": "Vì sao nên đưa ra 2 lựa chọn thời gian?",
           "options": [
+            "Để cuộc gọi dài hơn",
             "Người kia dễ chọn một giờ hơn là tự nghĩ",
             "Để ép người kia phải gặp",
             "Để có lý do huỷ"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Câu hỏi lựa chọn giúp cuộc hẹn cụ thể hơn."
         },
         {
           "prompt": "Vì sao phải xác nhận lại trước khi cúp máy?",
           "options": [
             "Để kéo dài cuộc gọi",
+            "Để nhắc lại giá sản phẩm",
             "Để cả hai nhớ đúng giờ và địa điểm",
             "Không cần thiết"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Xác nhận lại giúp tránh lỡ hẹn vì nhầm."
         }
       ]
@@ -2324,6 +2486,7 @@
           "options": [
             "Khi nào anh rảnh thì báo em nhé?",
             "Tối thứ Ba hay sáng thứ Bảy thì tiện cho anh hơn?",
+            "Bao giờ thì anh gặp em được?",
             "Anh có muốn gặp không?"
           ],
           "correctIndex": 1,
@@ -2334,7 +2497,8 @@
           "options": [
             "Càng đông càng tốt",
             "Ít nhất 10 người",
-            "1–2 người"
+            "1–2 người",
+            "Không mời ai, tự đi một mình"
           ],
           "correctIndex": 2,
           "explanation": "Ít người thì trò chuyện được kỹ và quan tâm từng người."
@@ -2342,21 +2506,23 @@
         {
           "prompt": "Nên hẹn gặp ở đâu?",
           "options": [
+            "Trong xe cho kín đáo",
             "Ở nhà, chỗ làm hoặc văn phòng, nơi yên tĩnh",
             "Quán đông người, ồn ào",
             "Ở bất kỳ đâu"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Chỗ yên tĩnh giúp người nghe tập trung."
         },
         {
           "prompt": "Khi tập gọi cùng tuyến trên, vì sao nên bật loa ngoài?",
           "options": [
             "Để người khác cùng nghe chuyện riêng",
+            "Để gọi nhanh hơn",
             "Để tuyến trên nghe, góp ý và cổ vũ",
             "Để ghi âm người nghe"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Tuyến trên nghe trực tiếp thì góp ý sát hơn. Nếu người nghe hỏi, cứ nói thật là có người cùng nghe."
         },
         {
@@ -2364,9 +2530,10 @@
           "options": [
             "Thôi không hẹn nữa",
             "Nài nỉ cho bằng được",
+            "Hẹn luôn ngay tối nay",
             "Đưa ra hai lựa chọn thời gian cụ thể"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Hai lựa chọn cụ thể giúp người kia dễ quyết định hơn."
         }
       ]
@@ -2383,7 +2550,8 @@
           "options": [
             "Hẹn A tuần sau, rồi gọi tiếp người khác trong danh sách",
             "Chờ tới tuần sau rồi mới gọi ai khác",
-            "Bỏ hẳn A khỏi danh sách"
+            "Bỏ hẳn A khỏi danh sách",
+            "Gọi lại A mỗi ngày đến tuần sau"
           ],
           "correctIndex": 0,
           "explanation": "Làm theo danh sách, không để một người làm dừng cả kế hoạch."
@@ -2391,21 +2559,23 @@
         {
           "prompt": "B đang đi công tác xa. Bạn nên làm gì?",
           "options": [
+            "Đợi B về rồi mới làm tiếp",
             "Nghỉ gọi tuần này",
             "Ghi lại để liên lạc khi B về, rồi gọi C",
             "Nhắn liên tục cho B"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Ghi lại để không quên, nhưng vẫn tiếp tục với người tiếp theo."
         },
         {
           "prompt": "Bạn rất mong một người bạn thân tham gia, nhưng người đó chưa sẵn sàng. Nên làm gì?",
           "options": [
             "Dừng lại chờ người đó sẵn sàng",
+            "Ngừng làm cho tới khi người đó đồng ý",
             "Thuyết phục bằng mọi cách",
             "Vẫn giữ quan hệ tốt và tiếp tục với những người khác"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Không đặt hết hy vọng vào một người. Mỗi người có thời điểm riêng."
         },
         {
@@ -2413,6 +2583,7 @@
           "options": [
             "Đó là chuyện bình thường, quan trọng là giữ nhịp gọi đều",
             "Mình không hợp công việc này",
+            "Do mình gọi chưa đủ nhiều tin nhắn",
             "Nên ngừng hẹn một thời gian"
           ],
           "correctIndex": 0,
@@ -2423,7 +2594,8 @@
           "options": [
             "Để khoe với tuyến trên",
             "Để luôn có người tiếp theo khi ai đó bận",
-            "Không cần dài"
+            "Không cần dài",
+            "Để gọi lại cùng một người nhiều lần"
           ],
           "correctIndex": 1,
           "explanation": "Danh sách dài giúp mình không phải chờ ai."
@@ -2431,11 +2603,12 @@
         {
           "prompt": "Người hôm trước từ chối, hôm nay gọi lại hỏi thăm. Bạn nên làm gì?",
           "options": [
+            "Lờ đi vì họ đã từ chối",
             "Nhắc lại chuyện họ đã từ chối",
             "Từ chối lại cho công bằng",
             "Vui vẻ trò chuyện và hẹn gặp nếu họ muốn"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Giữ cửa luôn mở. Người từ chối hôm nay có thể quan tâm vào lúc khác."
         }
       ]
@@ -2463,10 +2636,11 @@
           "prompt": "Bước nào quan trọng nhất để khách tin?",
           "options": [
             "Nói thật nhiều về công dụng",
+            "Cho xem thật nhiều ảnh",
             "Đọc thuộc tài liệu",
             "Để khách tự thử, tự so sánh"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Khách tin điều họ tự thấy hơn điều được kể."
         },
         {
@@ -2474,6 +2648,7 @@
           "options": [
             "Phân tích giá trị sản phẩm mang lại cho khách",
             "Chốt đơn ngay",
+            "Hỏi ngay khách có mua không",
             "Chuyển sang sản phẩm khác"
           ],
           "correctIndex": 0,
@@ -2484,7 +2659,8 @@
           "options": [
             "Nói giá thật nhanh",
             "Tóm tắt lại các ưu điểm khách vừa thấy",
-            "Kết thúc luôn, không nói gì"
+            "Kết thúc luôn, không nói gì",
+            "Xin khách giới thiệu thêm người"
           ],
           "correctIndex": 1,
           "explanation": "Tóm tắt giúp khách nhớ điều họ vừa trải nghiệm."
@@ -2492,11 +2668,12 @@
         {
           "prompt": "Khi nói công dụng, cần lưu ý gì?",
           "options": [
+            "Nói giống hãng khác cho khách dễ hiểu",
             "Nói càng mạnh càng tốt",
             "Hứa chắc chắn hiệu quả",
             "Nói đúng thông tin chính thức, không phóng đại"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Nói đúng sự thật giữ được lòng tin lâu dài."
         }
       ]
@@ -2535,6 +2712,7 @@
           "prompt": "Vì sao nên chuẩn bị bộ demo sẵn?",
           "options": [
             "Gặp khách lúc nào cũng làm được ngay",
+            "Để không cần tập trước",
             "Để khoe đồ nghề",
             "Không cần thiết"
           ],
@@ -2546,6 +2724,7 @@
           "options": [
             "Đọc hướng dẫn ngay trước mặt khách",
             "Tập trước một lần để làm thành thạo",
+            "Mua thêm thật nhiều sản phẩm",
             "Không cần tập"
           ],
           "correctIndex": 1,
@@ -2556,7 +2735,8 @@
           "options": [
             "Để lẫn với đồ khác",
             "Chỉ mang khi nhớ ra",
-            "Sạch sẽ, gọn gàng, đủ đồ"
+            "Sạch sẽ, gọn gàng, đủ đồ",
+            "Cất kỹ, ít khi lấy ra"
           ],
           "correctIndex": 2,
           "explanation": "Dụng cụ sạch gọn cho thấy sự chuyên nghiệp."
@@ -2564,11 +2744,12 @@
         {
           "prompt": "Hết một món trong bộ demo thì làm gì?",
           "options": [
+            "Mượn tạm của khách",
             "Bổ sung ngay để lần sau không thiếu",
             "Đợi khi cần mới mua",
             "Bỏ qua bước demo đó"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Kiểm tra và bổ sung sau mỗi buổi là thói quen tốt."
         }
       ]
@@ -2584,6 +2765,7 @@
           "prompt": "Chất hoạt động bề mặt làm sạch bằng cách nào?",
           "options": [
             "Kéo vết bẩn ra khỏi bề mặt rồi trôi đi theo nước",
+            "Làm vết bẩn biến mất ngay không cần nước",
             "Cắt nhỏ vết bẩn",
             "Phủ lên che vết bẩn"
           ],
@@ -2595,6 +2777,7 @@
           "options": [
             "Tẩy màu vết bẩn",
             "Cắt các liên kết của vết bẩn",
+            "Hút vết bẩn vào bên trong",
             "Làm vết bẩn cứng lại"
           ],
           "correctIndex": 1,
@@ -2605,7 +2788,8 @@
           "options": [
             "Hai cách giống hệt nhau",
             "Enzyme mất đi ngay sau một lần",
-            "Chất hoạt động bề mặt mất đi theo vết bẩn, enzyme dùng lại được nhiều lần"
+            "Chất hoạt động bề mặt mất đi theo vết bẩn, enzyme dùng lại được nhiều lần",
+            "Chỉ khác nhau về mùi"
           ],
           "correctIndex": 2,
           "explanation": "Enzyme không bị mất đi khi làm việc nên tiếp tục cắt vết bẩn khác."
@@ -2632,11 +2816,12 @@
         {
           "prompt": "Khi giải thích cho khách, nên nói thế nào?",
           "options": [
+            "Nói enzyme là chất tốt nhất thế giới",
             "Dùng ví dụ dễ hiểu và để khách tự xem kết quả",
             "Dùng thật nhiều thuật ngữ khó",
             "Không cần giải thích"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Lời giải thích đơn giản cộng với trải nghiệm giúp khách hiểu nhanh."
         }
       ]
@@ -2663,10 +2848,11 @@
           "prompt": "Vì sao làm song song hai bên?",
           "options": [
             "Để làm cho nhanh",
+            "Để tốn ít nước hơn",
             "Để khách tự so sánh trong cùng điều kiện",
             "Không có lý do"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "So sánh cùng lúc thì kết quả rõ ràng, công bằng."
         },
         {
@@ -2674,9 +2860,10 @@
           "options": [
             "Tự nói kết quả trước khi khách nhìn",
             "Im lặng hoàn toàn",
+            "Gọi điện cho người khác",
             "Hỏi khách thấy gì, ngửi thấy gì"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Để khách tự nói ra điều họ thấy."
         },
         {
@@ -2684,7 +2871,8 @@
           "options": [
             "Không chê, chỉ để khách tự so sánh",
             "Chê sản phẩm khách đang dùng",
-            "Nói tên hãng khác là kém"
+            "Nói tên hãng khác là kém",
+            "Nói sản phẩm của khách gây hại"
           ],
           "correctIndex": 0,
           "explanation": "Tôn trọng lựa chọn của khách, không so sánh với hãng khác."
@@ -2692,11 +2880,12 @@
         {
           "prompt": "Sau khi khách thấy kết quả, nên làm gì?",
           "options": [
+            "Chê lại sản phẩm cũ của khách",
             "Đưa ngay hoá đơn",
             "Hỏi cảm nhận và tóm tắt điểm khách thích",
             "Chuyển sang chuyện khác"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Lắng nghe cảm nhận rồi tóm lại giúp khách nhớ trải nghiệm."
         }
       ]
@@ -2712,10 +2901,11 @@
           "prompt": "Demo nước giặt thường dùng gì làm vết bẩn?",
           "options": [
             "Vết sơn tường",
+            "Vết keo dán",
             "Vết dầu máy",
             "Vết bút bi trên mẩu vải"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Vết bút bi dễ chuẩn bị và dễ thấy kết quả."
         },
         {
@@ -2723,6 +2913,7 @@
           "options": [
             "So sánh độ pH của các loại nước giặt",
             "Lau tay",
+            "Đo nhiệt độ nước",
             "Ghi chú"
           ],
           "correctIndex": 0,
@@ -2733,7 +2924,8 @@
           "options": [
             "Ngồi chờ im lặng",
             "Làm thí nghiệm thứ hai, ví dụ đo pH",
-            "Kết thúc buổi demo"
+            "Kết thúc buổi demo",
+            "Giới thiệu bảng giá"
           ],
           "correctIndex": 1,
           "explanation": "Tận dụng thời gian chờ giúp buổi demo không bị gián đoạn."
@@ -2752,11 +2944,12 @@
         {
           "prompt": "Khách hỏi một kết quả mà mình không chắc. Nên làm gì?",
           "options": [
+            "Lảng sang chuyện khác",
             "Đoán một câu cho xong",
             "Khẳng định cho khách yên tâm",
             "Nói thật chưa chắc và hẹn tìm hiểu thêm"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Trung thực giữ được lòng tin."
         }
       ]
@@ -2784,6 +2977,7 @@
           "prompt": "Vì sao bắt đầu bằng vấn đề của khách?",
           "options": [
             "Để khách thấy sản phẩm liên quan tới mình",
+            "Để chuyển sang chuyện giá",
             "Để nói cho dài",
             "Không cần thiết"
           ],
@@ -2795,6 +2989,7 @@
           "options": [
             "Chỉ gửi hình qua mạng",
             "Tổ chức gặp tại nhà đều đặn và nấu, dùng thử cùng khách",
+            "Mang theo catalog dày",
             "Đọc thông số kỹ thuật"
           ],
           "correctIndex": 1,
@@ -2805,7 +3000,8 @@
           "options": [
             "Có, càng chi tiết càng tốt",
             "Chỉ nói giá",
-            "Không, chỉ để khách trải nghiệm"
+            "Không, chỉ để khách trải nghiệm",
+            "Chỉ so sánh giá với hãng rẻ hơn"
           ],
           "correctIndex": 2,
           "explanation": "Tập trung vào trải nghiệm của khách, không so sánh hãng khác."
@@ -2813,11 +3009,12 @@
         {
           "prompt": "Khách hỏi nhiều về thông số kỹ thuật mà mình chưa nắm. Nên làm gì?",
           "options": [
+            "Đọc nguyên văn tài liệu cho khách nghe",
             "Ghi lại câu hỏi và hẹn trả lời sau khi tìm hiểu",
             "Đoán con số",
             "Lảng sang chuyện khác"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Trả lời đúng quan trọng hơn trả lời nhanh."
         }
       ]
@@ -2846,6 +3043,7 @@
           "prompt": "Vì sao nên mở đầu buổi demo bằng câu hỏi?",
           "options": [
             "Để người nghe tự nghĩ về nhu cầu của mình",
+            "Để khách thấy mình am hiểu",
             "Để kéo dài thời gian",
             "Để kiểm tra kiến thức của họ"
           ],
@@ -2876,6 +3074,7 @@
           "options": [
             "Hạt bụi nhỏ hơn 2,5 micromet",
             "Một loại máy lọc",
+            "Loại bụi chỉ có ở nhà máy",
             "Chỉ số độ ẩm"
           ],
           "correctIndex": 0,
@@ -2886,7 +3085,8 @@
           "options": [
             "Quy ra chi phí mỗi ngày",
             "Chỉ nói tổng số tiền",
-            "Không nhắc tới chi phí"
+            "Không nhắc tới chi phí",
+            "So sánh với giá điện thoại"
           ],
           "correctIndex": 0,
           "explanation": "Chi phí mỗi ngày giúp người nghe dễ so với các khoản chi quen thuộc."
@@ -2915,21 +3115,23 @@
         {
           "prompt": "Demo bằng tỏi dùng được cho những loại sản phẩm nào?",
           "options": [
+            "Chỉ dầu gội",
             "Kem đánh răng, lăn khử mùi, xịt họng",
             "Chỉ nước giặt",
             "Chỉ máy lọc không khí"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Cùng một cách làm, áp dụng cho nhiều sản phẩm."
         },
         {
           "prompt": "Trước khi chà tỏi lên tay khách, cần làm gì?",
           "options": [
             "Làm luôn cho bất ngờ",
+            "Rửa tay khách bằng nước nóng",
             "Xin phép khách",
             "Không cần hỏi"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Tôn trọng khách, nhất là khi chạm vào người họ."
         },
         {
@@ -2937,9 +3139,10 @@
           "options": [
             "Người demo",
             "Tuyến trên",
+            "Người đứng xem bên cạnh",
             "Chính khách, sau khi tự ngửi"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Khách tự kết luận thì tin hơn."
         },
         {
@@ -2947,7 +3150,8 @@
           "options": [
             "Cảm ơn khách đã nói thật và hỏi thêm cảm nhận",
             "Cãi rằng hết mùi rồi",
-            "Bỏ qua"
+            "Bỏ qua",
+            "Kết thúc demo ngay"
           ],
           "correctIndex": 0,
           "explanation": "Tôn trọng cảm nhận thật của khách."
@@ -2964,21 +3168,23 @@
         {
           "prompt": "Nên thoa dưỡng thể lên đâu khi demo?",
           "options": [
+            "Lên tóc khách",
             "Cả hai tay",
             "Một bên mu bàn tay khách",
             "Lên mặt khách"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Thoa một bên để khách so với bên chưa thoa."
         },
         {
           "prompt": "Sau khi thoa, nên làm gì?",
           "options": [
             "Lau đi ngay",
+            "Bôi thêm lớp thứ hai ngay",
             "Rửa tay ngay",
             "Vỗ nhẹ cho thấm, rồi để khách sờ và ngửi"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Khách tự cảm nhận bằng tay và mũi."
         },
         {
@@ -2986,6 +3192,7 @@
           "options": [
             "Để khách tự thấy sự khác nhau",
             "Để làm cho nhanh",
+            "Để khách khen sản phẩm",
             "Không có lý do"
           ],
           "correctIndex": 0,
@@ -2996,7 +3203,8 @@
           "options": [
             "Khi nào mua",
             "Có bết dính không, mùi thế nào, da có mềm không",
-            "Lương bao nhiêu"
+            "Lương bao nhiêu",
+            "Có muốn làm kinh doanh không"
           ],
           "correctIndex": 1,
           "explanation": "Câu hỏi về cảm nhận giúp khách tự đánh giá."
@@ -3004,11 +3212,12 @@
         {
           "prompt": "Khách có làn da nhạy cảm. Nên làm gì?",
           "options": [
+            "Thoa lên mặt để thấy rõ hơn",
             "Thoa nhiều cho thấy rõ",
             "Không cần hỏi",
             "Hỏi trước, thử một vùng nhỏ, dừng nếu khách thấy khó chịu"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "An toàn và thoải mái của khách là trên hết."
         }
       ]
@@ -3024,10 +3233,11 @@
           "prompt": "Vì sao người ta cần chăm sóc da?",
           "options": [
             "Chỉ để đẹp hơn người khác",
+            "Vì quảng cáo nói vậy",
             "Da chịu tác động từ bên ngoài như nắng, bụi và từ bên trong như nghỉ ngơi, ăn uống",
             "Da không cần chăm sóc"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Hiểu nguyên nhân giúp tư vấn đúng."
         },
         {
@@ -3035,9 +3245,10 @@
           "options": [
             "Trắng, vàng, nâu, đen, đỏ",
             "Trẻ, già, trung niên, em bé, thiếu niên",
+            "Mỏng, dày, mềm, cứng, mịn",
             "Thường, khô, dầu, hỗn hợp, nhạy cảm"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Năm loại da này là cách chia phổ biến khi tư vấn."
         },
         {
@@ -3068,7 +3279,8 @@
           "options": [
             "Hỏi đáp, quan sát, dùng máy soi da",
             "Chỉ đoán theo tuổi",
-            "Hỏi người nhà khách"
+            "Hỏi người nhà khách",
+            "Nhìn ảnh trên mạng"
           ],
           "correctIndex": 0,
           "explanation": "Kết hợp nhiều cách cho kết quả chính xác hơn."
@@ -3076,11 +3288,12 @@
         {
           "prompt": "Khách không chắc da mình thuộc loại nào. Nên làm gì?",
           "options": [
+            "Khuyên khách dùng loại đắt nhất",
             "Đoán đại một loại",
             "Hỏi thêm về cảm giác da trong ngày và quan sát cùng khách",
             "Bán sản phẩm cho mọi loại da"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Hỏi kỹ thể hiện sự quan tâm và giúp tư vấn đúng."
         }
       ]
@@ -3107,6 +3320,7 @@
           "prompt": "Buổi tối, khách có trang điểm. Bước đầu tiên là gì?",
           "options": [
             "Tẩy trang",
+            "Thoa kem dưỡng",
             "Dưỡng ẩm",
             "Chống nắng"
           ],
@@ -3118,6 +3332,7 @@
           "options": [
             "Bỏ hẳn bước dưỡng ẩm",
             "Da dầu vẫn cần dưỡng ẩm, chọn loại mỏng nhẹ",
+            "Rửa mặt thật nhiều lần trong ngày",
             "Dùng loại đặc nhất"
           ],
           "correctIndex": 1,
@@ -3128,7 +3343,8 @@
           "options": [
             "Dùng hết cùng lúc cho nhanh thấy",
             "Không cần thử",
-            "Thử từng sản phẩm một, mỗi lần một vùng nhỏ"
+            "Thử từng sản phẩm một, mỗi lần một vùng nhỏ",
+            "Chỉ cần thử trên tay người khác"
           ],
           "correctIndex": 2,
           "explanation": "Thử từng món giúp biết món nào hợp hoặc không hợp."
@@ -3136,21 +3352,23 @@
         {
           "prompt": "Khách ít ra ngoài trời hỏi có cần chống nắng không. Nên trả lời thế nào?",
           "options": [
+            "Chỉ cần khi trời nắng to",
             "Vẫn nên dùng khi ra ngoài hoặc ngồi gần cửa sổ",
             "Không bao giờ cần",
             "Chỉ dùng khi đi biển"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Chống nắng là bước bảo vệ cơ bản hằng ngày."
         },
         {
           "prompt": "Khách có vấn đề da kéo dài, nổi mẩn nhiều. Nên làm gì?",
           "options": [
             "Tư vấn sản phẩm điều trị",
+            "Đắp mặt nạ nhiều hơn",
             "Khuyên khách đi khám bác sĩ da liễu",
             "Bảo khách cứ chờ sẽ hết"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Vấn đề bệnh lý là việc của bác sĩ."
         }
       ]
@@ -3167,6 +3385,7 @@
           "options": [
             "Vì ai cũng thích mua đồ đắt",
             "Hầu hết mọi người đều đang dùng sản phẩm chăm sóc da",
+            "Vì sản phẩm làm đẹp rẻ nhất",
             "Vì không cần hiểu biết gì"
           ],
           "correctIndex": 1,
@@ -3177,7 +3396,8 @@
           "options": [
             "Giúp bán được ngay",
             "Không giúp gì",
-            "Có thêm dịp gặp gỡ, hỏi thăm thường xuyên"
+            "Có thêm dịp gặp gỡ, hỏi thăm thường xuyên",
+            "Giúp khỏi phải hỏi thăm"
           ],
           "correctIndex": 2,
           "explanation": "Chăm sóc da là việc hằng ngày nên dễ duy trì liên lạc."
@@ -3185,21 +3405,23 @@
         {
           "prompt": "Từ một khách hàng làm đẹp, có thể mở rộng thế nào?",
           "options": [
+            "Giảm giá cho khách để giữ chân",
             "Phục vụ thêm các nhu cầu của gia đình khách",
             "Chỉ bán cho mỗi khách đó",
             "Ép khách giới thiệu người khác"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Khách hài lòng thường muốn dùng thêm cho gia đình."
         },
         {
           "prompt": "Nhóm nào thường thích chủ đề làm đẹp?",
           "options": [
             "Chỉ người lớn tuổi",
+            "Chỉ người làm trong ngành làm đẹp",
             "Các bạn trẻ thích chăm sóc bản thân",
             "Không ai cả"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Hiểu nhóm khách giúp chọn chủ đề phù hợp."
         },
         {
@@ -3207,9 +3429,10 @@
           "options": [
             "Giới thiệu thật nhiều sản phẩm",
             "Chê làn da của khách",
+            "So sánh khách với người mẫu",
             "Hỏi và hiểu làn da, nhu cầu của khách"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Tư vấn đúng nhu cầu thì khách mới tin."
         }
       ]
@@ -3249,7 +3472,8 @@
           "options": [
             "Bột đường",
             "Chất béo",
-            "Vitamin và khoáng chất"
+            "Vitamin và khoáng chất",
+            "Đạm"
           ],
           "correctIndex": 2,
           "explanation": "Cần lượng nhỏ nhưng thiếu thì ảnh hưởng tới cơ thể."
@@ -3257,21 +3481,23 @@
         {
           "prompt": "Thực phẩm bổ sung có phải là thuốc không?",
           "options": [
+            "Có, nếu dùng đủ liều",
             "Không, thực phẩm bổ sung không phải là thuốc",
             "Có, dùng thay thuốc được",
             "Tuỳ loại"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Không bao giờ nói thực phẩm bổ sung chữa bệnh hay thay thuốc."
         },
         {
           "prompt": "Khách đang điều trị bệnh hỏi có nên ngừng thuốc để dùng thực phẩm bổ sung không. Nên trả lời thế nào?",
           "options": [
             "Nên ngừng thuốc",
+            "Giảm dần thuốc theo cảm nhận",
             "Không ngừng thuốc, hãy hỏi bác sĩ điều trị",
             "Dùng cả hai, không cần hỏi ai"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Việc dùng thuốc là của bác sĩ. Mình không tư vấn thay."
         },
         {
@@ -3279,9 +3505,10 @@
           "options": [
             "Giới thiệu sản phẩm ngay",
             "Nói về bệnh tật để khách lo",
+            "Hỏi khách đang uống thuốc gì",
             "Hỏi thói quen ăn uống của khách trước"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Hiểu thói quen của khách thì câu chuyện mới gần gũi, không gây sợ hãi."
         }
       ]
@@ -3298,7 +3525,8 @@
           "options": [
             "Khách, sau khi tự nhìn, ngửi, sờ",
             "Người demo",
-            "Tờ giới thiệu"
+            "Tờ giới thiệu",
+            "Người đứng xem bên cạnh"
           ],
           "correctIndex": 0,
           "explanation": "Khách tự kết luận thì tin chắc hơn."
@@ -3306,21 +3534,23 @@
         {
           "prompt": "Thay vì nói \"rất thơm\", người demo nên nói gì?",
           "options": [
+            "\"Ai dùng cũng khen\"",
             "\"Thơm nhất thị trường\"",
             "\"Chị ngửi thử xem thấy thế nào?\"",
             "Không nói gì"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Hỏi cảm nhận thay vì tự khẳng định."
         },
         {
           "prompt": "Khách nói \"cũng bình thường\". Bạn nên làm gì?",
           "options": [
             "Nói lại rằng sản phẩm rất tốt",
+            "Hỏi khách có muốn mua không",
             "Kết thúc buổi demo",
             "Hỏi khách thích điều gì, chưa thích điều gì"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Lắng nghe giúp hiểu nhu cầu thật của khách."
         },
         {
@@ -3328,6 +3558,7 @@
           "options": [
             "Chọn một demo ngắn nhất để khách tự thử",
             "Nói thật nhanh mọi thứ",
+            "Bỏ qua phần thử, chỉ nói giá",
             "Hẹn hôm khác và không demo gì"
           ],
           "correctIndex": 0,
@@ -3338,7 +3569,8 @@
           "options": [
             "Nói có để khách yên tâm",
             "Nói rõ đây không phải thuốc, việc chữa bệnh hỏi bác sĩ",
-            "Nói chắc chắn không"
+            "Nói chắc chắn không",
+            "Đổi sang chủ đề khác"
           ],
           "correctIndex": 1,
           "explanation": "Không bao giờ khẳng định công dụng chữa bệnh."
@@ -3346,11 +3578,12 @@
         {
           "prompt": "Sau buổi demo, khách chưa muốn mua. Nên làm gì?",
           "options": [
+            "Giảm giá ngay để khách mua",
             "Năn nỉ khách mua",
             "Không liên lạc nữa",
             "Cảm ơn, để lại thông tin và hẹn hỏi thăm sau"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Giữ quan hệ tốt, khách có thể quay lại khi cần."
         }
       ]
@@ -3366,10 +3599,11 @@
           "prompt": "Trong phân phối truyền thống, hàng đi qua những ai?",
           "options": [
             "Đi thẳng từ công ty tới người dùng",
+            "Chỉ qua nhân viên công ty",
             "Chỉ qua một người bán",
             "Nhiều tầng trung gian như tổng đại lý, đại lý, cửa hàng"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Mỗi tầng trung gian đều cộng thêm chi phí."
         },
         {
@@ -3377,6 +3611,7 @@
           "options": [
             "Từ công ty tới người dùng qua nhà phân phối",
             "Qua nhiều tổng đại lý",
+            "Qua các sàn thương mại điện tử",
             "Chỉ bán ở siêu thị"
           ],
           "correctIndex": 0,
@@ -3387,7 +3622,8 @@
           "options": [
             "Mua qua người giới thiệu mình",
             "Mua thẳng từ công ty",
-            "Mua ở chợ"
+            "Mua ở chợ",
+            "Mua của nhà phân phối khác giá rẻ hơn"
           ],
           "correctIndex": 1,
           "explanation": "Không ai phải mua hàng qua tuyến trên."
@@ -3395,17 +3631,19 @@
         {
           "prompt": "Phần chi phí trung gian trong bán trực tiếp được dùng thế nào?",
           "options": [
+            "Dùng để quảng cáo trên truyền hình",
             "Bị mất đi",
             "Cộng thêm vào giá",
             "Trả cho nhà phân phối làm việc bán hàng và chăm sóc khách"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Nhà phân phối làm thay các khâu lưu thông và được trả cho phần việc đó."
         },
         {
           "prompt": "Khi giải thích mô hình này, nên tránh điều gì?",
           "options": [
             "Hứa hẹn thu nhập",
+            "Nói về sản phẩm",
             "Vẽ sơ đồ cho dễ hiểu",
             "Trả lời câu hỏi"
           ],
@@ -3445,6 +3683,7 @@
           "options": [
             "Vì công ty không cần bán",
             "Nhà phân phối làm thay khâu lưu thông, bán hàng",
+            "Vì công ty làm luôn cả bán lẻ",
             "Vì không có khách hàng"
           ],
           "correctIndex": 1,
@@ -3455,7 +3694,8 @@
           "options": [
             "Chỉ mãi là khách",
             "Nhân viên công ty",
-            "Nhà phân phối, nếu họ muốn"
+            "Nhà phân phối, nếu họ muốn",
+            "Đại lý cấp một"
           ],
           "correctIndex": 2,
           "explanation": "Người dùng hài lòng có thể chọn kinh doanh."
@@ -3463,21 +3703,23 @@
         {
           "prompt": "Lợi ích \"đổi trả\" giúp gì cho khách?",
           "options": [
+            "Khách được mua giá rẻ hơn mọi nơi",
             "Khách yên tâm khi dùng thử",
             "Không giúp gì",
             "Khách phải trả thêm phí"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Chính sách rõ ràng giúp khách tin."
         },
         {
           "prompt": "Khi kể về ba bên cùng có lợi, nên nói theo cách nào?",
           "options": [
             "Nói mình được gì trước",
+            "Nói về hoa hồng mình nhận được",
             "Nói theo góc nhìn của người nghe: họ được gì",
             "Nói về công ty thật dài"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Người nghe quan tâm tới lợi ích của họ."
         }
       ]
@@ -3494,9 +3736,10 @@
           "options": [
             "Tiền, may mắn, quen biết",
             "Bằng cấp, tuổi tác, nơi ở",
+            "Vốn, mặt bằng, nhân viên",
             "Năng lực, thời gian, quy mô"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Kết quả là tích của ba yếu tố."
         },
         {
@@ -3504,7 +3747,8 @@
           "options": [
             "Thời gian",
             "Quy mô",
-            "Năng lực"
+            "Năng lực",
+            "Số người quen"
           ],
           "correctIndex": 0,
           "explanation": "Mỗi ngày ai cũng chỉ có 24 giờ."
@@ -3512,21 +3756,23 @@
         {
           "prompt": "Yếu tố nào tăng được nhờ hợp tác với nhiều người?",
           "options": [
+            "Tuổi nghề",
             "Thời gian",
             "Quy mô",
             "Tuổi tác"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Nhiều người cùng làm thì quy mô lớn hơn sức một người."
         },
         {
           "prompt": "Năng lực tăng lên bằng cách nào?",
           "options": [
             "Chờ kinh nghiệm tự tới",
+            "Mua thêm sản phẩm",
             "Không tăng được",
             "Học và thực hành đều đặn"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Đi học và làm nhiều thì năng lực tăng."
         },
         {
@@ -3534,6 +3780,7 @@
           "options": [
             "Kết quả bị giới hạn vì thời gian có hạn",
             "Kết quả tăng mãi",
+            "Kết quả tăng gấp đôi",
             "Không thay đổi gì"
           ],
           "correctIndex": 0,
@@ -3553,7 +3800,8 @@
           "options": [
             "Làm một lần, nhận lâu dài",
             "Làm một lần, nhận một lần",
-            "Không làm vẫn nhận"
+            "Không làm vẫn nhận",
+            "Xây một lần, nhận lâu dài"
           ],
           "correctIndex": 1,
           "explanation": "Rau thu hoạch xong phải trồng lại."
@@ -3561,17 +3809,19 @@
         {
           "prompt": "\"Trồng cây\" ví với cách làm nào?",
           "options": [
+            "Không cần làm vẫn nhận ngay",
             "Làm một lần, nhận một lần",
             "Không cần chăm sóc",
             "Xây một lần, nhận lâu dài"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Cây cần thời gian chăm sóc nhưng cho trái nhiều mùa."
         },
         {
           "prompt": "Trồng cây cần điều gì?",
           "options": [
             "Kiên nhẫn và chăm sóc đều đặn",
+            "Trồng thật nhiều cùng lúc",
             "Không cần làm gì",
             "Chỉ cần may mắn"
           ],
@@ -3583,6 +3833,7 @@
           "options": [
             "Một lần bán hàng lớn",
             "Hệ thống khách hàng và đội nhóm được xây dựng",
+            "Một món quà tặng khách",
             "Một món hàng đắt tiền"
           ],
           "correctIndex": 1,
@@ -3593,7 +3844,8 @@
           "options": [
             "Bỏ ngay công việc hiện tại",
             "Không cần làm gì",
-            "Cân nhắc giữa việc chỉ làm một lần và xây dựng điều lâu dài"
+            "Cân nhắc giữa việc chỉ làm một lần và xây dựng điều lâu dài",
+            "Chỉ nên làm việc nhanh có tiền"
           ],
           "correctIndex": 2,
           "explanation": "Đây là bài suy nghĩ về lựa chọn, không phải lời khuyên bỏ việc."
@@ -3633,17 +3885,19 @@
         {
           "prompt": "Cách nào phụ thuộc nhiều nhất vào thời gian của bản thân?",
           "options": [
+            "Không cách nào phụ thuộc thời gian",
             "Làm chủ hệ thống",
             "Đầu tư",
             "Làm công và làm tư"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Nghỉ làm thì thu nhập dừng."
         },
         {
           "prompt": "Làm chủ hệ thống khác làm tư ở điểm nào?",
           "options": [
             "Có nhiều người cùng làm trong hệ thống",
+            "Làm chủ hệ thống phải bỏ vốn lớn hơn",
             "Không cần làm gì",
             "Không có khác biệt"
           ],
@@ -3655,6 +3909,7 @@
           "options": [
             "Có, nên bỏ ngay",
             "Không, chỉ giúp hiểu các cách tạo thu nhập",
+            "Có, nếu đã có khách hàng",
             "Có, nếu muốn giàu"
           ],
           "correctIndex": 1,
@@ -3665,7 +3920,8 @@
           "options": [
             "Không cần gì",
             "Chỉ cần may mắn",
-            "Có vốn và hiểu biết"
+            "Có vốn và hiểu biết",
+            "Có nhiều thời gian rảnh"
           ],
           "correctIndex": 2,
           "explanation": "Đầu tư cần vốn và kiến thức, không phải ai cũng bắt đầu được ngay."
@@ -3682,17 +3938,19 @@
         {
           "prompt": "So với tự mở một cửa hàng, điểm khác biệt của mô hình này là gì?",
           "options": [
+            "Phải có giấy phép kinh doanh riêng",
             "Phải thuê mặt bằng",
             "Phải tự sản xuất hàng",
             "Không phải bỏ vốn lớn ban đầu nên ít rủi ro"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Công ty lo sản xuất, kho bãi, giao hàng; người làm tập trung vào khách hàng."
         },
         {
           "prompt": "\"Không phụ thuộc điểm xuất phát\" nghĩa là gì?",
           "options": [
             "Ai bắt đầu từ đâu cũng có thể học và làm",
+            "Ai có nhiều tiền thì đi nhanh hơn",
             "Chỉ người có bằng cấp mới làm được",
             "Người đến trước luôn hơn người đến sau"
           ],
@@ -3704,6 +3962,7 @@
           "options": [
             "Chỉ ở văn phòng công ty",
             "Tại nhà, mọi lúc mọi nơi",
+            "Chỉ ở cửa hàng của công ty",
             "Chỉ vào cuối tuần"
           ],
           "correctIndex": 1,
@@ -3714,7 +3973,8 @@
           "options": [
             "Nhờ người khác làm thay mình",
             "Chỉ lo cho bản thân",
-            "Giúp người khác thành công thì mình cũng phát triển"
+            "Giúp người khác thành công thì mình cũng phát triển",
+            "Chỉ giúp những người giàu có"
           ],
           "correctIndex": 2,
           "explanation": "Thành công của đội nhóm gắn với thành công của từng người."
@@ -3722,11 +3982,12 @@
         {
           "prompt": "Ngoài thu nhập, công việc này còn giúp phát triển điều gì?",
           "options": [
+            "Chỉ thêm thời gian rảnh",
             "Bản thân: kỹ năng và kinh nghiệm được tích luỹ",
             "Không có gì thêm",
             "Chỉ thêm quen biết"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Kinh nghiệm học được không mất đi mà tích luỹ dần."
         }
       ]
@@ -3742,6 +4003,7 @@
           "prompt": "\"Bài 1\" có thể diễn ra ở đâu?",
           "options": [
             "Ở bất cứ đâu: buổi OPP, tại nhà, chuyên đề, tiệc, du lịch",
+            "Chỉ trong buổi họp lớn của công ty",
             "Chỉ ở văn phòng công ty",
             "Chỉ qua điện thoại"
           ],
@@ -3753,6 +4015,7 @@
           "options": [
             "Chỉ uống cà phê làm quen",
             "Nói OPP hoàn chỉnh và cho thử nghiệm sản phẩm",
+            "Chỉ cho xem bảng giá",
             "Chỉ đưa tài liệu"
           ],
           "correctIndex": 1,
@@ -3763,7 +4026,8 @@
           "options": [
             "Để buổi gặp dài hơn",
             "Không cần hoàn chỉnh",
-            "Để người nghe có đủ thông tin, không hiểu sai"
+            "Để người nghe có đủ thông tin, không hiểu sai",
+            "Để người nghe ký ngay"
           ],
           "correctIndex": 2,
           "explanation": "Nói nửa vời dễ khiến người nghe hiểu lầm."
@@ -3771,21 +4035,23 @@
         {
           "prompt": "Bài 1 thuộc phần nào trong 8 chìa khoá?",
           "options": [
+            "Tổ chức",
             "Định vị",
             "Kế hoạch",
             "Thành tích"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Bài 1 và bài 2 giúp người mới định vị hướng đi."
         },
         {
           "prompt": "Người mới chưa tự nói OPP được. Nên làm gì?",
           "options": [
             "Bỏ qua phần OPP",
+            "Gửi tài liệu cho người mới tự đọc",
             "Mời tuyến trên hỗ trợ trong buổi bài 1",
             "Hoãn đến khi tự tin hẳn"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Có người hỗ trợ thì bài 1 vẫn đủ nội dung."
         }
       ]
@@ -3802,9 +4068,10 @@
           "options": [
             "Nấu ăn, lái xe, bơi, đàn",
             "Đọc, viết, nghe, nói",
+            "Gọi điện, nhắn tin, đăng bài, chụp ảnh",
             "Hẹn gặp, phân tích chế độ, thử nghiệm sản phẩm, trả lời câu hỏi"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Bốn kỹ năng cốt lõi để tự làm việc."
         },
         {
@@ -3812,7 +4079,8 @@
           "options": [
             "Khi đã thành thạo cả bốn kỹ năng",
             "Ngay ngày đầu",
-            "Không bao giờ"
+            "Không bao giờ",
+            "Sau một tuần, dù chưa thạo"
           ],
           "correctIndex": 0,
           "explanation": "Thành thạo trước thì tự tin và hiệu quả hơn."
@@ -3820,21 +4088,23 @@
         {
           "prompt": "\"Phân tích chế độ\" là gì?",
           "options": [
+            "Bàn về chế độ làm việc giờ hành chính",
             "Phân tích chế độ ăn uống",
             "Giải thích cách mô hình và kế hoạch trả thưởng vận hành",
             "Nói về lương công ty"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Đây là phần trình bày cơ hội kinh doanh."
         },
         {
           "prompt": "\"Thử nghiệm sản phẩm\" là gì?",
           "options": [
             "Đọc tờ giới thiệu",
+            "Gửi mẫu thử qua bưu điện",
             "Nói giá sản phẩm",
             "Demo để khách tự trải nghiệm"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Khách tự thấy thì tin hơn."
         },
         {
@@ -3842,6 +4112,7 @@
           "options": [
             "Đi cùng tuyến trên, xem làm rồi tự làm",
             "Chỉ đọc tài liệu",
+            "Chỉ xem video trên mạng",
             "Tự mày mò một mình"
           ],
           "correctIndex": 0,
@@ -3861,7 +4132,8 @@
           "options": [
             "Thật nhiều thuật ngữ chuyên môn",
             "Hỏi người nghe đang quan tâm điều gì",
-            "Đọc nguyên một bản slide dài"
+            "Đọc nguyên một bản slide dài",
+            "Kể ngay thu nhập của mình"
           ],
           "correctIndex": 1,
           "explanation": "Hiểu nhu cầu của họ trước rồi mới trình bày."
@@ -3869,17 +4141,19 @@
         {
           "prompt": "Cách trình bày nào dễ hiểu nhất?",
           "options": [
+            "Đọc thật nhiều số liệu",
             "Nói nhiều ý cùng lúc cho đầy đủ",
             "Chia sẻ 2–3 ý chính bằng ví dụ gần gũi",
             "Chỉ nói về bản thân mình"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Ít ý, ví dụ gần gũi thì người nghe dễ nhớ."
         },
         {
           "prompt": "Khi nói về kết quả, bạn nên làm gì?",
           "options": [
             "Nói thật, không hứa hẹn chắc chắn về kết quả",
+            "Chỉ kể những người thành công nhất",
             "Cam kết ai cũng sẽ thành công",
             "Tránh trả lời mọi câu hỏi"
           ],
@@ -3891,6 +4165,7 @@
           "options": [
             "Một bước tiếp theo rõ ràng và nhẹ nhàng",
             "Im lặng rồi chia tay",
+            "Một lời hứa về thu nhập",
             "Ép họ quyết định ngay hôm nay"
           ],
           "correctIndex": 0,
@@ -3901,7 +4176,8 @@
           "options": [
             "Đoán một câu trả lời cho xong",
             "Nói thật là chưa rõ và hẹn tìm hiểu, hoặc nhờ người hỗ trợ trả lời",
-            "Lảng sang chuyện khác"
+            "Lảng sang chuyện khác",
+            "Nói chắc chắn cho người nghe yên tâm"
           ],
           "correctIndex": 1,
           "explanation": "Trung thực giữ được lòng tin. Không cần biết hết mọi câu trả lời."
@@ -3930,21 +4206,23 @@
         {
           "prompt": "Vì sao OPP bắt đầu bằng ước mơ, nhu cầu?",
           "options": [
+            "Để người nghe thấy áp lực",
             "Để nói cho dài",
             "Để người nghe thấy câu chuyện liên quan tới mình",
             "Không có lý do"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Người nghe quan tâm khi thấy mục tiêu của họ."
         },
         {
           "prompt": "Bước \"vì sao chọn công cụ này\" nói về điều gì?",
           "options": [
             "Thu nhập của người trình bày",
+            "Giá sản phẩm của các hãng",
             "Chuyện riêng của tuyến trên",
             "Những điểm khác biệt của mô hình"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Giải thích vì sao mô hình phù hợp, không khoe thu nhập."
         },
         {
@@ -3952,6 +4230,7 @@
           "options": [
             "Mời nhẹ nhàng, để người nghe tự quyết",
             "Ép ký ngay",
+            "Hứa thưởng nếu ký hôm nay",
             "Không mời gì"
           ],
           "correctIndex": 0,
@@ -3962,7 +4241,8 @@
           "options": [
             "Bỏ qua bước này",
             "Hỏi thêm về mong muốn cho gia đình, thời gian, sức khoẻ",
-            "Kể ước mơ của mình thay"
+            "Kể ước mơ của mình thay",
+            "Nói ước mơ chung chung cho xong"
           ],
           "correctIndex": 1,
           "explanation": "Câu hỏi gợi mở giúp người nghe tự nghĩ."
@@ -3990,17 +4270,19 @@
         {
           "prompt": "Vì sao hẹn giờ với tuyến trên trước khi gọi khách?",
           "options": [
+            "Để tuyến trên gọi khách thay mình",
             "Để tuyến trên quyết định thay mình",
             "Để có cớ hoãn hẹn",
             "Để chắc người hỗ trợ có mặt được"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Hẹn khách rồi mới hỏi tuyến trên dễ phải đổi giờ."
         },
         {
           "prompt": "Khách đổi giờ hẹn. Bạn làm gì?",
           "options": [
             "Báo ngay cho tuyến trên và xác nhận giờ mới",
+            "Giữ nguyên giờ cũ, không báo ai",
             "Tự đi một mình, không báo",
             "Huỷ luôn buổi hẹn"
           ],
@@ -4012,6 +4294,7 @@
           "options": [
             "Chuyện riêng tư của khách",
             "Mối quan hệ, nhu cầu và điều họ quan tâm",
+            "Thu nhập của khách",
             "Không cần kể gì"
           ],
           "correctIndex": 1,
@@ -4022,7 +4305,8 @@
           "options": [
             "Không giới thiệu gì",
             "Nói là sếp của mình",
-            "Giới thiệu là người có kinh nghiệm, mình rất quý"
+            "Giới thiệu là người có kinh nghiệm, mình rất quý",
+            "Nói là người kiếm nhiều tiền nhất"
           ],
           "correctIndex": 2,
           "explanation": "Lời giới thiệu tốt giúp khách tin và chịu lắng nghe."
@@ -4058,17 +4342,19 @@
         {
           "prompt": "Để C muốn gặp A, B nên làm gì?",
           "options": [
+            "Hứa C sẽ kiếm được nhiều tiền",
             "Nói đúng điều C đang quan tâm",
             "Kể thật nhiều về A",
             "Giữ bí mật cho tới lúc gặp"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Khi chạm đúng nhu cầu, C sẽ tự thấy muốn gặp."
         },
         {
           "prompt": "Thứ nào cũng là một \"A\" của chính bạn?",
           "options": [
             "Câu chuyện vì sao bạn tham gia",
+            "Bảng giá sản phẩm",
             "Số điện thoại của bạn",
             "Lịch tuần của bạn"
           ],
@@ -4080,6 +4366,7 @@
           "options": [
             "Cùng làm, mỗi người một phần",
             "Để tuyến trên lo hết",
+            "Mỗi người làm riêng một nơi",
             "Tự làm, không cần ai"
           ],
           "correctIndex": 0,
@@ -4090,7 +4377,8 @@
           "options": [
             "Vì B không được phép nói",
             "Vì để A hỗ trợ thì C dễ tin hơn và B học được cách làm",
-            "Vì C không thích nghe B"
+            "Vì C không thích nghe B",
+            "Vì B phải im lặng suốt buổi"
           ],
           "correctIndex": 1,
           "explanation": "Mượn sức người hỗ trợ giúp buổi gặp hiệu quả hơn, đồng thời B học được qua mỗi lần."
@@ -4107,21 +4395,23 @@
         {
           "prompt": "Nhóm nào gồm đủ 6 thứ có thể ABC?",
           "options": [
+            "Văn phòng, xe cộ, nhà cửa, đồ hiệu, chuyến bay, khách sạn",
             "Sản phẩm, kết quả bản thân, giá trị, môi trường, lãnh đạo, cơ hội",
             "Giá, khuyến mãi, quà tặng, chiết khấu, thưởng, du lịch",
             "Chỉ sản phẩm"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "A có thể nâng B ở nhiều mặt, không chỉ sản phẩm."
         },
         {
           "prompt": "\"Môi trường\" công ty gồm những gì?",
           "options": [
             "Toà nhà văn phòng",
+            "Số lượng nhân viên văn phòng",
             "Sản phẩm, chế độ, văn hoá, tầm nhìn, sứ mệnh",
             "Giá cổ phiếu"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Nói về môi trường giúp C hiểu nơi mình sẽ tham gia."
         },
         {
@@ -4129,9 +4419,10 @@
           "options": [
             "Số người trong nhóm",
             "Lương của trưởng nhóm",
+            "Các khoản phạt trong nhóm",
             "Văn hoá, quy trình, câu chuyện thành công"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Hệ thống tốt giúp người mới yên tâm."
         },
         {
@@ -4139,7 +4430,8 @@
           "options": [
             "Mối quan hệ, nhu cầu và điều C quan tâm",
             "Chuyện riêng tư của C",
-            "Không cần kể gì"
+            "Không cần kể gì",
+            "Số tiền C đang có"
           ],
           "correctIndex": 0,
           "explanation": "A biết trước người sắp gặp thì nâng đúng điều C cần."
@@ -4147,11 +4439,12 @@
         {
           "prompt": "B cần làm gì khi A đang nói?",
           "options": [
+            "Ra ngoài nghe điện thoại",
             "Nói chen vào",
             "Lắng nghe, gật đầu, không ngắt lời",
             "Dùng điện thoại"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Thái độ của B giúp C tin vào A."
         }
       ]
@@ -4198,6 +4491,7 @@
           "prompt": "Khi giới thiệu hai bên, giới thiệu ai trước?",
           "options": [
             "Người quan trọng hơn (tuyến trên)",
+            "Người nhỏ tuổi hơn",
             "Ứng viên",
             "Ai cũng được"
           ],
@@ -4209,6 +4503,7 @@
           "options": [
             "Để sau, tập trung vào buổi gặp",
             "Trả lời nhanh",
+            "Đưa điện thoại cho người khác trả lời",
             "Ra ngoài gọi lại"
           ],
           "correctIndex": 0,
@@ -4219,7 +4514,8 @@
           "options": [
             "Không cần trao đổi gì thêm",
             "Cùng rút kinh nghiệm và thống nhất bước tiếp theo",
-            "Để tuyến trên tự liên hệ ứng viên"
+            "Để tuyến trên tự liên hệ ứng viên",
+            "Hỏi tuyến trên được bao nhiêu hoa hồng"
           ],
           "correctIndex": 1,
           "explanation": "Rút kinh nghiệm sau mỗi buổi giúp lần sau tốt hơn và không bỏ sót ứng viên."
@@ -4236,17 +4532,19 @@
         {
           "prompt": "Câu chuyện của bản thân nên bắt đầu bằng gì?",
           "options": [
+            "Thành tích của tuyến trên",
             "Mình kiếm được bao nhiêu",
             "Chuyện của người khác",
             "Vì sao mình bắt đầu làm"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Lý do thật của mình chạm tới người nghe."
         },
         {
           "prompt": "Điều quan trọng nhất khi kể là gì?",
           "options": [
             "Chân thật",
+            "Kể thật nhanh",
             "Kể thật hoành tráng",
             "Thêm chi tiết cho hấp dẫn"
           ],
@@ -4258,6 +4556,7 @@
           "options": [
             "Càng nhiều càng tốt",
             "Hợp lý, liên quan tới người nghe",
+            "Chỉ kể thành công",
             "Chỉ kể khó khăn"
           ],
           "correctIndex": 1,
@@ -4268,7 +4567,8 @@
           "options": [
             "Để kể hai lần",
             "Không cần thiết",
-            "Để dùng theo thời lượng buổi gặp"
+            "Để dùng theo thời lượng buổi gặp",
+            "Để có bản cho tuyến trên duyệt"
           ],
           "correctIndex": 2,
           "explanation": "Có lúc chỉ có 1 phút, có lúc có 10 phút."
@@ -4276,11 +4576,12 @@
         {
           "prompt": "Câu chuyện có nên nói về thu nhập của mình không?",
           "options": [
+            "Có, nếu người nghe hỏi kỹ",
             "Không, tập trung vào thay đổi trong cuộc sống và lý do",
             "Có, càng cụ thể càng tốt",
             "Có, để thuyết phục"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Không nêu thu nhập, tránh tạo kỳ vọng sai."
         }
       ]
@@ -4296,6 +4597,7 @@
           "prompt": "\"Chuyển chi tiêu thành tài sản\" bắt đầu từ đâu?",
           "options": [
             "Đổi chỗ mua những thứ gia đình vẫn dùng hằng ngày",
+            "Mở một cửa hàng riêng",
             "Mua thêm thật nhiều hàng",
             "Vay tiền để đầu tư"
           ],
@@ -4307,6 +4609,7 @@
           "options": [
             "Bán cho thật nhiều người cùng lúc",
             "Giúp người khác làm tương tự",
+            "Ngừng dùng sản phẩm cũ hoàn toàn",
             "Không cần làm gì thêm"
           ],
           "correctIndex": 1,
@@ -4317,7 +4620,8 @@
           "options": [
             "Có, càng nhiều càng tốt",
             "Có, nếu được giảm giá",
-            "Không, chỉ dùng theo nhu cầu thật"
+            "Không, chỉ dùng theo nhu cầu thật",
+            "Có, nếu sắp đến cuối tháng"
           ],
           "correctIndex": 2,
           "explanation": "Mua theo nhu cầu thật, không ôm hàng."
@@ -4325,21 +4629,23 @@
         {
           "prompt": "Vì sao gọi là \"tài sản\"?",
           "options": [
+            "Vì được cộng điểm thưởng ngay",
             "Hệ thống khách dùng lâu dài mang lại giá trị bền",
             "Vì hàng hoá tăng giá",
             "Vì được cất trong kho"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Tài sản ở đây là mạng lưới khách hàng thật."
         },
         {
           "prompt": "Khách chỉ muốn dùng sản phẩm, không muốn kinh doanh. Nên làm gì?",
           "options": [
             "Ép họ kinh doanh",
+            "Bán cho họ thật nhiều một lần",
             "Tôn trọng và chăm sóc họ như một khách hàng",
             "Ngừng liên lạc"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Mỗi người có lựa chọn riêng."
         }
       ]
@@ -4387,6 +4693,7 @@
           "options": [
             "21%",
             "50%",
+            "30%",
             "10%"
           ],
           "correctIndex": 0,
@@ -4397,7 +4704,8 @@
           "options": [
             "Số người trong nhóm",
             "Tổng điểm PV của cả nhóm trong tháng",
-            "Số năm tham gia"
+            "Số năm tham gia",
+            "Số sản phẩm mình tự dùng"
           ],
           "correctIndex": 1,
           "explanation": "Doanh số sản phẩm của nhóm quyết định mốc %."
@@ -4405,17 +4713,19 @@
         {
           "prompt": "Phần hoa hồng của mình được tính thế nào khi có nhóm tuyến dưới?",
           "options": [
+            "Chia đều cho cả nhóm",
             "Cộng thêm phần của tuyến dưới",
             "Lấy hết của tuyến dưới",
             "Lấy hoa hồng cả nhóm trừ phần của từng nhóm tuyến dưới"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Mỗi nhóm nhận phần của mình, mình nhận phần chênh lệch."
         },
         {
           "prompt": "Một nhóm đạt 600 PV, nhóm tuyến dưới đạt 200 PV. % chênh lệch mình nhận trên doanh số nhóm tuyến dưới là bao nhiêu?",
           "options": [
             "3% (6% trừ 3%)",
+            "12%",
             "6%",
             "9%"
           ],
@@ -4427,6 +4737,7 @@
           "options": [
             "Các mốc PV",
             "Hứa một mức thu nhập cụ thể",
+            "Ví dụ cách tính trên giấy",
             "Cách trừ phần của nhóm tuyến dưới"
           ],
           "correctIndex": 1,
@@ -4473,7 +4784,8 @@
           "options": [
             "Silver",
             "Gold",
-            "Sapphire"
+            "Sapphire",
+            "Ruby"
           ],
           "correctIndex": 2,
           "explanation": "Sapphire nằm giữa Platinum và Emerald. Theo kế hoạch trả thưởng hiện hành, có thể thay đổi."
@@ -4481,21 +4793,23 @@
         {
           "prompt": "Từ Emerald trở lên, danh hiệu dựa chủ yếu vào điều gì?",
           "options": [
+            "Thu nhập của người giới thiệu",
             "Số nhánh tuyến dưới mình giúp đạt danh hiệu",
             "Doanh số cá nhân",
             "Số năm tham gia"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Danh hiệu cao gắn với việc giúp người khác thành công."
         },
         {
           "prompt": "Danh hiệu Silver đầu tiên dựa vào điều gì?",
           "options": [
             "Số người giới thiệu",
+            "Số buổi học đã dự",
             "Nhóm đạt mốc 21% trong tháng",
             "Thời gian tham gia"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Mốc 21% tương ứng 10.000 PV nhóm. Theo kế hoạch trả thưởng hiện hành, có thể thay đổi."
         },
         {
@@ -4503,9 +4817,10 @@
           "options": [
             "Có, để tạo động lực",
             "Có, nếu người nghe hỏi",
+            "Có, nếu cố gắng hết sức",
             "Không, không hứa thời gian hay thu nhập"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Mỗi người có tốc độ khác nhau, không hứa hẹn."
         }
       ]
@@ -4522,7 +4837,8 @@
           "options": [
             "Khi mình đạt 21% và có nhóm tuyến dưới cũng đạt 21%",
             "Ngay khi mở thẻ",
-            "Khi có 10 người tuyến dưới"
+            "Khi có 10 người tuyến dưới",
+            "Khi đạt 6% trong tháng"
           ],
           "correctIndex": 0,
           "explanation": "Giúp tuyến dưới đạt 21% thì nhận 6% trên doanh số nhóm đó. Theo kế hoạch trả thưởng hiện hành, có thể thay đổi."
@@ -4530,21 +4846,23 @@
         {
           "prompt": "Có 1 nhóm tuyến dưới đạt 21%. Nhóm cá nhân cần bao nhiêu PV để nhận đủ 6%?",
           "options": [
+            "1.000 PV",
             "200 PV",
             "10.000 PV",
             "Không cần"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Nếu nhóm cá nhân đạt 4.000 PV thì nhận một phần. Theo kế hoạch trả thưởng hiện hành, có thể thay đổi."
         },
         {
           "prompt": "Có từ 2 nhóm tuyến dưới đạt 21% thì sao?",
           "options": [
             "Vẫn cần 10.000 PV",
+            "Phải gấp đôi doanh số nhóm cá nhân",
             "Không được nhận",
             "Không cần doanh số nhóm cá nhân vẫn nhận 6%"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Theo kế hoạch trả thưởng hiện hành, có thể thay đổi."
         },
         {
@@ -4552,6 +4870,7 @@
           "options": [
             "Nhóm cá nhân đạt từ 20.000 PV trong tháng",
             "Mọi nhà phân phối",
+            "Nhóm có nhiều người nhất",
             "Người mới tham gia"
           ],
           "correctIndex": 0,
@@ -4562,7 +4881,8 @@
           "options": [
             "Có 1 nhóm đạt 3%",
             "Có 3 nhóm tuyến dưới đạt 21% trong cùng tháng",
-            "Ngay khi lên Silver"
+            "Ngay khi lên Silver",
+            "Khi có 3 khách hàng mới"
           ],
           "correctIndex": 1,
           "explanation": "Nhận 1% trên doanh số các nhóm tầng thứ hai đạt 21%. Theo kế hoạch trả thưởng hiện hành, có thể thay đổi."
@@ -4602,17 +4922,19 @@
         {
           "prompt": "Tiền thưởng CSI tính trên doanh số nào?",
           "options": [
+            "Doanh số nhóm tuyến dưới",
             "Doanh số cả công ty",
             "Doanh số tuyến trên",
             "Doanh số khách hàng tự đặt hàng của mình"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Mức % CSI giảm dần khi % hoa hồng thành tích tăng. Theo kế hoạch trả thưởng hiện hành, có thể thay đổi."
         },
         {
           "prompt": "Bronze Foundation và Bronze Builder có thời hạn không?",
           "options": [
             "Có, trong 12 trên 18 tháng kể từ lần đầu nhận",
+            "Có, chỉ trong 3 tháng đầu",
             "Không, nhận mãi mãi",
             "Chỉ một tháng"
           ],
@@ -4624,6 +4946,7 @@
           "options": [
             "Một số tiền cố định",
             "Một phần nhỏ doanh số, chia theo tỉ lệ cho những người cùng đạt danh hiệu trong năm",
+            "Bằng số người tuyến dưới",
             "Không có quy định"
           ],
           "correctIndex": 1,
@@ -4634,7 +4957,8 @@
           "options": [
             "Nói số tiền càng lớn càng tốt",
             "Không cần nói điều kiện",
-            "Chỉ nói điều kiện, không hứa số tiền"
+            "Chỉ nói điều kiện, không hứa số tiền",
+            "So sánh với thu nhập ngành khác"
           ],
           "correctIndex": 2,
           "explanation": "Người nghe cần hiểu cách nhận, kết quả tuỳ việc làm thật."
@@ -4670,21 +4994,23 @@
         {
           "prompt": "Ngoài ba trụ, còn cần niềm tin vào điều gì?",
           "options": [
+            "Mức thu nhập người khác kể",
             "May mắn",
             "Chính bản thân mình",
             "Lời hứa của người khác"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Tin mình làm được thì mới bắt đầu hành động."
         },
         {
           "prompt": "Cách tốt nhất để người mới tin vào sản phẩm là gì?",
           "options": [
             "Đọc thật nhiều tài liệu",
+            "Xem quảng cáo trên mạng",
             "Nghe người khác khen",
             "Để họ tự dùng thử"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Trải nghiệm thật tạo niềm tin thật."
         },
         {
@@ -4692,6 +5018,7 @@
           "options": [
             "Họ thấy \"người giống mình cũng làm được\"",
             "Để khoe đội nhóm đông",
+            "Để người mới cảm thấy áp lực",
             "Không có lý do"
           ],
           "correctIndex": 0,
@@ -4702,7 +5029,8 @@
           "options": [
             "Khẳng định thật mạnh",
             "Mời họ tự tìm hiểu, đi tham quan",
-            "Bỏ qua"
+            "Bỏ qua",
+            "Nói rằng công ty không bao giờ sai"
           ],
           "correctIndex": 1,
           "explanation": "Tự tìm hiểu thì niềm tin chắc chắn hơn."
@@ -4719,17 +5047,19 @@
         {
           "prompt": "Khi nào nên liên hệ lại sau cuộc gặp?",
           "options": [
+            "Ngay khi vừa chia tay",
             "Trong vòng 1–2 ngày, khi họ còn nhớ",
             "Sau vài tháng",
             "Không bao giờ, chờ họ liên hệ"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Liên hệ sớm giúp cuộc trò chuyện không bị nguội."
         },
         {
           "prompt": "Tin nhắn theo dõi nên có nội dung gì?",
           "options": [
             "Lời cảm ơn và một câu hỏi mở về suy nghĩ của họ",
+            "Giá sản phẩm và đường link mua",
             "Nhắc đi nhắc lại một nội dung",
             "Trách họ chưa trả lời"
           ],
@@ -4741,6 +5071,7 @@
           "options": [
             "Không cần ghi gì",
             "Ngày trao đổi, điều họ quan tâm, hẹn lần sau",
+            "Số tiền họ chi tiêu",
             "Chỉ ghi tên"
           ],
           "correctIndex": 1,
@@ -4751,7 +5082,8 @@
           "options": [
             "Nhắn liên tục cho tới khi có trả lời",
             "Chờ vài ngày rồi hỏi thăm nhẹ nhàng một lần nữa",
-            "Xoá tên họ khỏi danh sách"
+            "Xoá tên họ khỏi danh sách",
+            "Nhờ người khác nhắn thay"
           ],
           "correctIndex": 1,
           "explanation": "Theo dõi đều đặn nhưng không làm phiền. Người ta có thể đang bận."
@@ -4759,11 +5091,12 @@
         {
           "prompt": "Mục đích chính của việc theo dõi sau cuộc gặp là gì?",
           "options": [
+            "Gửi thêm thật nhiều quảng cáo",
             "Thúc người kia quyết định ngay",
             "Giữ liên lạc và hiểu thêm điều họ quan tâm",
             "Kể thêm thật nhiều thông tin"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Theo dõi là để chăm sóc mối quan hệ và nắm được người kia đang nghĩ gì."
         }
       ]
@@ -4790,10 +5123,11 @@
           "prompt": "Bước \"định vị\" là gì?",
           "options": [
             "Chỉ chỗ ngồi trong buổi họp",
+            "Giao chỉ tiêu doanh số cho người mới",
             "Giúp người mới chọn hướng: tiêu dùng, làm thêm hay làm sự nghiệp",
             "Xếp hạng người mới"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Mỗi người có hướng đi riêng."
         },
         {
@@ -4801,9 +5135,10 @@
           "options": [
             "Phô tô tài liệu",
             "Làm thay người mới",
+            "Bắt người mới học thuộc lòng",
             "Hướng dẫn người mới làm được các bước như mình"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Người mới tự làm được thì đội nhóm mới lớn lên."
         },
         {
@@ -4811,7 +5146,8 @@
           "options": [
             "Giải đáp thắc mắc",
             "Sao chép quy trình",
-            "Bỏ qua để đi tiếp"
+            "Bỏ qua để đi tiếp",
+            "Định vị"
           ],
           "correctIndex": 0,
           "explanation": "Chưa hết thắc mắc thì khó đi tiếp."
@@ -4819,11 +5155,12 @@
         {
           "prompt": "Có nên bỏ qua bước xây niềm tin để đi nhanh không?",
           "options": [
+            "Có, nếu người mới vội",
             "Có, cho nhanh",
             "Không, thiếu niềm tin thì các bước sau không vững",
             "Tuỳ hứng"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Niềm tin là nền móng."
         }
       ]
@@ -4839,10 +5176,11 @@
           "prompt": "Nên hẹn buổi gặp thứ hai trong khoảng bao lâu?",
           "options": [
             "Sau một tháng",
+            "Ngay trong đêm hôm đó",
             "Trong 24–48 giờ",
             "Khi nào họ gọi lại"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Hẹn sớm khi người kia còn nhớ và còn hứng thú."
         },
         {
@@ -4850,9 +5188,10 @@
           "options": [
             "Bỏ qua phần đó",
             "Chỉ hỏi họ quyết định chưa",
+            "Nói lại y hệt buổi đầu",
             "Làm cho đủ phần còn thiếu"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Thiếu thông tin thì khó quyết định."
         },
         {
@@ -4860,7 +5199,8 @@
           "options": [
             "Để hiểu hoàn cảnh, công việc, sở thích, nhu cầu",
             "Để xem nhà to hay nhỏ",
-            "Để bán hàng cho cả nhà"
+            "Để bán hàng cho cả nhà",
+            "Để mượn đồ dùng"
           ],
           "correctIndex": 0,
           "explanation": "Hiểu hoàn cảnh thì tư vấn đúng."
@@ -4868,21 +5208,23 @@
         {
           "prompt": "Người kia nói \"để tôi suy nghĩ thêm\". Bạn nên làm gì?",
           "options": [
+            "Gửi thêm quảng cáo mỗi ngày",
             "Bỏ đi luôn",
             "Hỏi điều gì còn băn khoăn và hẹn thời gian gặp lại",
             "Ép quyết định ngay"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Giúp họ gỡ băn khoăn, không ép."
         },
         {
           "prompt": "Đến buổi hai, người kia báo bận đột xuất. Nên làm gì?",
           "options": [
             "Trách họ không giữ lời",
+            "Đến nhà họ chờ",
             "Không hẹn nữa",
             "Thông cảm và hẹn lại sớm nhất có thể"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Giữ thái độ dễ chịu, hẹn lại."
         },
         {
@@ -4890,6 +5232,7 @@
           "options": [
             "Lịch sự, tôn trọng không gian riêng của gia đình",
             "Xem xét kỹ đồ đạc",
+            "Chụp ảnh nhà đăng lên mạng",
             "Nói chuyện kinh doanh với mọi người trong nhà"
           ],
           "correctIndex": 0,
@@ -4928,7 +5271,8 @@
           "options": [
             "Nói nhiều nhất trong nhóm",
             "Thái độ tốt, cam kết dùng sản phẩm, đi học, dành thời gian, hành động",
-            "Có nhiều tiền"
+            "Có nhiều tiền",
+            "Hay hỏi về thu nhập"
           ],
           "correctIndex": 1,
           "explanation": "Hành động và cam kết quan trọng hơn lời nói."
@@ -4936,17 +5280,19 @@
         {
           "prompt": "Một người chỉ thích dùng sản phẩm. Nên định vị họ là gì?",
           "options": [
+            "Người làm toàn thời gian",
             "Ép trở thành thủ lĩnh",
             "Bỏ qua họ",
             "Khách hàng, và chăm sóc chu đáo"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Tôn trọng lựa chọn của từng người."
         },
         {
           "prompt": "Một người muốn kiếm thêm chút ít bằng cách bán cho người quen. Nên hỗ trợ thế nào?",
           "options": [
             "Dạy họ tứ đại công phu",
+            "Giao chỉ tiêu bán hàng hằng tháng",
             "Để họ tự mày mò",
             "Chỉ giao hàng cho họ"
           ],
@@ -4958,6 +5304,7 @@
           "options": [
             "Thủ lĩnh, vì nói rất hay",
             "Chưa phải thủ lĩnh, tiếp tục hỗ trợ theo nhu cầu thật",
+            "Giao ngay một nhóm cho họ quản lý",
             "Ngừng hỗ trợ hẳn"
           ],
           "correctIndex": 1,
@@ -4968,7 +5315,8 @@
           "options": [
             "Có, định vị một lần là xong",
             "Không cần định vị",
-            "Không, có thể thay đổi theo thời gian"
+            "Không, có thể thay đổi theo thời gian",
+            "Chỉ thay đổi khi tuyến trên quyết định"
           ],
           "correctIndex": 2,
           "explanation": "Khách hàng hôm nay có thể là thủ lĩnh ngày mai."
@@ -4985,17 +5333,19 @@
         {
           "prompt": "Nguyên tắc đầu tiên khi nghe lời từ chối là gì?",
           "options": [
+            "Hỏi lại cho người kia bối rối",
             "Phản bác ngay",
             "Im lặng bỏ đi",
             "Đồng ý trước với người nói"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Đồng ý trước giúp người kia thấy được lắng nghe."
         },
         {
           "prompt": "Mục đích của câu trả lời là gì?",
           "options": [
             "Mở thêm thông tin, không phải để tranh luận",
+            "Kết thúc cuộc gặp thật nhanh",
             "Thắng cuộc tranh luận",
             "Chứng minh người kia sai"
           ],
@@ -5007,6 +5357,7 @@
           "options": [
             "Có, phải trả lời ngay hết",
             "Không, cứ tự tin, câu nào chưa biết thì hẹn trả lời sau",
+            "Có, nếu không sẽ mất khách",
             "Không trả lời câu nào"
           ],
           "correctIndex": 1,
@@ -5017,7 +5368,8 @@
           "options": [
             "Lời hứa thu nhập",
             "Số liệu không rõ nguồn",
-            "Hình ảnh và câu chuyện thật"
+            "Hình ảnh và câu chuyện thật",
+            "Bảng xếp hạng thu nhập"
           ],
           "correctIndex": 2,
           "explanation": "Chuyện thật dễ tin và dễ nhớ."
@@ -5025,11 +5377,12 @@
         {
           "prompt": "Từ chối nên được nhìn nhận thế nào?",
           "options": [
+            "Là dấu hiệu nên đổi sản phẩm",
             "Là chuyện bình thường khi kinh doanh",
             "Là thất bại của bản thân",
             "Là lý do để bỏ cuộc"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Còn kinh doanh là còn có lời từ chối."
         }
       ]
@@ -5056,10 +5409,11 @@
           "prompt": "\"Theo\" nghĩa là gì?",
           "options": [
             "Làm theo mọi điều người kia nói",
+            "Nói theo đúng kịch bản có sẵn",
             "Đi theo người kia về nhà",
             "Lắng nghe và đồng cảm với quan điểm của người kia"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Được đồng cảm, người kia thấy mình cùng phía."
         },
         {
@@ -5067,6 +5421,7 @@
           "options": [
             "Kể trải nghiệm và đặt câu hỏi để người kia tự nghĩ",
             "Kéo người kia đi ký",
+            "Đưa ra kết luận thay người kia",
             "Giảng giải thật dài"
           ],
           "correctIndex": 0,
@@ -5077,7 +5432,8 @@
           "options": [
             "\"Anh nghĩ sai rồi.\"",
             "\"Vâng, lúc đầu em cũng thấy vậy.\"",
-            "\"Không phải đâu.\""
+            "\"Không phải đâu.\"",
+            "\"Để em giải thích cho anh hiểu.\""
           ],
           "correctIndex": 1,
           "explanation": "Đồng cảm trước khi chia sẻ góc nhìn khác."
@@ -5085,11 +5441,12 @@
         {
           "prompt": "Vì sao kết thúc bằng câu hỏi?",
           "options": [
+            "Để chứng minh mình đúng",
             "Để kéo dài cuộc nói chuyện",
             "Để làm khó người kia",
             "Để người kia tự suy nghĩ và tự trả lời"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Điều người ta tự nghĩ ra thì họ tin hơn."
         }
       ]
@@ -5124,6 +5481,7 @@
           "prompt": "\"Sản phẩm đắt quá\" thuộc nhóm nào?",
           "options": [
             "Công ty và sản phẩm",
+            "Gia đình",
             "Cá nhân",
             "Thị trường"
           ],
@@ -5135,6 +5493,7 @@
           "options": [
             "Thị trường",
             "Cá nhân",
+            "Sức khoẻ",
             "Công ty"
           ],
           "correctIndex": 1,
@@ -5145,7 +5504,8 @@
           "options": [
             "Cá nhân",
             "Công ty",
-            "Thị trường"
+            "Thị trường",
+            "Sức khoẻ"
           ],
           "correctIndex": 2,
           "explanation": "Đây là suy nghĩ về thị trường."
@@ -5153,11 +5513,12 @@
         {
           "prompt": "Nhóm lời từ chối nào thường gặp nhiều nhất?",
           "options": [
+            "Sức khoẻ",
             "Cá nhân",
             "Công ty",
             "Thị trường"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Phần lớn lời từ chối đến từ hoàn cảnh và cảm xúc của người nói."
         }
       ]
@@ -5173,10 +5534,11 @@
           "prompt": "Ai đó nói \"không\". Cách nghĩ nào lành mạnh nhất?",
           "options": [
             "Họ ghét mình",
+            "Mình đã nói sai một câu nào đó",
             "Đó là câu trả lời cho lúc này, không phải đánh giá con người mình",
             "Mình không hợp với việc này"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Lời từ chối thường nói về hoàn cảnh của họ, không phải giá trị của bạn."
         },
         {
@@ -5184,6 +5546,7 @@
           "options": [
             "Tranh luận cho đến khi họ hết bận",
             "Cảm thông và hỏi xem lúc nào thuận tiện hơn",
+            "Gửi thêm tài liệu để họ đọc khi rảnh",
             "Phớt lờ và nói tiếp"
           ],
           "correctIndex": 1,
@@ -5194,7 +5557,8 @@
           "options": [
             "Lắng nghe lo lắng, trả lời trung thực và chia sẻ điều bạn biết",
             "Đổi chủ đề",
-            "Nói họ không nên nghi ngờ"
+            "Nói họ không nên nghi ngờ",
+            "Đưa ra lời cam kết chắc chắn"
           ],
           "correctIndex": 0,
           "explanation": "Lo lắng là bình thường, trả lời trung thực xây dựng lòng tin."
@@ -5202,21 +5566,23 @@
         {
           "prompt": "Sau một lời từ chối, bạn nên làm gì?",
           "options": [
+            "Kể với nhóm rằng người đó khó tính",
             "Cảm ơn họ, giữ mối quan hệ tốt và tiếp tục với người tiếp theo",
             "Bỏ cuộc cả ngày",
             "Nhắn nhiều lần để thay đổi ý họ"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Giữ thái độ tử tế, để cửa luôn mở."
         },
         {
           "prompt": "Có ý kiến coi việc gom đủ 100 lời từ chối là một thử thách. Ý nghĩa của nó là gì?",
           "options": [
             "Từ chối nhiều nghĩa là mình làm sai",
+            "Càng ít lời từ chối càng giỏi",
             "Mỗi lời từ chối là một lần mình đã dám hành động",
             "Nên tránh người dễ từ chối"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Đổi cách nhìn: lời từ chối là dấu hiệu mình đang hành động, giúp bớt sợ khi liên hệ."
         }
       ]
@@ -5233,6 +5599,7 @@
           "options": [
             "Trên mạng xã hội",
             "Trong phần phân tích chế độ và thử nghiệm sản phẩm",
+            "Trong hợp đồng mua hàng",
             "Không ở đâu cả"
           ],
           "correctIndex": 1,
@@ -5243,7 +5610,8 @@
           "options": [
             "Câu hỏi về giá",
             "Câu hỏi về công ty",
-            "Chuyện riêng của người hỏi"
+            "Chuyện riêng của người hỏi",
+            "Câu hỏi về chế độ"
           ],
           "correctIndex": 2,
           "explanation": "Đó là hoàn cảnh, nỗi lo riêng của từng người."
@@ -5251,21 +5619,23 @@
         {
           "prompt": "Với 20% chuyện riêng, nên làm gì?",
           "options": [
+            "Chuyển ngay cho tuyến trên trả lời",
             "Lắng nghe, chạm vào điều họ thật sự lo lắng",
             "Giải thích bằng nhiều số liệu",
             "Bỏ qua"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Chạm vào tim, không làm họ đau đầu."
         },
         {
           "prompt": "Người hỏi một câu đã nói trong phần OPP. Nên làm gì?",
           "options": [
             "Trách họ không nghe",
+            "Trình bày lại toàn bộ OPP từ đầu",
             "Nhắc lại ngắn gọn, nhẹ nhàng",
             "Bảo họ tự xem lại"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Kiên nhẫn giúp người nghe thoải mái."
         },
         {
@@ -5273,9 +5643,10 @@
           "options": [
             "80% chế độ",
             "Câu hỏi về sản phẩm",
+            "Câu hỏi về thị trường",
             "20% chuyện riêng"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Cần lắng nghe hoàn cảnh gia đình của họ."
         },
         {
@@ -5283,7 +5654,8 @@
           "options": [
             "Nói thật và hẹn hỏi tuyến trên để trả lời sau",
             "Đoán một câu",
-            "Lảng sang chuyện khác"
+            "Lảng sang chuyện khác",
+            "Hứa sẽ có câu trả lời ngay hôm nay"
           ],
           "correctIndex": 0,
           "explanation": "Trung thực giữ được lòng tin."
@@ -5300,21 +5672,23 @@
         {
           "prompt": "\"Tôi không có thời gian.\" Câu \"Theo\" nào phù hợp?",
           "options": [
+            "\"Bận thì làm buổi tối đi.\"",
             "\"Vâng, cuộc sống bây giờ ai cũng bận rộn.\"",
             "\"Ai cũng có thời gian cả.\"",
             "\"Vậy thôi.\""
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Đồng cảm với sự bận rộn của họ trước."
         },
         {
           "prompt": "Sau câu \"Theo\" về thời gian, câu \"Dẫn\" nào phù hợp?",
           "options": [
             "\"Anh bỏ việc đi.\"",
+            "\"Vậy anh làm cuối tuần nhé.\"",
             "\"Anh muốn cân bằng công việc và gia đình thế nào?\"",
             "\"Anh lười thôi.\""
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Câu hỏi giúp họ tự nghĩ về điều họ muốn."
         },
         {
@@ -5322,9 +5696,10 @@
           "options": [
             "Nói họ sống khép kín",
             "Bỏ qua người này",
+            "Nói rằng không cần bạn bè vẫn làm được",
             "Đồng cảm, rồi cùng họ lập danh sách người quen theo nhóm"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Thường khi liệt kê theo nhóm, danh sách dài hơn người ta nghĩ."
         },
         {
@@ -5332,7 +5707,8 @@
           "options": [
             "\"Trước đây em cũng vậy, ở đây mình được học và hướng dẫn.\"",
             "\"Vậy không làm được đâu.\"",
-            "\"Cứ nói đại đi.\""
+            "\"Cứ nói đại đi.\"",
+            "\"Chỉ cần đọc thuộc kịch bản là được.\""
           ],
           "correctIndex": 0,
           "explanation": "Kỹ năng học được, không phải bẩm sinh."
@@ -5340,21 +5716,23 @@
         {
           "prompt": "\"Tôi không thích tiếp thị.\" Nên đáp thế nào?",
           "options": [
+            "Đưa ra danh sách thu nhập để thuyết phục",
             "Cãi rằng đây không phải tiếp thị",
             "Đồng ý, rồi so sánh với việc chia sẻ một món ăn ngon cho bạn",
             "Bỏ đi"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Chia sẻ điều tốt là việc tự nhiên."
         },
         {
           "prompt": "\"Tôi không tự tin.\" Nên đáp thế nào?",
           "options": [
             "Bảo họ phải tự tin lên",
+            "Kể chuyện người khác thất bại",
             "Không đáp",
             "Đồng cảm và kể lúc mình mới bắt đầu cũng vậy"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Câu chuyện thật giúp họ thấy mình không đơn độc."
         },
         {
@@ -5362,6 +5740,7 @@
           "options": [
             "Hỏi họ đang quan tâm điều gì trong cuộc sống",
             "Kể thu nhập của mình",
+            "Hẹn tuần sau nói lại cho bằng được",
             "Thuyết phục bằng mọi cách"
           ],
           "correctIndex": 0,
@@ -5381,7 +5760,8 @@
           "options": [
             "Bảo họ đừng nghe gia đình",
             "Đồng cảm, hỏi họ đã chia sẻ với gia đình thế nào và mời cả nhà cùng tìm hiểu",
-            "Bỏ qua"
+            "Bỏ qua",
+            "Bảo họ giấu gia đình"
           ],
           "correctIndex": 1,
           "explanation": "Gia đình cần hiểu đúng, không phải bị gạt đi."
@@ -5389,17 +5769,19 @@
         {
           "prompt": "\"Tôi ngại kiếm tiền của bạn bè.\" Nên đáp thế nào?",
           "options": [
+            "Nói bán cho bạn bè thì không sao",
             "Nói bạn bè là thị trường dễ nhất",
             "Bảo họ đừng ngại",
             "Đồng ý không nên bán hàng không tốt cho bạn, rồi hỏi: hàng tốt thì bạn bè có nên dùng cho nhau không"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Chia sẻ điều tốt khác với lợi dụng bạn bè."
         },
         {
           "prompt": "\"Làm việc này mất thể diện.\" Nên đáp thế nào?",
           "options": [
             "\"Ban đầu em cũng nghĩ vậy\", rồi chia sẻ vì sao mình thấy đây là việc chân chính",
+            "Nói ai cũng làm nên không sợ",
             "\"Thể diện không quan trọng.\"",
             "Cười cho qua"
           ],
@@ -5411,6 +5793,7 @@
           "options": [
             "Bảo họ gửi con cho ông bà",
             "Ghi nhận tình yêu với con, chia sẻ việc này tự sắp xếp được thời gian",
+            "Hứa việc này không tốn chút thời gian nào",
             "Nói con nhỏ không sao"
           ],
           "correctIndex": 1,
@@ -5421,7 +5804,8 @@
           "options": [
             "Cổ vũ cố thêm chút nữa",
             "Nói về cơ hội ngay",
-            "Hỏi thăm, đồng cảm, chưa nói chuyện công việc lúc này"
+            "Hỏi thăm, đồng cảm, chưa nói chuyện công việc lúc này",
+            "Hẹn họ gặp ngay tối nay"
           ],
           "correctIndex": 2,
           "explanation": "Lúc người kia mệt, quan tâm quan trọng hơn."
@@ -5429,21 +5813,23 @@
         {
           "prompt": "\"Tôi hài lòng với thu nhập hiện tại.\" Nên đáp thế nào?",
           "options": [
+            "Nói rằng ai cũng cần kiếm thêm",
             "Chúc mừng họ, rồi hỏi họ còn mong muốn gì khác như thời gian, sức khoẻ",
             "Nói thu nhập đó quá thấp",
             "Kể thu nhập của mình"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Không so sánh thu nhập. Hỏi về mong muốn khác."
         },
         {
           "prompt": "\"Làm cái này phiền phức lắm.\" Nên đáp thế nào?",
           "options": [
             "Nói chẳng phiền gì cả",
+            "Nói việc này rất nhẹ nhàng, không cần học",
             "Đồng ý khởi nghiệp nào cũng vất vả, rồi kể những phần công ty đã lo",
             "Bỏ qua"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Thừa nhận khó khăn giúp lời nói đáng tin."
         }
       ]
@@ -5460,9 +5846,10 @@
           "options": [
             "Đưa số liệu thị trường không rõ nguồn",
             "Đồng ý và bỏ cuộc",
+            "Nói thị trường còn trống rất nhiều",
             "Hỏi lại: mọi người vẫn mua đồ dùng hằng ngày không?"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Câu hỏi giúp họ tự thấy nhu cầu hằng ngày vẫn còn."
         },
         {
@@ -5470,7 +5857,8 @@
           "options": [
             "Kết quả theo thành tích, không theo thứ tự tham gia",
             "Đồng ý là muộn",
-            "Nói người đến sau luôn hơn"
+            "Nói người đến sau luôn hơn",
+            "Nói ai vào sớm thì luôn hơn"
           ],
           "correctIndex": 0,
           "explanation": "Người đến sau vẫn có thể vượt người đến trước nếu làm tốt hơn."
@@ -5478,21 +5866,23 @@
         {
           "prompt": "\"Kiếm tiền chậm quá.\" Nên hỏi ngược lại câu gì?",
           "options": [
+            "\"Kiên trì đi, rồi sẽ giàu.\"",
             "\"Anh muốn giàu nhanh à?\"",
             "\"Ở những nơi kiếm nhanh, tiền đến từ bán hàng hay từ tuyển người?\"",
             "\"Anh kiên nhẫn chút đi.\""
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Giúp họ phân biệt kinh doanh thật với tháp ảo."
         },
         {
           "prompt": "\"Bạn kiếm được bao nhiêu rồi?\" Nên đáp thế nào?",
           "options": [
             "Nói một con số thật lớn",
+            "Cho xem ảnh chụp thu nhập",
             "Từ chối trả lời và bỏ đi",
             "Hỏi lại mục tiêu của họ là gì, không nêu con số"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Không nêu thu nhập. Tập trung vào mục tiêu của người hỏi."
         },
         {
@@ -5500,6 +5890,7 @@
           "options": [
             "Đồng cảm, chia sẻ rằng cần làm đúng cách và có người hướng dẫn",
             "Chê người bạn đó",
+            "Nói chắc người bạn đó lười",
             "Nói chắc chắn ai làm cũng thành công"
           ],
           "correctIndex": 0,
@@ -5510,7 +5901,8 @@
           "options": [
             "Chê công ty khác",
             "Tôn trọng, mời họ tự so sánh qua trải nghiệm sản phẩm",
-            "Tranh luận cho bằng được"
+            "Tranh luận cho bằng được",
+            "Nói công ty khác sắp phá sản"
           ],
           "correctIndex": 1,
           "explanation": "Không nói xấu bên khác."
@@ -5518,11 +5910,12 @@
         {
           "prompt": "\"Có quá nhiều người làm rồi.\" Nên đáp thế nào?",
           "options": [
+            "Nói người làm nhiều thì càng dễ",
             "Đồng ý và bỏ cuộc",
             "Nói chỉ ít người làm",
             "Mỗi người có những mối quan hệ riêng, không ai giống ai"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Danh sách người quen của mỗi người là riêng."
         }
       ]
@@ -5538,6 +5931,7 @@
           "prompt": "\"Làm trước thắng trước.\" Nên đáp thế nào?",
           "options": [
             "Chế độ tính theo kết quả, ai làm tốt hơn được ghi nhận hơn",
+            "Nói người đến trước luôn hơn",
             "Đồng ý, nên làm ngay kẻo muộn",
             "Nói chẳng ai thắng ai"
           ],
@@ -5549,6 +5943,7 @@
           "options": [
             "Khẳng định bằng những giải thưởng chưa kiểm chứng",
             "Mời họ tự tìm hiểu thông tin công khai, đi tham quan",
+            "Đưa ảnh xe sang của lãnh đạo",
             "Nói \"tin em đi\""
           ],
           "correctIndex": 1,
@@ -5559,7 +5954,8 @@
           "options": [
             "Nói một con số thuế",
             "Bảo câu hỏi không quan trọng",
-            "Mời họ tự xem thông tin công khai, không khẳng định thay"
+            "Mời họ tự xem thông tin công khai, không khẳng định thay",
+            "Nói công ty được miễn thuế"
           ],
           "correctIndex": 2,
           "explanation": "Chỉ nói điều mình chắc chắn, còn lại để họ tự kiểm tra."
@@ -5567,21 +5963,23 @@
         {
           "prompt": "\"Sản phẩm có hại môi trường không?\" Nên làm gì?",
           "options": [
+            "Nói hãng khác mới có hại",
             "Mời họ xem thông tin chính thức và demo sản phẩm",
             "Khẳng định hoàn toàn vô hại",
             "Lảng sang chuyện khác"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Không khẳng định điều chưa kiểm chứng."
         },
         {
           "prompt": "\"Sản phẩm đắt quá.\" Nên làm gì?",
           "options": [
             "Nói hàng rẻ mà",
+            "Giảm giá ngay để khách mua",
             "Đồng cảm, mời họ dùng thử để tự đánh giá",
             "Chê hàng rẻ là kém"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Để khách tự cảm nhận giá trị, không so với hãng khác."
         },
         {
@@ -5589,9 +5987,10 @@
           "options": [
             "Công ty không có tiền quảng cáo",
             "Không biết",
+            "Nói quảng cáo chỉ dành cho hàng kém",
             "Sản phẩm đến tay khách qua người dùng chia sẻ và tư vấn trực tiếp"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Giải thích mô hình bán trực tiếp, không bịa lý do."
         }
       ]
@@ -5608,7 +6007,8 @@
           "options": [
             "Có sản phẩm tiêu dùng thật",
             "Tiền đến từ việc tuyển người",
-            "Có chính sách đổi trả"
+            "Có chính sách đổi trả",
+            "Có buổi đào tạo kỹ năng"
           ],
           "correctIndex": 1,
           "explanation": "Thu nhập dựa vào tuyển người là dấu hiệu nguy hiểm."
@@ -5616,17 +6016,19 @@
         {
           "prompt": "Dấu hiệu thứ hai là gì?",
           "options": [
+            "Có nhiều dòng sản phẩm",
             "Bán hàng hằng ngày",
             "Khách dùng sản phẩm lâu dài",
             "Ít hoặc không gắn với hàng hoá"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Kinh doanh thật luôn gắn với sản phẩm được dùng."
         },
         {
           "prompt": "Dấu hiệu thứ ba là gì?",
           "options": [
             "Tiền người sau trả cho người trước",
+            "Có kế hoạch trả thưởng công khai",
             "Công ty trả hoa hồng theo doanh số",
             "Có hợp đồng rõ ràng"
           ],
@@ -5638,6 +6040,7 @@
           "options": [
             "Hoàn toàn bình thường",
             "Đáng nghi, có thể là tháp ảo",
+            "Cách thể hiện cam kết bình thường",
             "Cơ hội tốt"
           ],
           "correctIndex": 1,
@@ -5648,7 +6051,8 @@
           "options": [
             "Đây là cơ hội dễ dàng",
             "Nên tham gia ngay",
-            "Cẩn thận, vì không gắn với sản phẩm"
+            "Cẩn thận, vì không gắn với sản phẩm",
+            "Đây là cách làm phổ biến"
           ],
           "correctIndex": 2,
           "explanation": "Không có sản phẩm thật thì không có giá trị thật."
@@ -5656,11 +6060,12 @@
         {
           "prompt": "Người nghe hỏi \"đây có phải đa cấp lừa đảo không\". Nên trả lời thế nào?",
           "options": [
+            "Khẳng định chắc chắn không phải rồi thôi",
             "Cảm ơn câu hỏi, giải thích 3 dấu hiệu và mời họ tự kiểm tra",
             "Cáu giận vì bị nghi ngờ",
             "Lảng sang chuyện khác"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Câu hỏi hợp lý, trả lời bình tĩnh và minh bạch."
         }
       ]
@@ -5676,6 +6081,7 @@
           "prompt": "3S gồm những gì?",
           "options": [
             "Bán hàng, chăm sóc khách hàng, bảo trợ",
+            "Sản phẩm, sổ sách, sự kiện",
             "Sản phẩm, sức khoẻ, sắc đẹp",
             "Sáng, trưa, chiều"
           ],
@@ -5687,6 +6093,7 @@
           "options": [
             "Cho vay tiền",
             "Giới thiệu và đồng hành cùng người mới tham gia kinh doanh",
+            "Đứng tên thay cho người mới",
             "Bảo hành sản phẩm"
           ],
           "correctIndex": 1,
@@ -5697,7 +6104,8 @@
           "options": [
             "Để bán được giá cao",
             "Không quan trọng",
-            "Khách được chăm sóc thì dùng lâu dài"
+            "Khách được chăm sóc thì dùng lâu dài",
+            "Để khách đặt hàng nhiều hơn mỗi lần"
           ],
           "correctIndex": 2,
           "explanation": "Bán tạo thị trường, chăm sóc giữ thị trường."
@@ -5705,21 +6113,23 @@
         {
           "prompt": "Có nên chỉ tập trung bán mà bỏ chăm sóc không?",
           "options": [
+            "Chỉ chăm sóc khách mua nhiều",
             "Không, phải làm cả ba việc",
             "Có, cho nhanh",
             "Tuỳ tháng"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Thiếu một việc thì hệ thống không vững."
         },
         {
           "prompt": "Việc nào giúp đội nhóm lớn lên?",
           "options": [
             "Chỉ bán hàng",
+            "Mua thêm sản phẩm",
             "Bảo trợ",
             "Chỉ chăm sóc"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Có người mới cùng làm thì đội nhóm phát triển."
         }
       ]
@@ -5755,9 +6165,10 @@
           "options": [
             "Mở thẻ nhà phân phối",
             "Không cách nào",
+            "Gửi khách đặt hàng qua tuyến trên",
             "Tự mua để bán"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Tự bán thì phải tư vấn, giao hàng, chăm sóc."
         },
         {
@@ -5765,7 +6176,8 @@
           "options": [
             "Khi người đó muốn cùng kinh doanh",
             "Khi muốn tăng số lượng thẻ",
-            "Với mọi người quen"
+            "Với mọi người quen",
+            "Khi người đó chỉ mua một lần"
           ],
           "correctIndex": 0,
           "explanation": "Mở thẻ theo nhu cầu thật của người đó."
@@ -5773,21 +6185,23 @@
         {
           "prompt": "Mở thẻ nhà phân phối cho tuyến dưới thì phần nhận của mình trước mắt thế nào?",
           "options": [
+            "Bị trừ thẳng vào điểm cá nhân mỗi tháng",
             "Luôn tăng lên",
             "Có thể ít đi, nhưng người đó có quyền lợi để cùng làm",
             "Không thay đổi"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Đổi lợi ích trước mắt lấy sự phát triển chung."
         },
         {
           "prompt": "Khách muốn tự đặt hàng tại nhà. Nên chọn cách nào?",
           "options": [
             "Bắt họ luôn mua qua mình",
+            "Chỉ bán khi khách đến tận nhà",
             "Từ chối",
             "Mở thẻ khách hàng và hướng dẫn họ đặt"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Thuận tiện cho khách là ưu tiên."
         }
       ]
@@ -5816,9 +6230,10 @@
           "options": [
             "Đọc ngay thực đơn",
             "Bán sản phẩm luôn",
+            "Nói giá sản phẩm",
             "Hỏi mục tiêu của khách trước"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Biết mục tiêu thì tư vấn mới đúng."
         },
         {
@@ -5826,7 +6241,8 @@
           "options": [
             "Kể câu chuyện thật, cho khách gặp người đã tham gia",
             "Hứa chắc chắn hiệu quả",
-            "Đưa số liệu không rõ nguồn"
+            "Đưa số liệu không rõ nguồn",
+            "So sánh với người khác thất bại"
           ],
           "correctIndex": 0,
           "explanation": "Không hứa kết quả."
@@ -5834,21 +6250,23 @@
         {
           "prompt": "Bước \"hành động\" là gì?",
           "options": [
+            "Khách hỏi thêm về giá",
             "Khách đọc tài liệu",
             "Khách quyết định tham gia và bắt đầu",
             "Khách nghe giới thiệu"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Đây là bước cuối cùng, khi khách đã sẵn sàng."
         },
         {
           "prompt": "Khách mới ở bước \"hứng thú\" mà mình đã đòi chốt. Điều gì dễ xảy ra?",
           "options": [
             "Khách đồng ý ngay",
+            "Khách giới thiệu thêm người",
             "Không ảnh hưởng gì",
             "Khách thấy bị ép và rút lui"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Đi tắt qua bước tin tưởng và mong muốn dễ làm khách ngại."
         }
       ]
@@ -5876,6 +6294,7 @@
           "options": [
             "Ghi nhận tình trạng ban đầu và hướng dẫn cách dùng công cụ",
             "Chỉ thu tiền",
+            "Gửi khách bảng giá các sản phẩm khác",
             "Hứa kết quả"
           ],
           "correctIndex": 0,
@@ -5886,7 +6305,8 @@
           "options": [
             "Chỉ nhắn tin nhắc nhở",
             "Như một học viên, cùng làm với khách",
-            "Không cần tham gia"
+            "Không cần tham gia",
+            "Chỉ hỏi khi khách gọi"
           ],
           "correctIndex": 1,
           "explanation": "Cùng làm thì hiểu khách và tạo động lực."
@@ -5894,17 +6314,19 @@
         {
           "prompt": "Sau lộ trình, ai nên được mời nghe OPP hoặc demo?",
           "options": [
+            "Chỉ khách mua nhiều nhất",
             "Tất cả mọi người, bắt buộc",
             "Không ai cả",
             "Khách thấy hiệu quả, muốn tiếp tục hoặc muốn kinh doanh"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Mời đúng người có nhu cầu."
         },
         {
           "prompt": "Một tuần khách không phản hồi. Nên làm gì?",
           "options": [
             "Hỏi thăm nhẹ nhàng xem khách có khó khăn gì",
+            "Tặng thêm sản phẩm để khách trả lời",
             "Bỏ qua khách",
             "Nhắn liên tục"
           ],
@@ -5925,6 +6347,7 @@
           "options": [
             "Chỉ cần bán là đủ",
             "Bán giúp có khách, chăm sóc giúp khách ở lại lâu dài",
+            "Bán xong thì chuyển sang khách khác",
             "Chăm sóc không cần thiết"
           ],
           "correctIndex": 1,
@@ -5935,7 +6358,8 @@
           "options": [
             "Trả lời đại cho nhanh",
             "Bỏ qua câu hỏi",
-            "Không trả lời vội, ghi lại và đưa vào buổi hỏi đáp chung"
+            "Không trả lời vội, ghi lại và đưa vào buổi hỏi đáp chung",
+            "Bảo khách tự tra trên mạng"
           ],
           "correctIndex": 2,
           "explanation": "Trả lời đúng quan trọng hơn trả lời nhanh."
@@ -5943,21 +6367,23 @@
         {
           "prompt": "Vì sao cần chăm sóc khách sau khi bán?",
           "options": [
+            "Để công ty khen thưởng",
             "Để khách có kết quả, lan toả và thể hiện trách nhiệm",
             "Để bán thêm bằng mọi giá",
             "Không cần lý do"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Chăm sóc là trách nhiệm với khách."
         },
         {
           "prompt": "Khách chưa thấy kết quả như mong đợi. Nên làm gì?",
           "options": [
             "Nói khách dùng sai rồi bỏ mặc",
+            "Đổi sang sản phẩm đắt hơn",
             "Hỏi cách dùng, hướng dẫn lại và theo sát thêm",
             "Hứa sẽ có kết quả"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Kiểm tra cách dùng và đồng hành, không hứa hẹn."
         },
         {
@@ -5965,9 +6391,10 @@
           "options": [
             "Xin ngay số điện thoại của tất cả",
             "Không cần quan tâm",
+            "Giảm giá cho khách lần sau",
             "Cảm ơn và hỏi xem bạn bè họ đang quan tâm điều gì"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Tôn trọng mối quan hệ của khách."
         },
         {
@@ -5975,7 +6402,8 @@
           "options": [
             "Tôn trọng quyết định, hỏi lý do để cải thiện, giữ quan hệ tốt",
             "Năn nỉ khách ở lại",
-            "Không liên lạc nữa"
+            "Không liên lạc nữa",
+            "Nói khách sẽ hối hận"
           ],
           "correctIndex": 0,
           "explanation": "Giữ quan hệ tốt, khách có thể quay lại."
@@ -6011,21 +6439,23 @@
         {
           "prompt": "Trong 3 ngày đầu, việc chính là gì?",
           "options": [
+            "Đọc hết tài liệu đào tạo",
             "Tuyển thêm 10 người",
             "Định vị và làm bài 2 với người mới",
             "Đi du lịch"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Bắt đầu sớm khi người mới còn hứng khởi."
         },
         {
           "prompt": "Trong 3 tuần hỗ trợ có bao nhiêu lần hợp tác?",
           "options": [
             "1 lần",
+            "3 lần",
             "20 lần",
             "6 lần"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Đủ số lần để người mới thấy và tập làm."
         },
         {
@@ -6033,6 +6463,7 @@
           "options": [
             "Đánh giá và định hình hệ thống",
             "Dừng hỗ trợ hoàn toàn",
+            "Đổi sang người hướng dẫn khác",
             "Bắt đầu lại từ đầu"
           ],
           "correctIndex": 0,
@@ -6043,7 +6474,8 @@
           "options": [
             "Kế hoạch",
             "Tổ chức",
-            "Định vị"
+            "Định vị",
+            "Thành tích"
           ],
           "correctIndex": 1,
           "explanation": "Chìa 5 và 6 thuộc phần tổ chức."
@@ -6060,21 +6492,23 @@
         {
           "prompt": "Bài 2 diễn ra ở đâu?",
           "options": [
+            "Ở buổi đại hội lớn",
             "Ở văn phòng công ty",
             "Thăm gia đình người mới trong 3 ngày",
             "Qua tin nhắn"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Gặp tại nhà giúp hiểu và hỗ trợ cả gia đình."
         },
         {
           "prompt": "Việc nào thuộc 6 việc của bài 2?",
           "options": [
             "Thu tiền đặt cọc",
+            "Kiểm tra số dư tài khoản",
             "Đánh giá nhà cửa",
             "Dạy tứ đại công phu"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Người mới cần kỹ năng để tự làm."
         },
         {
@@ -6082,6 +6516,7 @@
           "options": [
             "Để cả gia đình cùng hiểu và ủng hộ",
             "Để bán thêm hàng",
+            "Để có người ký thay",
             "Không cần thiết"
           ],
           "correctIndex": 0,
@@ -6092,7 +6527,8 @@
           "options": [
             "Kế hoạch vay vốn",
             "Kế hoạch thời gian",
-            "Danh sách mua sắm"
+            "Danh sách mua sắm",
+            "Kế hoạch đi chơi cuối tuần"
           ],
           "correctIndex": 1,
           "explanation": "Có lịch rõ thì việc mới đều đặn."
@@ -6100,17 +6536,19 @@
         {
           "prompt": "Việc cuối của bài 2 là gì?",
           "options": [
+            "Đăng ảnh buổi gặp lên mạng",
             "Ký hợp đồng vay",
             "Đi du lịch",
             "Hướng dẫn thăm cửa hàng và cách đặt hàng"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Người mới cần biết tự đặt hàng cho mình và khách."
         },
         {
           "prompt": "Ngoài kỹ năng, bài 2 còn giúp người mới xây dựng điều gì?",
           "options": [
             "Hình ảnh bản thân chuyên nghiệp",
+            "Danh sách khách hàng của tuyến trên",
             "Nhà cửa mới",
             "Xe mới"
           ],
@@ -6141,6 +6579,7 @@
           "options": [
             "Người mới tự làm hết",
             "Tuyến trên làm, người mới quan sát",
+            "Khách hàng làm chính",
             "Không ai làm"
           ],
           "correctIndex": 1,
@@ -6151,7 +6590,8 @@
           "options": [
             "Ngắt lời để sửa ngay trước mặt khách",
             "Không đến",
-            "Quan sát rồi góp ý sau buổi"
+            "Quan sát rồi góp ý sau buổi",
+            "Làm thay toàn bộ buổi gặp"
           ],
           "correctIndex": 2,
           "explanation": "Góp ý sau giúp người mới giữ được tự tin."
@@ -6159,21 +6599,23 @@
         {
           "prompt": "Vì sao không làm thay mãi cho người mới?",
           "options": [
+            "Vì người mới không thích được giúp",
             "Người mới phải tự làm được thì mới sao chép tiếp cho người khác",
             "Vì tuyến trên mệt",
             "Không có lý do"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Mục tiêu là người mới tự lập."
         },
         {
           "prompt": "Người mới làm sai trong lần đầu tự làm. Nên làm gì?",
           "options": [
             "Chê thật nhiều",
+            "Không nói gì để người mới tự nhận ra",
             "Khen điều làm tốt trước, rồi góp ý một điểm cần sửa",
             "Làm thay luôn"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Góp ý nhẹ nhàng, từng điểm một."
         }
       ]
@@ -6201,9 +6643,10 @@
           "options": [
             "1 buổi trong 1 ngày",
             "30 buổi trong 1 tuần",
+            "5 buổi trong 3 tháng",
             "10 buổi trong 3 tuần"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Đủ buổi để người mới thuần thục."
         },
         {
@@ -6211,7 +6654,8 @@
           "options": [
             "Demo dễ học và dễ làm hơn OPP",
             "Vì OPP không quan trọng",
-            "Không có lý do"
+            "Không có lý do",
+            "Vì demo không cần chuẩn bị"
           ],
           "correctIndex": 0,
           "explanation": "Bắt đầu từ việc dễ để tạo tự tin."
@@ -6219,21 +6663,23 @@
         {
           "prompt": "Ở giai đoạn cuối, tuyến trên làm gì?",
           "options": [
+            "Giao thêm chỉ tiêu",
             "Làm thay toàn bộ",
             "Quan sát và cùng rút kinh nghiệm",
             "Không tham gia"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Rút kinh nghiệm giúp người mới tiến bộ."
         },
         {
           "prompt": "Người mới chưa sẵn sàng sang giai đoạn tiếp theo. Nên làm gì?",
           "options": [
             "Ép chuyển giai đoạn",
+            "Chuyển người khác kèm thay",
             "Dừng kèm",
             "Kèm thêm ở giai đoạn hiện tại"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Đi theo tốc độ của người mới."
         }
       ]
@@ -6250,6 +6696,7 @@
           "options": [
             "Chỉ tiêu dùng, làm thêm, làm sự nghiệp",
             "Giàu, trung bình, nghèo",
+            "Bán lẻ, bán sỉ, đại lý",
             "Sáng, chiều, tối"
           ],
           "correctIndex": 0,
@@ -6260,7 +6707,8 @@
           "options": [
             "Mỗi ngày 10 tiếng",
             "Mỗi tuần 2 buổi tối, mỗi buổi 2 tiếng",
-            "Không cần thời gian"
+            "Không cần thời gian",
+            "Mỗi tháng 1 buổi"
           ],
           "correctIndex": 1,
           "explanation": "Thời gian cụ thể giúp lên lịch được."
@@ -6268,17 +6716,19 @@
         {
           "prompt": "Trong 3 tuần hỗ trợ, cần hẹn bao nhiêu cuộc gặp?",
           "options": [
+            "3 cuộc gặp",
             "1 cuộc gặp",
             "50 cuộc gặp",
             "6 cuộc gặp"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Đủ để người mới thấy và tập làm."
         },
         {
           "prompt": "Ai quyết định hướng định vị?",
           "options": [
             "Chính người mới, sau khi được tư vấn",
+            "Người có thu nhập cao nhất nhóm",
             "Tuyến trên",
             "Công ty"
           ],
@@ -6290,6 +6740,7 @@
           "options": [
             "Thuyết phục đổi hướng ngay",
             "Tôn trọng và chăm sóc họ như khách hàng",
+            "Mời họ đi đại hội ngay",
             "Ngừng liên lạc"
           ],
           "correctIndex": 1,
@@ -6328,7 +6779,8 @@
           "options": [
             "Để có việc cho vui",
             "Không cần thiết",
-            "Giữ nhịp làm việc và gặp gỡ đều đặn"
+            "Giữ nhịp làm việc và gặp gỡ đều đặn",
+            "Để báo cáo số giờ làm"
           ],
           "correctIndex": 2,
           "explanation": "Nhịp tuần giúp người mới không bị bỏ rơi."
@@ -6336,21 +6788,23 @@
         {
           "prompt": "Huấn luyện 1:1 là gì?",
           "options": [
+            "Một buổi kiểm tra bài",
             "Tuyến trên trao đổi riêng với một người để hỗ trợ sát",
             "Họp cả trăm người",
             "Tự học một mình"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Riêng từng người thì hỗ trợ đúng chỗ."
         },
         {
           "prompt": "Đại hội hằng năm mang lại gì?",
           "options": [
             "Không mang lại gì",
+            "Một buổi bán hàng lớn",
             "Động lực và tầm nhìn dài hạn",
             "Chỉ để đi chơi"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Gặp cộng đồng lớn giúp người mới thấy con đường dài."
         },
         {
@@ -6358,9 +6812,10 @@
           "options": [
             "Mọi việc vẫn tốt",
             "Thành công nhanh hơn",
+            "Kỹ năng tăng nhanh hơn",
             "Có cảm hứng nhưng thiếu kỹ năng và nhịp làm việc"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Cần cả ba lớp hoạt động."
         }
       ]
@@ -6377,7 +6832,8 @@
           "options": [
             "4 người, mỗi người 4 sản phẩm",
             "4 tháng, mỗi tháng 4 buổi",
-            "4 nhánh, mỗi nhánh đi sâu 4 tầng"
+            "4 nhánh, mỗi nhánh đi sâu 4 tầng",
+            "4 tuần, mỗi tuần 4 khách"
           ],
           "correctIndex": 2,
           "explanation": "Cấu trúc rộng và sâu giúp hệ thống vững."
@@ -6385,21 +6841,23 @@
         {
           "prompt": "Người mới trong 3 tháng đầu nên làm gì?",
           "options": [
+            "Chỉ học lý thuyết",
             "Toàn tâm phối hợp theo kế hoạch cùng tuyến trên",
             "Tự làm một mình",
             "Nghỉ ngơi cho quen"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "3 tháng đầu là giai đoạn xây nền."
         },
         {
           "prompt": "Khoảng bao nhiêu khách yêu thích sản phẩm là mục tiêu ban đầu?",
           "options": [
             "2 khách",
+            "50 khách",
             "Khoảng 20 khách",
             "500 khách"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Có nhóm khách trung thành là nền tảng."
         },
         {
@@ -6407,9 +6865,10 @@
           "options": [
             "Để có nhiều tên trong danh sách",
             "Không cần",
+            "Để tuyến trên nhận nhiều hơn",
             "Để mỗi nhánh vững, không phụ thuộc một người"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Nhánh sâu thì khi một người dừng, nhánh vẫn còn."
         },
         {
@@ -6417,7 +6876,8 @@
           "options": [
             "Để hệ thống không phụ thuộc vào một nhánh",
             "Để cạnh tranh với nhau",
-            "Không cần"
+            "Không cần",
+            "Để mỗi nhánh làm một sản phẩm riêng"
           ],
           "correctIndex": 0,
           "explanation": "Rộng và sâu cùng lúc giúp hệ thống bền."
@@ -6434,17 +6894,19 @@
         {
           "prompt": "Định luật đầu mút nói gì?",
           "options": [
+            "Hỗ trợ người ở đầu mỗi nhánh",
             "Tập trung vào người giỏi nhất",
             "Hỗ trợ ai gọi trước",
             "Tập trung hỗ trợ người mới nhất ở cuối mỗi nhánh"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Người cuối nhánh là nơi nhánh đang phát triển."
         },
         {
           "prompt": "Vì sao hỗ trợ người cuối nhánh?",
           "options": [
             "Giúp nhánh đi sâu thêm từng tầng",
+            "Vì họ mua nhiều hàng nhất",
             "Vì họ dễ bảo",
             "Không có lý do"
           ],
@@ -6456,6 +6918,7 @@
           "options": [
             "Giữ nguyên người cũ",
             "Về người mới nhất đó",
+            "Về người lâu năm nhất",
             "Về tuyến trên"
           ],
           "correctIndex": 1,
@@ -6466,7 +6929,8 @@
           "options": [
             "Có, bỏ hẳn",
             "Có, cho họ tự lo",
-            "Không, vẫn giữ liên lạc nhưng ưu tiên điểm mới nhất"
+            "Không, vẫn giữ liên lạc nhưng ưu tiên điểm mới nhất",
+            "Có, nếu người ở giữa đã giỏi"
           ],
           "correctIndex": 2,
           "explanation": "Ưu tiên không phải là bỏ rơi."
@@ -6474,11 +6938,12 @@
         {
           "prompt": "Định luật đầu mút thuộc phần nào trong 8 chìa khoá?",
           "options": [
+            "Tổ chức",
             "Thành tích",
             "Định vị",
             "Kế hoạch"
           ],
-          "correctIndex": 0,
+          "correctIndex": 1,
           "explanation": "Chìa 7 và 8 giúp đạt thành tích."
         }
       ]
@@ -6494,10 +6959,11 @@
           "prompt": "Hiệu ứng bươm bướm nói gì?",
           "options": [
             "Việc nhỏ không quan trọng",
+            "Chỉ người đầu nhánh mới tạo thay đổi",
             "Một việc nhỏ ở người cuối nhánh lan dần lên cả nhánh",
             "Chỉ việc lớn mới có ảnh hưởng"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Một cuộc hẹn nhỏ có thể tạo ra thay đổi lớn."
         },
         {
@@ -6505,9 +6971,10 @@
           "options": [
             "Tuyến trên đi du lịch",
             "Một người nghỉ làm",
+            "Công ty ra sản phẩm mới",
             "Người mới nhất có thêm một khách, cả nhánh có thêm động lực"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Kết quả nhỏ ở đầu mút lan toả lên trên."
         },
         {
@@ -6515,7 +6982,8 @@
           "options": [
             "Coi trọng từng việc nhỏ và dốc sức đạt mục tiêu",
             "Chỉ làm việc lớn",
-            "Chờ cơ hội lớn"
+            "Chờ cơ hội lớn",
+            "Làm thật nhiều việc cùng lúc"
           ],
           "correctIndex": 0,
           "explanation": "Việc nhỏ làm đều tạo kết quả lớn."
@@ -6523,21 +6991,23 @@
         {
           "prompt": "Hiệu ứng bươm bướm liên quan gì tới định luật đầu mút?",
           "options": [
+            "Đầu mút quan trọng hơn mọi thứ khác",
             "Không liên quan",
             "Hỗ trợ đầu mút tạo ra việc nhỏ lan toả cả nhánh",
             "Ngược nhau"
           ],
-          "correctIndex": 1,
+          "correctIndex": 2,
           "explanation": "Hai chìa cuối bổ sung cho nhau."
         },
         {
           "prompt": "Một người mới vừa có buổi demo đầu tiên. Bạn nên làm gì?",
           "options": [
             "Bỏ qua vì việc nhỏ",
+            "Nhắc họ cần làm thêm nhiều buổi nữa",
             "Chờ họ có kết quả lớn mới khen",
             "Ghi nhận và khích lệ ngay"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Ghi nhận việc nhỏ giúp lan toả động lực."
         }
       ]
@@ -6554,6 +7024,7 @@
           "options": [
             "Dẫn họ đi gặp lãnh đạo của hệ thống",
             "Để họ tự lo",
+            "Giao chỉ tiêu doanh số thật cao",
             "Giao ngay nhiều người cho họ"
           ],
           "correctIndex": 0,
@@ -6564,7 +7035,8 @@
           "options": [
             "Để họ tính thu nhập của bạn",
             "Để họ hiểu cơ chế và tự lên kế hoạch",
-            "Không cần"
+            "Không cần",
+            "Để họ so sánh với người khác"
           ],
           "correctIndex": 1,
           "explanation": "Hiểu cách tính thì lập mục tiêu sát hơn."
@@ -6572,17 +7044,19 @@
         {
           "prompt": "Nên chốt mục tiêu tháng đầu thế nào?",
           "options": [
+            "Đặt thật cao để họ cố gắng",
             "Tự đặt thay họ",
             "Không cần mục tiêu",
             "Cùng họ đặt mục tiêu cụ thể theo SMARTER"
           ],
-          "correctIndex": 2,
+          "correctIndex": 3,
           "explanation": "Mục tiêu do họ cam kết thì họ mới làm."
         },
         {
           "prompt": "Người này rất nhiệt tình nhưng chưa thành thạo kỹ năng. Nên làm gì?",
           "options": [
             "Đào tạo tứ đại công phu trước khi để họ tự dẫn dắt",
+            "Giao ngay một nhóm để họ tự học",
             "Để họ tự dẫn dắt ngay",
             "Kìm bớt nhiệt tình của họ"
           ],
@@ -6594,6 +7068,7 @@
           "options": [
             "Cấm tuyệt đối",
             "Giải thích lợi ích của việc làm theo hệ thống trước, rồi lắng nghe ý tưởng",
+            "Để họ tự rút kinh nghiệm sau vài tháng",
             "Để họ làm tuỳ ý"
           ],
           "correctIndex": 1,
@@ -6604,7 +7079,8 @@
           "options": [
             "Kết luận họ không phải thủ lĩnh",
             "Giảm hỗ trợ",
-            "Cùng nhìn lại nguyên nhân và điều chỉnh"
+            "Cùng nhìn lại nguyên nhân và điều chỉnh",
+            "Chuyển họ sang nhóm khác"
           ],
           "correctIndex": 2,
           "explanation": "Thủ lĩnh cũng cần thời gian."
