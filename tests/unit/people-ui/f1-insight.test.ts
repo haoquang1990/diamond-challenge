@@ -74,6 +74,11 @@ describe('householdInsight', () => {
     expect(householdInsight(house({ progress: mp({ goalToday: true }) }), TODAY)?.goalToday).toBe(true);
   });
 
+  it('shows the goal picked today (story 056), the higher one for a shared code', () => {
+    expect(householdInsight(house({ progress: mp({ goalXp: 50 }) }, { progress: mp({ goalXp: 75 }) }), TODAY)?.goalXp).toBe(75);
+    expect(householdInsight(house({ progress: mp({ goalXp: 50, statsDay: '2026-11-25' }) }), TODAY)?.goalXp).toBeNull();
+  });
+
   it('is null without numbers, but still reports a never-activated account', () => {
     expect(householdInsight(house({ progress: null }), TODAY)).toBeNull();
     expect(householdInsight(house({ progress: null, activated: false }), TODAY)?.notActivated).toBe(true);

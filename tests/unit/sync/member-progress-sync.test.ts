@@ -23,7 +23,7 @@ const memory = () => {
 };
 const P = (xpTotal: number, xp7d: number, streak: number): ShareProgress => ({
   xpTotal, xp7d, streak, statsDay: '2026-11-26', goalToday: false, activeDays7d: 1,
-  tasks7d: { contact: 0, demo: 0, opp: 0, new_customer: 0, new_npp: 0 }, lessonsDistinct: 0, lastLessonAt: null, badges7d: 0,
+  tasks7d: { contact: 0, demo: 0, opp: 0, new_customer: 0, new_npp: 0 }, lessonsDistinct: 0, lastLessonAt: null, badges7d: 0, goalXp: 30,
 });
 
 describe('createMemberProgressSync', () => {
@@ -51,7 +51,9 @@ describe('createMemberProgressSync', () => {
     ready = true;
     expect(await s.flush()).toBe('failed');
     expect(await s.flush()).toBe('failed');
-    expect(failing.calls).toHaveLength(4); // each failure retries once with the story 044 columns
+    expect(failing.calls).toHaveLength(6); // each failure retries without goal_xp (story 056), then with the story 044 columns
+    expect(failing.calls[1]?.row).not.toHaveProperty('goal_xp');
+    expect(failing.calls[2]?.row).toEqual({ user_id: 'me', xp_total: 1, xp_7d: 1, streak: 0 });
   });
 
   it('remembers the last send across instances (no resend after a restart)', async () => {

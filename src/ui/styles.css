@@ -1186,3 +1186,11 @@ body.dialog-open { overflow: hidden; }
 .household-card__member span { color: var(--color-muted); font-weight: 700; font-size: 0.9rem; }
 .card--danger { border-color: #f3b4b4; }
 .card--danger .card__title { color: var(--color-error); }
+/* Story 056: daily XP goal picker. */
+.goal-card__stepper { display: flex; align-items: center; gap: 10px; }
+.goal-card__stepper .icon-button { font-size: 1.6rem; font-weight: 800; }
+.goal-card__value { flex: 1; display: flex; align-items: center; gap: 8px; min-width: 0; }
+.goal-card__input { width: 100%; min-width: 0; text-align: center; font-size: 1.4rem; font-weight: 800; }
+.goal-card__unit { font-weight: 800; color: var(--color-muted); }
+.goal-card__quick { display: flex; flex-wrap: wrap; gap: 6px; }
+.goal-card__next { color: var(--color-diamond-dark); font-weight: 800; }

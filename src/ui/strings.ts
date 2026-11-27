@@ -457,6 +457,13 @@ export const STRINGS = {
   settingsGroupAccount: 'Tài khoản',
   settingsGroupCode: 'Mã số của tôi',
   settingsGroupGoal: 'Mục tiêu hằng ngày',
+  goalCardLabel: 'XP mỗi ngày',
+  goalLess: 'Giảm 5 XP',
+  goalMore: 'Tăng 5 XP',
+  goalRule: 'Mỗi ngày: đủ XP, học 1 bài và làm 1 việc. Đạt mục tiêu thì giữ được chuỗi ngày. Mức mới áp dụng từ ngày mai.',
+  goalSave: 'Đặt mục tiêu',
+  goalSaved: 'Đã đặt. Mục tiêu mới áp dụng từ ngày mai.',
+  goalSaveError: 'Chưa lưu được mục tiêu. Thử lại nhé.',
   settingsGroupApp: 'Ứng dụng',
   settingsGroupData: 'Dữ liệu',
   settingsGroupOther: 'Khác',
@@ -783,6 +790,16 @@ export function daysSinceLabel(days: number): string {
 /** Character counter under the note field, e.g. "12/500". */
 export function noteCounterLabel(length: number, max: number): string {
   return `${length}/${max}`;
+}
+
+/** "Hôm nay: 30 XP" (story 056). */
+export function goalTodayLabel(xp: number): string {
+  return `Mục tiêu hôm nay: ${xp} XP`;
+}
+
+/** "Từ ngày mai: 50 XP" (story 056). */
+export function goalFromTomorrowLabel(xp: number): string {
+  return `Từ ngày mai: ${xp} XP`;
 }
 
 /** Screen-reader text of a row's day count (story 052). */

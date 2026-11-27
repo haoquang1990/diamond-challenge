@@ -158,6 +158,8 @@ export interface HouseholdInsight {
   readonly streak: number;
   /** Some member never changed the first password. */
   readonly notActivated: boolean;
+  /** Today's XP goal the member(s) picked (story 056), highest of those sent today; null when unknown. */
+  readonly goalXp?: number | null;
 }
 
 /**
@@ -186,6 +188,7 @@ export function householdInsight(h: GroupHousehold, today: string): HouseholdIns
   for (const p of sent) for (const [k, v] of Object.entries(p.tasks7d ?? {})) tasks[k] = (tasks[k] ?? 0) + v;
   return {
     goalToday: sent.some((p) => p.statsDay === today && p.goalToday === true),
+    goalXp: sent.filter((p) => p.statsDay === today && typeof p.goalXp === 'number').reduce<number | null>((best, p) => Math.max(best ?? 0, p.goalXp ?? 0), null),
     activeDays7d: Math.max(...sent.map((p) => p.activeDays7d ?? 0)),
     tasks7d: tasks,
     lessonsDistinct: Math.max(...sent.map((p) => p.lessonsDistinct ?? 0)),

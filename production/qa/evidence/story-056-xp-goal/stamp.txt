@@ -1,0 +1,7 @@
+Reviewed-Content-Hash: src/domain/progress.ts 6afde509d9af5f1650ad301a4433a2481d89e442
+Reviewed-Content-Hash: src/domain/badges.ts 9e889aba2269c7949122db501fe9a80904867065
+Reviewed-Content-Hash: src/ui/screens/goal-card.tsx 76a5e8ac105f4291d2fa46c194431447f07b4a4f
+Reviewed-Content-Hash: src/ui/screens/f1-household-box.tsx 37533e854f50c2dde4e363b4b4c137e7c4a49e9b
+Reviewed-Content-Hash: src/data/member-progress-sync.ts dfddc60752061e193f6784355b240d3151f9e9fb
+Reviewed-Content-Hash: src/data/group-service.ts 30de0886fcae6889ba0bbfa2acec1dfe590da7e1
+Reviewed-Content-Hash: src/ui/strings.ts abb12481012f6f8033e5ce6c7fe03d41b187c883

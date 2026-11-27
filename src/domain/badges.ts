@@ -13,6 +13,7 @@ import type { LessonStage } from './lesson-stages';
 import { computePeopleStats, derivePeople } from './people';
 import type { PeopleConfig } from './people';
 import type { ProgressConfig } from './progress';
+import { xpGoalByDay } from './progress';
 
 /** One badge group (a section of the Huy hiệu screen). */
 export interface BadgeGroup {
@@ -218,7 +219,9 @@ export function computeBadgeMetrics(events: readonly LogEvent[], now: Date, time
   }).length);
 
   // Days: goal, streaks, weeks, months, weekends, combos.
-  const met = (d: DayInfo | undefined) => d !== undefined && d.xp >= deps.progress.dailyXpGoal && d.lesson && d.activity;
+  // Story 056: a day is met against the goal I had picked for that day.
+  const goalFor = xpGoalByDay(events, deps.progress.dailyXpGoal, deps.others);
+  const metDay = (d: DayInfo | undefined, day: number) => d !== undefined && d.xp >= goalFor(day) && d.lesson && d.activity;
   const sorted = [...days.keys()].sort((a, b) => a - b);
   let best = 0;
   let run = 0;
@@ -230,7 +233,7 @@ export function computeBadgeMetrics(events: readonly LogEvent[], now: Date, time
     if (info !== undefined && info.xp > 0) add('activeDays');
     if (info !== undefined && info.tasks.size >= 3) add('multiTaskDays');
     if (info !== undefined && info.lesson && info.activity) add('learnAndDoDays');
-    if (!met(info)) continue;
+    if (!metDay(info, d)) continue;
     add('goalDays');
     run = prev !== null && d === prev + 1 ? run + 1 : 1;
     prev = d;

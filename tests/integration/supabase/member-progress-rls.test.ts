@@ -114,6 +114,12 @@ describe('member_progress (story 044)', () => {
     await expect(as(3, () => db.query('update public.member_progress set active_days_7d = 8 where user_id = $1', [U(3)]))).rejects.toThrow();
   });
 
+  it('stores the goal the member picked (story 056) and rejects goals outside 1-1000', async () => {
+    await as(3, () => db.query('update public.member_progress set goal_xp = 75 where user_id = $1', [U(3)]));
+    expect(await as(2, () => one<number>('select goal_xp as v from public.member_progress where user_id = $1', [U(3)]))).toBe(75);
+    await expect(as(3, () => db.query('update public.member_progress set goal_xp = 0 where user_id = $1', [U(3)]))).rejects.toThrow();
+  });
+
   it('tells the direct sponsor and the household whether accounts are activated, nobody else', async () => {
     await db.query('update public.profiles set must_change_password = true where id = $1', [U(4)]);
     await db.query('update public.profiles set must_change_password = false where id = $1', [U(3)]);

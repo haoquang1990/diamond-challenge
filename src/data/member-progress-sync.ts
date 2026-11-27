@@ -54,6 +54,7 @@ export function memberProgressRow(accountId: string, p: ShareProgress, seenAt: s
     streak: p.streak,
     stats_day: p.statsDay,
     goal_today: p.goalToday,
+    goal_xp: p.goalXp,
     active_days_7d: p.activeDays7d,
     tasks_7d: p.tasks7d,
     lessons_distinct: p.lessonsDistinct,
@@ -89,6 +90,11 @@ export function createMemberProgressSync(deps: MemberProgressSyncDeps): MemberPr
       const next = await deps.compute();
       if (!shareProgressChanged(lastSent, next)) return 'unchanged';
       let { error } = await deps.client.from('member_progress').upsert(memberProgressRow(deps.accountId, next, new Date().toISOString()), { onConflict: 'user_id' });
+      if (error !== null) {
+        // A server before the story 056 migration has no goal_xp column.
+        const { goal_xp: _goal, ...row050 } = memberProgressRow(deps.accountId, next, new Date().toISOString());
+        ({ error } = await deps.client.from('member_progress').upsert(row050, { onConflict: 'user_id' }));
+      }
       if (error !== null) {
         // A server before the story 050 migration has only the story 044 columns.
         ({ error } = await deps.client.from('member_progress').upsert({ user_id: deps.accountId, xp_total: next.xpTotal, xp_7d: next.xp7d, streak: next.streak }, { onConflict: 'user_id' }));
@@ -136,7 +142,7 @@ function readStored(storage: Pick<Storage, 'getItem'> | null, key: string): Shar
     if (typeof text !== 'string') return null;
     const r = JSON.parse(text) as Record<string, unknown>;
     // Only a full story 050 snapshot counts; an older one is sent again once.
-    return typeof r.xpTotal === 'number' && typeof r.statsDay === 'string' && typeof r.tasks7d === 'object' ? (r as unknown as ShareProgress) : null;
+    return typeof r.xpTotal === 'number' && typeof r.statsDay === 'string' && typeof r.tasks7d === 'object' && typeof r.goalXp === 'number' ? (r as unknown as ShareProgress) : null;
   } catch {
     return null;
   }

@@ -7,7 +7,8 @@
  * parameters, nothing reads the real clock.
  */
 import { FORMER_MEMBER_ID } from '../data/event-store';
-import type { LogEvent } from '../data/event-store';
+import type { EventPayload, LogEvent } from '../data/event-store';
+import gameConfig from '../config/game-config.json';
 
 /** Tunable values read from `src/config/game-config.json`. */
 export interface ProgressConfig {
@@ -110,15 +111,17 @@ export function computeProgress(
     days.set(day, totals);
   }
 
-  const isMet = (t: DayTotals | undefined): boolean =>
-    t !== undefined && t.xp >= config.dailyXpGoal && t.hasLesson && t.hasActivity;
+  // Story 056: each day uses the goal I picked for it (a change counts from its start day).
+  const goalFor = xpGoalByDay(events, config.dailyXpGoal, others);
+  const isMet = (t: DayTotals | undefined, day: number): boolean =>
+    t !== undefined && t.xp >= goalFor(day) && t.hasLesson && t.hasActivity;
 
   const today = localDayNumber(formatter, now);
   const todayTotals = days.get(today);
-  const todayMet = isMet(todayTotals);
+  const todayMet = isMet(todayTotals, today);
 
   let streak = 0;
-  for (let day = todayMet ? today : today - 1; isMet(days.get(day)); day--) streak++;
+  for (let day = todayMet ? today : today - 1; isMet(days.get(day), day); day--) streak++;
 
   return {
     totalXp,
@@ -127,7 +130,7 @@ export function computeProgress(
     dailyGoal: {
       met: todayMet,
       xp: todayTotals?.xp ?? 0,
-      threshold: config.dailyXpGoal,
+      threshold: goalFor(today),
       hasLesson: todayTotals?.hasLesson ?? false,
       hasActivity: todayTotals?.hasActivity ?? false,
     },
@@ -181,6 +184,8 @@ export interface ShareProgress {
   readonly lastLessonAt: string | null;
   /** Badges that popped up (non-silent acknowledgements) in the last 7 days. */
   readonly badges7d: number;
+  /** Today's XP goal (story 056: picked by the person, 20–200). */
+  readonly goalXp: number;
 }
 
 /** Task types counted in {@link ShareProgress.tasks7d}. */
@@ -249,10 +254,83 @@ export function computeShareProgress(
     streak: progress.streak,
     statsDay,
     goalToday: progress.dailyGoal.met,
+    goalXp: progress.dailyGoal.threshold,
     activeDays7d: activeDays.size,
     tasks7d,
     lessonsDistinct: lessons.size,
     lastLessonAt,
     badges7d,
   };
+}
+
+/** Allowed daily XP goals (story 056), from `xpGoalRange` in game-config.json. */
+export const XP_GOAL_RANGE: { readonly min: number; readonly max: number; readonly step: number } = (() => {
+  const raw = (gameConfig as { xpGoalRange?: { min?: unknown; max?: unknown; step?: unknown } }).xpGoalRange;
+  const int = (v: unknown, d: number) => (typeof v === 'number' && Number.isInteger(v) && v > 0 ? v : d);
+  const min = int(raw?.min, 20);
+  const max = Math.max(min, int(raw?.max, 200));
+  return { min, max, step: int(raw?.step, 5) };
+})();
+
+/** Day number (as {@link localDayNumber}) of a "YYYY-MM-DD" local date, or null. */
+function dateKeyToDay(key: unknown): number | null {
+  if (typeof key !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(key)) return null;
+  const [y, m, d] = key.split('-').map(Number) as [number, number, number];
+  return Date.UTC(y, m - 1, d) / MS_PER_DAY;
+}
+
+/** "YYYY-MM-DD" of a day number. */
+function dayToDateKey(day: number): string {
+  const d = new Date(day * MS_PER_DAY);
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+}
+
+/** True for an allowed goal: inside {@link XP_GOAL_RANGE} and on its step. */
+function validGoal(xp: unknown): xp is number {
+  return typeof xp === 'number' && Number.isInteger(xp) && xp >= XP_GOAL_RANGE.min && xp <= XP_GOAL_RANGE.max && (xp - XP_GOAL_RANGE.min) % XP_GOAL_RANGE.step === 0;
+}
+
+/** My goal choices `{ xpGoal: { xp, from } }`, oldest written first (spouse's and undone ones dropped). */
+function goalChoices(events: readonly LogEvent[], others?: ReadonlySet<string>): { readonly xp: number; readonly from: number }[] {
+  const undone = new Set<string>();
+  for (const e of events) if (typeof e.payload.compensates === 'string') undone.add(e.payload.compensates);
+  const out: { xp: number; from: number }[] = [];
+  for (const e of events) {
+    if (e.type !== 'settings_changed' || undone.has(e.id) || others?.has(e.userId) === true) continue;
+    const g = e.payload.xpGoal as { xp?: unknown; from?: unknown } | undefined;
+    const from = dateKeyToDay(g?.from);
+    if (typeof g === 'object' && g !== null && validGoal(g.xp) && from !== null) out.push({ xp: g.xp, from });
+  }
+  return out;
+}
+
+/**
+ * The XP goal of each day (story 056): the latest-written choice whose start day is on or before
+ * it, else `fallback`. Pure.
+ */
+export function xpGoalByDay(events: readonly LogEvent[], fallback: number, others?: ReadonlySet<string>): (day: number) => number {
+  const choices = goalChoices(events, others);
+  return (day) => {
+    let xp = fallback;
+    for (const c of choices) if (c.from <= day) xp = c.xp;
+    return xp;
+  };
+}
+
+/** Today's goal and a choice that starts later ("from tomorrow"), for Cài đặt (story 056). */
+export function readXpGoal(events: readonly LogEvent[], now: Date, config: ProgressConfig, timeZone: string, others?: ReadonlySet<string>): { readonly today: number; readonly next: { readonly xp: number; readonly from: string } | null } {
+  const formatter = new Intl.DateTimeFormat('en-US', { timeZone, year: 'numeric', month: 'numeric', day: 'numeric' });
+  const today = localDayNumber(formatter, now);
+  const goalFor = xpGoalByDay(events, config.dailyXpGoal, others);
+  const later = goalChoices(events, others).filter((c) => c.from > today).at(-1);
+  const next = later === undefined || later.xp === goalFor(today) ? null : { xp: later.xp, from: dayToDateKey(later.from) };
+  return { today: goalFor(today), next };
+}
+
+/** The setting event for a new goal, snapped to {@link XP_GOAL_RANGE}, starting tomorrow (local). */
+export function buildXpGoalEvent(xp: number, now: Date, timeZone: string): { readonly type: 'settings_changed'; readonly payload: EventPayload } {
+  const { min, max, step } = XP_GOAL_RANGE;
+  const snapped = Math.min(max, Math.max(min, min + Math.round((xp - min) / step) * step));
+  const formatter = new Intl.DateTimeFormat('en-US', { timeZone, year: 'numeric', month: 'numeric', day: 'numeric' });
+  return { type: 'settings_changed', payload: { xpGoal: { xp: snapped, from: dayToDateKey(localDayNumber(formatter, now) + 1) } } };
 }
