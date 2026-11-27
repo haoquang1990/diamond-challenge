@@ -2,7 +2,7 @@
  * Names and cheer candidates for F1 households (stories 028, 041). Pure; no network.
  */
 import { activityStatus, sortGroup } from '../data/group-service';
-import type { GroupHousehold, GroupMember } from '../data/group-service';
+import type { GroupData, GroupHousehold, GroupMember } from '../data/group-service';
 import type { Person } from '../domain/people';
 import { formatE164 } from '../domain/people';
 import { STRINGS } from './strings';
@@ -158,6 +158,8 @@ export interface HouseholdInsight {
   readonly streak: number;
   /** Some member never changed the first password. */
   readonly notActivated: boolean;
+  /** Today's XP goal the member(s) picked (story 056), highest of those sent today; null when unknown. */
+  readonly goalXp?: number | null;
 }
 
 /**
@@ -186,6 +188,7 @@ export function householdInsight(h: GroupHousehold, today: string): HouseholdIns
   for (const p of sent) for (const [k, v] of Object.entries(p.tasks7d ?? {})) tasks[k] = (tasks[k] ?? 0) + v;
   return {
     goalToday: sent.some((p) => p.statsDay === today && p.goalToday === true),
+    goalXp: sent.filter((p) => p.statsDay === today && typeof p.goalXp === 'number').reduce<number | null>((best, p) => Math.max(best ?? 0, p.goalXp ?? 0), null),
     activeDays7d: Math.max(...sent.map((p) => p.activeDays7d ?? 0)),
     tasks7d: tasks,
     lessonsDistinct: Math.max(...sent.map((p) => p.lessonsDistinct ?? 0)),
@@ -259,4 +262,25 @@ export function suggestCheers(i: HouseholdInsight | null, now: Date): string[] {
   const lesson = daysSince(i.lastLessonAt, now);
   if (!i.notActivated && (lesson === null || lesson >= 7)) out.push('Dành 2 phút học một bài hôm nay nhé!');
   return out;
+}
+
+/** What the Hôm nay "Cổ vũ nhóm" card shows (2026-11-27). */
+export type CheerCardView =
+  | { readonly kind: 'hidden' }
+  | { readonly kind: 'done' }
+  | { readonly kind: 'list'; readonly households: GroupHousehold[]; readonly spouses: NonNullable<GroupData['spouses']>[number][] };
+
+/**
+ * The cheer card's content: hidden without F1 households or spouse, "everyone cheered" when
+ * nobody is left today, else who is left (households ordered by {@link cheerCandidates}). A
+ * group loaded on an earlier local day (the cache) keeps no "cheered today" marks. Pure.
+ */
+export function cheerCardView(group: GroupData | null, now: Date, inactiveDays: number): CheerCardView {
+  if (group === null || group.myHouseholdId === null) return { kind: 'hidden' };
+  const spousesAll = group.spouses ?? [];
+  if (group.households.length === 0 && spousesAll.length === 0) return { kind: 'hidden' };
+  const fresh = localDayKey(new Date(group.loadedAt)) === localDayKey(now);
+  const households = cheerCandidates(fresh ? group.households : group.households.map((h) => ({ ...h, cheeredToday: false })), now, inactiveDays);
+  const spouses = spousesAll.filter((m) => !fresh || !m.cheeredToday);
+  return households.length === 0 && spouses.length === 0 ? { kind: 'done' } : { kind: 'list', households, spouses };
 }

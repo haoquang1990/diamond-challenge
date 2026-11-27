@@ -96,7 +96,8 @@ export function F1HouseholdBox({ clientPromise, accountId, amwayCode, now = real
       {progress !== null && <p className="f1-box__progress">{householdProgressLabel(progress)}</p>}
       {insight !== null && insight.lastSeenAt !== null && (
         <ul className="f1-box__insight" aria-label={STRINGS.f1InsightTasks}>
-          <li className={insight.goalToday ? 'f1-box__fact f1-box__fact--ok' : 'f1-box__fact'}>{insight.goalToday ? STRINGS.f1InsightGoalMet : STRINGS.f1InsightGoalNot}</li>
+          <li className={insight.goalToday ? 'f1-box__fact f1-box__fact--ok' : 'f1-box__fact'}>{insight.goalToday ? STRINGS.f1InsightGoalMet : STRINGS.f1InsightGoalNot}
+            {insight.goalXp != null ? ` (${insight.goalXp} XP)` : ''}</li>
           <li className="f1-box__fact">
             {STRINGS.f1InsightActiveDays} <strong>{insight.activeDays7d}/7</strong> ngày
           </li>

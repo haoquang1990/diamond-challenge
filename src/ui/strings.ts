@@ -174,7 +174,7 @@ export const STRINGS = {
   groupLoadError: 'Chưa tải được nhóm. Thử lại nhé.',
   groupOfflineNoData: 'Cần có mạng để xem nhóm lần đầu.',
   groupOfflineNote: 'Đang offline, hiện dữ liệu lần tải gần nhất.',
-  groupNoHousehold: 'Tài khoản này chưa thuộc NPP nào.',
+  groupNoHousehold: 'Tài khoản này chưa gắn với mã số nào.',
   groupCodeLabel: 'Mã số',
   groupNoCode: 'Chưa có mã',
   groupNoNumbers: 'Chưa có số liệu',
@@ -188,7 +188,8 @@ export const STRINGS = {
   sponsorCancelDone: 'Đã huỷ bảo trợ.',
   sponsorCancelHistory: 'Huỷ bảo trợ',
   cheerGroupTitle: 'Cổ vũ nhóm',
-  cheerSpouseNote: 'Vợ/chồng trong NPP của bạn',
+  cheerAllDone: '✓ Hôm nay bạn đã cổ vũ tất cả mọi người.',
+  cheerSpouseNote: 'Đứng chung mã số với bạn',
   cheerPickTitle: 'Gửi lời cổ vũ',
   cheerPickLabel: 'Chọn một lời',
   cheerCustomLabel: 'Hoặc tự viết (tối đa 200 ký tự)',
@@ -430,68 +431,85 @@ export const STRINGS = {
     invalid_password: 'Mật khẩu tạm không hợp lệ. Thử lại nhé.',
     invalid_code: 'Mã số Amway của người này chưa hợp lệ. Hãy sửa mã trong thông tin liên hệ.',
     phone_taken: 'Số điện thoại này đã có tài khoản.',
-    code_taken: 'Mã số Amway này đã được một NPP khác dùng.',
-    no_household: 'Bạn chưa thuộc NPP nào nên chưa tạo được tài khoản.',
+    code_taken: 'Mã số Amway này đã có tài khoản khác dùng.',
+    no_household: 'Bạn chưa gắn với mã số nào nên chưa tạo được tài khoản.',
     not_allowed: 'Bạn không có quyền tạo tài khoản.',
-    household_full_or_inactive: 'NPP của bạn đã đủ thành viên hoặc không còn hoạt động.',
+    household_full_or_inactive: 'Mã số của bạn đã đủ 2 người hoặc không còn hoạt động.',
     create_failed: 'Máy chủ chưa tạo được tài khoản. Thử lại sau ít phút nhé.',
     network: 'Không có kết nối mạng. Kiểm tra mạng rồi thử lại nhé.',
     unknown: 'Chưa tạo được tài khoản. Thử lại sau nhé.',
   },
 
   // NPP của tôi và Thêm vợ/chồng (story 025)
-  householdEntry: 'NPP của tôi',
-  householdTitle: 'NPP của tôi',
-  householdPrompt: 'Mã số Amway và các thành viên trong NPP của bạn.',
+  householdEntry: 'Mã số của tôi',
+  householdTitle: 'Mã số của tôi',
+  householdPrompt: 'Mã số Amway và người đứng chung mã số với bạn.',
   householdCodeLabel: 'Mã số Amway',
   householdNoCode: 'Chưa có mã',
-  householdMembersHeading: 'Thành viên',
-  householdNoHousehold: 'Tài khoản này chưa thuộc NPP nào.',
-  householdOffline: 'Cần có mạng để xem thông tin NPP. Kết nối mạng rồi thử lại nhé.',
-  householdLoadError: 'Chưa tải được thông tin NPP. Thử lại nhé.',
+  householdMembersHeading: 'Người đứng chung mã số',
+  householdNoHousehold: 'Tài khoản này chưa gắn với mã số nào.',
+  householdOffline: 'Cần có mạng để xem thông tin mã số. Kết nối mạng rồi thử lại nhé.',
+  householdLoadError: 'Chưa tải được thông tin mã số. Thử lại nhé.',
   householdMemberUnnamed: 'Chưa có tên',
-  addMemberButton: 'Thêm vợ/chồng',
-  addMemberOfflineReason: 'Cần có mạng để thêm vợ/chồng.',
-  addMemberTitle: 'Thêm vợ/chồng',
-  addMemberPrompt: 'Tạo tài khoản cho vợ/chồng bằng số điện thoại. App sẽ sinh một mật khẩu tạm để bạn gửi cho họ.',
-  addMemberSubmit: 'Thêm vào NPP',
+  householdMe: 'Bạn',
+  householdSharedHint: 'Mã số kép: hai người dùng chung một Danh bạ, mỗi người có XP và mục tiêu riêng.',
+  householdSingleHint: 'Vợ/chồng có thể đứng chung mã số này (mã số kép) để dùng chung Danh bạ.',
+  settingsGroupAccount: 'Tài khoản',
+  settingsGroupCode: 'Mã số của tôi',
+  settingsGroupGoal: 'Mục tiêu hằng ngày',
+  goalCardLabel: 'XP mỗi ngày',
+  goalLess: 'Giảm 5 XP',
+  goalMore: 'Tăng 5 XP',
+  goalRule: 'Mỗi ngày: đủ XP, học 1 bài và làm 1 việc. Đạt mục tiêu thì giữ được chuỗi ngày. Mức mới áp dụng từ ngày mai.',
+  goalSave: 'Đặt mục tiêu',
+  goalSaved: 'Đã đặt. Mục tiêu mới áp dụng từ ngày mai.',
+  goalSaveError: 'Chưa lưu được mục tiêu. Thử lại nhé.',
+  settingsGroupApp: 'Ứng dụng',
+  settingsGroupData: 'Dữ liệu',
+  settingsGroupOther: 'Khác',
+  accountLoginLabel: 'Đăng nhập bằng',
+  addMemberButton: 'Thêm người đứng chung (mã số kép)',
+  addMemberOfflineReason: 'Cần có mạng để thêm người đứng chung.',
+  addMemberTitle: 'Thêm người đứng chung (mã số kép)',
+  addMemberPrompt: 'Tạo tài khoản cho vợ/chồng đứng chung mã số này (mã số kép) bằng số điện thoại. App sẽ sinh một mật khẩu tạm để bạn gửi cho họ.',
+  addMemberSubmit: 'Thêm vào mã số',
   addMemberSubmitting: 'Đang thêm…',
-  addMemberDone: 'Đã thêm vào NPP',
+  addMemberDone: 'Đã thêm vào mã số',
   addMemberErrors: {
-    not_signed_in: 'Bạn cần đăng nhập để thêm thành viên.',
-    change_password_first: 'Hãy đổi mật khẩu tạm của bạn trước khi thêm thành viên.',
+    not_signed_in: 'Bạn cần đăng nhập để thêm người đứng chung.',
+    change_password_first: 'Hãy đổi mật khẩu tạm của bạn trước khi thêm người đứng chung.',
     invalid_phone: 'Số điện thoại chưa đúng. Kiểm tra mã nước và số điện thoại.',
     invalid_password: 'Mật khẩu tạm không hợp lệ. Thử lại nhé.',
     phone_taken: 'Số điện thoại này đã có tài khoản. Hãy nhờ quản trị viên hỗ trợ.',
-    no_household: 'Bạn chưa thuộc NPP nào nên chưa thêm được thành viên.',
-    household_full_or_inactive: 'NPP đã đủ thành viên hoặc không còn hoạt động.',
-    not_allowed: 'Bạn không có quyền thêm thành viên vào NPP này.',
-    not_found: 'Không tìm thấy NPP này.',
-    create_failed: 'Máy chủ chưa thêm được thành viên. Thử lại sau ít phút nhé.',
+    no_household: 'Bạn chưa gắn với mã số nào nên chưa thêm được người đứng chung.',
+    household_full_or_inactive: 'Mã số đã đủ 2 người hoặc không còn hoạt động.',
+    not_allowed: 'Bạn không có quyền thêm người vào mã số này.',
+    not_found: 'Không tìm thấy mã số này.',
+    create_failed: 'Máy chủ chưa thêm được người đứng chung. Thử lại sau ít phút nhé.',
     network: 'Không có kết nối mạng. Kiểm tra mạng rồi thử lại nhé.',
-    unknown: 'Chưa thêm được thành viên. Thử lại sau nhé.',
+    unknown: 'Chưa thêm được người đứng chung. Thử lại sau nhé.',
   },
 
   // Quản trị (story 029)
   adminEntry: 'Quản trị',
   adminTitle: 'Quản trị',
-  adminPrompt: 'Tìm NPP theo số điện thoại hoặc mã số Amway để đặt lại mật khẩu hoặc đặt mã số.',
+  adminPrompt: 'Tìm mã số theo số điện thoại hoặc mã số Amway để đặt lại mật khẩu hoặc đặt mã số.',
   adminOffline: 'Cần có mạng để dùng màn Quản trị.',
   adminSearchByPhone: 'SĐT',
   adminSearchByCode: 'Mã số',
   adminSearchCodeLabel: 'Mã số Amway',
-  adminSearchButton: 'Tìm NPP',
+  adminSearchButton: 'Tìm mã số',
   adminSearching: 'Đang tìm…',
-  adminSearchOfflineReason: 'Cần có mạng để tìm NPP.',
+  adminSearchOfflineReason: 'Cần có mạng để tìm mã số.',
   adminSearchPhoneRequired: 'Hãy nhập số điện thoại.',
   adminSearchCodeInvalid: 'Mã số chỉ gồm chữ số (được cách bằng dấu cách, chấm hoặc gạch) và dài từ 4 đến 15 chữ số.',
-  adminNotFound: 'Không tìm thấy NPP nào.',
+  adminNotFound: 'Không tìm thấy mã số nào.',
   adminSearchErrors: {
     network: 'Không có kết nối mạng. Kiểm tra mạng rồi thử lại nhé.',
     unknown: 'Chưa tìm được. Thử lại sau nhé.',
   },
   adminMembersHeading: 'Thành viên',
-  adminNoMembers: 'NPP chưa có thành viên.',
+  adminNoMembers: 'Mã số chưa có người dùng.',
   adminActiveCodeLabel: 'Mã đang hoạt động',
   adminNoCode: 'Chưa có mã',
   adminCancelledHeading: 'Mã đã huỷ',
@@ -514,7 +532,7 @@ export const STRINGS = {
   adminSetCodeDone: 'Đã đặt mã số. Mã cũ chuyển sang Đã huỷ.',
   adminSetCodeErrors: {
     invalid_code: 'Mã số chỉ gồm chữ số (được cách bằng dấu cách, chấm hoặc gạch) và dài từ 4 đến 15 chữ số.',
-    code_taken: 'Mã số này đang hoạt động ở một NPP khác. Chưa đổi gì.',
+    code_taken: 'Mã số này đang được tài khoản khác dùng. Chưa đổi gì.',
     not_admin: 'Chỉ quản trị viên mới đặt được mã số.',
     network: 'Không có kết nối mạng. Mã số chưa đổi. Kiểm tra mạng rồi thử lại nhé.',
     other: 'Chưa đặt được mã số. Thử lại sau nhé.',
@@ -523,8 +541,8 @@ export const STRINGS = {
   // Đồng bộ Danh bạ NPP (story 023)
   consentTitle: 'Đồng bộ dữ liệu',
   consentIntro:
-    'Để đồng bộ với các thành viên trong NPP, Danh bạ của bạn (tên, số điện thoại, mã số Amway, ghi chú, nhãn, việc cần làm và lịch sử) sẽ được lưu trên máy chủ đặt tại Singapore.',
-  consentMembersOnly: 'Chỉ thành viên trong NPP của bạn xem được Danh bạ này qua app.',
+    'Để dùng chung với người đứng chung mã số, Danh bạ của bạn (tên, số điện thoại, mã số Amway, ghi chú, nhãn, việc cần làm và lịch sử) sẽ được lưu trên máy chủ đặt tại Singapore.',
+  consentMembersOnly: 'Chỉ người đứng chung mã số với bạn xem được Danh bạ này qua app.',
   consentProgress:
     'Tiến độ học và XP của bạn (bài học đã học, XP, streak, thành tích) cũng được lưu trên máy chủ ở Singapore, chỉ bạn xem được.',
   consentAdmins: 'Quản trị viên của dự án có thể truy cập dữ liệu trên máy chủ.',
@@ -560,10 +578,10 @@ export const STRINGS = {
   contactSyncProgressLabel: 'Tiến độ:',
   syncNetworkError: 'Không có mạng. App sẽ thử lại khi có mạng.',
   syncServerError: 'Máy chủ đang gặp sự cố. Thử lại sau ít phút nhé.',
-  syncDenied: 'Máy chủ từ chối đồng bộ (có thể bạn không còn trong NPP). Đã dừng đồng bộ; dữ liệu trên máy vẫn giữ nguyên.',
+  syncDenied: 'Máy chủ từ chối đồng bộ (có thể bạn không còn đứng chung mã số này). Đã dừng đồng bộ; dữ liệu trên máy vẫn giữ nguyên.',
   /** Progress sync refused (no current consent or no rights); the Danh bạ wording about the household does not apply. */
   progressSyncDenied: 'Máy chủ từ chối lưu tiến độ (có thể bạn cần đồng ý lại). Đã dừng đồng bộ tiến độ; dữ liệu trên máy vẫn giữ nguyên.',
-  syncNoHousehold: 'Tài khoản chưa thuộc NPP nào nên chưa đồng bộ được. Dữ liệu trên máy vẫn giữ nguyên.',
+  syncNoHousehold: 'Tài khoản chưa gắn với mã số nào nên chưa đồng bộ được. Dữ liệu trên máy vẫn giữ nguyên.',
   historyFormerMember: 'Thành viên cũ',
 
   // Liên hệ trùng (story 026)
@@ -774,6 +792,16 @@ export function noteCounterLabel(length: number, max: number): string {
   return `${length}/${max}`;
 }
 
+/** "Hôm nay: 30 XP" (story 056). */
+export function goalTodayLabel(xp: number): string {
+  return `Mục tiêu hôm nay: ${xp} XP`;
+}
+
+/** "Từ ngày mai: 50 XP" (story 056). */
+export function goalFromTomorrowLabel(xp: number): string {
+  return `Từ ngày mai: ${xp} XP`;
+}
+
 /** Screen-reader text of a row's day count (story 052). */
 export function contactDaysAria(days: number | null): string {
   return days === null ? 'Chưa có hoạt động' : days === 0 ? 'Hôm nay có hoạt động' : `${days} ngày chưa hoạt động`;
@@ -943,12 +971,12 @@ export function contactSyncLastSyncedLabel(iso: string): string {
 
 /** "x/2 thành viên". */
 export function householdCountLabel(count: number, max: number): string {
-  return `${count}/${max} thành viên`;
+  return `${count}/${max} người`;
 }
 
 /** Note shown instead of the add button when the household is full. */
 export function householdFullNote(max: number): string {
-  return `NPP đã đủ ${max} thành viên`;
+  return `Mã số đã đủ ${max} người`;
 }
 
 /** "KH 12/30". */
@@ -987,7 +1015,7 @@ export function adminCancelledLabel(iso: string): string {
 
 /** Vietnamese text of a code's cancel reason; unknown reasons are shown as stored. */
 export function adminCancelReason(reason: string): string {
-  const known: Record<string, string> = { replaced: 'đã thay bằng mã mới', merged: 'gộp mã', dissolved: 'NPP giải thể' };
+  const known: Record<string, string> = { replaced: 'đã thay bằng mã mới', merged: 'gộp mã', dissolved: 'mã số giải thể' };
   return known[reason] ?? reason;
 }
 

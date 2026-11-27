@@ -35,7 +35,8 @@ import { CreateAccountScreen } from './ui/screens/create-account-screen';
 import { ConsentScreen } from './ui/screens/consent-screen';
 import { BadgesScreen } from './ui/screens/badges-screen';
 import { LessonScreen } from './ui/screens/lesson-screen';
-import { HouseholdScreen } from './ui/screens/household-screen';
+import { GoalCard } from './ui/screens/goal-card';
+import { HouseholdCard, HouseholdScreen } from './ui/screens/household-screen';
 import { GroupCheerCard } from './ui/screens/group-cheer-card';
 import type { Person } from './domain/people';
 import { F1HouseholdBox } from './ui/screens/f1-household-box';
@@ -641,7 +642,7 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
   if (tab === 'household' && clientPromise !== null && account !== null) {
     return (
       <div className="app-shell">
-        <HouseholdScreen clientPromise={clientPromise} accountId={account.accountId} onBack={() => setTab('settings')} />
+        <HouseholdScreen clientPromise={clientPromise} accountId={account.accountId} onBack={() => setTab('settings')} startAdding />
       </div>
     );
   }
@@ -683,6 +684,8 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
                   },
                 },
                 onEraseDevice,
+                goalSlot: <GoalCard eventStore={eventStore} memberIds={memberIds} />,
+                ...(account !== null ? { householdSlot: <HouseholdCard clientPromise={clientPromise} accountId={account.accountId} onAddMember={() => setTab('household')} /> } : {}),
               })}
         />
       </div>

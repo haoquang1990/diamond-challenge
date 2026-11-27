@@ -1,0 +1,5 @@
+Reviewed-Content-Hash: src/ui/screens/settings-screen.tsx 8c4c421af85c6f4dcc87f3d1b7d9a3eb27dc0be9
+Reviewed-Content-Hash: src/ui/screens/household-screen.tsx 288dc756b075cb71a989bae3ea5e638fc83fb301
+Reviewed-Content-Hash: src/app.tsx 7fd9055f2b390d4b97db17ffe18672bffbaf15ab
+Reviewed-Content-Hash: src/ui/strings.ts 55f7818ed9e8a44677f056c5ece82ae64f270ffc
+Reviewed-Content-Hash: src/ui/styles.css 012bf921cac3919f99035d9e2f276f957a2fa19f

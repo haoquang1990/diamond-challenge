@@ -15,6 +15,8 @@ export interface HouseholdScreenProps {
   readonly accountId: string;
   /** Back to Cài đặt. */
   readonly onBack: () => void;
+  /** Opens straight on "Thêm người đứng chung"; closing it goes back (story 055). */
+  readonly startAdding?: boolean;
 }
 
 /** Load state: `offline` and `error` show a short message instead of the household. */
@@ -32,43 +34,9 @@ type LoadState =
  * @example
  * <HouseholdScreen clientPromise={client} accountId={id} onBack={back} />
  */
-export function HouseholdScreen({ clientPromise, accountId, onBack }: HouseholdScreenProps) {
-  const [state, setState] = useState<LoadState>({ kind: 'loading' });
-  const [online, setOnline] = useState(() => navigator.onLine);
-  const [adding, setAdding] = useState(false);
-  const [reloadKey, setReloadKey] = useState(0);
-  const reload = useCallback(() => setReloadKey((k) => k + 1), []);
-
-  useEffect(() => {
-    const update = () => setOnline(navigator.onLine);
-    window.addEventListener('online', update);
-    window.addEventListener('offline', update);
-    return () => {
-      window.removeEventListener('online', update);
-      window.removeEventListener('offline', update);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!online) {
-      setState({ kind: 'offline' });
-      return;
-    }
-    let cancelled = false;
-    clientPromise
-      .then((client) => loadHousehold(client, accountId, gameConfig.maxHouseholdMembers))
-      .then((info) => {
-        if (!cancelled) setState(info === null ? { kind: 'error' } : { kind: 'ready', info });
-      })
-      .catch((error: unknown) => {
-        console.error('[household] could not read the household', error);
-        if (!cancelled) setState({ kind: 'error' });
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [clientPromise, accountId, online, reloadKey]);
-
+export function HouseholdScreen({ clientPromise, accountId, onBack, startAdding = false }: HouseholdScreenProps) {
+  const { state, online, reload } = useHousehold(clientPromise, accountId);
+  const [adding, setAdding] = useState(startAdding);
   if (adding) {
     const householdId = state.kind === 'ready' ? state.info.householdId : null;
     return (
@@ -76,7 +44,7 @@ export function HouseholdScreen({ clientPromise, accountId, onBack }: HouseholdS
         clientPromise={clientPromise}
         {...(householdId === null ? {} : { householdId })}
         onAdded={reload}
-        onClose={() => setAdding(false)}
+        onClose={() => (startAdding ? onBack() : setAdding(false))}
       />
     );
   }
@@ -157,5 +125,111 @@ export function HouseholdScreen({ clientPromise, accountId, onBack }: HouseholdS
         </>
       )}
     </main>
+  );
+}
+
+/** Loads my household (code, members) when online; reload on demand (story 025, 055). */
+function useHousehold(clientPromise: Promise<SupabaseClient>, accountId: string) {
+  const [state, setState] = useState<LoadState>({ kind: 'loading' });
+  const [online, setOnline] = useState(() => navigator.onLine);
+  const [reloadKey, setReloadKey] = useState(0);
+  const reload = useCallback(() => setReloadKey((k) => k + 1), []);
+
+  useEffect(() => {
+    const update = () => setOnline(navigator.onLine);
+    window.addEventListener('online', update);
+    window.addEventListener('offline', update);
+    return () => {
+      window.removeEventListener('online', update);
+      window.removeEventListener('offline', update);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!online) {
+      setState({ kind: 'offline' });
+      return;
+    }
+    let cancelled = false;
+    clientPromise
+      .then((client) => loadHousehold(client, accountId, gameConfig.maxHouseholdMembers))
+      .then((info) => {
+        if (!cancelled) setState(info === null ? { kind: 'error' } : { kind: 'ready', info });
+      })
+      .catch((error: unknown) => {
+        console.error('[household] could not read the household', error);
+        if (!cancelled) setState({ kind: 'error' });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [clientPromise, accountId, online, reloadKey]);
+
+  return { state, online, reload };
+}
+
+/** Props for {@link HouseholdCard}. */
+export interface HouseholdCardProps {
+  readonly clientPromise: Promise<SupabaseClient>;
+  readonly accountId: string;
+  /** Opens "Thêm người đứng chung (mã số kép)". */
+  readonly onAddMember: () => void;
+}
+
+/**
+ * Cài đặt "Mã số của tôi" (story 055): the Amway code and the people on it (me marked "Bạn",
+ * others by name and phone), a note on the shared code, and "Thêm người đứng chung" while there is
+ * room (locked with a reason offline). Needs the network to read.
+ */
+export function HouseholdCard({ clientPromise, accountId, onAddMember }: HouseholdCardProps) {
+  const { state, online, reload } = useHousehold(clientPromise, accountId);
+  return (
+    <section className="card form household-card" aria-label={STRINGS.householdTitle}>
+      {state.kind === 'loading' && (
+        <p className="message" role="status">
+          {STRINGS.loading}
+        </p>
+      )}
+      {state.kind === 'offline' && <p className="message">{STRINGS.householdOffline}</p>}
+      {state.kind === 'error' && (
+        <>
+          <p className="message message--error" role="alert">
+            {STRINGS.householdLoadError}
+          </p>
+          <button type="button" className="button button--secondary" onClick={reload}>
+            {STRINGS.retry}
+          </button>
+        </>
+      )}
+      {state.kind === 'ready' &&
+        (state.info.householdId === null ? (
+          <p className="message">{STRINGS.householdNoHousehold}</p>
+        ) : (
+          <>
+            <div className="household-card__row">
+              <span className="household-card__key">{STRINGS.householdCodeLabel}</span>
+              <span className="household-card__value">{state.info.code ?? STRINGS.householdNoCode}</span>
+            </div>
+            <p className="household-card__key">{STRINGS.householdMembersHeading}</p>
+            <ul className="household-card__members">
+              {state.info.members.map((m) => (
+                <li key={m.userId} className="household-card__member">
+                  <strong>{m.displayName ?? (m.phone === null ? STRINGS.householdMemberUnnamed : formatE164(m.phone))}</strong>
+                  <span>{m.userId === accountId ? STRINGS.householdMe : m.phone === null ? '' : formatE164(m.phone)}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="message">{state.info.members.length < state.info.maxMembers ? STRINGS.householdSingleHint : STRINGS.householdSharedHint}</p>
+            {state.info.members.length < state.info.maxMembers && (
+              <>
+                <button type="button" className="button button--secondary" onClick={onAddMember} disabled={!online}>
+                  {STRINGS.addMemberButton}
+                </button>
+                {!online && <p className="message">{STRINGS.addMemberOfflineReason}</p>}
+              </>
+            )}
+          </>
+        ))}
+    </section>
   );
 }

@@ -9,6 +9,7 @@ import SYNC_SQL from '../../../supabase/migrations/20261107010000_contact_sync_s
 import GROUP_SQL from '../../../supabase/migrations/20261109000000_group_activity_cheers.sql?raw';
 import PERSONAL_SQL from '../../../supabase/migrations/20261118000000_personal_events.sql?raw';
 import SETTINGS_KEYS_SQL from '../../../supabase/migrations/20261127000000_personal_settings_keys.sql?raw';
+import XP_GOAL_SQL from '../../../supabase/migrations/20261127010000_xp_goal.sql?raw';
 
 const SUPABASE_STUB = `
 create role anon nologin; create role authenticated nologin; create role service_role nologin bypassrls;
@@ -103,6 +104,7 @@ beforeAll(async () => {
   await db.exec(GROUP_SQL);
   await db.exec(PERSONAL_SQL);
   await db.exec(SETTINGS_KEYS_SQL);
+  await db.exec(XP_GOAL_SQL);
   await db.exec('grant all on all tables in schema public to service_role;');
   const S = await provision(7, null, '2000007', 1); // sponsor (upline) of A
   A = await provision(2, S, '2000002', 7);
@@ -251,6 +253,8 @@ describe('check constraints', () => {
     ['badgesSeeded', { badgesSeeded: true, silent: true }],
     // Story 052: the contact list order follows the account.
     ['contactSort', { contactSort: 'recent' }],
+    // Story 056: the daily XP goal follows the account.
+    ['xpGoal', { xpGoal: { xp: 50, from: '2026-11-28' } }],
   ])('accepts settings_changed carrying %s', async (_k, payload) => {
     await add(2, 'settings_changed', payload);
   });

@@ -77,6 +77,8 @@ export interface MemberProgress {
   /** Story 050 (absent before that migration or on an old app): local day the numbers are for. */
   readonly statsDay?: string | null;
   readonly goalToday?: boolean;
+  /** Today's XP goal the member picked (story 056), when sent. */
+  readonly goalXp?: number;
   readonly activeDays7d?: number;
   readonly tasks7d?: Readonly<Record<string, number>>;
   readonly lessonsDistinct?: number;
@@ -94,7 +96,8 @@ export interface GroupNumbers {
 }
 
 const PROGRESS_COLUMNS = 'user_id, xp_total, xp_7d, streak, updated_at';
-const INSIGHT_COLUMNS = 'stats_day, goal_today, active_days_7d, tasks_7d, lessons_distinct, last_lesson_at, badges_7d, last_seen_at';
+const INSIGHT_COLUMNS_050 = 'stats_day, goal_today, active_days_7d, tasks_7d, lessons_distinct, last_lesson_at, badges_7d, last_seen_at';
+const INSIGHT_COLUMNS = `${INSIGHT_COLUMNS_050}, goal_xp`;
 
 interface ProgressRow {
   user_id: string;
@@ -104,6 +107,7 @@ interface ProgressRow {
   updated_at: string;
   stats_day?: string | null;
   goal_today?: boolean;
+  goal_xp?: number | null;
   active_days_7d?: number;
   tasks_7d?: Record<string, number> | null;
   lessons_distinct?: number;
@@ -119,6 +123,7 @@ function toMemberProgress(r: ProgressRow): MemberProgress {
     ...base,
     statsDay: r.stats_day,
     goalToday: r.goal_today === true,
+    ...(typeof r.goal_xp === 'number' ? { goalXp: r.goal_xp } : {}),
     activeDays7d: r.active_days_7d ?? 0,
     tasks7d: r.tasks_7d ?? {},
     lessonsDistinct: r.lessons_distinct ?? 0,
@@ -218,6 +223,11 @@ export async function loadGroup(
     profiles = (p.data ?? []) as typeof profiles;
     if (!mp.error) progressRows = (mp.data ?? []) as ProgressRow[];
     else {
+      // A server before story 056 has no goal_xp.
+      const mid = await client.from('member_progress').select(`${PROGRESS_COLUMNS}, ${INSIGHT_COLUMNS_050}`).in('user_id', userIds);
+      if (!mid.error) progressRows = (mid.data ?? []) as ProgressRow[];
+    }
+    if (progressRows.length === 0 && mp.error) {
       // Optional: a server before story 050 has only the story 044 columns, before 044 none.
       const old = await client.from('member_progress').select(PROGRESS_COLUMNS).in('user_id', userIds);
       if (!old.error) progressRows = (old.data ?? []) as ProgressRow[];
