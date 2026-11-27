@@ -6,6 +6,7 @@ import {
   isMatchQuestion,
   isOrderQuestion,
   shuffledStepOrder,
+  choiceDisplayOrder,
   toggleMatchLink,
   xpForCompletion,
 } from '../../domain/lesson';
@@ -133,6 +134,7 @@ export function LessonScreen({
     let shuffled: number[] = [];
     let links: (number | null)[] = [];
     if (question !== undefined && isOrderQuestion(question)) shuffled = shuffledStepOrder(question.steps.length, random);
+    else if (question !== undefined && !isMatchQuestion(question) && 'options' in question) shuffled = choiceDisplayOrder(question.options.length, random);
     if (question !== undefined && isMatchQuestion(question)) {
       shuffled = shuffledStepOrder(question.pairs.length, random);
       links = question.pairs.map(() => null);
@@ -219,7 +221,8 @@ export function LessonScreen({
           />
         ) : (
           <div className="lesson-options">
-            {question.options.map((option, optionIndex) => {
+            {(view.shuffled.length === question.options.length ? view.shuffled : question.options.map((_, i) => i)).map((optionIndex) => {
+              const option = question.options[optionIndex] ?? '';
               let modifier = '';
               if (answered && optionIndex === question.correctIndex) modifier = ' lesson-option--correct';
               else if (answered && optionIndex === selected) modifier = ' lesson-option--wrong';

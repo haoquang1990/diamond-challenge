@@ -271,6 +271,14 @@ export function shuffledStepOrder(count: number, random: () => number): number[]
   return order;
 }
 
+/**
+ * Display order of a choice question's answers (2026-11-28): a fresh shuffle each time the question
+ * opens, so the right answer is not learned by its place. Grading still uses the option index.
+ */
+export function choiceDisplayOrder(count: number, random: () => number): number[] {
+  return shuffledStepOrder(count, random);
+}
+
 /** Score of a finished lesson. */
 export interface LessonResult {
   readonly correct: number;

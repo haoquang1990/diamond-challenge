@@ -217,5 +217,6 @@ export function nextReminderAt(
 
 /** What today's goal still needs, for {@link reminderMessage}-style text. */
 export function reminderMissing(goal: DailyGoalStatus): ReminderMissing {
-  return { xp: Math.max(0, goal.threshold - goal.xp), lesson: !goal.hasLesson, activity: !goal.hasActivity };
+  // Story 062: a part with 0 needed is never missing.
+  return { xp: Math.max(0, goal.threshold - goal.xp), lesson: goal.lessons < goal.lessonsNeeded, activity: goal.tasks < goal.tasksNeeded };
 }

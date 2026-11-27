@@ -1,0 +1,3 @@
+Reviewed-Content-Hash: src/content/lessons.json e7b5445d0eec9d65bf9fcf6a4ad5722bb78ef21e
+Reviewed-Content-Hash: src/ui/screens/lesson-screen.tsx 9a552dff647061c52958beb0ac1533f59c25c02a
+Reviewed-Content-Hash: src/domain/lesson.ts 90297708de188af94720e33f929b38b64ed4503c
