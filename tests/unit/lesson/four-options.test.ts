@@ -16,3 +16,15 @@ describe('multiple-choice questions', () => {
     expect([...at].sort()).toEqual([0, 1, 2, 3]);
   });
 });
+
+describe('answer order on screen (2026-11-28)', () => {
+  it('shows every answer once, in a shuffled order that can differ each time', async () => {
+    const { choiceDisplayOrder } = await import('../../../src/domain/lesson');
+    const seq = (values: number[]) => () => values.shift() ?? 0;
+    const a = choiceDisplayOrder(4, seq([0.9, 0.1, 0.5]));
+    const b = choiceDisplayOrder(4, seq([0.1, 0.9, 0.2]));
+    expect([...a].sort()).toEqual([0, 1, 2, 3]);
+    expect([...b].sort()).toEqual([0, 1, 2, 3]);
+    expect(a).not.toEqual(b);
+  });
+});
