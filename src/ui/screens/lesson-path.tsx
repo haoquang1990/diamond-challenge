@@ -56,6 +56,9 @@ export function PathIcon({ shapes, className }: { readonly shapes: readonly Icon
   );
 }
 
+/** Height the fixed stage bar covers (8px margin + bar): a card hidden under it counts as passed. */
+const BAR_ZONE_PX = 80;
+
 /**
  * The Học path (story 037): one card per stage (icon, title, description,
  * progress bar), then the stage's lessons as zigzag round buttons, then a
@@ -67,6 +70,7 @@ export function LessonPath({ groups, events, at, timeZone, onStart }: LessonPath
   const [popup, setPopup] = useState<Popup | null>(null);
   const [barStage, setBarStage] = useState<number | null>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const nextRef = useRef<HTMLLIElement | null>(null);
 
   const learned = (id: string) => lessonHistory(events, id).count > 0;
   const nextId = suggestedNextLesson(groups, learned);
@@ -75,7 +79,7 @@ export function LessonPath({ groups, events, at, timeZone, onStart }: LessonPath
     const onScroll = () => {
       let current: number | null = null;
       cardRefs.current.forEach((card, index) => {
-        if (card !== null && card.getBoundingClientRect().bottom < 0) current = index;
+        if (card !== null && card.getBoundingClientRect().bottom < BAR_ZONE_PX) current = index;
       });
       setBarStage(current);
     };
@@ -83,6 +87,12 @@ export function LessonPath({ groups, events, at, timeZone, onStart }: LessonPath
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, [groups]);
+
+  // Opening Học lands on the "Học tiếp" lesson, not on stage 1 (2026-11-27). Once per opening.
+  useEffect(() => {
+    nextRef.current?.scrollIntoView({ block: 'center', behavior: 'auto' });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const barGroup = barStage === null ? undefined : groups[barStage];
 
@@ -150,6 +160,7 @@ export function LessonPath({ groups, events, at, timeZone, onStart }: LessonPath
                   return (
                     <li
                       key={lesson.id}
+                      ref={isNext ? nextRef : undefined}
                       className={`lesson-node-item lesson-node-item--${state}`}
                       style={{ '--path-x': `${ZIGZAG[i % ZIGZAG.length]}px` } as CSSProperties}
                     >

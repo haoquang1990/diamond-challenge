@@ -82,7 +82,8 @@ export function LessonScreen({
   initialLessonId,
 }: LessonScreenProps) {
   const [view, setView] = useState<ViewState>({ kind: 'list' });
-  const [events, setEvents] = useState<readonly LogEvent[]>([]);
+  // null until the log is read, so the path opens once at the real "Học tiếp" lesson (2026-11-27).
+  const [events, setEvents] = useState<readonly LogEvent[] | null>(null);
 
   const running = view.kind === 'question';
   useEffect(() => {
@@ -101,6 +102,7 @@ export function LessonScreen({
       .catch((error: unknown) => console.error('[lesson] could not read the event log', error));
     return () => {
       cancelled = true;
+      setEvents(null);
     };
   }, [eventStore, view.kind]);
 
@@ -297,13 +299,15 @@ export function LessonScreen({
         <h1 className="screen__title">{STRINGS.lessonListTitle}</h1>
       </header>
       {parsed.problems.length > 0 && <p className="message">{STRINGS.lessonSkippedNote}</p>}
-      <LessonPath
-        groups={groupLessonsByStage(parsed.lessons, stages)}
-        events={events}
-        at={at}
-        timeZone={timeZone}
-        onStart={(lesson) => setView(questionView(lesson, 0, []))}
-      />
+      {events !== null && (
+        <LessonPath
+          groups={groupLessonsByStage(parsed.lessons, stages)}
+          events={events}
+          at={at}
+          timeZone={timeZone}
+          onStart={(lesson) => setView(questionView(lesson, 0, []))}
+        />
+      )}
     </main>
   );
 }

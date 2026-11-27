@@ -1,0 +1,2 @@
+Reviewed-Content-Hash: src/ui/screens/lesson-path.tsx cef275d7af78987e5014f35c9ec0e5d08cc5252b
+Reviewed-Content-Hash: src/ui/screens/lesson-screen.tsx c583a3f067c182b239ba9a7b06bfc6bbd2dbcf29
