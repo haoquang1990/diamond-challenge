@@ -1217,3 +1217,15 @@ body.dialog-open { overflow: hidden; }
 .f1-box__pill { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px; border-radius: 12px; background: #f3f3f3; color: var(--color-muted); font-weight: 800; }
 .f1-box__pill--ok { background: #e9f9db; color: #2b7a00; }
 .f1-box__pill--fire { background: #fff3e0; color: #b25f00; }
+/* Story 061: the spouse on Hôm nay and in Mã số của tôi. */
+.spouse-card__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.spouse-card__row { display: flex; align-items: center; gap: 10px; }
+.spouse-card__who { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.spouse-card__meta { color: var(--color-muted); font-size: 0.88rem; font-weight: 600; }
+.household-card__member--open { display: block; }
+.household-card__details { width: 100%; }
+.household-card__summary { display: flex; align-items: baseline; gap: 10px; cursor: pointer; list-style: none; }
+.household-card__summary::-webkit-details-marker { display: none; }
+.household-card__summary strong { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.household-card__summary span { color: var(--color-muted); font-weight: 700; font-size: 0.9rem; }
+.member-numbers { margin-top: 10px; display: flex; flex-direction: column; gap: 10px; }

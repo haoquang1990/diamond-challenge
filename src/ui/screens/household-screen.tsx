@@ -3,9 +3,12 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import gameConfig from '../../config/game-config.json';
 import { loadHousehold } from '../../data/account-service';
 import type { HouseholdInfo } from '../../data/account-service';
-import { STRINGS, householdCountLabel, householdFullNote } from '../strings';
+import { STRINGS, householdCountLabel, householdFullNote, streakDaysLabel } from '../strings';
 import { formatE164 } from '../../domain/people';
 import { AddMemberForm } from './add-member-form';
+import { loadMemberProgress } from '../../data/group-service';
+import type { GroupHousehold, MemberProgress } from '../../data/group-service';
+import { agoLabel, householdInsight, householdProgressLabel, localDayKey, tasks7dLabel } from '../group-helpers';
 
 /** Props for {@link HouseholdScreen}. */
 export interface HouseholdScreenProps {
@@ -183,6 +186,22 @@ export interface HouseholdCardProps {
  */
 export function HouseholdCard({ clientPromise, accountId, onAddMember }: HouseholdCardProps) {
   const { state, online, reload } = useHousehold(clientPromise, accountId);
+  // Story 061: the other member's shared numbers, shown when their row is opened.
+  const [progress, setProgress] = useState<ReadonlyMap<string, MemberProgress>>(() => new Map());
+  const memberKey = state.kind === 'ready' ? state.info.members.map((m) => m.userId).join(',') : '';
+  useEffect(() => {
+    if (memberKey === '' || !navigator.onLine) return undefined;
+    let cancelled = false;
+    void clientPromise
+      .then((client) => loadMemberProgress(client, memberKey.split(',').filter((id) => id !== accountId)))
+      .then((map) => {
+        if (!cancelled) setProgress(map);
+      })
+      .catch((error: unknown) => console.warn('[household] spouse numbers not loaded', error));
+    return () => {
+      cancelled = true;
+    };
+  }, [clientPromise, accountId, memberKey]);
   return (
     <section className="card form household-card" aria-label={STRINGS.householdTitle}>
       {state.kind === 'loading' && (
@@ -212,12 +231,29 @@ export function HouseholdCard({ clientPromise, accountId, onAddMember }: Househo
             </div>
             <p className="household-card__key">{STRINGS.householdMembersHeading}</p>
             <ul className="household-card__members">
-              {state.info.members.map((m) => (
-                <li key={m.userId} className="household-card__member">
-                  <strong>{m.displayName ?? (m.phone === null ? STRINGS.householdMemberUnnamed : formatE164(m.phone))}</strong>
-                  <span>{m.userId === accountId ? STRINGS.householdMe : m.phone === null ? '' : formatE164(m.phone)}</span>
-                </li>
-              ))}
+              {state.info.members.map((m) => {
+                const name = m.displayName ?? (m.phone === null ? STRINGS.householdMemberUnnamed : formatE164(m.phone));
+                const p = progress.get(m.userId);
+                if (m.userId === accountId || p === undefined) {
+                  return (
+                    <li key={m.userId} className="household-card__member">
+                      <strong>{name}</strong>
+                      <span>{m.userId === accountId ? STRINGS.householdMe : m.phone === null ? '' : formatE164(m.phone)}</span>
+                    </li>
+                  );
+                }
+                return (
+                  <li key={m.userId} className="household-card__member household-card__member--open">
+                    <details className="household-card__details">
+                      <summary className="household-card__summary">
+                        <strong>{name} ▾</strong>
+                        <span>{m.phone === null ? '' : formatE164(m.phone)}</span>
+                      </summary>
+                      <MemberNumbers progress={p} />
+                    </details>
+                  </li>
+                );
+              })}
             </ul>
             <p className="message">{state.info.members.length < state.info.maxMembers ? STRINGS.householdSingleHint : STRINGS.householdSharedHint}</p>
             {state.info.members.length < state.info.maxMembers && (
@@ -231,5 +267,43 @@ export function HouseholdCard({ clientPromise, accountId, onAddMember }: Househo
           </>
         ))}
     </section>
+  );
+}
+
+/** One member's shared numbers (story 061), laid out like the NPP F1 box. */
+function MemberNumbers({ progress }: { readonly progress: MemberProgress }) {
+  const now = new Date();
+  const insight = householdInsight({ members: [{ userId: '', displayName: null, phone: null, progress, activated: true }] } as unknown as GroupHousehold, localDayKey(now));
+  return (
+    <div className="member-numbers">
+      <div className="f1-box__today">
+        <span className={insight?.goalToday === true ? 'f1-box__pill f1-box__pill--ok' : 'f1-box__pill'} aria-label={insight?.goalToday === true ? STRINGS.f1InsightGoalMet : STRINGS.f1InsightGoalNot}>
+          <span className={insight?.goalToday === true ? 'goal-dot goal-dot--ok' : 'goal-dot'} aria-hidden="true">
+            {insight?.goalToday === true ? '✓' : ''}
+          </span>
+          <span aria-hidden="true">{STRINGS.f1RowToday}</span>
+        </span>
+        <span className={progress.streak > 0 ? 'f1-box__pill f1-box__pill--fire' : 'f1-box__pill'}>{streakDaysLabel(progress.streak)}</span>
+      </div>
+      {insight !== null && insight.lastSeenAt !== null ? (
+        <ul className="f1-box__insight">
+          <li className="f1-box__fact">
+            {STRINGS.f1InsightActiveDays} <strong>{insight.activeDays7d}/7</strong> ngày · {progress.xp7d.toLocaleString('vi-VN')} XP
+          </li>
+          <li className="f1-box__fact">
+            {STRINGS.f1InsightTasks}: {tasks7dLabel(insight.tasks7d)}
+          </li>
+          <li className="f1-box__fact">
+            {STRINGS.f1InsightLessons} <strong>{insight.lessonsDistinct}</strong> bài · {STRINGS.f1InsightBadges}: {insight.badges7d}
+          </li>
+          <li className="f1-box__fact">
+            {insight.goalXp != null ? `Mục tiêu ${insight.goalXp} XP/ngày · ` : ''}
+            {STRINGS.f1InsightSeen}: {agoLabel(insight.lastSeenAt, now)}
+          </li>
+        </ul>
+      ) : (
+        <p className="message">{householdProgressLabel({ xpTotal: progress.xpTotal, xp7d: progress.xp7d, streak: progress.streak })}</p>
+      )}
+    </div>
   );
 }

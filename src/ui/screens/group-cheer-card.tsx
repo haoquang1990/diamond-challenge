@@ -5,9 +5,21 @@ import { CHEER_MAX_LENGTH, cleanCheerMessage, loadGroup, notifyCheer, parseGroup
 import type { GroupData } from '../../data/group-service';
 import type { EventStore } from '../../data/event-store';
 import { derivePeople, formatE164 } from '../../domain/people';
-import { cheerCardView, codeContactNames, householdActivityNote, householdInsight, householdNames, insightNote, linkedContactNames, localDayKey, suggestCheers } from '../group-helpers';
+import {
+  agoLabel,
+  cheerCardView,
+  codeContactNames,
+  spouseCard,
+  householdActivityNote,
+  householdInsight,
+  householdNames,
+  insightNote,
+  linkedContactNames,
+  localDayKey,
+  suggestCheers,
+} from '../group-helpers';
 import { PEOPLE_CONFIG } from '../people-config';
-import { STRINGS, groupCheerAria, noteCounterLabel } from '../strings';
+import { STRINGS, f1RowAria, groupCheerAria, noteCounterLabel, spouseMetaLabel } from '../strings';
 import { Dialog } from './person-form';
 
 const GROUP_CONFIG = parseGroupConfig(gameConfig);
@@ -45,6 +57,7 @@ export function GroupCheerCard({ clientPromise, accountId, eventStore, now = rea
   const [online, setOnline] = useState(() => navigator.onLine);
   const [reloadKey, setReloadKey] = useState(0);
   const [cheering, setCheering] = useState<string | null>(null);
+  const [noticeFor, setNoticeFor] = useState<'spouse' | 'group'>('group');
   const [notice, setNotice] = useState<{
     readonly text: string;
     readonly error: boolean;
@@ -117,9 +130,12 @@ export function GroupCheerCard({ clientPromise, accountId, eventStore, now = rea
   }, [clientPromise, accountId, online, reloadKey, now]);
 
   const view = cheerCardView(data?.group ?? null, now(), GROUP_CONFIG.inactiveDays);
-  if (data === null || data.group.myHouseholdId === null || (view.kind === 'hidden' && notice === null)) return null;
+  const spouseList = data?.group.spouses ?? [];
+  if (data === null || data.group.myHouseholdId === null || (view.kind === 'hidden' && spouseList.length === 0 && notice === null)) return null;
   const candidates = view.kind === 'list' ? view.households : [];
-  const spouses = view.kind === 'list' ? view.spouses : [];
+  // Story 061: the spouse gets its own "Vợ/chồng" card; "cheered" marks of a cache from another day are dropped.
+  const freshGroup = localDayKey(new Date(data.group.loadedAt)) === localDayKey(now());
+  const spouseRows = spouseCard(spouseList, now()).map((r) => (freshGroup ? r : { ...r, cheeredToday: false }));
   const myId = data.group.myHouseholdId;
   const canCheer = online && !data.stale && GROUP_CONFIG.cheerMessages.length > 0;
   const options = [...(picking?.suggested ?? []), ...GROUP_CONFIG.cheerMessages.filter((m) => !(picking?.suggested ?? []).includes(m))];
@@ -138,6 +154,7 @@ export function GroupCheerCard({ clientPromise, accountId, eventStore, now = rea
     if (picking === null || chosen === null || cheering !== null) return;
     const target = picking;
     setCheering(target.toUserId ?? target.toHouseholdId);
+    setNoticeFor(target.toUserId === undefined ? 'group' : 'spouse');
     setNotice(null);
     try {
       const result = await sendCheer(await clientPromise, {
@@ -172,51 +189,92 @@ export function GroupCheerCard({ clientPromise, accountId, eventStore, now = rea
     </li>
   );
 
-  return (
-    <section className="card cheer-group" aria-labelledby="cheer-group-title">
-      <h2 id="cheer-group-title" className="card__title">
-        {STRINGS.cheerGroupTitle}
-      </h2>
-      {notice !== null && (
-        <p className={notice.error ? 'message message--error' : 'message'} role={notice.error ? 'alert' : 'status'}>
-          {notice.text}
-        </p>
-      )}
-      {view.kind === 'done' && (
-        <p className="message cheer-group__done" role="status">
-          {STRINGS.cheerAllDone}
-        </p>
-      )}
-      {(spouses.length > 0 || candidates.length > 0) && (
-        <ul className="cheer-group__list">
-          {spouses.map((m) => {
-            const name = m.displayName ?? contactNames.get(m.userId) ?? (m.phone === null ? null : formatE164(m.phone)) ?? STRINGS.groupMemberUnnamed;
-            return row(`spouse-${m.userId}`, name, STRINGS.cheerSpouseNote, () =>
-              open({
-                toHouseholdId: myId,
-                toUserId: m.userId,
-                name,
-                suggested: [],
-              }),
-            );
-          })}
-          {candidates.map((h) => {
-            const names = householdNames(h, contactNames, codeNames);
-            const at = now();
-            const insight = householdInsight(h, localDayKey(at));
-            const note = householdActivityNote(h, at, GROUP_CONFIG.inactiveDays) ?? insightNote(insight);
-            return row(h.householdId, names, note, () =>
-              open({
-                toHouseholdId: h.householdId,
-                name: names,
-                suggested: suggestCheers(insight, at),
-              }),
-            );
-          })}
-        </ul>
-      )}
-      {!online && (spouses.length > 0 || candidates.length > 0) && <p className="message">{STRINGS.groupCheerOfflineReason}</p>}
+  const noticeLine =
+    notice === null ? null : (
+      <p className={notice.error ? 'message message--error' : 'message'} role={notice.error ? 'alert' : 'status'}>
+        {notice.text}
+      </p>
+    );
 
+  return (
+    <>
+      {spouseRows.length > 0 && (
+        <section className="card spouse-card" aria-labelledby="spouse-card-title">
+          <h2 id="spouse-card-title" className="card__title">
+            {STRINGS.spouseCardTitle}
+          </h2>
+          {noticeFor === 'spouse' && noticeLine}
+          <ul className="spouse-card__list">
+            {spouseRows.map((r) => {
+              const m = spouseList.find((x) => x.userId === r.userId);
+              const name = contactNames.get(r.userId) ?? m?.displayName ?? (m?.phone == null ? null : formatE164(m.phone)) ?? STRINGS.groupMemberUnnamed;
+              return (
+                <li key={r.userId} className="spouse-card__row">
+                  <span className="spouse-card__who">
+                    <span className="cheer-group__name">{name}</span>
+                    {r.xp7d === null ? (
+                      <span className="cheer-group__note">{STRINGS.spouseNoNumbers}</span>
+                    ) : (
+                      <>
+                        <span className="person-row__f1" aria-label={f1RowAria(r.goalToday, r.streak)}>
+                          <span className={r.goalToday ? 'goal-dot goal-dot--ok' : 'goal-dot'} aria-hidden="true">
+                            {r.goalToday ? '✓' : ''}
+                          </span>
+                          <span className={r.streak > 0 ? 'streak-mark' : 'streak-mark streak-mark--zero'} aria-hidden="true">
+                            🔥{r.streak}
+                          </span>
+                        </span>
+                        <span className="spouse-card__meta">{spouseMetaLabel(r.xp7d, r.lastSeenAt === null ? null : agoLabel(r.lastSeenAt, now()))}</span>
+                      </>
+                    )}
+                  </span>
+                  <button
+                    type="button"
+                    className="button button--primary cheer-group__button"
+                    aria-label={groupCheerAria(name)}
+                    disabled={!canCheer || cheering !== null || r.cheeredToday}
+                    onClick={() => open({ toHouseholdId: myId, toUserId: r.userId, name, suggested: [] })}
+                  >
+                    {r.cheeredToday ? STRINGS.spouseCheered : STRINGS.groupCheerButton}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+          {!online && <p className="message">{STRINGS.groupCheerOfflineReason}</p>}
+        </section>
+      )}
+      {(view.kind !== 'hidden' || (noticeFor === 'group' && notice !== null)) && (
+        <section className="card cheer-group" aria-labelledby="cheer-group-title">
+          <h2 id="cheer-group-title" className="card__title">
+            {STRINGS.cheerGroupTitle}
+          </h2>
+          {noticeFor === 'group' && noticeLine}
+          {view.kind === 'done' && (
+            <p className="message cheer-group__done" role="status">
+              {STRINGS.cheerAllDone}
+            </p>
+          )}
+          {candidates.length > 0 && (
+            <ul className="cheer-group__list">
+              {candidates.map((h) => {
+                const names = householdNames(h, contactNames, codeNames);
+                const at = now();
+                const insight = householdInsight(h, localDayKey(at));
+                const note = householdActivityNote(h, at, GROUP_CONFIG.inactiveDays) ?? insightNote(insight);
+                return row(h.householdId, names, note, () =>
+                  open({
+                    toHouseholdId: h.householdId,
+                    name: names,
+                    suggested: suggestCheers(insight, at),
+                  }),
+                );
+              })}
+            </ul>
+          )}
+          {!online && candidates.length > 0 && <p className="message">{STRINGS.groupCheerOfflineReason}</p>}
+        </section>
+      )}
       {picking !== null && (
         <Dialog title={STRINGS.cheerPickTitle} onClose={() => setPicking(null)}>
           <p className="popup__body">
@@ -255,6 +313,6 @@ export function GroupCheerCard({ clientPromise, accountId, eventStore, now = rea
           </div>
         </Dialog>
       )}
-    </section>
+    </>
   );
 }

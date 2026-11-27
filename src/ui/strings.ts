@@ -189,6 +189,9 @@ export const STRINGS = {
   sponsorCancelHistory: 'Huỷ bảo trợ',
   cheerGroupTitle: 'Cổ vũ nhóm',
   cheerAllDone: '✓ Hôm nay bạn đã cổ vũ tất cả mọi người.',
+  spouseCardTitle: 'Vợ/chồng',
+  spouseNoNumbers: 'Chưa có số liệu (cần mở bản app mới)',
+  spouseCheered: 'Đã cổ vũ',
   cheerSpouseNote: 'Đứng chung mã số với bạn',
   cheerPickTitle: 'Gửi lời cổ vũ',
   cheerPickLabel: 'Chọn một lời',
@@ -835,6 +838,11 @@ export function goalFromTomorrowLabel(xp: number): string {
 /** Screen-reader text of an F1 row's goal and streak (story 060). */
 export function f1RowAria(goalToday: boolean, streak: number): string {
   return `${goalToday ? 'Hôm nay đã đạt mục tiêu' : 'Hôm nay chưa đạt mục tiêu'}, chuỗi ${streak} ngày`;
+}
+
+/** "7 ngày 210 XP · mở app hôm nay" (story 061). */
+export function spouseMetaLabel(xp7d: number, seen: string | null): string {
+  return `7 ngày ${xp7d.toLocaleString('vi-VN')} XP${seen === null ? '' : ` · mở app ${seen}`}`;
 }
 
 /** "🔥 5 ngày". */
