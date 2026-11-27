@@ -47,7 +47,7 @@ jobs:
         # none is set; never printed, never in the repository. An existing pair is kept, so
         # browsers that already turned notifications on keep receiving them.
         run: |
-          names="$(supabase secrets list --project-ref "$SUPABASE_PROJECT_ID")"
+          names="$(supabase secrets list)"
           if printf '%s\n' "$names" | grep -q 'VAPID_PRIVATE_KEY'; then
             echo "Push keys already set."
           else
@@ -57,7 +57,7 @@ jobs:
             echo "::add-mask::$priv"
             env_file="$(mktemp)"
             printf 'VAPID_PUBLIC_KEY=%s\nVAPID_PRIVATE_KEY=%s\n' "$pub" "$priv" > "$env_file"
-            supabase secrets set --env-file "$env_file" --project-ref "$SUPABASE_PROJECT_ID"
+            supabase secrets set --env-file "$env_file" --yes
             rm -f "$env_file"
             echo "Push keys created."
           fi
