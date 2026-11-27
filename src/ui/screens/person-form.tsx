@@ -10,17 +10,20 @@ import {
   validateActivityTime,
   validateAmwayCode,
   validatePersonName,
+  formatE164,
   phoneKey,
   tidyNationalNumber,
   validatePhone,
 } from '../../domain/people';
 import type { PeopleConfig, Person, PersonPhone, PersonTaskDef } from '../../domain/people';
 import { CONTACT_STALE_DAYS, COUNTRY_CODES, NOTE_AUTOSAVE_MS, PEOPLE_CONFIG, PERSON_TASKS } from '../people-config';
-import { activityInstant, buildPersonHistory, calendarDaysSince, countDoneTasks, createNoteAutosave, duplicateCodeNames, findDuplicateCodes, findPeopleWithCode, formatPhone, phoneProblemText, summarizeHistory, summaryCounts, toLocalInputValue } from '../people-helpers';
+import { activityInstant, buildPersonHistory, calendarDaysSince, countDoneTasks, createNoteAutosave, duplicateCodeNames, findDuplicateCodes, findPeopleWithCode, accountPhoneDiffers, formatPhone, phoneProblemText, splitE164, summarizeHistory, summaryCounts, toLocalInputValue } from '../people-helpers';
 import type { NoteAutosave, NoteSaveState } from '../people-helpers';
 import {
   STRINGS,
   activityTimeTooOldLabel,
+  linkedAccountLine,
+  linkedPhoneDiffersLabel,
   compactDateLabel,
   dateTimeLabel,
   daysSinceLabel,
@@ -528,6 +531,8 @@ export interface PersonDetailProps {
   readonly createAccount?: { readonly onOpen: () => void };
   /** Extra section shown under Thông tin (story 042: "Hộ F1" for an NPP contact). */
   readonly extra?: ReactNode;
+  /** The linked F1 account (story 059): the name it set and its login phone; null when unknown. */
+  readonly linkedAccount?: { readonly displayName: string | null; readonly phone: string | null } | null;
   /** Re-read the log after any write. */
   readonly onChanged: () => Promise<void>;
   readonly onBack: () => void;
@@ -549,7 +554,7 @@ interface TaskUndo {
  * change in the "Sửa thông tin" popup. State of record is the event log; this only holds form
  * state.
  */
-export function PersonDetail({ eventStore, person, people, events, activityTypes, config = PEOPLE_CONFIG, authorLabel, createAccount, extra, onChanged, onBack }: PersonDetailProps) {
+export function PersonDetail({ eventStore, person, people, events, activityTypes, config = PEOPLE_CONFIG, authorLabel, createAccount, extra, linkedAccount = null, onChanged, onBack }: PersonDetailProps) {
   const [name, setName] = useState(person.name);
   const [note, setNote] = useState(person.note);
   const [noteState, setNoteState] = useState<NoteSaveState | null>(null);
@@ -702,6 +707,16 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
       setInfo(STRINGS.sponsorCancelDone);
     });
 
+  // Story 059: copy the linked account's login phone into this contact.
+  const applyAccountPhone = () =>
+    run(async () => {
+      const phone = linkedAccount?.phone == null ? null : splitE164(linkedAccount.phone, COUNTRY_CODES);
+      if (phone === null) return;
+      await eventStore.append({ type: 'person_updated', payload: { personId: person.personId, phone } });
+      await onChanged();
+      setInfo(STRINGS.linkedPhoneUpdated);
+    });
+
   const undoTask = () =>
     run(async () => {
       if (taskUndo === null) return;
@@ -756,9 +771,22 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
           </p>
         )}
         {person.linkedUserId != null && (
-          <p className="screen__prompt">
-            <strong>{STRINGS.createAccountHasAccount}</strong>
+          <p className="linked-account" aria-label={STRINGS.linkedAccountLabel}>
+            <span aria-hidden="true">👤</span>
+            <span>
+              {linkedAccount === null
+                ? STRINGS.createAccountHasAccount
+                : linkedAccountLine(linkedAccount.displayName, linkedAccount.phone === null ? null : formatE164(linkedAccount.phone))}
+            </span>
           </p>
+        )}
+        {person.linkedUserId != null && linkedAccount !== null && accountPhoneDiffers(person.phone, linkedAccount.phone, COUNTRY_CODES) && (
+          <div className="message message--warn linked-account__warn" role="status">
+            <span>{linkedPhoneDiffersLabel(formatE164(linkedAccount.phone ?? ''))}</span>
+            <button type="button" className="button button--secondary linked-account__fix" onClick={() => void applyAccountPhone()} disabled={busy}>
+              {STRINGS.linkedPhoneUpdate}
+            </button>
+          </div>
         )}
         {person.linkedUserId != null && (person.archived || person.label !== 'NPP') && (
           <p className="message message--warn" role="status">

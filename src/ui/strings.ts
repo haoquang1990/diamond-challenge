@@ -401,6 +401,10 @@ export const STRINGS = {
   createAccountButton: 'Tạo tài khoản',
   createAccountNeedsNetwork: 'Cần có mạng để tạo tài khoản',
   createAccountHasAccount: 'Đã có tài khoản',
+  linkedAccountLabel: 'Tài khoản của người này',
+  linkedPhoneUpdate: 'Cập nhật số trong danh bạ',
+  linkedPhoneUpdated: 'Đã cập nhật số theo tài khoản.',
+  createAccountNameNote: 'Lấy từ danh bạ của bạn. F1 sẽ thấy tên này khi đăng nhập lần đầu và sửa được.',
   createAccountWarnArchived: 'Người này đã có tài khoản và đang được lưu trữ. Tài khoản vẫn được giữ.',
   createAccountWarnNotNpp: 'Người này đã có tài khoản nhưng không còn nhãn NPP. Tài khoản vẫn được giữ.',
   createAccountTitle: 'Tạo tài khoản',
@@ -832,6 +836,16 @@ export function contactDaysAria(days: number | null): string {
 /** Button label of the sort choice: "Sắp xếp: Hoạt động gần nhất" (screen readers only). */
 export function contactSortAria(name: string): string {
   return `Sắp xếp: ${name}`;
+}
+
+/** "Tài khoản: Uyên · +84 912 345 678" (story 059); without a name only the phone. */
+export function linkedAccountLine(name: string | null, phone: string | null): string {
+  return `Tài khoản: ${[name, phone].filter((x) => x !== null && x !== '').join(' · ')}`;
+}
+
+/** "Số trong danh bạ khác số tài khoản (+84 …)." */
+export function linkedPhoneDiffersLabel(phone: string): string {
+  return `Số trong danh bạ khác số tài khoản (${phone}).`;
 }
 
 /** Short local date, e.g. "02/11/26" (story 051 summary). */

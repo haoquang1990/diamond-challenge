@@ -3,7 +3,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import gameConfig from '../../config/game-config.json';
 import { loadGroup, parseGroupConfig, readGroupCache, writeGroupCache } from '../../data/group-service';
 import type { GroupData } from '../../data/group-service';
-import { agoLabel, localDayKey, f1TotalsLabel, findF1Household, householdActivityNote, householdInsight, householdProgress, householdProgressLabel, tasks7dLabel } from '../group-helpers';
+import { agoLabel, f1LoginName, localDayKey, f1TotalsLabel, findF1Household, householdActivityNote, householdInsight, householdProgress, householdProgressLabel, tasks7dLabel } from '../group-helpers';
 import { generateTempPassword, resendF1Password } from '../../data/account-service';
 import type { ResendPasswordError } from '../../data/account-service';
 import { STRINGS, appLink, createAccountShareText, groupUpdatedLabel } from '../strings';
@@ -11,6 +11,7 @@ import { Dialog } from './person-form';
 import { formatE164 } from '../../domain/people';
 
 const GROUP_CONFIG = parseGroupConfig(gameConfig);
+const NO_NAMES: ReadonlyMap<string, string> = new Map();
 
 /** Props for {@link F1HouseholdBox}. */
 export interface F1HouseholdBoxProps {
@@ -20,6 +21,8 @@ export interface F1HouseholdBoxProps {
   readonly amwayCode: string;
   /** Clock; defaults to the real one. */
   readonly now?: () => Date;
+  /** My contact names by account id (story 059), for the login rows. */
+  readonly contactNames?: ReadonlyMap<string, string>;
 }
 
 function realNow(): Date {
@@ -34,7 +37,7 @@ function realNow(): Date {
  * "Cấp lại mật khẩu tạm" (server-checked: my direct F1, never activated) and a once-only popup
  * with the app link, phone and new password to copy or share.
  */
-export function F1HouseholdBox({ clientPromise, accountId, amwayCode, now = realNow }: F1HouseholdBoxProps) {
+export function F1HouseholdBox({ clientPromise, accountId, amwayCode, now = realNow, contactNames = NO_NAMES }: F1HouseholdBoxProps) {
   const [group, setGroup] = useState<GroupData | null>(() => readGroupCache(accountId));
   const [stale, setStale] = useState(true);
   const [busyUser, setBusyUser] = useState<string | null>(null);
@@ -130,7 +133,10 @@ export function F1HouseholdBox({ clientPromise, accountId, amwayCode, now = real
             .map((m) => (
               <li key={m.userId} className="f1-box__login">
                 <span>
-                  {STRINGS.f1BoxLogin}: {formatE164(m.phone ?? '')}
+                  {(() => {
+                    const name = f1LoginName(m, contactNames);
+                    return name === null ? `${STRINGS.f1BoxLogin}: ${formatE164(m.phone ?? '')}` : `${name} · ${formatE164(m.phone ?? '')}`;
+                  })()}
                   {m.activated === false && <span className="f1-box__badge">{STRINGS.f1NotActivated}</span>}
                 </span>
                 {m.activated !== true && (

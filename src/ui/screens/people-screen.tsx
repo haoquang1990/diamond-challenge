@@ -57,6 +57,8 @@ export interface PeopleScreenProps {
   readonly renderPersonExtra?: (person: Person) => ReactNode;
   /** F1 household progress by Amway code (story 044); adds XP sorting and numbers to the NPP chip. */
   readonly nppProgress?: ReadonlyMap<string, HouseholdProgress>;
+  /** The F1 account linked to a contact (story 059): name it set and login phone, null when unknown. */
+  readonly linkedAccountFor?: (userId: string) => { readonly displayName: string | null; readonly phone: string | null } | null;
 }
 
 type LoadState =
@@ -77,7 +79,7 @@ const ADD_NAME_ACTIVITY_ID = 'add_name';
  * the per-filter totals and ignore the search. Re-reads the event log on
  * mount and after every write; keeps no copy of truth.
  */
-export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initialFilter = 'all', onBack, members = null, memberIds = NO_MEMBERS, dataVersion = 0, initialOpenId = null, onCreateAccount, onOpenDuplicates, renderPersonExtra, nppProgress }: PeopleScreenProps) {
+export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initialFilter = 'all', onBack, members = null, memberIds = NO_MEMBERS, dataVersion = 0, initialOpenId = null, onCreateAccount, onOpenDuplicates, renderPersonExtra, nppProgress, linkedAccountFor }: PeopleScreenProps) {
   const [load, setLoad] = useState<LoadState>({ kind: 'loading' });
   const [openId, setOpenId] = useState<string | null>(initialOpenId);
   const [addedXp, setAddedXp] = useState<number | null>(null);
@@ -144,6 +146,7 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
         authorLabel={(userId) => historyAuthorLabel(userId, others, members)}
         {...(onCreateAccount === undefined ? {} : { createAccount: { onOpen: () => onCreateAccount(opened.personId) } })}
         extra={renderPersonExtra?.(opened) ?? null}
+        linkedAccount={opened.linkedUserId == null ? null : (linkedAccountFor?.(opened.linkedUserId) ?? null)}
         onChanged={reload}
         onBack={() => setOpenId(null)}
       />

@@ -1199,3 +1199,7 @@ body.dialog-open { overflow: hidden; }
 .notify-row__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .notify-row__hint { color: var(--color-muted); font-size: 0.88rem; font-weight: 600; }
 .notify-sep { height: 2px; background: var(--color-border); margin: 2px -4px; }
+/* Story 059: the linked F1 account on a contact. */
+.linked-account { margin: 6px 0 0; display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 12px; background: var(--color-diamond-light); color: var(--color-diamond-dark); font-weight: 700; overflow-wrap: anywhere; }
+.linked-account__warn { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; margin: 8px 0 0; padding: 10px 12px; border-radius: 12px; background: #fff4dc; }
+.linked-account__fix { width: auto; min-height: 40px; padding: 6px 12px; font-size: 0.85rem; }

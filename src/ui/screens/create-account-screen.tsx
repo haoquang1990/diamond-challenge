@@ -8,7 +8,7 @@ import type { EventStore } from '../../data/event-store';
 import { derivePeople, formatPhoneParts, tidyNationalNumber, validateAmwayCode, validatePhone } from '../../domain/people';
 import type { Person } from '../../domain/people';
 import { COUNTRY_CODES, PEOPLE_CONFIG } from '../people-config';
-import { phoneProblemText } from '../people-helpers';
+import { phoneProblemText, splitE164 } from '../people-helpers';
 import { STRINGS } from '../strings';
 import { TempPasswordView } from './temp-password-view';
 
@@ -62,6 +62,8 @@ export function CreateAccountScreen({ clientPromise, eventStore, personId, onBac
         if (cancelled) return;
         const found = derivePeople(events, PEOPLE_CONFIG).find((p) => p.personId === personId) ?? null;
         setPerson(found);
+        // Story 059: the name I saved becomes the account's display name (editable).
+        if (found !== null && validateDisplayName(found.name) !== null) setDisplayName(found.name);
         if (found?.phone != null) {
           setCountry(found.phone.country);
           setNumber(tidyNationalNumber(found.phone.country, found.phone.number));
@@ -129,7 +131,9 @@ export function CreateAccountScreen({ clientPromise, eventStore, personId, onBac
       }
       let saveFailed = false;
       try {
-        await eventStore.append({ type: 'person_updated', payload: { personId, linkedUserId: result.userId, ...(typedCode ? { amwayCode } : {}) } });
+        // Story 059: the contact keeps the account's login phone too.
+        const accountPhone = splitE164(result.phone, COUNTRY_CODES);
+        await eventStore.append({ type: 'person_updated', payload: { personId, linkedUserId: result.userId, ...(typedCode ? { amwayCode } : {}), ...(accountPhone === null ? {} : { phone: accountPhone }) } });
       } catch (err) {
         console.error('[create-account] could not save the link', err);
         saveFailed = true;
@@ -249,6 +253,7 @@ export function CreateAccountScreen({ clientPromise, eventStore, personId, onBac
               disabled={busy}
             />
           </label>
+          <p className="message">{STRINGS.createAccountNameNote}</p>
           {error !== null && (
             <p className="message message--error" role="alert">
               {error}
