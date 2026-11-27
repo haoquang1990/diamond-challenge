@@ -14,15 +14,15 @@ describe('cheerCardView', () => {
     const v = cheerCardView(group([house('a', true), house('b', false)], [{ cheeredToday: false }]), NOW, 3);
     expect(v.kind).toBe('list');
     expect(v.kind === 'list' && v.households.map((h) => h.householdId)).toEqual(['b']);
-    expect(v.kind === 'list' && v.spouses.length).toBe(1);
   });
 
   it('says everyone is cheered when nobody is left', () => {
     expect(cheerCardView(group([house('a', true)], [{ cheeredToday: true }]), NOW, 3).kind).toBe('done');
   });
 
-  it('is hidden without any F1 or spouse', () => {
+  it('is hidden without any F1 (the spouse has its own card since story 061)', () => {
     expect(cheerCardView(group([], []), NOW, 3).kind).toBe('hidden');
+    expect(cheerCardView(group([], [{ cheeredToday: false }]), NOW, 3).kind).toBe('hidden');
     expect(cheerCardView(null, NOW, 3).kind).toBe('hidden');
   });
 
@@ -30,6 +30,18 @@ describe('cheerCardView', () => {
     const yesterday = new Date(2026, 10, 26, 22, 0);
     const v = cheerCardView(group([house('a', true)], [{ cheeredToday: true }], yesterday), NOW, 3);
     expect(v.kind).toBe('list');
-    expect(v.kind === 'list' && v.households.length + v.spouses.length).toBe(2);
+    expect(v.kind === 'list' && v.households.length).toBe(1);
+  });
+});
+
+describe('spouseCard (story 061)', () => {
+  it('shows each spouse with today\'s goal, streak, 7-day XP and last open; no numbers yet is said', async () => {
+    const { spouseCard } = await import('../../../src/ui/group-helpers');
+    const withNumbers = { userId: 's1', displayName: 'Minh', phone: null, cheeredToday: false, progress: { xpTotal: 900, xp7d: 210, streak: 6, updatedAt: NOW.toISOString(), statsDay: '2026-11-27', goalToday: true, lastSeenAt: NOW.toISOString() } };
+    const without = { userId: 's2', displayName: null, phone: '+84922222222', cheeredToday: true, progress: null };
+    expect(spouseCard([withNumbers, without] as never, NOW)).toEqual([
+      { userId: 's1', goalToday: true, streak: 6, xp7d: 210, lastSeenAt: NOW.toISOString(), cheeredToday: false },
+      { userId: 's2', goalToday: false, streak: 0, xp7d: null, lastSeenAt: null, cheeredToday: true },
+    ]);
   });
 });

@@ -223,17 +223,7 @@ export async function loadGroup(
     ]);
     if (p.error) return null;
     profiles = (p.data ?? []) as typeof profiles;
-    if (!mp.error) progressRows = (mp.data ?? []) as ProgressRow[];
-    else {
-      // A server before story 056 has no goal_xp.
-      const mid = await client.from('member_progress').select(`${PROGRESS_COLUMNS}, ${INSIGHT_COLUMNS_050}`).in('user_id', userIds);
-      if (!mid.error) progressRows = (mid.data ?? []) as ProgressRow[];
-    }
-    if (progressRows.length === 0 && mp.error) {
-      // Optional: a server before story 050 has only the story 044 columns, before 044 none.
-      const old = await client.from('member_progress').select(PROGRESS_COLUMNS).in('user_id', userIds);
-      if (!old.error) progressRows = (old.data ?? []) as ProgressRow[];
-    }
+    progressRows = mp.error ? await loadProgressFallback(client, userIds) : ((mp.data ?? []) as ProgressRow[]);
     if (!act.error && Array.isArray(act.data)) activation = act.data as typeof activation;
   }
   const codes = (codeRows.data ?? []) as { household_id: string; code: string }[];
@@ -342,14 +332,33 @@ export function cleanCheerMessage(text: string): string | null {
 }
 
 /** The other active members of my NPP with today's cheer state; [] when the read fails. */
+/** `member_progress` rows of these accounts on a server that misses newer columns (stories 050, 056). */
+async function loadProgressFallback(client: SupabaseClient, userIds: readonly string[]): Promise<ProgressRow[]> {
+  // A server before story 056 has no goal_xp.
+  const mid = await client.from('member_progress').select(`${PROGRESS_COLUMNS}, ${INSIGHT_COLUMNS_050}`).in('user_id', userIds);
+  if (!mid.error) return (mid.data ?? []) as ProgressRow[];
+  // A server before story 050 has only the story 044 columns, before 044 none.
+  const old = await client.from('member_progress').select(PROGRESS_COLUMNS).in('user_id', userIds);
+  return old.error ? [] : ((old.data ?? []) as ProgressRow[]);
+}
+
+/** Shared progress of these accounts (readable for my household and my F1s); [] when unavailable. */
+async function loadProgressRows(client: SupabaseClient, userIds: readonly string[]): Promise<ProgressRow[]> {
+  if (userIds.length === 0) return [];
+  const mp = await client.from('member_progress').select(`${PROGRESS_COLUMNS}, ${INSIGHT_COLUMNS}`).in('user_id', userIds);
+  return mp.error ? loadProgressFallback(client, userIds) : ((mp.data ?? []) as ProgressRow[]);
+}
+
 async function loadSpouses(client: SupabaseClient, mine: string, accountId: string, cheersPerDay: number, now: Date): Promise<SpouseMember[]> {
   const members = await client.from('household_members').select('user_id').eq('household_id', mine).is('left_at', null);
   if (members.error) return [];
   const ids = ((members.data ?? []) as { user_id: string }[]).map((m) => m.user_id).filter((id) => id !== accountId);
   if (ids.length === 0) return [];
-  const [p, sent] = await Promise.all([
+  const [p, sent, progressRows] = await Promise.all([
     client.from('profiles').select('id, phone, display_name').in('id', ids),
     client.from('cheers').select('to_user_id').eq('from_household_id', mine).eq('to_household_id', mine).eq('sent_by', accountId).eq('cheer_day', utcDay(now)),
+    // Story 061: the spouse's shared numbers, shown on Hôm nay and in Mã số của tôi.
+    loadProgressRows(client, ids),
   ]);
   const profiles = (p.error ? [] : (p.data ?? [])) as { id: string; phone: string | null; display_name: string | null }[];
   // A server without `to_user_id` yet (before the story 049 migration) just shows no sent cheers.
@@ -361,6 +370,10 @@ async function loadSpouses(client: SupabaseClient, mine: string, accountId: stri
       displayName: profile?.display_name ?? null,
       phone: profile?.phone ?? null,
       cheeredToday: sentTo.filter((c) => c.to_user_id === id).length >= cheersPerDay,
+      progress: (() => {
+        const row = progressRows.find((r) => r.user_id === id);
+        return row === undefined ? null : toMemberProgress(row);
+      })(),
     };
   });
 }
@@ -478,4 +491,13 @@ export async function loadUnseenCheer(
   const cheers = await loadReceivedCheers(client, household, 20, accountId);
   const unseen = cheers?.find((c) => !dismissed.has(c.id));
   return cheers === null || unseen === undefined ? null : { cheer: unseen, allIds: cheers.map((c) => c.id) };
+}
+
+/**
+ * The shared numbers of these accounts (story 061: the members of my own code), by account id.
+ * Owner, household and upline may read them; others get nothing.
+ */
+export async function loadMemberProgress(client: SupabaseClient, userIds: readonly string[]): Promise<ReadonlyMap<string, MemberProgress>> {
+  const rows = await loadProgressRows(client, userIds);
+  return new Map(rows.map((r) => [r.user_id, toMemberProgress(r)]));
 }

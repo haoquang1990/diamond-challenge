@@ -280,23 +280,42 @@ export function suggestCheers(i: HouseholdInsight | null, now: Date): string[] {
   return out;
 }
 
-/** What the Hôm nay "Cổ vũ nhóm" card shows (2026-11-27). */
-export type CheerCardView =
-  | { readonly kind: 'hidden' }
-  | { readonly kind: 'done' }
-  | { readonly kind: 'list'; readonly households: GroupHousehold[]; readonly spouses: NonNullable<GroupData['spouses']>[number][] };
+/** What the Hôm nay "Cổ vũ nhóm" card shows (2026-11-27; F1 households only since story 061). */
+export type CheerCardView = { readonly kind: 'hidden' } | { readonly kind: 'done' } | { readonly kind: 'list'; readonly households: GroupHousehold[] };
 
 /**
- * The cheer card's content: hidden without F1 households or spouse, "everyone cheered" when
- * nobody is left today, else who is left (households ordered by {@link cheerCandidates}). A
- * group loaded on an earlier local day (the cache) keeps no "cheered today" marks. Pure.
+ * The cheer card's content: hidden without F1 households, "everyone cheered" when nobody is left
+ * today, else who is left (ordered by {@link cheerCandidates}). A group loaded on an earlier local
+ * day (the cache) keeps no "cheered today" marks. The spouse has its own card (story 061). Pure.
  */
 export function cheerCardView(group: GroupData | null, now: Date, inactiveDays: number): CheerCardView {
-  if (group === null || group.myHouseholdId === null) return { kind: 'hidden' };
-  const spousesAll = group.spouses ?? [];
-  if (group.households.length === 0 && spousesAll.length === 0) return { kind: 'hidden' };
+  if (group === null || group.myHouseholdId === null || group.households.length === 0) return { kind: 'hidden' };
   const fresh = localDayKey(new Date(group.loadedAt)) === localDayKey(now);
   const households = cheerCandidates(fresh ? group.households : group.households.map((h) => ({ ...h, cheeredToday: false })), now, inactiveDays);
-  const spouses = spousesAll.filter((m) => !fresh || !m.cheeredToday);
-  return households.length === 0 && spouses.length === 0 ? { kind: 'done' } : { kind: 'list', households, spouses };
+  return households.length === 0 ? { kind: 'done' } : { kind: 'list', households };
+}
+
+/** One spouse row of the Hôm nay "Vợ/chồng" card (story 061). */
+export interface SpouseRow {
+  readonly userId: string;
+  /** Met today's goal (numbers from today). */
+  readonly goalToday: boolean;
+  readonly streak: number;
+  /** null: the spouse's app has not sent numbers yet. */
+  readonly xp7d: number | null;
+  readonly lastSeenAt: string | null;
+  readonly cheeredToday: boolean;
+}
+
+/** The spouse rows, in the given order; "cheered today" from a cache of another day is dropped by the caller. Pure. */
+export function spouseCard(spouses: NonNullable<GroupData['spouses']>, now: Date): SpouseRow[] {
+  const today = localDayKey(now);
+  return spouses.map((m) => ({
+    userId: m.userId,
+    goalToday: m.progress != null && m.progress.statsDay === today && m.progress.goalToday === true,
+    streak: m.progress?.streak ?? 0,
+    xp7d: m.progress?.xp7d ?? null,
+    lastSeenAt: m.progress?.lastSeenAt ?? null,
+    cheeredToday: m.cheeredToday,
+  }));
 }
