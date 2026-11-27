@@ -2,7 +2,7 @@
  * Names and cheer candidates for F1 households (stories 028, 041). Pure; no network.
  */
 import { activityStatus, sortGroup } from '../data/group-service';
-import type { GroupHousehold, GroupMember } from '../data/group-service';
+import type { GroupData, GroupHousehold, GroupMember } from '../data/group-service';
 import type { Person } from '../domain/people';
 import { formatE164 } from '../domain/people';
 import { STRINGS } from './strings';
@@ -259,4 +259,25 @@ export function suggestCheers(i: HouseholdInsight | null, now: Date): string[] {
   const lesson = daysSince(i.lastLessonAt, now);
   if (!i.notActivated && (lesson === null || lesson >= 7)) out.push('Dành 2 phút học một bài hôm nay nhé!');
   return out;
+}
+
+/** What the Hôm nay "Cổ vũ nhóm" card shows (2026-11-27). */
+export type CheerCardView =
+  | { readonly kind: 'hidden' }
+  | { readonly kind: 'done' }
+  | { readonly kind: 'list'; readonly households: GroupHousehold[]; readonly spouses: NonNullable<GroupData['spouses']>[number][] };
+
+/**
+ * The cheer card's content: hidden without F1 households or spouse, "everyone cheered" when
+ * nobody is left today, else who is left (households ordered by {@link cheerCandidates}). A
+ * group loaded on an earlier local day (the cache) keeps no "cheered today" marks. Pure.
+ */
+export function cheerCardView(group: GroupData | null, now: Date, inactiveDays: number): CheerCardView {
+  if (group === null || group.myHouseholdId === null) return { kind: 'hidden' };
+  const spousesAll = group.spouses ?? [];
+  if (group.households.length === 0 && spousesAll.length === 0) return { kind: 'hidden' };
+  const fresh = localDayKey(new Date(group.loadedAt)) === localDayKey(now);
+  const households = cheerCandidates(fresh ? group.households : group.households.map((h) => ({ ...h, cheeredToday: false })), now, inactiveDays);
+  const spouses = spousesAll.filter((m) => !fresh || !m.cheeredToday);
+  return households.length === 0 && spouses.length === 0 ? { kind: 'done' } : { kind: 'list', households, spouses };
 }

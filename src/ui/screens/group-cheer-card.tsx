@@ -5,7 +5,7 @@ import { CHEER_MAX_LENGTH, cleanCheerMessage, loadGroup, parseGroupConfig, readG
 import type { GroupData } from '../../data/group-service';
 import type { EventStore } from '../../data/event-store';
 import { derivePeople, formatE164 } from '../../domain/people';
-import { cheerCandidates, codeContactNames, householdActivityNote, householdInsight, householdNames, insightNote, linkedContactNames, localDayKey, suggestCheers } from '../group-helpers';
+import { cheerCardView, codeContactNames, householdActivityNote, householdInsight, householdNames, insightNote, linkedContactNames, localDayKey, suggestCheers } from '../group-helpers';
 import { PEOPLE_CONFIG } from '../people-config';
 import { STRINGS, groupCheerAria, noteCounterLabel } from '../strings';
 import { Dialog } from './person-form';
@@ -37,10 +37,11 @@ function realNow(): Date {
  * locked; nothing is shown while loading or when nothing was ever loaded.
  */
 export function GroupCheerCard({ clientPromise, accountId, eventStore, now = realNow, dataVersion = 0 }: GroupCheerCardProps) {
-  const [data, setData] = useState<{
-    readonly group: GroupData;
-    readonly stale: boolean;
-  } | null>(null);
+  // Shown at once from the last loaded group (2026-11-27), then refreshed in the background.
+  const [data, setData] = useState<{ readonly group: GroupData; readonly stale: boolean } | null>(() => {
+    const cached = readGroupCache(accountId);
+    return cached === null ? null : { group: cached, stale: true };
+  });
   const [online, setOnline] = useState(() => navigator.onLine);
   const [reloadKey, setReloadKey] = useState(0);
   const [cheering, setCheering] = useState<string | null>(null);
@@ -115,10 +116,10 @@ export function GroupCheerCard({ clientPromise, accountId, eventStore, now = rea
     };
   }, [clientPromise, accountId, online, reloadKey, now]);
 
-  if (data === null || data.group.myHouseholdId === null) return null;
-  const candidates = cheerCandidates(data.group.households, now(), GROUP_CONFIG.inactiveDays);
-  const spouses = (data.group.spouses ?? []).filter((m) => !m.cheeredToday);
-  if (candidates.length === 0 && spouses.length === 0 && notice === null) return null;
+  const view = cheerCardView(data?.group ?? null, now(), GROUP_CONFIG.inactiveDays);
+  if (data === null || data.group.myHouseholdId === null || (view.kind === 'hidden' && notice === null)) return null;
+  const candidates = view.kind === 'list' ? view.households : [];
+  const spouses = view.kind === 'list' ? view.spouses : [];
   const myId = data.group.myHouseholdId;
   const canCheer = online && !data.stale && GROUP_CONFIG.cheerMessages.length > 0;
   const options = [...(picking?.suggested ?? []), ...GROUP_CONFIG.cheerMessages.filter((m) => !(picking?.suggested ?? []).includes(m))];
@@ -180,6 +181,11 @@ export function GroupCheerCard({ clientPromise, accountId, eventStore, now = rea
           {notice.text}
         </p>
       )}
+      {view.kind === 'done' && (
+        <p className="message cheer-group__done" role="status">
+          {STRINGS.cheerAllDone}
+        </p>
+      )}
       {(spouses.length > 0 || candidates.length > 0) && (
         <ul className="cheer-group__list">
           {spouses.map((m) => {
@@ -208,7 +214,7 @@ export function GroupCheerCard({ clientPromise, accountId, eventStore, now = rea
           })}
         </ul>
       )}
-      {!canCheer && (spouses.length > 0 || candidates.length > 0) && <p className="message">{STRINGS.groupCheerOfflineReason}</p>}
+      {!online && (spouses.length > 0 || candidates.length > 0) && <p className="message">{STRINGS.groupCheerOfflineReason}</p>}
 
       {picking !== null && (
         <Dialog title={STRINGS.cheerPickTitle} onClose={() => setPicking(null)}>

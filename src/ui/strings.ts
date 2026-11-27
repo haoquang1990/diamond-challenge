@@ -188,6 +188,7 @@ export const STRINGS = {
   sponsorCancelDone: 'Đã huỷ bảo trợ.',
   sponsorCancelHistory: 'Huỷ bảo trợ',
   cheerGroupTitle: 'Cổ vũ nhóm',
+  cheerAllDone: '✓ Hôm nay bạn đã cổ vũ tất cả mọi người.',
   cheerSpouseNote: 'Vợ/chồng trong NPP của bạn',
   cheerPickTitle: 'Gửi lời cổ vũ',
   cheerPickLabel: 'Chọn một lời',
