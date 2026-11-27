@@ -17,9 +17,17 @@ export function linkedContactNames(people: readonly Person[]): ReadonlyMap<strin
   return names;
 }
 
-/** A member's name: the display name they set, else my contact name for that account, else phone, else a placeholder. */
+/**
+ * A member's name (story 059: the sponsor's own names first): my contact name for that account,
+ * else the display name they set, else phone, else a placeholder.
+ */
 export function groupMemberName(member: Pick<GroupMember, 'userId' | 'displayName' | 'phone'>, contactNames: ReadonlyMap<string, string>): string {
-  return member.displayName ?? contactNames.get(member.userId) ?? (member.phone === null ? null : formatE164(member.phone)) ?? STRINGS.groupMemberUnnamed;
+  return contactNames.get(member.userId) ?? member.displayName ?? (member.phone === null ? null : formatE164(member.phone)) ?? STRINGS.groupMemberUnnamed;
+}
+
+/** Name for one F1 login row (story 059): my contact name for that account, else theirs, else null. */
+export function f1LoginName(member: Pick<GroupMember, 'userId' | 'displayName' | 'phone'>, contactNames: ReadonlyMap<string, string>): string | null {
+  return contactNames.get(member.userId) ?? member.displayName ?? null;
 }
 
 /**
@@ -39,18 +47,20 @@ export function codeContactNames(people: readonly Person[]): ReadonlyMap<string,
  * member already shows it); the rest fall back to phone, then a placeholder.
  */
 export function householdNames(h: GroupHousehold, contactNames: ReadonlyMap<string, string>, codeNames: ReadonlyMap<string, string> = new Map()): string {
-  const known = h.members.map((m) => m.displayName ?? contactNames.get(m.userId) ?? null);
+  // Story 059: my own names first. A member linked to one of my contacts gets that name; my
+  // contact name for the code goes to the first member without a linked name; only then the name
+  // they set, then the phone.
+  const linked = h.members.map((m) => contactNames.get(m.userId) ?? null);
   const byCode = h.code === null ? undefined : codeNames.get(h.code);
-  // My contact name for the household code goes to the first member without a name, unless a member already has it.
-  let codeUsed = byCode === undefined || known.includes(byCode);
+  let codeUsed = byCode === undefined || linked.includes(byCode);
   const names = h.members.map((m, i) => {
-    const name = known[i];
+    const name = linked[i];
     if (name != null) return name;
     if (!codeUsed && byCode !== undefined) {
       codeUsed = true;
       return byCode;
     }
-    return m.phone === null ? STRINGS.groupMemberUnnamed : formatE164(m.phone);
+    return m.displayName ?? (m.phone === null ? STRINGS.groupMemberUnnamed : formatE164(m.phone));
   });
   if (names.length === 0) return byCode ?? STRINGS.groupMemberUnnamed;
   return names.join(' & ');
@@ -90,16 +100,22 @@ export interface HouseholdProgress {
   readonly xpTotal: number;
   readonly xp7d: number;
   readonly streak: number;
+  /** Story 060: some member met today's goal (numbers from `today`); only when `today` is given. */
+  readonly goalToday?: boolean;
 }
 
-/** Adds up the members' shared progress; null when no member has sent any. Pure. */
-export function householdProgress(h: GroupHousehold): HouseholdProgress | null {
+/**
+ * Adds up the members' shared progress; null when no member has sent any. With `today` (local
+ * YYYY-MM-DD) it also says whether today's goal is met. Pure.
+ */
+export function householdProgress(h: GroupHousehold, today?: string): HouseholdProgress | null {
   const sent = h.members.map((m) => m.progress).filter((p): p is NonNullable<typeof p> => p != null);
   if (sent.length === 0) return null;
   return {
     xpTotal: sent.reduce((sum, p) => sum + p.xpTotal, 0),
     xp7d: sent.reduce((sum, p) => sum + p.xp7d, 0),
     streak: Math.max(...sent.map((p) => p.streak)),
+    ...(today === undefined ? {} : { goalToday: sent.some((p) => p.statsDay === today && p.goalToday === true) }),
   };
 }
 
@@ -124,10 +140,10 @@ export function sortNppByProgress<T extends { readonly amwayCode?: string | null
 }
 
 /** Code → household progress for every F1 household with a code and shared numbers. */
-export function progressByCode(households: readonly GroupHousehold[]): ReadonlyMap<string, HouseholdProgress> {
+export function progressByCode(households: readonly GroupHousehold[], today?: string): ReadonlyMap<string, HouseholdProgress> {
   const map = new Map<string, HouseholdProgress>();
   for (const h of households) {
-    const stats = householdProgress(h);
+    const stats = householdProgress(h, today);
     if (h.code !== null && stats !== null) map.set(h.code, stats);
   }
   return map;

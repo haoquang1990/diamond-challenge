@@ -26,9 +26,8 @@ import {
   searchPeopleByName,
 } from '../people-helpers';
 import type { ContactSort, ContactsFilter } from '../people-helpers';
-import { STRINGS, contactDaysAria, contactSortAria, duplicateCodeWarning, duplicatesEntryLabel, filterChipLabel, nppSinceLabel, shortDateLabel, xpLabel } from '../strings';
+import { STRINGS, contactDaysAria, contactSortAria, duplicateCodeWarning, duplicatesEntryLabel, f1RowAria, filterChipLabel, shortDateLabel, xpLabel } from '../strings';
 import { AddPersonForm, Dialog, LabelBadge, PersonDetail } from './person-form';
-import { householdProgressLabel } from '../group-helpers';
 import type { HouseholdProgress } from '../group-helpers';
 
 /** Props for {@link PeopleScreen}. */
@@ -57,6 +56,8 @@ export interface PeopleScreenProps {
   readonly renderPersonExtra?: (person: Person) => ReactNode;
   /** F1 household progress by Amway code (story 044); adds XP sorting and numbers to the NPP chip. */
   readonly nppProgress?: ReadonlyMap<string, HouseholdProgress>;
+  /** The F1 account linked to a contact (story 059): name it set and login phone, null when unknown. */
+  readonly linkedAccountFor?: (userId: string) => { readonly displayName: string | null; readonly phone: string | null } | null;
 }
 
 type LoadState =
@@ -77,7 +78,7 @@ const ADD_NAME_ACTIVITY_ID = 'add_name';
  * the per-filter totals and ignore the search. Re-reads the event log on
  * mount and after every write; keeps no copy of truth.
  */
-export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initialFilter = 'all', onBack, members = null, memberIds = NO_MEMBERS, dataVersion = 0, initialOpenId = null, onCreateAccount, onOpenDuplicates, renderPersonExtra, nppProgress }: PeopleScreenProps) {
+export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initialFilter = 'all', onBack, members = null, memberIds = NO_MEMBERS, dataVersion = 0, initialOpenId = null, onCreateAccount, onOpenDuplicates, renderPersonExtra, nppProgress, linkedAccountFor }: PeopleScreenProps) {
   const [load, setLoad] = useState<LoadState>({ kind: 'loading' });
   const [openId, setOpenId] = useState<string | null>(initialOpenId);
   const [addedXp, setAddedXp] = useState<number | null>(null);
@@ -144,6 +145,7 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
         authorLabel={(userId) => historyAuthorLabel(userId, others, members)}
         {...(onCreateAccount === undefined ? {} : { createAccount: { onOpen: () => onCreateAccount(opened.personId) } })}
         extra={renderPersonExtra?.(opened) ?? null}
+        linkedAccount={opened.linkedUserId == null ? null : (linkedAccountFor?.(opened.linkedUserId) ?? null)}
         onChanged={reload}
         onBack={() => setOpenId(null)}
       />
@@ -347,12 +349,21 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
                     {dupCodes.has(person.personId) && (
                       <span className="person-row__warn">{duplicateCodeWarning(duplicateCodeNames(dupCodes.get(person.personId) ?? []))}</span>
                     )}
-                    {filter === 'npp' && person.nppAt != null && (
-                      <span className="person-row__stage">{nppSinceLabel(person.nppAt)}</span>
-                    )}
-                    {filter === 'npp' && person.amwayCode != null && nppProgress?.get(person.amwayCode) !== undefined && (
-                      <span className="person-row__progress">{householdProgressLabel(nppProgress.get(person.amwayCode) as HouseholdProgress)}</span>
-                    )}
+                    {(() => {
+                      // Story 060: an F1 NPP shows today's goal and its streak under the name, in every filter.
+                      const f1 = person.label === 'NPP' && person.amwayCode != null ? nppProgress?.get(person.amwayCode) : undefined;
+                      if (f1 === undefined) return null;
+                      return (
+                        <span className="person-row__f1" aria-label={f1RowAria(f1.goalToday === true, f1.streak)}>
+                          <span className={f1.goalToday === true ? 'goal-dot goal-dot--ok' : 'goal-dot'} aria-hidden="true">
+                            {f1.goalToday === true ? '✓' : ''}
+                          </span>
+                          <span className={f1.streak > 0 ? 'streak-mark' : 'streak-mark streak-mark--zero'} aria-hidden="true">
+                            🔥{f1.streak}
+                          </span>
+                        </span>
+                      );
+                    })()}
                   </span>
                   {person.label != null && <LabelBadge label={person.label} />}
                   {(() => {

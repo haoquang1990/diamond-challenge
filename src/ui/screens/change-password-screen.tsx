@@ -94,6 +94,8 @@ export interface DisplayNameScreenProps {
   readonly onSaved: (name: string) => void;
   /** "Để sau": skip without a name. */
   readonly onSkip: () => void;
+  /** Name already on the account (story 059: the sponsor's name for me), shown ready to keep. */
+  readonly initialName?: string;
 }
 
 /**
@@ -102,8 +104,8 @@ export interface DisplayNameScreenProps {
  * @example
  * <DisplayNameScreen clientPromise={client} onSaved={setName} onSkip={skip} />
  */
-export function DisplayNameScreen({ clientPromise, onSaved, onSkip }: DisplayNameScreenProps) {
-  const [name, setName] = useState('');
+export function DisplayNameScreen({ clientPromise, onSaved, onSkip, initialName = '' }: DisplayNameScreenProps) {
+  const [name, setName] = useState(initialName);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

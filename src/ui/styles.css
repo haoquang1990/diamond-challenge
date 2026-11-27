@@ -1199,3 +1199,21 @@ body.dialog-open { overflow: hidden; }
 .notify-row__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .notify-row__hint { color: var(--color-muted); font-size: 0.88rem; font-weight: 600; }
 .notify-sep { height: 2px; background: var(--color-border); margin: 2px -4px; }
+/* Story 059: the linked F1 account on a contact. */
+.linked-account { margin: 6px 0 0; display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 12px; background: var(--color-diamond-light); color: var(--color-diamond-dark); font-weight: 700; overflow-wrap: anywhere; }
+.linked-account__warn { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; margin: 8px 0 0; padding: 10px 12px; border-radius: 12px; background: #fff4dc; }
+.linked-account__fix { width: auto; min-height: 40px; padding: 6px 12px; font-size: 0.85rem; }
+/* Story 060: today's goal and streak of an F1 NPP. */
+.person-row__f1 { display: flex; align-items: center; gap: 6px; color: var(--color-muted); font-weight: 700; font-size: 0.9rem; }
+.goal-dot { flex: none; width: 18px; height: 18px; border-radius: 50%; border: 2px solid #cfcfcf; display: grid; place-items: center; font-size: 0.7rem; font-weight: 900; color: #fff; }
+.goal-dot--ok { border-color: var(--color-success); background: var(--color-success); }
+.streak-mark { color: #b25f00; font-weight: 800; }
+.streak-mark--zero { color: #b5b5b5; }
+.f1-box__stats { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.f1-box__stat { display: flex; flex-direction: column; align-items: center; padding: 10px 4px; border-radius: 12px; background: #f6f6f6; }
+.f1-box__stat strong { font-size: 1.5rem; font-weight: 800; color: var(--color-diamond-dark); }
+.f1-box__stat span { color: var(--color-muted); font-weight: 700; font-size: 0.85rem; }
+.f1-box__today { display: flex; gap: 8px; }
+.f1-box__pill { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px; border-radius: 12px; background: #f3f3f3; color: var(--color-muted); font-weight: 800; }
+.f1-box__pill--ok { background: #e9f9db; color: #2b7a00; }
+.f1-box__pill--fire { background: #fff3e0; color: #b25f00; }

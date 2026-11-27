@@ -12,7 +12,7 @@ import {
   sortNppByDate,
 } from '../domain/people';
 import type { PeopleConfig, Person, PersonPhone, PersonStageDef } from '../domain/people';
-import { formatPhoneParts } from '../domain/people';
+import { formatPhoneParts, phoneKey } from '../domain/people';
 
 /** Non-archived people sharing one stage. */
 export interface StageGroup {
@@ -522,4 +522,21 @@ export function readContactSort(events: readonly LogEvent[], others: ReadonlySet
     if (typeof v === 'string' && (CONTACT_SORTS as readonly string[]).includes(v)) found = v as ContactSort;
   }
   return found;
+}
+
+/** Splits an account phone ("+84912345678") by the configured country codes (longest first). Pure. */
+export function splitE164(e164: string, codes: readonly { readonly code: string }[]): PersonPhone | null {
+  const match = [...codes].sort((a, b) => b.code.length - a.code.length).find((c) => e164.startsWith(c.code) && /^[0-9]+$/.test(e164.slice(c.code.length)));
+  return match === undefined ? null : { country: match.code, number: e164.slice(match.code.length) };
+}
+
+/**
+ * True when my contact's phone is not the linked account's phone (story 059), so "Cập nhật số
+ * trong danh bạ" is offered; false when the account phone is unknown. Pure.
+ */
+export function accountPhoneDiffers(contactPhone: PersonPhone | null | undefined, accountE164: string | null, codes: readonly { readonly code: string }[]): boolean {
+  if (accountE164 === null) return false;
+  const account = splitE164(accountE164, codes);
+  if (account === null) return false;
+  return contactPhone == null || contactPhone.number === '' || phoneKey(contactPhone) !== phoneKey(account);
 }

@@ -44,6 +44,7 @@ import { GroupCheerCard } from './ui/screens/group-cheer-card';
 import type { Person } from './domain/people';
 import { F1HouseholdBox } from './ui/screens/f1-household-box';
 import { useGroupData } from './ui/use-group-data';
+import { localDayKey } from './ui/group-helpers';
 import { progressByCode } from './ui/group-helpers';
 import { DuplicatesScreen } from './ui/screens/duplicates-screen';
 import { PeopleScreen } from './ui/screens/people-screen';
@@ -449,7 +450,13 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
 
   // F1 group for the NPP ranking in Làm (story 044); refreshed each time Làm opens.
   const group = useGroupData(tab === 'people' ? clientPromise : null, tab === 'people' ? accountId : null);
-  const nppProgress = useMemo(() => (group === null ? undefined : progressByCode(group.households)), [group]);
+  const nppProgress = useMemo(() => (group === null ? undefined : progressByCode(group.households, localDayKey(new Date()))), [group]);
+  // Story 059: the F1 accounts I sponsor, by account id (name they set, login phone).
+  const f1Accounts = useMemo(() => {
+    const map = new Map<string, { readonly displayName: string | null; readonly phone: string | null }>();
+    for (const h of group?.households ?? []) for (const m of h.members) map.set(m.userId, { displayName: m.displayName, phone: m.phone });
+    return map;
+  }, [group]);
 
   const onConsentAgree = async (): Promise<SyncFailure | null> => {
     if (clientPromise === null || accountId === null) return 'server';
@@ -623,6 +630,7 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
       <div className="app-shell">
         <DisplayNameScreen
           clientPromise={clientPromise}
+          initialName={account.displayName ?? ''}
           onSaved={(name) => {
             setAccount({ ...account, displayName: name });
             done();
@@ -759,9 +767,10 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
             : {
                 renderPersonExtra: (person: Person) =>
                   person.label === 'NPP' && person.amwayCode != null && person.amwayCode !== '' ? (
-                    <F1HouseholdBox clientPromise={clientPromise} accountId={account.accountId} amwayCode={person.amwayCode} />
+                    <F1HouseholdBox clientPromise={clientPromise} accountId={account.accountId} amwayCode={person.amwayCode} contactNames={person.linkedUserId == null ? undefined : new Map([[person.linkedUserId, person.name]])} />
                   ) : null,
               })}
+          linkedAccountFor={(userId) => f1Accounts.get(userId) ?? null}
           initialOpenId={reopenPerson}
           {...(clientPromise === null || account === null ? {} : { onCreateAccount: setCreateAccountFor })}
         />

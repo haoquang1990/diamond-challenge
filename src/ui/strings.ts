@@ -229,6 +229,10 @@ export const STRINGS = {
   },
   nppSortLabel: 'Sắp xếp NPP',
   contactSortTitle: 'Sắp xếp',
+  f1RowToday: 'Hôm nay',
+  f1StatContacts: 'Liên hệ',
+  f1StatCustomers: 'KH',
+  f1StatNpp: 'NPP',
   installTitle: 'Đưa app ra màn hình chính',
   installIntro: 'Mở app bằng một chạm như app thường, toàn màn hình, không cần gõ địa chỉ. Trên iPhone, cần làm bước này để nhận thông báo.',
   installButton: 'Cài app',
@@ -401,6 +405,10 @@ export const STRINGS = {
   createAccountButton: 'Tạo tài khoản',
   createAccountNeedsNetwork: 'Cần có mạng để tạo tài khoản',
   createAccountHasAccount: 'Đã có tài khoản',
+  linkedAccountLabel: 'Tài khoản của người này',
+  linkedPhoneUpdate: 'Cập nhật số trong danh bạ',
+  linkedPhoneUpdated: 'Đã cập nhật số theo tài khoản.',
+  createAccountNameNote: 'Lấy từ danh bạ của bạn. F1 sẽ thấy tên này khi đăng nhập lần đầu và sửa được.',
   createAccountWarnArchived: 'Người này đã có tài khoản và đang được lưu trữ. Tài khoản vẫn được giữ.',
   createAccountWarnNotNpp: 'Người này đã có tài khoản nhưng không còn nhãn NPP. Tài khoản vẫn được giữ.',
   createAccountTitle: 'Tạo tài khoản',
@@ -824,6 +832,16 @@ export function goalFromTomorrowLabel(xp: number): string {
   return `Từ ngày mai: ${xp} XP`;
 }
 
+/** Screen-reader text of an F1 row's goal and streak (story 060). */
+export function f1RowAria(goalToday: boolean, streak: number): string {
+  return `${goalToday ? 'Hôm nay đã đạt mục tiêu' : 'Hôm nay chưa đạt mục tiêu'}, chuỗi ${streak} ngày`;
+}
+
+/** "🔥 5 ngày". */
+export function streakDaysLabel(streak: number): string {
+  return `🔥 ${streak} ngày`;
+}
+
 /** Screen-reader text of a row's day count (story 052). */
 export function contactDaysAria(days: number | null): string {
   return days === null ? 'Chưa có hoạt động' : days === 0 ? 'Hôm nay có hoạt động' : `${days} ngày chưa hoạt động`;
@@ -832,6 +850,16 @@ export function contactDaysAria(days: number | null): string {
 /** Button label of the sort choice: "Sắp xếp: Hoạt động gần nhất" (screen readers only). */
 export function contactSortAria(name: string): string {
   return `Sắp xếp: ${name}`;
+}
+
+/** "Tài khoản: Uyên · +84 912 345 678" (story 059); without a name only the phone. */
+export function linkedAccountLine(name: string | null, phone: string | null): string {
+  return `Tài khoản: ${[name, phone].filter((x) => x !== null && x !== '').join(' · ')}`;
+}
+
+/** "Số trong danh bạ khác số tài khoản (+84 …)." */
+export function linkedPhoneDiffersLabel(phone: string): string {
+  return `Số trong danh bạ khác số tài khoản (${phone}).`;
 }
 
 /** Short local date, e.g. "02/11/26" (story 051 summary). */

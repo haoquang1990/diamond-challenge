@@ -47,6 +47,11 @@ describe('householdNames (2026-11-24)', () => {
     expect(householdNames(h([{ userId: 'x', displayName: null, phone: '+849' }, { userId: 'y', displayName: 'Chị Mai', phone: '+848' }]), new Map(), BY_CODE)).toBe('Chị Hoa & Chị Mai');
   });
 
+  it('prefers my Danh bạ name over the name the F1 set (story 059)', () => {
+    expect(householdNames(h([{ userId: 'x', displayName: 'Uyên', phone: '+849' }]), new Map(), BY_CODE)).toBe('Chị Hoa');
+    expect(householdNames(h([{ userId: 'u1', displayName: 'Bình', phone: '+849' }]), LINKED)).toBe('Anh Bình');
+  });
+
   it('falls back to the phone without any name', () => {
     expect(householdNames(h([{ userId: 'x', displayName: null, phone: '+849' }], null), new Map(), BY_CODE)).toBe('+849');
   });

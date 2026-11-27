@@ -91,6 +91,8 @@ export interface MemberProgress {
 export interface GroupNumbers {
   readonly customers: number;
   readonly f1: number;
+  /** People in the household's Danh bạ (story 060). */
+  readonly contacts?: number;
   readonly achieved30x30: boolean;
   readonly updatedAt: string;
 }
@@ -204,7 +206,7 @@ export async function loadGroup(
   const [memberRows, codeRows, numberRows, cheerRows] = await Promise.all([
     client.from('household_members').select('household_id, user_id').in('household_id', ids).is('left_at', null),
     client.from('household_codes').select('household_id, code').in('household_id', ids).eq('status', 'active'),
-    client.from('household_aggregates').select('household_id, customers, f1, achieved_30x30, updated_at, updated_by').in('household_id', ids),
+    client.from('household_aggregates').select('household_id, customers, f1, contacts, achieved_30x30, updated_at, updated_by').in('household_id', ids),
     client.from('cheers').select('to_household_id').eq('from_household_id', mine).eq('cheer_day', utcDay(now)).in('to_household_id', ids),
   ]);
   if (memberRows.error || codeRows.error || numberRows.error || cheerRows.error) return null;
@@ -236,7 +238,7 @@ export async function loadGroup(
   }
   const codes = (codeRows.data ?? []) as { household_id: string; code: string }[];
   const numbers = (numberRows.data ?? []) as {
-    household_id: string; customers: number; f1: number; achieved_30x30: boolean; updated_at: string; updated_by: string | null;
+    household_id: string; customers: number; f1: number; contacts?: number; achieved_30x30: boolean; updated_at: string; updated_by: string | null;
   }[];
   const cheers = (cheerRows.data ?? []) as { to_household_id: string }[];
 
@@ -263,7 +265,7 @@ export async function loadGroup(
       numbers:
         n === undefined || n.updated_by === null
           ? null
-          : { customers: n.customers, f1: n.f1, achieved30x30: n.achieved_30x30, updatedAt: n.updated_at },
+          : { customers: n.customers, f1: n.f1, ...(typeof n.contacts === 'number' ? { contacts: n.contacts } : {}), achieved30x30: n.achieved_30x30, updatedAt: n.updated_at },
       lastActivityAt: r.last_activity_at,
       cheeredToday: cheers.filter((c) => c.to_household_id === r.id).length >= cheersPerDay,
     };
