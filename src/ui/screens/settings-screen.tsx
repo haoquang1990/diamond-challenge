@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import type { ChangeEvent } from 'react';
+import type { ChangeEvent, ReactNode } from 'react';
 import gameConfig from '../../config/game-config.json';
 import { backupFileName, buildBackup, parseBackup } from '../../data/backup';
 import type { BackupRejectReason } from '../../data/backup';
@@ -31,7 +31,7 @@ export interface SettingsAccountProps {
   readonly onSignOut: () => Promise<boolean>;
   /** Saves a validated, trimmed display name. */
   readonly onSaveDisplayName: (name: string) => Promise<AuthResult>;
-  /** Opens "Hộ của tôi" (story 025); shown only when signed in. */
+  /** Opens "Thêm người đứng chung (mã số kép)" (story 025, 055). */
   readonly onOpenHousehold: () => void;
   /** Opens "Quản trị" (story 029); pass it ONLY for an account with role = admin. */
   readonly onOpenAdmin?: () => void;
@@ -118,10 +118,17 @@ export interface SettingsScreenProps {
    * Resolves to false when it failed. Omit when there is no signed-in account.
    */
   readonly onEraseDevice?: () => Promise<boolean>;
+  /** "Mã số của tôi" card (story 055), shown under Tài khoản. */
+  readonly householdSlot?: ReactNode;
+  /** "Mục tiêu hằng ngày" card (story 056). */
+  readonly goalSlot?: ReactNode;
 }
 
-/** "Tài khoản" card: login state, display name edit, sign out. */
-function AccountCard({ account, onSignOut, onSaveDisplayName, onOpenHousehold, onOpenAdmin }: SettingsAccountProps) {
+/**
+ * Account card (story 055 splits it): `profile` = login phone and display name; `actions` =
+ * Quản trị (admins) and Đăng xuất, near the end of Cài đặt.
+ */
+function AccountCard({ account, onSignOut, onSaveDisplayName, onOpenAdmin, part }: SettingsAccountProps & { readonly part: 'profile' | 'actions' }) {
   const [name, setName] = useState(account?.displayName ?? '');
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<{ readonly text: string; readonly error: boolean } | null>(null);
@@ -156,18 +163,43 @@ function AccountCard({ account, onSignOut, onSaveDisplayName, onOpenHousehold, o
     }
   };
 
+  if (part === 'actions') {
+    if (account === null) return null;
+    return (
+      <section className="card form" aria-label={STRINGS.accountSignOut}>
+        {onOpenAdmin !== undefined && (
+          <button type="button" className="button button--secondary" onClick={onOpenAdmin}>
+            {STRINGS.adminEntry}
+          </button>
+        )}
+        <button type="button" className="button button--secondary" onClick={() => void onOut()} disabled={busy}>
+          {STRINGS.accountSignOut}
+        </button>
+        <p className="message">{STRINGS.accountSignOutKeepsData}</p>
+        {message !== null && message.error && (
+          <p className="message message--error" role="alert">
+            {message.text}
+          </p>
+        )}
+      </section>
+    );
+  }
+
   return (
     <section className="card form" aria-labelledby="account-title">
-      <h2 id="account-title" className="card__title">
+      <h2 id="account-title" className="visually-hidden">
         {STRINGS.accountHeading}
       </h2>
       {account === null ? (
         <p className="account-name">{STRINGS.accountSignedOut}</p>
       ) : (
         <>
-          <p className="card__body">{STRINGS.accountSignedInAs}</p>
-          <p className="account-name">{account.displayName ?? (account.phone === null ? '' : formatE164(account.phone))}</p>
-          {account.displayName !== null && account.phone !== null && <p className="card__body">{formatE164(account.phone)}</p>}
+          {account.phone !== null && (
+            <div className="household-card__row">
+              <span className="household-card__key">{STRINGS.accountLoginLabel}</span>
+              <span className="household-card__value">{formatE164(account.phone)}</span>
+            </div>
+          )}
           <label className="form__field">
             <span className="form__label">{STRINGS.displayNameLabel}</span>
             <input type="text" maxLength={120} className="note__input form__input" value={name} onChange={(e) => setName(e.target.value)} disabled={busy} />
@@ -180,18 +212,6 @@ function AccountCard({ account, onSignOut, onSaveDisplayName, onOpenHousehold, o
               {message.text}
             </p>
           )}
-          <button type="button" className="button button--secondary" onClick={onOpenHousehold}>
-            {STRINGS.householdEntry}
-          </button>
-          {onOpenAdmin !== undefined && (
-            <button type="button" className="button button--secondary" onClick={onOpenAdmin}>
-              {STRINGS.adminEntry}
-            </button>
-          )}
-          <button type="button" className="button button--secondary" onClick={() => void onOut()} disabled={busy}>
-            {STRINGS.accountSignOut}
-          </button>
-          <p className="message">{STRINGS.accountSignOutKeepsData}</p>
         </>
       )}
     </section>
@@ -282,6 +302,8 @@ export function SettingsScreen({
   accountSection,
   contactSync,
   onEraseDevice,
+  householdSlot,
+  goalSlot,
 }: SettingsScreenProps) {
   const [state, setState] = useState<ScreenState>({ kind: 'loading' });
   const [reloadKey, setReloadKey] = useState(0);
@@ -441,15 +463,173 @@ export function SettingsScreen({
           ‹ {STRINGS.back}
         </button>
         <h1 className="screen__title">{STRINGS.settingsTitle}</h1>
-        <p className="screen__prompt">{STRINGS.settingsPrompt}</p>
       </header>
 
-      {accountSection !== undefined && <AccountCard key={accountSection.account?.accountId ?? 'signed-out'} {...accountSection} />}
+      {accountSection !== undefined && (
+        <>
+          <h2 className="settings-group">{STRINGS.settingsGroupAccount}</h2>
+          <AccountCard key={accountSection.account?.accountId ?? 'signed-out'} {...accountSection} part="profile" />
+        </>
+      )}
+      {householdSlot !== undefined && (
+        <>
+          <h2 className="settings-group">{STRINGS.settingsGroupCode}</h2>
+          {householdSlot}
+        </>
+      )}
+      {goalSlot !== undefined && (
+        <>
+          <h2 className="settings-group">{STRINGS.settingsGroupGoal}</h2>
+          {goalSlot}
+        </>
+      )}
 
-      {contactSync !== undefined && <ContactSyncCard {...contactSync} />}
+      {state.kind === 'loading' && (
+        <p className="message" role="status">
+          {STRINGS.loading}
+        </p>
+      )}
 
+      {state.kind === 'error' && (
+        <div className="card">
+          <p className="message message--error" role="alert">
+            {STRINGS.settingsLoadError}
+          </p>
+          <button type="button" className="button button--secondary" onClick={() => setReloadKey((k) => k + 1)}>
+            {STRINGS.retry}
+          </button>
+        </div>
+      )}
+
+      {state.kind === 'ready' && (
+        <>
+          <h2 className="settings-group">{STRINGS.settingsGroupApp}</h2>
+          <InstallGuideCard />
+          <section className="card">
+            <div className="setting-row">
+              <span id="reminder-toggle-label" className="setting-row__label">
+                {STRINGS.reminderToggle}
+              </span>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={enabled}
+                aria-labelledby="reminder-toggle-label"
+                className={enabled ? 'switch switch--on' : 'switch'}
+                onClick={onToggle}
+                disabled={busy}
+              >
+                <span className="switch__thumb" aria-hidden="true" />
+              </button>
+            </div>
+            <label className="setting-row">
+              <span className="setting-row__label">{STRINGS.reminderTimeLabel}</span>
+              <input
+                type="time"
+                className="time-input"
+                value={draftTime ?? state.settings.time}
+                onChange={(e) => setDraftTime(e.target.value)}
+                onBlur={onTimeCommit}
+              />
+            </label>
+            {saveStatus === 'saving' && (
+              <p className="message" role="status">
+                {STRINGS.reminderSaving}
+              </p>
+            )}
+            {saveStatus === 'saved' && (
+              <p className="message" role="status">
+                {STRINGS.reminderSaved}
+              </p>
+            )}
+            {saveStatus === 'error' && (
+              <p className="message message--error" role="alert">
+                {STRINGS.reminderSaveError}
+              </p>
+            )}
+            <p className="card__body" id="permission-title">
+              {STRINGS.permissionHeading}: {permissionText(permission, enabled)}
+            </p>
+            {fallbackNeeded && <p className="reminder-notice">{STRINGS.permissionFallback}</p>}
+            <p className="reminder-disclaimer">{STRINGS.reminderDisclaimer}</p>
+          </section>
+
+          <section className="card">
+            <div className="setting-row">
+              <span id="sound-toggle-label" className="setting-row__label">
+                {STRINGS.soundToggle}
+              </span>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={soundOn}
+                aria-labelledby="sound-toggle-label"
+                className={soundOn ? 'switch switch--on' : 'switch'}
+                onClick={() => void onSoundToggle()}
+              >
+                <span className="switch__thumb" aria-hidden="true" />
+              </button>
+            </div>
+            {soundError && (
+              <p className="message message--error" role="alert">
+                {STRINGS.soundSaveError}
+              </p>
+            )}
+          </section>
+
+          <h2 className="settings-group">{STRINGS.settingsGroupData}</h2>
+          {contactSync !== undefined && <ContactSyncCard {...contactSync} />}
+          <section className="card person-section" aria-labelledby="backup-title">
+            <h2 id="backup-title" className="card__title">
+              {STRINGS.backupHeading}
+            </h2>
+            <p className="backup-warning">{STRINGS.backupWarning}</p>
+            <div className="backup-actions">
+              <button type="button" className="button button--secondary" onClick={() => void onExport()} disabled={backupBusy}>
+                {STRINGS.backupExport}
+              </button>
+              <label className={backupBusy ? 'button button--secondary backup-file backup-file--disabled' : 'button button--secondary backup-file'}>
+                {STRINGS.backupImport}
+                <input
+                  type="file"
+                  accept=".json,application/json"
+                  className="backup-file__input"
+                  onChange={(e) => void onImportFile(e)}
+                  disabled={backupBusy}
+                />
+              </label>
+            </div>
+            {backup.kind === 'busy' && (
+              <p className="message" role="status">
+                {STRINGS.backupBusy}
+              </p>
+            )}
+            {backup.kind === 'exported' && (
+              <p className="message" role="status">
+                {STRINGS.backupExported}
+              </p>
+            )}
+            {backup.kind === 'imported' && (
+              <p className="message" role="status">
+                {STRINGS.backupImportDone(backup.added, backup.skipped)}
+                {backup.invalid > 0 && ` ${STRINGS.backupImportInvalid(backup.invalid)}`}
+              </p>
+            )}
+            {backup.kind === 'error' && (
+              <p className="message message--error" role="alert">
+                {backup.text}
+              </p>
+            )}
+          </section>
+        </>
+      )}
+
+      {state.kind !== 'ready' && contactSync !== undefined && <ContactSyncCard {...contactSync} />}
+
+      {(accountSection?.account != null || onEraseDevice !== undefined) && <h2 className="settings-group">{STRINGS.settingsGroupOther}</h2>}
+      {accountSection !== undefined && <AccountCard key={`actions-${accountSection.account?.accountId ?? 'signed-out'}`} {...accountSection} part="actions" />}
       {onEraseDevice !== undefined && (
-        <section className="card form" aria-labelledby="erase-title">
+        <section className="card form card--danger" aria-labelledby="erase-title">
           <h2 id="erase-title" className="card__title">
             {STRINGS.eraseHeading}
           </h2>
@@ -503,147 +683,6 @@ export function SettingsScreen({
         </section>
       )}
 
-      {state.kind === 'loading' && (
-        <p className="message" role="status">
-          {STRINGS.loading}
-        </p>
-      )}
-
-      {state.kind === 'error' && (
-        <div className="card">
-          <p className="message message--error" role="alert">
-            {STRINGS.settingsLoadError}
-          </p>
-          <button type="button" className="button button--secondary" onClick={() => setReloadKey((k) => k + 1)}>
-            {STRINGS.retry}
-          </button>
-        </div>
-      )}
-
-      {state.kind === 'ready' && (
-        <>
-          <InstallGuideCard />
-          <section className="card">
-            <div className="setting-row">
-              <span id="reminder-toggle-label" className="setting-row__label">
-                {STRINGS.reminderToggle}
-              </span>
-              <button
-                type="button"
-                role="switch"
-                aria-checked={enabled}
-                aria-labelledby="reminder-toggle-label"
-                className={enabled ? 'switch switch--on' : 'switch'}
-                onClick={onToggle}
-                disabled={busy}
-              >
-                <span className="switch__thumb" aria-hidden="true" />
-              </button>
-            </div>
-            <label className="setting-row">
-              <span className="setting-row__label">{STRINGS.reminderTimeLabel}</span>
-              <input
-                type="time"
-                className="time-input"
-                value={draftTime ?? state.settings.time}
-                onChange={(e) => setDraftTime(e.target.value)}
-                onBlur={onTimeCommit}
-              />
-            </label>
-            {saveStatus === 'saving' && (
-              <p className="message" role="status">
-                {STRINGS.reminderSaving}
-              </p>
-            )}
-            {saveStatus === 'saved' && (
-              <p className="message" role="status">
-                {STRINGS.reminderSaved}
-              </p>
-            )}
-            {saveStatus === 'error' && (
-              <p className="message message--error" role="alert">
-                {STRINGS.reminderSaveError}
-              </p>
-            )}
-          </section>
-
-          <section className="card">
-            <div className="setting-row">
-              <span id="sound-toggle-label" className="setting-row__label">
-                {STRINGS.soundToggle}
-              </span>
-              <button
-                type="button"
-                role="switch"
-                aria-checked={soundOn}
-                aria-labelledby="sound-toggle-label"
-                className={soundOn ? 'switch switch--on' : 'switch'}
-                onClick={() => void onSoundToggle()}
-              >
-                <span className="switch__thumb" aria-hidden="true" />
-              </button>
-            </div>
-            {soundError && (
-              <p className="message message--error" role="alert">
-                {STRINGS.soundSaveError}
-              </p>
-            )}
-          </section>
-
-          <section className="card" aria-labelledby="permission-title">
-            <h2 id="permission-title" className="card__title">
-              {STRINGS.permissionHeading}
-            </h2>
-            <p className="card__body">{permissionText(permission, enabled)}</p>
-            {fallbackNeeded && <p className="reminder-notice">{STRINGS.permissionFallback}</p>}
-          </section>
-
-          <p className="reminder-disclaimer">{STRINGS.reminderDisclaimer}</p>
-
-          <section className="card person-section" aria-labelledby="backup-title">
-            <h2 id="backup-title" className="card__title">
-              {STRINGS.backupHeading}
-            </h2>
-            <p className="backup-warning">{STRINGS.backupWarning}</p>
-            <div className="backup-actions">
-              <button type="button" className="button button--secondary" onClick={() => void onExport()} disabled={backupBusy}>
-                {STRINGS.backupExport}
-              </button>
-              <label className={backupBusy ? 'button button--secondary backup-file backup-file--disabled' : 'button button--secondary backup-file'}>
-                {STRINGS.backupImport}
-                <input
-                  type="file"
-                  accept=".json,application/json"
-                  className="backup-file__input"
-                  onChange={(e) => void onImportFile(e)}
-                  disabled={backupBusy}
-                />
-              </label>
-            </div>
-            {backup.kind === 'busy' && (
-              <p className="message" role="status">
-                {STRINGS.backupBusy}
-              </p>
-            )}
-            {backup.kind === 'exported' && (
-              <p className="message" role="status">
-                {STRINGS.backupExported}
-              </p>
-            )}
-            {backup.kind === 'imported' && (
-              <p className="message" role="status">
-                {STRINGS.backupImportDone(backup.added, backup.skipped)}
-                {backup.invalid > 0 && ` ${STRINGS.backupImportInvalid(backup.invalid)}`}
-              </p>
-            )}
-            {backup.kind === 'error' && (
-              <p className="message message--error" role="alert">
-                {backup.text}
-              </p>
-            )}
-          </section>
-        </>
-      )}
     </main>
   );
 }

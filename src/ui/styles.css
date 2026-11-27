@@ -1175,3 +1175,14 @@ body.dialog-open { overflow: hidden; }
 .install-guide__tab:focus-visible { outline: 3px solid var(--color-diamond-dark); outline-offset: 2px; }
 .install-guide__steps { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 6px; line-height: 1.45; }
 .install-guide__done { margin: 0; font-weight: 800; color: #2b7a00; }
+/* Story 055: Cài đặt grouped; "Mã số của tôi" inline. */
+.settings-group { margin: 14px 4px -2px; color: var(--color-muted); font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; }
+.household-card__row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.household-card__key { margin: 0; color: var(--color-muted); font-weight: 700; }
+.household-card__value { font-weight: 800; text-align: right; overflow-wrap: anywhere; }
+.household-card__members { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.household-card__member { display: flex; align-items: baseline; gap: 10px; padding: 10px 12px; border-radius: 12px; background: #f6f6f6; }
+.household-card__member strong { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.household-card__member span { color: var(--color-muted); font-weight: 700; font-size: 0.9rem; }
+.card--danger { border-color: #f3b4b4; }
+.card--danger .card__title { color: var(--color-error); }
