@@ -1243,3 +1243,19 @@ body.dialog-open { overflow: hidden; }
 .goal-card__btn:focus-visible { outline: 3px solid var(--color-diamond-dark); outline-offset: 2px; }
 .goal-card__value { min-width: 40px; text-align: center; font-size: 1.15rem; font-weight: 800; }
 .goal-card__value--zero { color: #b5b5b5; }
+
+/* Story 063: Hôm nay "Bật thông báo" */
+.push-prompt { border-color: #b8e4fb; background: var(--color-diamond-light); gap: 10px; }
+.push-prompt__head { display: flex; gap: 12px; align-items: flex-start; }
+.push-prompt__bell { flex: none; width: 44px; height: 44px; border-radius: 50%; background: var(--color-diamond); display: grid; place-items: center; }
+.push-prompt__bell svg { width: 24px; height: 24px; fill: #fff; }
+.push-prompt__bell--off { background: #999; }
+.push-prompt__title { margin: 0; font-size: 1.05rem; font-weight: 800; }
+.push-prompt__body { margin: 2px 0 0; color: #3d5a6b; font-weight: 600; font-size: 0.92rem; }
+.push-prompt__steps { margin: 0; padding-left: 20px; color: #3d5a6b; font-weight: 600; font-size: 0.92rem; display: flex; flex-direction: column; gap: 4px; }
+.push-prompt__actions { display: flex; gap: 8px; }
+.push-prompt__actions .button { flex: 1; min-height: 48px; margin: 0; }
+.push-prompt__actions .push-prompt__later { flex: 0 0 auto; }
+.push-prompt--done { border-color: #bfe8a0; background: #f0fbe6; }
+.push-prompt--done .push-prompt__bell { background: #58cc02; }
+.push-prompt--done .push-prompt__title { color: #2b7a00; }

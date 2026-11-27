@@ -3,6 +3,7 @@
   "xpGoalRange": { "min": 20, "max": 200, "step": 5 },
   "dailyCountLimits": { "lessons": 10, "tasks": 20 },
   "push": { "vapidPublicKey": "" },
+  "pushPrompt": { "snoozeDays": 3, "doneShowMs": 5000 },
   "reminder": {
     "defaultTime": "20:00",
     "enabledByDefault": false
