@@ -88,3 +88,14 @@ export async function hasPushSubscription(): Promise<boolean> {
     return false;
   }
 }
+
+/** The VAPID public key from the server (`push-public-key`), or '' when it is not set up yet. */
+export async function fetchPushPublicKey(client: Pick<SupabaseClient, 'functions'>): Promise<string> {
+  try {
+    const { data, error } = await client.functions.invoke('push-public-key', { method: 'GET' });
+    const key = (data as { publicKey?: unknown } | null)?.publicKey;
+    return error === null && typeof key === 'string' ? key : '';
+  } catch {
+    return '';
+  }
+}

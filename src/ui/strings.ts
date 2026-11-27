@@ -480,7 +480,7 @@ export const STRINGS = {
     needs_install: 'Trên iPhone, hãy đưa app ra màn hình chính (thẻ ở trên) rồi mở app từ biểu tượng đó để bật thông báo.',
     denied: 'Thông báo đang bị chặn. Mở cài đặt của trình duyệt hoặc điện thoại để cho phép.',
     unsupported: 'Trình duyệt này không nhận được thông báo đẩy. Thử Chrome (Android) hoặc app ngoài màn hình chính (iPhone).',
-    not_configured: 'Thông báo sẽ có khi quản trị viên cài xong khoá gửi thông báo.',
+    not_configured: 'Máy chủ chưa sẵn sàng gửi thông báo (hoặc đang không có mạng). Thử lại sau ít phút nhé.',
   },
   settingsGroupData: 'Dữ liệu',
   settingsGroupOther: 'Khác',
