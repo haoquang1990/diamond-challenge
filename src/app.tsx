@@ -19,6 +19,8 @@ import type { EventStore, SyncStateStore } from './data/event-store';
 import { createProgressSyncController, PERSONAL_EVENT_TYPES } from './data/progress-sync';
 import type { ProgressSyncController } from './data/progress-sync';
 import { browserNotificationPlatform, createReminderScheduler } from './notifications/reminders';
+import { createPrefsSync } from './data/notification-prefs';
+import { parseReminderConfig, readReminderSettings } from './domain/reminders';
 import type { NotificationPlatform } from './notifications/reminders';
 import { AchievementsOverlay, ACHIEVEMENTS_CONFIG } from './ui/achievements-overlay';
 import { createObservedStore, readSoundEnabled } from './ui/achievements-helpers';
@@ -77,6 +79,9 @@ export interface AppSession {
 const OPEN_TODAY_MESSAGE = 'reminder-open-today';
 
 const DEFAULT_PLATFORM = browserNotificationPlatform();
+
+/** Reminder defaults (story 007), for sending the settings to the server (story 058). */
+const REMINDER_CONFIG = parseReminderConfig(gameConfig.reminder);
 
 function realNow(): Date {
   return new Date();
@@ -503,7 +508,24 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
       }),
     [eventStore, notificationPlatform],
   );
-  const refreshReminders = useCallback(() => void scheduler.refresh(), [scheduler]);
+  // Story 058: the server pushes the reminder while the app is closed, so it needs the settings.
+  const prefsSync = useMemo(() => (clientPromise === null || accountId === null ? null : { accountId, clientPromise }), [clientPromise, accountId]);
+  const syncReminderPrefs = useCallback(async () => {
+    if (prefsSync === null || !navigator.onLine) return;
+    try {
+      const settings = readReminderSettings(await eventStore.list(), REMINDER_CONFIG);
+      await createPrefsSync({ client: await prefsSync.clientPromise, accountId: prefsSync.accountId }).save({
+        reminder: { enabled: settings.enabled, time: settings.time },
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      });
+    } catch (error) {
+      console.warn('[app] reminder settings not sent', error);
+    }
+  }, [prefsSync, eventStore]);
+  const refreshReminders = useCallback(() => {
+    void scheduler.refresh();
+    void syncReminderPrefs();
+  }, [scheduler, syncReminderPrefs]);
 
   useEffect(() => {
     const onVisible = () => {
@@ -686,7 +708,7 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
                 },
                 onEraseDevice,
                 goalSlot: <GoalCard eventStore={eventStore} memberIds={memberIds} />,
-                ...(account !== null ? { pushSlot: <PushCard clientPromise={clientPromise} /> } : {}),
+                ...(account !== null ? { pushSlot: <PushCard clientPromise={clientPromise} accountId={account.accountId} /> } : {}),
                 ...(account !== null ? { householdSlot: <HouseholdCard clientPromise={clientPromise} accountId={account.accountId} onAddMember={() => setTab('household')} /> } : {}),
               })}
         />

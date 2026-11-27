@@ -5,7 +5,7 @@
  * Finds the caller's latest cheer to that target from the last 10 minutes that was not pushed
  * yet, marks it pushed (`notified_at`, so one cheer is pushed at most once), and pushes it to
  * every browser of its receivers: the named member for a spouse cheer, else every member of the
- * cheered code; never the sender. Subscriptions the push service reports gone are deleted.
+ * cheered code; never the sender, nor anyone who turned cheer notifications off (story 058). Subscriptions the push service reports gone are deleted.
  * Needs the VAPID_PUBLIC_KEY and VAPID_PRIVATE_KEY function secrets; without them it answers
  * 503 `not_configured` and changes nothing.
  */
@@ -52,7 +52,11 @@ Deno.serve(async (req) => {
   if (!claimed || claimed.length === 0) return json(req, 200, { sent: 0 });
 
   const { data: members } = await admin.from('household_members').select('user_id').eq('household_id', toHouseholdId).is('left_at', null);
-  const receivers = cheerRecipients(cheer, (members ?? []).map((m: { user_id: string }) => m.user_id));
+  const all = cheerRecipients(cheer, (members ?? []).map((m: { user_id: string }) => m.user_id));
+  // Story 058: skip anyone who turned cheer notifications off (no row = on).
+  const { data: off } = all.length === 0 ? { data: [] } : await admin.from('notification_prefs').select('user_id').in('user_id', all).eq('cheers', false);
+  const muted = new Set(((off ?? []) as { user_id: string }[]).map((r) => r.user_id));
+  const receivers = all.filter((id) => !muted.has(id));
   if (receivers.length === 0) return json(req, 200, { sent: 0 });
   const { data: subs } = await admin.from('push_subscriptions').select('id, endpoint, p256dh, auth').in('user_id', receivers);
 

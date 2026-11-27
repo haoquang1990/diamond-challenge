@@ -19,3 +19,6 @@ verify_jwt = false
 
 [functions.push-public-key]
 verify_jwt = false
+
+[functions.send-reminders]
+verify_jwt = false
