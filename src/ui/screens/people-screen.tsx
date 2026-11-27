@@ -26,9 +26,8 @@ import {
   searchPeopleByName,
 } from '../people-helpers';
 import type { ContactSort, ContactsFilter } from '../people-helpers';
-import { STRINGS, contactDaysAria, contactSortAria, duplicateCodeWarning, duplicatesEntryLabel, filterChipLabel, nppSinceLabel, shortDateLabel, xpLabel } from '../strings';
+import { STRINGS, contactDaysAria, contactSortAria, duplicateCodeWarning, duplicatesEntryLabel, f1RowAria, filterChipLabel, shortDateLabel, xpLabel } from '../strings';
 import { AddPersonForm, Dialog, LabelBadge, PersonDetail } from './person-form';
-import { householdProgressLabel } from '../group-helpers';
 import type { HouseholdProgress } from '../group-helpers';
 
 /** Props for {@link PeopleScreen}. */
@@ -350,12 +349,22 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
                     {dupCodes.has(person.personId) && (
                       <span className="person-row__warn">{duplicateCodeWarning(duplicateCodeNames(dupCodes.get(person.personId) ?? []))}</span>
                     )}
-                    {filter === 'npp' && person.nppAt != null && (
-                      <span className="person-row__stage">{nppSinceLabel(person.nppAt)}</span>
-                    )}
-                    {filter === 'npp' && person.amwayCode != null && nppProgress?.get(person.amwayCode) !== undefined && (
-                      <span className="person-row__progress">{householdProgressLabel(nppProgress.get(person.amwayCode) as HouseholdProgress)}</span>
-                    )}
+                    {(() => {
+                      // Story 060: an F1 NPP shows today's goal and its streak under the name, in every filter.
+                      const f1 = person.label === 'NPP' && person.amwayCode != null ? nppProgress?.get(person.amwayCode) : undefined;
+                      if (f1 === undefined) return null;
+                      return (
+                        <span className="person-row__f1" aria-label={f1RowAria(f1.goalToday === true, f1.streak)}>
+                          <span className={f1.goalToday === true ? 'goal-dot goal-dot--ok' : 'goal-dot'} aria-hidden="true">
+                            {f1.goalToday === true ? '✓' : ''}
+                          </span>
+                          <span aria-hidden="true">{STRINGS.f1RowToday}</span>
+                          <span className={f1.streak > 0 ? 'streak-mark' : 'streak-mark streak-mark--zero'} aria-hidden="true">
+                            🔥{f1.streak}
+                          </span>
+                        </span>
+                      );
+                    })()}
                   </span>
                   {person.label != null && <LabelBadge label={person.label} />}
                   {(() => {

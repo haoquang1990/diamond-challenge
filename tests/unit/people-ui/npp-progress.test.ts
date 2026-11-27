@@ -43,3 +43,12 @@ describe('householdProgressLabel', () => {
     expect(householdProgressLabel({ xpTotal: 2340, xp7d: 120, streak: 5 })).toBe('XP 7 ngày 120 · Tổng 2.340 XP · Chuỗi 5 ngày');
   });
 });
+
+describe('today\'s goal on the NPP row (story 060)', () => {
+  const today = (goal: boolean, day = '2026-11-28'): MemberProgress => ({ ...mp(10, 5, 2), statsDay: day, goalToday: goal });
+  it('is met when a member met it with numbers from today', () => {
+    expect(householdProgress(house('1', today(false), today(true)), '2026-11-28')?.goalToday).toBe(true);
+    expect(householdProgress(house('1', today(true, '2026-11-27')), '2026-11-28')?.goalToday).toBe(false);
+    expect(progressByCode([house('1', today(true))], '2026-11-28').get('1')?.goalToday).toBe(true);
+  });
+});

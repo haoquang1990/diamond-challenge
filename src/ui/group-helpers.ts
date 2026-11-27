@@ -100,16 +100,22 @@ export interface HouseholdProgress {
   readonly xpTotal: number;
   readonly xp7d: number;
   readonly streak: number;
+  /** Story 060: some member met today's goal (numbers from `today`); only when `today` is given. */
+  readonly goalToday?: boolean;
 }
 
-/** Adds up the members' shared progress; null when no member has sent any. Pure. */
-export function householdProgress(h: GroupHousehold): HouseholdProgress | null {
+/**
+ * Adds up the members' shared progress; null when no member has sent any. With `today` (local
+ * YYYY-MM-DD) it also says whether today's goal is met. Pure.
+ */
+export function householdProgress(h: GroupHousehold, today?: string): HouseholdProgress | null {
   const sent = h.members.map((m) => m.progress).filter((p): p is NonNullable<typeof p> => p != null);
   if (sent.length === 0) return null;
   return {
     xpTotal: sent.reduce((sum, p) => sum + p.xpTotal, 0),
     xp7d: sent.reduce((sum, p) => sum + p.xp7d, 0),
     streak: Math.max(...sent.map((p) => p.streak)),
+    ...(today === undefined ? {} : { goalToday: sent.some((p) => p.statsDay === today && p.goalToday === true) }),
   };
 }
 
@@ -134,10 +140,10 @@ export function sortNppByProgress<T extends { readonly amwayCode?: string | null
 }
 
 /** Code → household progress for every F1 household with a code and shared numbers. */
-export function progressByCode(households: readonly GroupHousehold[]): ReadonlyMap<string, HouseholdProgress> {
+export function progressByCode(households: readonly GroupHousehold[], today?: string): ReadonlyMap<string, HouseholdProgress> {
   const map = new Map<string, HouseholdProgress>();
   for (const h of households) {
-    const stats = householdProgress(h);
+    const stats = householdProgress(h, today);
     if (h.code !== null && stats !== null) map.set(h.code, stats);
   }
   return map;

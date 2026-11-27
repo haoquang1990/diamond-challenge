@@ -1,0 +1,7 @@
+Reviewed-Content-Hash: src/ui/screens/people-screen.tsx b0186226600d24542169e1c46b01d571e16cf469
+Reviewed-Content-Hash: src/ui/screens/f1-household-box.tsx ff4a919fa4a23de9ad9327261a55c3e59ebecaea
+Reviewed-Content-Hash: src/ui/group-helpers.ts 3a28d0a7d1173e77df1711d5c13b1ff98b05e997
+Reviewed-Content-Hash: src/data/group-service.ts a4485410d36e38ccf3c6142c0f725e74497a2a3e
+Reviewed-Content-Hash: src/app.tsx b798c5ed44931b83f9a801fa14ccc3cda658ee8f
+Reviewed-Content-Hash: src/ui/strings.ts f8358e000866cebaf4ed3b7054b11e0a18ec68c7
+Reviewed-Content-Hash: src/ui/styles.css eaca1f1fea0880c60fc658db2b45edfbe3a0e5ef

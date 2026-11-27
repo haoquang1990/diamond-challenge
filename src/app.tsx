@@ -44,6 +44,7 @@ import { GroupCheerCard } from './ui/screens/group-cheer-card';
 import type { Person } from './domain/people';
 import { F1HouseholdBox } from './ui/screens/f1-household-box';
 import { useGroupData } from './ui/use-group-data';
+import { localDayKey } from './ui/group-helpers';
 import { progressByCode } from './ui/group-helpers';
 import { DuplicatesScreen } from './ui/screens/duplicates-screen';
 import { PeopleScreen } from './ui/screens/people-screen';
@@ -449,7 +450,7 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
 
   // F1 group for the NPP ranking in Làm (story 044); refreshed each time Làm opens.
   const group = useGroupData(tab === 'people' ? clientPromise : null, tab === 'people' ? accountId : null);
-  const nppProgress = useMemo(() => (group === null ? undefined : progressByCode(group.households)), [group]);
+  const nppProgress = useMemo(() => (group === null ? undefined : progressByCode(group.households, localDayKey(new Date()))), [group]);
   // Story 059: the F1 accounts I sponsor, by account id (name they set, login phone).
   const f1Accounts = useMemo(() => {
     const map = new Map<string, { readonly displayName: string | null; readonly phone: string | null }>();

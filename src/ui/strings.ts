@@ -229,6 +229,10 @@ export const STRINGS = {
   },
   nppSortLabel: 'Sắp xếp NPP',
   contactSortTitle: 'Sắp xếp',
+  f1RowToday: 'Hôm nay',
+  f1StatContacts: 'Liên hệ',
+  f1StatCustomers: 'KH',
+  f1StatNpp: 'NPP',
   installTitle: 'Đưa app ra màn hình chính',
   installIntro: 'Mở app bằng một chạm như app thường, toàn màn hình, không cần gõ địa chỉ. Trên iPhone, cần làm bước này để nhận thông báo.',
   installButton: 'Cài app',
@@ -826,6 +830,16 @@ export function goalTodayLabel(xp: number): string {
 /** "Từ ngày mai: 50 XP" (story 056). */
 export function goalFromTomorrowLabel(xp: number): string {
   return `Từ ngày mai: ${xp} XP`;
+}
+
+/** Screen-reader text of an F1 row's goal and streak (story 060). */
+export function f1RowAria(goalToday: boolean, streak: number): string {
+  return `${goalToday ? 'Hôm nay đã đạt mục tiêu' : 'Hôm nay chưa đạt mục tiêu'}, chuỗi ${streak} ngày`;
+}
+
+/** "🔥 5 ngày". */
+export function streakDaysLabel(streak: number): string {
+  return `🔥 ${streak} ngày`;
 }
 
 /** Screen-reader text of a row's day count (story 052). */
