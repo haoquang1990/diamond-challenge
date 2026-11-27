@@ -358,7 +358,6 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
                           <span className={f1.goalToday === true ? 'goal-dot goal-dot--ok' : 'goal-dot'} aria-hidden="true">
                             {f1.goalToday === true ? '✓' : ''}
                           </span>
-                          <span aria-hidden="true">{STRINGS.f1RowToday}</span>
                           <span className={f1.streak > 0 ? 'streak-mark' : 'streak-mark streak-mark--zero'} aria-hidden="true">
                             🔥{f1.streak}
                           </span>

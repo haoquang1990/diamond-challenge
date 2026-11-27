@@ -1207,7 +1207,7 @@ body.dialog-open { overflow: hidden; }
 .person-row__f1 { display: flex; align-items: center; gap: 6px; color: var(--color-muted); font-weight: 700; font-size: 0.9rem; }
 .goal-dot { flex: none; width: 18px; height: 18px; border-radius: 50%; border: 2px solid #cfcfcf; display: grid; place-items: center; font-size: 0.7rem; font-weight: 900; color: #fff; }
 .goal-dot--ok { border-color: var(--color-success); background: var(--color-success); }
-.streak-mark { color: #b25f00; font-weight: 800; margin-left: 4px; }
+.streak-mark { color: #b25f00; font-weight: 800; }
 .streak-mark--zero { color: #b5b5b5; }
 .f1-box__stats { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .f1-box__stat { display: flex; flex-direction: column; align-items: center; padding: 10px 4px; border-radius: 12px; background: #f6f6f6; }

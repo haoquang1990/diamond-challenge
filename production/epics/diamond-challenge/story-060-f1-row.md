@@ -26,7 +26,7 @@
 
 ## Acceptance Criteria
 
-- [x] Dòng NPP có số liệu F1: dưới tên một dòng "◯/✓ Hôm nay 🔥N" (đạt khi số liệu gửi hôm nay báo đạt; mã số kép: một người đạt là đạt; chuỗi dài hơn), giống nhau ở Tất cả và NPP; bỏ "Lên NPP: …" và dòng XP. Có unit test.
+- [x] Dòng NPP có số liệu F1: dưới tên một dòng chỉ có biểu tượng "◯/✓ 🔥N" (đạt khi số liệu gửi hôm nay báo đạt; mã số kép: một người đạt là đạt; chuỗi dài hơn), giống nhau ở Tất cả và NPP; bỏ "Lên NPP: …" và dòng XP. Có unit test.
 - [x] Ô NPP F1: ba ô Liên hệ · KH · NPP (số liên hệ đọc từ máy chủ), hai ô "Hôm nay" (✓/◯) và "🔥 N ngày", khung xanh gom 7 ngày, việc làm, học, XP 7 ngày · tổng XP · mục tiêu, lần mở app.
 - [x] 390 và 320px không tràn ngang.
 
