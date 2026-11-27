@@ -62,4 +62,4 @@ jobs:
             echo "Push keys created."
           fi
       - name: Deploy Edge Functions
-        run: supabase functions deploy create-f1-account add-household-member reset-password notify-cheer push-public-key --use-api --yes
+        run: supabase functions deploy create-f1-account add-household-member reset-password notify-cheer push-public-key send-reminders --use-api --yes

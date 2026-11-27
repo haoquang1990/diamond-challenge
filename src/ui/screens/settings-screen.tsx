@@ -508,11 +508,19 @@ export function SettingsScreen({
         <>
           <h2 className="settings-group">{STRINGS.settingsGroupApp}</h2>
           <InstallGuideCard />
-          {pushSlot}
-          <section className="card">
+          {/* Story 058: one "Thông báo" card: this device's push, cheer pushes, the daily reminder. */}
+          <section className="card form" aria-labelledby="notify-title">
+            <h2 id="notify-title" className="card__title">
+              {STRINGS.pushTitle}
+            </h2>
+            {pushSlot}
+            {pushSlot !== undefined && <div className="notify-sep" aria-hidden="true" />}
             <div className="setting-row">
-              <span id="reminder-toggle-label" className="setting-row__label">
-                {STRINGS.reminderToggle}
+              <span className="notify-row__text">
+                <span id="reminder-toggle-label" className="setting-row__label">
+                  {STRINGS.reminderDailyToggle}
+                </span>
+                <span className="notify-row__hint">{STRINGS.reminderDailyHint}</span>
               </span>
               <button
                 type="button"
@@ -551,11 +559,8 @@ export function SettingsScreen({
                 {STRINGS.reminderSaveError}
               </p>
             )}
-            <p className="card__body" id="permission-title">
-              {STRINGS.permissionHeading}: {permissionText(permission, enabled)}
-            </p>
+            {pushSlot === undefined && <p className="card__body">{permissionText(permission, enabled)}</p>}
             {fallbackNeeded && <p className="reminder-notice">{STRINGS.permissionFallback}</p>}
-            <p className="reminder-disclaimer">{STRINGS.reminderDisclaimer}</p>
           </section>
 
           <section className="card">
