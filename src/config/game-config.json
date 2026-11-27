@@ -1,6 +1,7 @@
 {
   "dailyXpGoal": 30,
   "xpGoalRange": { "min": 20, "max": 200, "step": 5 },
+  "push": { "vapidPublicKey": "" },
   "reminder": {
     "defaultTime": "20:00",
     "enabledByDefault": false

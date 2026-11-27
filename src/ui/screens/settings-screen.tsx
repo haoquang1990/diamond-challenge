@@ -122,6 +122,8 @@ export interface SettingsScreenProps {
   readonly householdSlot?: ReactNode;
   /** "Mục tiêu hằng ngày" card (story 056). */
   readonly goalSlot?: ReactNode;
+  /** "Thông báo khi được cổ vũ" card (story 057), under Ứng dụng. */
+  readonly pushSlot?: ReactNode;
 }
 
 /**
@@ -304,6 +306,7 @@ export function SettingsScreen({
   onEraseDevice,
   householdSlot,
   goalSlot,
+  pushSlot,
 }: SettingsScreenProps) {
   const [state, setState] = useState<ScreenState>({ kind: 'loading' });
   const [reloadKey, setReloadKey] = useState(0);
@@ -505,6 +508,7 @@ export function SettingsScreen({
         <>
           <h2 className="settings-group">{STRINGS.settingsGroupApp}</h2>
           <InstallGuideCard />
+          {pushSlot}
           <section className="card">
             <div className="setting-row">
               <span id="reminder-toggle-label" className="setting-row__label">
