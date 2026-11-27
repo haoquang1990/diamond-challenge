@@ -50,6 +50,7 @@ import { DuplicatesScreen } from './ui/screens/duplicates-screen';
 import { PeopleScreen } from './ui/screens/people-screen';
 import { SettingsScreen } from './ui/screens/settings-screen';
 import { TodayScreen } from './ui/screens/today-screen';
+import { PushPromptCard } from './ui/screens/push-prompt-card';
 import { STRINGS } from './ui/strings';
 
 /** Props for {@link App}. */
@@ -740,6 +741,9 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
           }}
           onOpenSettings={() => setTab('settings')}
           notificationPermission={notificationPlatform.permission}
+          {...(clientPromise !== null && account !== null
+            ? { pushPrompt: <PushPromptCard clientPromise={clientPromise} accountId={account.accountId} eventStore={eventStore} onChanged={refreshReminders} /> }
+            : {})}
           cheer={unseenCheer}
           onDismissCheer={onDismissCheer}
         />
