@@ -649,3 +649,14 @@ export function personAddedAt(events: readonly LogEvent[], personId: string): st
   }
   return first;
 }
+
+/**
+ * My spouse for "Phụ trách" (story 066): the one other active member of my own household, or
+ * null when I am alone, the household has more, or it is not known yet. Pure. Not the readable
+ * profiles: those include my F1 accounts.
+ */
+export function spouseFor(householdMemberIds: ReadonlySet<string> | null, accountId: string): string | null {
+  if (householdMemberIds === null) return null;
+  const others = [...householdMemberIds].filter((id) => id !== accountId);
+  return others.length === 1 ? (others[0] ?? null) : null;
+}

@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 import { derivePeople } from '../../../src/domain/people';
 import { FORMER_MEMBER_ID } from '../../../src/data/event-store';
 import { PEOPLE_CONFIG } from '../../../src/ui/people-config';
-import { addedByDot, buildOwnerChange, filterByOwner, ownerChoice, readOwnerFilter } from '../../../src/ui/people-helpers';
+import { addedByDot, buildOwnerChange, filterByOwner, ownerChoice, readOwnerFilter, spouseFor } from '../../../src/ui/people-helpers';
 
 let n = 0;
 const mk = (type: string, ts: string, userId: string, payload: Record<string, unknown>) => ({ id: `e${++n}`, type, timestamp: ts, userId, schemaVersion: 1, payload, syncedAt: null }) as never;
@@ -84,5 +84,17 @@ describe('readOwnerFilter', () => {
       mk('settings_changed', '2026-11-04T00:00:00.000Z', 'lan', { contactSort: 'name' }),
     ];
     expect(readOwnerFilter(ev, OTHERS)).toBe('mine');
+  });
+});
+
+// Regression (2026-11-28): the Phụ trách filter never showed for an account with F1s, because the
+// spouse was taken from every profile the account can read (its F1s too), not from its household.
+describe('spouseFor', () => {
+  it('is the one other member of my household, whatever F1 profiles I can read', () => {
+    expect(spouseFor(new Set(['lan', 'minh']), 'lan')).toBe('minh');
+  });
+  it('is none when I am alone or the household is unknown', () => {
+    expect(spouseFor(new Set(['lan']), 'lan')).toBeNull();
+    expect(spouseFor(null, 'lan')).toBeNull();
   });
 });

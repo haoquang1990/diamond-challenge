@@ -1,6 +1,7 @@
 Reviewed-Content-Hash: src/domain/people.ts 2d2f254eb6f81843980c83abc4ffe1ae6a8b5d58
-Reviewed-Content-Hash: src/ui/people-helpers.ts 1a2daa0bdeaef432de515635cdf4ccf3f61d0c76
-Reviewed-Content-Hash: src/ui/screens/people-screen.tsx c0fdc0eef820f1dbd5839eb99c4abc4487c45730
+Reviewed-Content-Hash: src/ui/people-helpers.ts fc2a16f7fef601cc23161970c275e73c08b58f0e
+Reviewed-Content-Hash: src/ui/screens/people-screen.tsx 4c5e5004b371a35aeda737cfd4658e899fd9a756
 Reviewed-Content-Hash: src/ui/screens/person-form.tsx d7af244116014608f0bee9f49b8cf0971994822f
-Reviewed-Content-Hash: src/ui/strings.ts 021e1146238bd32a523516e3c41e404629e127fd
-Reviewed-Content-Hash: src/ui/styles.css 8764ce210201863f95a0fa61969723cd6411d4b3
+Reviewed-Content-Hash: src/app.tsx c1773a941771002672afce6bd15a5ff58da8cd37
+Reviewed-Content-Hash: src/ui/strings.ts 5a366605bf37bd31cbe4e314d6bb279378bab9db
+Reviewed-Content-Hash: src/ui/styles.css 84a68104bfc250850ecef543a0915e784adbf0de

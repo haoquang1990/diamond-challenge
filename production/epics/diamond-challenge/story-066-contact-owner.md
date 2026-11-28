@@ -44,3 +44,10 @@
 **Deviations**: Advisory: (1) fixes a story 064 bug: contacts added by a former member showed the orange dot, because the app's set of other members always holds the former-member id; (2) the Loại choice (KH / NPP) is still not remembered, as before; only Phụ trách is
 **Test Evidence**: unit tests above; screenshots of the "Của tôi" list, the filter sheet and the Phụ trách field at 390 and 320px; full suite passing
 **Reviewed by**: self, no independent review
+
+## Fix 2026-11-28
+The Phụ trách group never showed for an account with F1s: the spouse was taken from every profile the
+account can read, and those include its F1 accounts. The spouse now comes from the active members of the
+account's own household (`spouseFor`, loaded with `loadHousehold`). Regression test in
+`tests/unit/people-ui/contact-owner.test.ts` (seen failing first); the old build was also run against a
+fake server that returns F1 profiles, as the real one does, and hid the group; the fixed build shows it.
