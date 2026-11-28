@@ -1,0 +1,6 @@
+Reviewed-Content-Hash: supabase/migrations/20261129010000_claim_household_code.sql 4101034e037b375e16b3c753f87e11d2177536e6
+Reviewed-Content-Hash: src/data/account-service.ts e97492d9207e14f4041d050a72a7ea0fbc9bbe55
+Reviewed-Content-Hash: src/ui/screens/code-required-screen.tsx ce82b7e7ffe1992647bab0380bc2dabbd026a0ed
+Reviewed-Content-Hash: src/app.tsx 858cda409ae0638059f3a6fc571b3ac0313ffa0e
+Reviewed-Content-Hash: src/ui/strings.ts 1e7676070ed8385b083d835db3a01d861b0c9dfd
+Reviewed-Content-Hash: src/ui/styles.css d5f35be2ae750d1f357713719a4533a926288dc9

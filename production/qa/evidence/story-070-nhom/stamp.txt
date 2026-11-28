@@ -1,0 +1,10 @@
+Reviewed-Content-Hash: supabase/migrations/20261129030000_nhom_people_cheers.sql 861a62faec0846f82e94e68ed0fa9d576aa37296
+Reviewed-Content-Hash: supabase/migrations/20261129030100_cheer_xp.sql b3d159aa7144a0084ffe6a13bfa4f5bbb24932be
+Reviewed-Content-Hash: src/domain/cheer-xp.ts 2459effd27931203fba51f5ee9db34c2497fa861
+Reviewed-Content-Hash: src/data/nhom-service.ts 469b7a7c0bb538985f2cd878fd4200e190302d20
+Reviewed-Content-Hash: src/ui/screens/nhom-panel.tsx 889f7bfd9b898218c2b3c53f58033552cb4f2ce7
+Reviewed-Content-Hash: src/ui/screens/group-screen.tsx f5dd078657a685c9ada94c34050c97a02e58adc8
+Reviewed-Content-Hash: src/ui/screens/today-screen.tsx 92c70c2beb51233fd4c85f844e2e08f57ab5d8ef
+Reviewed-Content-Hash: src/app.tsx e5a11634f9260659876482f50572bec8075f3310
+Reviewed-Content-Hash: src/ui/strings.ts ad2034e49d5c0938f5b3f04a7c5cb659b5d84e6a
+Reviewed-Content-Hash: src/ui/styles.css 7c0244777658390a8d5be8b2dc07673d259a517b

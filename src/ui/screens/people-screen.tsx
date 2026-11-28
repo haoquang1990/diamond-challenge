@@ -25,8 +25,13 @@ import {
   listUnassignedActivities,
   searchPeopleByName,
   addedByDot,
+  OWNER_FILTERS,
+  coMemberIds,
+  filterByOwner,
+  ownerChoice,
+  readOwnerFilter,
 } from '../people-helpers';
-import type { ContactSort, ContactsFilter } from '../people-helpers';
+import type { ContactSort, ContactsFilter, OwnerFilter } from '../people-helpers';
 import { STRINGS, contactDaysAria, contactSortAria, duplicateCodeWarning, duplicatesEntryLabel, f1RowAria, filterChipLabel, shortDateLabel, xpLabel } from '../strings';
 import { AddPersonForm, Dialog, LabelBadge, PersonDetail } from './person-form';
 import type { HouseholdProgress } from '../group-helpers';
@@ -87,6 +92,8 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
   const [filter, setFilter] = useState<ContactsFilter>(initialFilter);
   /** Story 052: the sort sheet is open. */
   const [sortOpen, setSortOpen] = useState(false);
+  /** Story 066: the "Lọc danh sách" sheet is open. */
+  const [filterOpen, setFilterOpen] = useState(false);
   /** null = automatic: open while the list is empty, collapsed once there are people. */
   const [showAdd, setShowAdd] = useState<boolean | null>(null);
   /** Name search text; kept while a person detail is open so the list returns as it was. */
@@ -131,6 +138,11 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
   const others = otherMemberIds(events, memberIds);
   const allPeople = derivePeople(events, PEOPLE_CONFIG);
   const people = allPeople.filter((p) => !p.archived);
+  // Story 066 "Phụ trách": only with exactly one co-member whose id and mine are known.
+  const coMembers = coMemberIds(others);
+  const spouseId = coMembers.length === 1 ? coMembers[0] : undefined;
+  const meId = [...memberIds].find((id) => !others.has(id));
+  const owner = spouseId !== undefined && meId !== undefined ? { meId, spouseId, spouseName: historyAuthorLabel(spouseId, others, members) ?? STRINGS.ownerSpouseFallback } : undefined;
   const opened = openId === null ? undefined : people.find((p) => p.personId === openId);
 
   if (opened !== undefined) {
@@ -147,6 +159,7 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
         {...(onCreateAccount === undefined ? {} : { createAccount: { onOpen: () => onCreateAccount(opened.personId) } })}
         extra={renderPersonExtra?.(opened) ?? null}
         linkedAccount={opened.linkedUserId == null ? null : (linkedAccountFor?.(opened.linkedUserId) ?? null)}
+        {...(owner === undefined ? {} : { owner: { ...owner, current: ownerChoice(opened, others) } })}
         onChanged={reload}
         onBack={() => setOpenId(null)}
       />
@@ -189,8 +202,11 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
   }
 
   const dupCodes = findDuplicateCodes(people);
-  const counts = countContacts(allPeople);
-  const listed = filterContacts(allPeople, filter);
+  const ownerFilter: OwnerFilter = owner === undefined ? 'all' : readOwnerFilter(events, others);
+  const ownerScoped = filterByOwner(allPeople, ownerFilter, others);
+  const counts = countContacts(ownerScoped);
+  const ownerCounts = Object.fromEntries(OWNER_FILTERS.map((f) => [f, filterContacts(filterByOwner(allPeople, f, others), filter).length])) as Record<OwnerFilter, number>;
+  const listed = filterContacts(ownerScoped, filter);
   // Story 052: my chosen order (synced with my account); an NPP-only order outside NPP falls back.
   const chosenSort = readContactSort(events, others);
   const sortOptions = CONTACT_SORTS.filter((k) => filter === 'npp' || !NPP_ONLY_SORTS.includes(k)).filter((k) => nppProgress !== undefined || (k !== 'xpTotal' && k !== 'xp7d'));
@@ -205,6 +221,17 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
       await reload();
     } catch (e) {
       console.error('[people] could not save the sort', e);
+      setError(STRINGS.personSaveError);
+    }
+  };
+  const chooseOwner = async (value: OwnerFilter) => {
+    if (value === ownerFilter) return;
+    try {
+      // Rides on the synced contactSort setting, so it follows my account (story 066).
+      await eventStore.append({ type: 'settings_changed', payload: { contactSort: chosenSort, contactOwner: value } });
+      await reload();
+    } catch (e) {
+      console.error('[people] could not save the owner filter', e);
       setError(STRINGS.personSaveError);
     }
   };
@@ -233,16 +260,12 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
         <div className="today-header">
           <h1 className="screen__title">{STRINGS.peopleTitle}</h1>
           {/* Filter as a dropdown in the header (2026-11-24): the list starts higher on the phone. */}
-          <label className="filter-select">
-            <span className="visually-hidden">{STRINGS.filterBarLabel}</span>
-            <select value={filter} onChange={(e) => setFilter(e.target.value as ContactsFilter)} aria-label={STRINGS.filterBarLabel}>
-              {CONTACTS_FILTERS.map((f) => (
-                <option key={f} value={f}>
-                  {filterChipLabel(filterNames[f], counts[f])}
-                </option>
-              ))}
-            </select>
-          </label>
+          <div className="filter-select">
+            <button type="button" className="filter-select__button" onClick={() => setFilterOpen(true)} aria-haspopup="dialog" aria-label={`${STRINGS.filterBarLabel}: ${filterChipLabel(filterNames[filter], counts[filter])}${ownerFilter === 'all' ? '' : `, ${STRINGS.ownerFilterAria[ownerFilter]}`}`}>
+              {ownerFilter !== 'all' && <span className={`added-dot added-dot--${ownerFilter === 'mine' ? 'mine' : 'spouse'}`} aria-hidden="true" />}
+              <span className="filter-select__text">{filterChipLabel(filter === 'kh' ? STRINGS.filterKhShort : filterNames[filter], counts[filter])}</span>
+            </button>
+          </div>
         </div>
       </header>
 
@@ -311,6 +334,52 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
           </svg>
         </button>
       </div>
+
+      {filterOpen && (
+        <Dialog title={STRINGS.filterSheetTitle} onClose={() => setFilterOpen(false)} variant="sheet">
+          {owner !== undefined && <p className="sort-options__group">{STRINGS.filterKindGroup}</p>}
+          <ul className="sort-options">
+            {CONTACTS_FILTERS.map((f) => (
+              <li key={f}>
+                <button type="button" className={f === filter ? 'sort-option sort-option--on' : 'sort-option'} aria-pressed={f === filter} onClick={() => { setFilter(f); setFilterOpen(false); }}>
+                  <span className="sort-option__text">
+                    <span className="sort-option__name">{filterNames[f]}</span>
+                  </span>
+                  <span className="sort-option__end">
+                    <span className="sort-option__count">{counts[f]}</span>
+                    {f === filter && <span aria-hidden="true">✓</span>}
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+          {owner !== undefined && (
+            <>
+              <p className="sort-options__group">{STRINGS.filterOwnerGroup}</p>
+              <ul className="sort-options">
+                {OWNER_FILTERS.map((f) => (
+                  <li key={f}>
+                    <button type="button" className={f === ownerFilter ? 'sort-option sort-option--on' : 'sort-option'} aria-pressed={f === ownerFilter} onClick={() => { setFilterOpen(false); void chooseOwner(f); }}>
+                      <span className="sort-option__text sort-option__text--row">
+                        {f !== 'all' && <span className={`added-dot added-dot--${f === 'mine' ? 'mine' : 'spouse'}`} aria-hidden="true" />}
+                        <span className="sort-option__name">{f === 'all' ? STRINGS.ownerAll : f === 'mine' ? STRINGS.ownerMine : STRINGS.ownerSpouse(owner.spouseName)}</span>
+                      </span>
+                      <span className="sort-option__end">
+                        <span className="sort-option__count">{ownerCounts[f]}</span>
+                        {f === ownerFilter && <span aria-hidden="true">✓</span>}
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              <p className="message filter-sheet__note">
+                <span className="added-dot added-dot--both" aria-hidden="true" />
+                {STRINGS.ownerBothNote}
+              </p>
+            </>
+          )}
+        </Dialog>
+      )}
 
       {sortOpen && (
         <Dialog title={STRINGS.contactSortTitle} onClose={() => setSortOpen(false)} variant="sheet">

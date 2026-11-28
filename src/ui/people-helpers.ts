@@ -555,21 +555,74 @@ export function accountPhoneDiffers(contactPhone: PersonPhone | null | undefined
   return contactPhone == null || contactPhone.number === '' || phoneKey(contactPhone) !== phoneKey(account);
 }
 
-/** Dot after a contact's name in Làm (story 064). */
+/** Dot after a contact's name in Làm (story 064; follows "Phụ trách" since story 066). */
 export type AddedByDot = 'spouse' | 'both';
 
+/** Who looks after a contact, seen from me (story 066). */
+export type OwnerChoice = 'me' | 'spouse' | 'both';
+
 /**
- * 'spouse' when only other current members of my household added the contact, 'both' when I (or
- * this device before sign-in) and another member each had it before a merge, null otherwise.
- * Former members count for nobody. `otherMembers`: the household's other current account ids.
+ * Who looks after `person`: its `owners` (set in Sửa thông tin), else whoever added it. An id
+ * that is not another current member (me, this device before sign-in, a former member) is me.
  */
-export function addedByDot(person: Pick<Person, 'addedBy'>, otherMembers: ReadonlySet<string>): AddedByDot | null {
-  if (otherMembers.size === 0) return null;
-  const ids = person.addedBy ?? [];
-  const others = ids.some((id) => otherMembers.has(id));
-  const mine = ids.some((id) => !otherMembers.has(id) && id !== FORMER_MEMBER_ID);
-  if (!others) return null;
-  return mine ? 'both' : 'spouse';
+export function ownerChoice(person: Pick<Person, 'addedBy' | 'owners'>, otherMembers: ReadonlySet<string>): OwnerChoice {
+  const ids = person.owners ?? person.addedBy ?? [];
+  const isCoMember = (id: string) => otherMembers.has(id) && id !== FORMER_MEMBER_ID;
+  const spouse = ids.some(isCoMember);
+  const mine = ids.length === 0 || ids.some((id) => !isCoMember(id));
+  return spouse && mine ? 'both' : spouse ? 'spouse' : 'me';
+}
+
+/**
+ * 'spouse' (orange) when only another current member looks after the contact, 'both' (purple)
+ * when we both do, null (mine) otherwise or when I have no co-member.
+ */
+export function addedByDot(person: Pick<Person, 'addedBy' | 'owners'>, otherMembers: ReadonlySet<string>): AddedByDot | null {
+  if (coMemberIds(otherMembers).length === 0) return null;
+  const choice = ownerChoice(person, otherMembers);
+  return choice === 'me' ? null : choice;
+}
+
+/** Current co-members of my household: `otherMemberIds` without the former-member id it always holds. */
+export function coMemberIds(otherMembers: ReadonlySet<string>): string[] {
+  return [...otherMembers].filter((id) => id !== FORMER_MEMBER_ID);
+}
+
+/** "Phụ trách" filter of Làm (story 066). */
+export type OwnerFilter = 'all' | 'mine' | 'spouse';
+
+/** Owner filter values in sheet order. */
+export const OWNER_FILTERS: readonly OwnerFilter[] = ['all', 'mine', 'spouse'];
+
+/** Contacts I (or my co-member) look after; shared ones are in both. No co-member: everyone. Pure. */
+export function filterByOwner<T extends Pick<Person, 'addedBy' | 'owners'>>(people: readonly T[], filter: OwnerFilter, otherMembers: ReadonlySet<string>): T[] {
+  if (filter === 'all' || coMemberIds(otherMembers).length === 0) return [...people];
+  return people.filter((p) => {
+    const c = ownerChoice(p, otherMembers);
+    return c === 'both' || (filter === 'mine' ? c === 'me' : c === 'spouse');
+  });
+}
+
+/**
+ * My remembered owner filter: the latest `settings_changed` carrying `contactOwner`, written by
+ * me and not undone; 'all' when none. It rides on the synced `contactSort` setting (story 052).
+ */
+export function readOwnerFilter(events: readonly LogEvent[], others: ReadonlySet<string>): OwnerFilter {
+  const undone = new Set<string>();
+  for (const e of events) if (typeof e.payload.compensates === 'string') undone.add(e.payload.compensates);
+  let found: OwnerFilter = 'all';
+  for (const e of events) {
+    if (e.type !== 'settings_changed' || undone.has(e.id) || others.has(e.userId)) continue;
+    const v = e.payload.contactOwner;
+    if (typeof v === 'string' && (OWNER_FILTERS as readonly string[]).includes(v)) found = v as OwnerFilter;
+  }
+  return found;
+}
+
+/** `person_updated { personId, owners }` for a "Phụ trách" choice (story 066). Pure. */
+export function buildOwnerChange(personId: string, choice: OwnerChoice, meId: string, spouseId: string): NewEvent {
+  const owners = choice === 'me' ? [meId] : choice === 'spouse' ? [spouseId] : [meId, spouseId];
+  return { type: 'person_updated', payload: { personId, owners } };
 }
 
 /** Result of {@link buildNoteChangeEvent}. */

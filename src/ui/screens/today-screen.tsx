@@ -14,7 +14,6 @@ import type { Lesson } from '../../domain/lesson';
 import { nextLessonSuggestion } from '../../domain/lesson-stages';
 import type { LessonStage, NextLessonSuggestion } from '../../domain/lesson-stages';
 import { LOADED_LESSONS, LOADED_STAGES } from '../lesson-content';
-import { LESSON_STRINGS, nextLessonAllDone, pathLessonFacts, pathStageHeading } from '../lesson-strings';
 import {
   STRINGS,
   cheerFromLabel,
@@ -47,6 +46,8 @@ export interface TodayScreenProps {
   readonly timeZone?: string;
   /** Opens Cài đặt (account, household, sync, reminders, backup); the header button is hidden when absent. */
   readonly onOpenSettings?: () => void;
+  /** Story 067: the "Làm" button of today's goal opens the Làm tab. */
+  readonly onOpenWork?: () => void;
   /** An unseen cheer from the sponsor household (story 028); the card is shown only when set. */
   readonly cheer?: { readonly message: string; readonly senderName?: string | null } | null;
   /** Closes the cheer card for good. */
@@ -57,8 +58,10 @@ export interface TodayScreenProps {
   readonly notificationPermission?: () => ReminderPermission;
   /** Starts a lesson in Học (story 039); the "Bài nên học tiếp" card is hidden when absent. */
   readonly onStartLesson?: (lessonId: string) => void;
-  /** Hôm nay "Cổ vũ nhóm" card (story 041); hidden when absent (signed out or no server). */
-  readonly cheerGroup?: ReactNode;
+  /** Bumped when something on Hôm nay wrote XP (story 070: a cheer), so the goal is read again. */
+  readonly refreshKey?: number;
+  /** Story 069: the "Nhóm" card, under today's goal. */
+  readonly groupCard?: ReactNode;
   /** Story 063: the "Bật thông báo" card, shown above today's goal. */
   readonly pushPrompt?: ReactNode;
   /** Lessons and stages for the suggestion; default to content/lessons.json. */
@@ -112,14 +115,16 @@ export function TodayScreen({
   now = realNow,
   timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone,
   onOpenSettings,
+  onOpenWork,
   reminderConfig = DEFAULT_REMINDER_CONFIG,
   notificationPermission = DEFAULT_PERMISSION,
   memberIds = NO_MEMBERS,
   cheer = null,
   onDismissCheer,
   onStartLesson,
-  cheerGroup,
   pushPrompt,
+  groupCard,
+  refreshKey = 0,
   lessons = LOADED_LESSONS.lessons,
   lessonStages = LOADED_STAGES,
 }: TodayScreenProps) {
@@ -160,7 +165,7 @@ export function TodayScreen({
     return () => {
       cancelled = true;
     };
-  }, [eventStore, config, stages, now, timeZone, reminderConfig, reloadKey, memberIds]);
+  }, [eventStore, config, stages, now, timeZone, reminderConfig, reloadKey, memberIds, refreshKey]);
 
   useEffect(() => {
     const onVisible = () => {
@@ -261,60 +266,42 @@ export function TodayScreen({
         </section>
       )}
 
-      {state.kind === 'ready' && (goalMet ? <GoalMetCard streak={streak} /> : <GoalProgressCard progress={state.progress} goalChange={state.goalChange} />)}
+      {state.kind === 'ready' &&
+        (goalMet ? (
+          <GoalMetCard streak={streak} />
+        ) : (
+          <GoalProgressCard
+            progress={state.progress}
+            goalChange={state.goalChange}
+            // Story 067: "Học" opens the suggested next lesson (the Học path when all are learned), "Làm" opens Làm.
+            onLearn={() => {
+              const next = state.next.lesson;
+              if (next !== null && onStartLesson !== undefined) onStartLesson(next.id);
+              else onLearn();
+            }}
+            {...(onOpenWork === undefined ? {} : { onWork: onOpenWork })}
+          />
+        ))}
 
-      {cheerGroup}
-
-      {state.kind === 'ready' && onStartLesson !== undefined && state.next.total > 0 && (
-        <NextLessonCard next={state.next} onStart={onStartLesson} onLearn={onLearn} />
-      )}
+      {groupCard}
 
 
     </main>
   );
 }
 
-/** "Bài nên học tiếp" (story 039): the first lesson not learned yet, in path order. */
-function NextLessonCard({
-  next,
-  onStart,
-  onLearn,
-}: {
-  readonly next: NextLessonSuggestion;
-  readonly onStart: (lessonId: string) => void;
-  readonly onLearn: () => void;
-}) {
-  const { lesson } = next;
-  return (
-    <section className="card next-lesson" aria-labelledby="next-lesson-title">
-      <h2 id="next-lesson-title" className="card__title">
-        {LESSON_STRINGS.nextLessonTitle}
-      </h2>
-      {lesson === null ? (
-        <>
-          <p className="card__body">{nextLessonAllDone(next.total)}</p>
-          <button type="button" className="button button--secondary" onClick={onLearn}>
-            {LESSON_STRINGS.nextLessonReview}
-          </button>
-        </>
-      ) : (
-        <>
-          {next.stagePosition !== null && next.stageTitle !== null && (
-            <p className="next-lesson__stage">{pathStageHeading(next.stagePosition, next.stageTitle)}</p>
-          )}
-          <p className="next-lesson__name">{lesson.title}</p>
-          <p className="next-lesson__facts">{pathLessonFacts(lesson.xp, lesson.questions.length)}</p>
-          <button type="button" className="button button--primary" onClick={() => onStart(lesson.id)}>
-            {LESSON_STRINGS.nextLessonStart}
-          </button>
-        </>
-      )}
-    </section>
-  );
-}
-
 /** In-progress view: XP bar plus a checklist of what is still missing today. */
-function GoalProgressCard({ progress, goalChange }: { readonly progress: Progress; readonly goalChange: string | null }) {
+function GoalProgressCard({
+  progress,
+  goalChange,
+  onLearn,
+  onWork,
+}: {
+  readonly progress: Progress;
+  readonly goalChange: string | null;
+  readonly onLearn: () => void;
+  readonly onWork?: () => void;
+}) {
   const { xp, threshold, lessons, lessonsNeeded, tasks, tasksNeeded } = progress.dailyGoal;
   const xpRemaining = Math.max(0, threshold - xp);
   const ratio = threshold > 0 ? Math.min(1, xp / threshold) : 1;
@@ -339,8 +326,20 @@ function GoalProgressCard({ progress, goalChange }: { readonly progress: Progres
       <ul className="checklist">
         <ChecklistItem done={xpRemaining === 0} label={xpRemaining === 0 ? xpProgressLabel(xp, threshold) : xpRemainingLabel(xpRemaining)} />
         {/* Story 062: counts, and a part with 0 needed is not shown. */}
-        {lessonsNeeded > 0 && <ChecklistItem done={lessons >= lessonsNeeded} label={goalCountLabel(STRINGS.goalLessonsName, lessons, lessonsNeeded)} />}
-        {tasksNeeded > 0 && <ChecklistItem done={tasks >= tasksNeeded} label={goalCountLabel(STRINGS.goalTasksName, tasks, tasksNeeded)} />}
+        {lessonsNeeded > 0 && (
+          <ChecklistItem
+            done={lessons >= lessonsNeeded}
+            label={goalCountLabel(STRINGS.goalLessonsName, lessons, lessonsNeeded)}
+            action={{ label: lessons >= lessonsNeeded ? STRINGS.goalLearnMore : STRINGS.goalLearn, onClick: onLearn }}
+          />
+        )}
+        {tasksNeeded > 0 && (
+          <ChecklistItem
+            done={tasks >= tasksNeeded}
+            label={goalCountLabel(STRINGS.goalTasksName, tasks, tasksNeeded)}
+            {...(onWork === undefined ? {} : { action: { label: tasks >= tasksNeeded ? STRINGS.goalWorkMore : STRINGS.goalWork, onClick: onWork } })}
+          />
+        )}
       </ul>
       {progress.streak > 0 && <p className="message">{keepStreakLabel(progress.streak)}</p>}
       {goalChange !== null && <p className="goal-card__soon">{goalChange}</p>}
@@ -348,14 +347,19 @@ function GoalProgressCard({ progress, goalChange }: { readonly progress: Progres
   );
 }
 
-/** One checklist row; done rows are ticked and muted. */
-function ChecklistItem({ done, label }: { readonly done: boolean; readonly label: string }) {
+/** One checklist row; done rows are ticked and muted. An action button sits at the end (story 067). */
+function ChecklistItem({ done, label, action }: { readonly done: boolean; readonly label: string; readonly action?: { readonly label: string; readonly onClick: () => void } }) {
   return (
     <li className={done ? 'checklist__item checklist__item--done' : 'checklist__item'}>
       <span className="checklist__mark" aria-hidden="true">
         {done ? '✓' : ''}
       </span>
-      {label}
+      <span className="checklist__label">{label}</span>
+      {action !== undefined && (
+        <button type="button" className={done ? 'checklist__action checklist__action--more' : 'checklist__action'} onClick={action.onClick}>
+          {action.label}
+        </button>
+      )}
     </li>
   );
 }

@@ -150,6 +150,8 @@ export interface Person {
   readonly nppAt?: string | null;
   /** Accounts that added this contact or a contact merged into it (story 064), first adder first. */
   readonly addedBy?: readonly string[];
+  /** Accounts that look after it ("Phụ trách", story 066), set in Sửa thông tin; absent means {@link addedBy}. */
+  readonly owners?: readonly string[];
 }
 
 /** Result of {@link buildTaskCompletionEvent}. */
@@ -476,6 +478,7 @@ interface MutablePerson {
   phones: PersonPhone[];
   absorbed: AbsorbedPerson[];
   addedBy: string[];
+  owners: string[] | null;
   amwayCode: string | null;
   linkedUserId: string | null;
   done: Set<string>;
@@ -520,6 +523,13 @@ export function validateAmwayCode(input: string, config: PeopleConfig): AmwayCod
  */
 export function phoneKey(phone: PersonPhone): string {
   return `${phone.country}${phone.number.replace(/^0+/, '')}`;
+}
+
+/** `person_updated.owners` (story 066): 1 to 5 distinct non-empty account ids, else null. */
+function readOwners(raw: unknown): string[] | null {
+  if (!Array.isArray(raw) || raw.length === 0 || raw.length > 5) return null;
+  const ids = raw.filter((x): x is string => typeof x === 'string' && x.trim() !== '').map((x) => x.trim());
+  return ids.length === raw.length ? [...new Set(ids)] : null;
 }
 
 /** Order-independent key of a pair of person ids. */
@@ -770,6 +780,7 @@ export function derivePeople(events: readonly LogEvent[], config: PeopleConfig):
         phones: [],
         absorbed: [],
         addedBy: [e.userId],
+        owners: null,
         amwayCode: readCode(p.amwayCode) ?? null,
         linkedUserId: null,
         done: new Set(),
@@ -805,6 +816,8 @@ export function derivePeople(events: readonly LogEvent[], config: PeopleConfig):
       const code = readCode(p.amwayCode);
       if (code !== undefined) person.amwayCode = code;
       if (isNonEmptyString(p.linkedUserId)) person.linkedUserId = p.linkedUserId.trim();
+      const owners = readOwners(p.owners);
+      if (owners !== null) person.owners = owners;
     } else if (e.type === 'person_stage_changed') {
       const to = p.to;
       const target = people.get(rootOf.get(personId) ?? personId);
@@ -837,6 +850,7 @@ export function derivePeople(events: readonly LogEvent[], config: PeopleConfig):
     lastContactAt: m.lastContactAt,
     nppAt: m.label === 'NPP' ? m.labelledAt : null,
     addedBy: m.addedBy,
+    ...(m.owners === null ? {} : { owners: m.owners }),
   }));
 }
 

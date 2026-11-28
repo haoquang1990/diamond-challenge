@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import gameConfig from './config/game-config.json';
 import { getSupabaseClient } from './config/supabase';
 import { loadIsAdmin } from './data/admin-service';
+import { loadCodeRequirement } from './data/account-service';
+import type { CodeRequirement } from './data/account-service';
 import { clearGroupCaches, dismissCheers, loadUnseenCheer } from './data/group-service';
 import { ensureAccountLinked, saveDisplayName, signOut } from './data/auth-service';
 import { readDeviceAccount, updateDeviceAccount } from './data/account-stores';
@@ -33,6 +35,12 @@ import type { MemberProgressSync } from './data/member-progress-sync';
 import { PEOPLE_CONFIG } from './ui/people-config';
 import { AdminScreen } from './ui/screens/admin-screen';
 import { ChangePasswordScreen, DisplayNameScreen } from './ui/screens/change-password-screen';
+import { CodeRequiredScreen } from './ui/screens/code-required-screen';
+import { GroupScreen } from './ui/screens/group-screen';
+import { GroupTodayCard } from './ui/screens/group-today-card';
+import { NhomCardBody } from './ui/screens/nhom-panel';
+import { FriendShareCard } from './ui/screens/friend-share-card';
+import { readInviteToken, requestFriendByToken } from './data/friends-service';
 import { CreateAccountScreen } from './ui/screens/create-account-screen';
 import { ConsentScreen } from './ui/screens/consent-screen';
 import { BadgesScreen } from './ui/screens/badges-screen';
@@ -40,7 +48,6 @@ import { LessonScreen } from './ui/screens/lesson-screen';
 import { GoalCard } from './ui/screens/goal-card';
 import { PushCard } from './ui/screens/push-card';
 import { HouseholdCard, HouseholdScreen } from './ui/screens/household-screen';
-import { GroupCheerCard } from './ui/screens/group-cheer-card';
 import type { Person } from './domain/people';
 import { F1HouseholdBox } from './ui/screens/f1-household-box';
 import { useGroupData } from './ui/use-group-data';
@@ -95,9 +102,12 @@ function realNow(): Date {
  * merged person list (Danh bạ). `settings` (opened from Hôm nay) is not in the tab bar.
  * Bảng 30x30 and Nhóm của tôi were removed in story 042.
  */
-type Tab = 'today' | 'learn' | 'people' | 'badges' | 'settings' | 'household' | 'admin' | 'duplicates';
+/** sessionStorage key holding an invite link token until the account is signed in (story 069). */
+const INVITE_STORAGE_KEY = 'diamond.pendingFriendInvite';
 
-const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'household' | 'admin' | 'duplicates'>; readonly label: string }[] = [
+type Tab = 'today' | 'learn' | 'people' | 'badges' | 'settings' | 'household' | 'admin' | 'duplicates' | 'group';
+
+const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'household' | 'admin' | 'duplicates' | 'group'>; readonly label: string }[] = [
   { id: 'today', label: STRINGS.tabToday },
   { id: 'learn', label: STRINGS.tabLearn },
   { id: 'people', label: STRINGS.tabPeople },
@@ -155,6 +165,8 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
   /** Temporary password typed at sign-in; memory only, cleared once the password is changed. */
   const temporaryPasswordRef = useRef<string | null>(session?.temporaryPassword ?? null);
   const [askDisplayName, setAskDisplayName] = useState(false);
+  /** Story 068: whether my household still needs its Amway code (null while unread). */
+  const [codeReq, setCodeReq] = useState<CodeRequirement | null>(null);
 
   // Household contact sync (story 023).
   // Consent is required (story 030): server state is the truth; the cached agreement opens the app offline.
@@ -170,6 +182,8 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
   const [members, setMembers] = useState<ReadonlyMap<string, HouseholdMember> | null>(null);
   /** Bumped when a sync pulled new events, so the open Làm list re-reads the log. */
   const [dataVersion, setDataVersion] = useState(0);
+  /** Story 070: bumped when a cheer on Hôm nay earned XP. */
+  const [todayRefresh, setTodayRefresh] = useState(0);
   /** Persisted household member ids: their events are not mine (works offline and signed out). */
   const [memberIds, setMemberIds] = useState<ReadonlySet<string>>(() => new Set());
   const memberIdsRef = useRef(memberIds);
@@ -200,6 +214,59 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
       cancelled = true;
     };
   }, [clientPromise, accountId, passwordPending]);
+
+  // Story 068: ask once for the household's Amway code when it has none (offline: never blocks).
+  useEffect(() => {
+    setCodeReq(null);
+    if (clientPromise === null || accountId === null || passwordPending) return;
+    let cancelled = false;
+    clientPromise
+      .then((client) => loadCodeRequirement(client, accountId))
+      .then((req) => {
+        if (!cancelled) setCodeReq(req);
+      })
+      .catch((error: unknown) => console.error('[code] could not read the household code', error));
+    return () => {
+      cancelled = true;
+    };
+  }, [clientPromise, accountId, passwordPending]);
+
+  // Story 069: an invite link (?ban=<token>) is kept until signed in, then sent as a friend request.
+  const [groupNotice, setGroupNotice] = useState<string | null>(null);
+  useEffect(() => {
+    const token = readInviteToken(window.location.search);
+    if (token === null) return;
+    try {
+      sessionStorage.setItem(INVITE_STORAGE_KEY, token);
+    } catch {
+      // Without storage the request is sent only when already signed in.
+    }
+    const url = new URL(window.location.href);
+    url.searchParams.delete('ban');
+    window.history.replaceState(null, '', url.toString());
+  }, []);
+  useEffect(() => {
+    if (clientPromise === null || accountId === null || passwordPending || codeReq === null || codeReq === 'missing') return;
+    let token: string | null = null;
+    try {
+      token = sessionStorage.getItem(INVITE_STORAGE_KEY);
+    } catch {
+      token = null;
+    }
+    if (token === null) return;
+    void clientPromise
+      .then((client) => requestFriendByToken(client, token))
+      .then((r) => {
+        if (r === 'failed') return;
+        try {
+          sessionStorage.removeItem(INVITE_STORAGE_KEY);
+        } catch {
+          // ignore
+        }
+        setGroupNotice(r === 'limit' ? STRINGS.friendLimit : STRINGS.friendInviteSentFromLink);
+        setTab('group');
+      });
+  }, [clientPromise, accountId, passwordPending, codeReq]);
 
   // Story 028: an unseen cheer from the sponsor household shows as a dismissible card on Hôm nay.
   const [unseenCheer, setUnseenCheer] = useState<{ readonly message: string; readonly senderName: string | null; readonly allIds: readonly string[] } | null>(null);
@@ -655,6 +722,14 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
     );
   }
 
+  if (clientPromise !== null && account !== null && codeReq === 'missing') {
+    return (
+      <div className="app-shell">
+        <CodeRequiredScreen clientPromise={clientPromise} onSaved={() => setCodeReq('ok')} onPending={() => setCodeReq('pending')} onSignOut={() => void onSignOut()} />
+      </div>
+    );
+  }
+
   if (createAccountFor !== null && clientPromise !== null && account !== null) {
     return (
       <div className="app-shell">
@@ -683,6 +758,24 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
     return (
       <div className="app-shell">
         <AdminScreen clientPromise={clientPromise} onBack={() => setTab('settings')} />
+      </div>
+    );
+  }
+
+  if (tab === 'group' && clientPromise !== null && account !== null) {
+    return (
+      <div className="app-shell">
+        <GroupScreen
+          clientPromise={clientPromise}
+          nhom={{ clientPromise, accountId: account.accountId, eventStore, memberIds, dataVersion }}
+          notice={groupNotice}
+          appUrl={new URL(import.meta.env.BASE_URL, window.location.href).toString()}
+          onBack={() => {
+            setGroupNotice(null);
+            setDataVersion((v) => v + 1);
+            goToday();
+          }}
+        />
       </div>
     );
   }
@@ -717,6 +810,7 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
                 },
                 onEraseDevice,
                 goalSlot: <GoalCard eventStore={eventStore} memberIds={memberIds} />,
+                ...(account !== null ? { friendShareSlot: <FriendShareCard clientPromise={clientPromise} accountId={account.accountId} /> } : {}),
                 ...(account !== null ? { pushSlot: <PushCard clientPromise={clientPromise} accountId={account.accountId} /> } : {}),
                 ...(account !== null ? { householdSlot: <HouseholdCard clientPromise={clientPromise} accountId={account.accountId} onAddMember={() => setTab('household')} /> } : {}),
               })}
@@ -730,16 +824,24 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
       {tab === 'today' && (
         <TodayScreen
           eventStore={eventStore}
+          refreshKey={todayRefresh}
           memberIds={memberIds}
           onLearn={() => setTab('learn')}
           {...(clientPromise !== null && account !== null
-            ? { cheerGroup: <GroupCheerCard clientPromise={clientPromise} accountId={account.accountId} eventStore={eventStore} dataVersion={dataVersion} /> }
+            ? {
+                groupCard: (
+                  <GroupTodayCard clientPromise={clientPromise} dataVersion={dataVersion} onOpen={() => setTab('group')}>
+                    <NhomCardBody clientPromise={clientPromise} accountId={account.accountId} eventStore={eventStore} memberIds={memberIds} dataVersion={dataVersion} onXp={() => setTodayRefresh((k) => k + 1)} onAddFriend={() => setTab('group')} />
+                  </GroupTodayCard>
+                ),
+              }
             : {})}
           onStartLesson={(lessonId) => {
             setStartLessonId(lessonId);
             setTab('learn');
           }}
           onOpenSettings={() => setTab('settings')}
+          onOpenWork={() => setTab('people')}
           notificationPermission={notificationPlatform.permission}
           {...(clientPromise !== null && account !== null
             ? { pushPrompt: <PushPromptCard clientPromise={clientPromise} accountId={account.accountId} eventStore={eventStore} onChanged={refreshReminders} /> }

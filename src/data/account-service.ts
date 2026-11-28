@@ -260,3 +260,56 @@ export async function resendF1Password(client: Pick<SupabaseClient, 'functions'>
   if (key === 'not_allowed' || key === 'admin_only' || key === 'change_password_first') return { ok: false, error: 'not_allowed' };
   return { ok: false, error: 'other' };
 }
+
+/** Whether the app must ask for the household's Amway code (story 068). */
+export type CodeRequirement = 'ok' | 'missing' | 'pending' | 'unknown';
+
+/** 'missing' when my household has no active code and no claim waits for the admin. Pure. */
+export function codeRequirement(input: { readonly householdId: string | null; readonly code: string | null; readonly pendingClaim: boolean }): Exclude<CodeRequirement, 'unknown'> {
+  if (input.householdId === null || input.code !== null) return 'ok';
+  return input.pendingClaim ? 'pending' : 'missing';
+}
+
+/**
+ * Reads whether my household still needs its Amway code (story 068). Any read error (offline)
+ * gives 'unknown', and the app then does not block.
+ */
+export async function loadCodeRequirement(client: SupabaseClient, accountId: string): Promise<CodeRequirement> {
+  try {
+    const own = await client.from('household_members').select('household_id').eq('user_id', accountId).is('left_at', null).maybeSingle();
+    if (own.error) return 'unknown';
+    const householdId = (own.data as { household_id?: string } | null)?.household_id ?? null;
+    if (householdId === null) return 'ok';
+    const [codeRow, claimRow] = await Promise.all([
+      client.from('household_codes').select('code').eq('household_id', householdId).eq('status', 'active').maybeSingle(),
+      client.from('code_claims').select('id').eq('household_id', householdId).eq('status', 'pending').maybeSingle(),
+    ]);
+    if (codeRow.error) return 'unknown';
+    const code = (codeRow.data as { code?: string } | null)?.code ?? null;
+    // An older server has no code_claims: read that as "no claim".
+    return codeRequirement({ householdId, code, pendingClaim: !claimRow.error && claimRow.data !== null });
+  } catch {
+    return 'unknown';
+  }
+}
+
+/** Answer of `claim_household_code`, plus 'network' and 'other'. */
+export type ClaimCodeResult = 'saved' | 'taken' | 'already_set' | 'invalid' | 'no_household' | 'network' | 'other';
+
+const CLAIM_RESULTS: ReadonlySet<string> = new Set(['saved', 'taken', 'already_set', 'invalid', 'no_household']);
+
+/** A server answer as a {@link ClaimCodeResult}; anything unknown is 'other'. Pure. */
+export function parseClaimResult(raw: unknown): ClaimCodeResult {
+  return typeof raw === 'string' && CLAIM_RESULTS.has(raw) ? (raw as ClaimCodeResult) : 'other';
+}
+
+/** Sets my household's Amway code once, or files a claim for the admin when another household holds it. */
+export async function claimHouseholdCode(client: SupabaseClient, code: string): Promise<ClaimCodeResult> {
+  try {
+    const { data, error } = await client.rpc('claim_household_code', { p_code: code });
+    if (error) return 'other';
+    return parseClaimResult(data);
+  } catch {
+    return 'network';
+  }
+}

@@ -18,7 +18,7 @@ import type { ContactSyncConfig, SyncFailure, SyncStatus } from './contact-sync'
 import type { EventPayload, EventStore, EventType, LogEvent, SyncStateStore } from './event-store';
 
 /** Event types the `personal_events` table accepts (the server also checks the payload). */
-export const PERSONAL_EVENT_TYPES: readonly EventType[] = ['lesson_completed', 'activity_logged', 'settings_changed'];
+export const PERSONAL_EVENT_TYPES: readonly EventType[] = ['lesson_completed', 'activity_logged', 'settings_changed', 'cheer_sent'];
 
 /** `settings_changed` payload keys that mark an achievement / stage acknowledgement (synced); every other settings key stays on the device. */
 export const PROGRESS_SETTINGS_KEYS: readonly string[] = ['achievementAcknowledged', 'stageAcknowledged', 'achievementsSeeded', 'badgesSeeded', 'contactSort', 'xpGoal'];
@@ -64,7 +64,7 @@ export function isPersonalProgressEvent(event: Pick<LogEvent, 'type' | 'payload'
   const seen = new Set<string>();
   let current: Pick<LogEvent, 'type' | 'payload'> | undefined = event;
   while (current !== undefined) {
-    if (current.type === 'lesson_completed') return true;
+    if (current.type === 'lesson_completed' || current.type === 'cheer_sent') return true;
     if (current.type === 'settings_changed') return hasProgressSettingsKey(current.payload);
     if (current.type !== 'activity_logged' || typeof current.payload.personId === 'string') return false;
     const target = current.payload.compensates;

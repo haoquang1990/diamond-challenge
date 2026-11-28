@@ -4,6 +4,8 @@
   "dailyCountLimits": { "lessons": 10, "tasks": 20 },
   "push": { "vapidPublicKey": "" },
   "pushPrompt": { "snoozeDays": 3, "doneShowMs": 5000 },
+  "cheerXp": { "xp": 5, "maxPerDay": 3 },
+  "nhomCard": { "needsShown": 3, "avatarsShown": 5 },
   "reminder": {
     "defaultTime": "20:00",
     "enabledByDefault": false

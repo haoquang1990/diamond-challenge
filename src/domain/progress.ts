@@ -202,6 +202,10 @@ export interface ShareProgress {
   readonly badges7d: number;
   /** Today's XP goal (story 056: picked by the person, 20–200). */
   readonly goalXp: number;
+  /** XP since Monday of my local week, today included (story 071 ranking). */
+  readonly xpWeek: number;
+  /** That Monday, YYYY-MM-DD. */
+  readonly weekStart: string;
 }
 
 /** Task types counted in {@link ShareProgress.tasks7d}. */
@@ -234,7 +238,9 @@ export function computeShareProgress(
   }
   const today = localDayNumber(formatter, now);
   const firstDay = today - (SHARE_XP_DAYS - 1);
+  const mondayDay = today - mondayOffset(today);
   let xp7d = 0;
+  let xpWeek = 0;
   const activeDays = new Set<number>();
   const tasks7d: Record<ShareTask, number> = { contact: 0, demo: 0, opp: 0, new_customer: 0, new_npp: 0 };
   const lessons = new Set<string>();
@@ -256,6 +262,7 @@ export function computeShareProgress(
       if (xp > 0 && typeof e.payload.lessonId === 'string') lessons.add(e.payload.lessonId);
       if (lastLessonAt === null || e.timestamp > lastLessonAt) lastLessonAt = e.timestamp;
     }
+    if (day >= mondayDay && day <= today) xpWeek += xp;
     if (!recent) continue;
     xp7d += xp;
     if (xp > 0) activeDays.add(day);
@@ -276,7 +283,21 @@ export function computeShareProgress(
     lessonsDistinct: lessons.size,
     lastLessonAt,
     badges7d,
+    xpWeek: Math.max(0, xpWeek),
+    weekStart: dayToDateKey(mondayDay),
   };
+}
+
+/** Days since Monday of a day number (day 0, 1970-01-01, was a Thursday). */
+function mondayOffset(day: number): number {
+  return (((day + 3) % 7) + 7) % 7;
+}
+
+/** Monday of the local week of `now`, YYYY-MM-DD (story 071). Pure. */
+export function weekStartKey(now: Date, timeZone: string): string {
+  const formatter = new Intl.DateTimeFormat('en-US', { timeZone, year: 'numeric', month: 'numeric', day: 'numeric' });
+  const today = localDayNumber(formatter, now);
+  return dayToDateKey(today - mondayOffset(today));
 }
 
 /** Allowed daily XP goals (story 056), from `xpGoalRange` in game-config.json. */

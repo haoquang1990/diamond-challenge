@@ -17,8 +17,8 @@ import {
 } from '../../domain/people';
 import type { PeopleConfig, Person, PersonPhone, PersonTaskDef } from '../../domain/people';
 import { CONTACT_STALE_DAYS, COUNTRY_CODES, NOTE_AUTOSAVE_MS, PEOPLE_CONFIG, PERSON_TASKS } from '../people-config';
-import { ADD_NAME_ID, activityInstant, buildNoteChangeEvent, buildPersonHistory, personAddedAt, calendarDaysSince, countDoneTasks, createNoteAutosave, duplicateCodeNames, findDuplicateCodes, findPeopleWithCode, accountPhoneDiffers, formatPhone, phoneProblemText, splitE164, summarizeHistory, summaryCounts, toLocalInputValue } from '../people-helpers';
-import type { HistoryEntry, NoteAutosave, NoteSaveState } from '../people-helpers';
+import { ADD_NAME_ID, activityInstant, buildNoteChangeEvent, buildOwnerChange, buildPersonHistory, personAddedAt, calendarDaysSince, countDoneTasks, createNoteAutosave, duplicateCodeNames, findDuplicateCodes, findPeopleWithCode, accountPhoneDiffers, formatPhone, phoneProblemText, splitE164, summarizeHistory, summaryCounts, toLocalInputValue } from '../people-helpers';
+import type { HistoryEntry, NoteAutosave, NoteSaveState, OwnerChoice } from '../people-helpers';
 import {
   STRINGS,
   activityTimeTooOldLabel,
@@ -603,6 +603,8 @@ export interface PersonDetailProps {
   readonly extra?: ReactNode;
   /** The linked F1 account (story 059): the name it set and its login phone; null when unknown. */
   readonly linkedAccount?: { readonly displayName: string | null; readonly phone: string | null } | null;
+  /** Story 066 "Phụ trách": my id, my co-member's id and name, and who looks after it now. */
+  readonly owner?: { readonly meId: string; readonly spouseId: string; readonly spouseName: string; readonly current: OwnerChoice };
   /** Re-read the log after any write. */
   readonly onChanged: () => Promise<void>;
   readonly onBack: () => void;
@@ -624,7 +626,8 @@ interface TaskUndo {
  * change in the "Sửa thông tin" popup. State of record is the event log; this only holds form
  * state.
  */
-export function PersonDetail({ eventStore, person, people, events, activityTypes, config = PEOPLE_CONFIG, authorLabel, createAccount, extra, linkedAccount = null, onChanged, onBack }: PersonDetailProps) {
+export function PersonDetail({ eventStore, person, people, events, activityTypes, config = PEOPLE_CONFIG, authorLabel, createAccount, extra, linkedAccount = null, owner, onChanged, onBack }: PersonDetailProps) {
+  const [ownerSel, setOwnerSel] = useState<OwnerChoice>(owner?.current ?? 'me');
   const [name, setName] = useState(person.name);
   const [note, setNote] = useState(person.note);
   const [noteState, setNoteState] = useState<NoteSaveState | null>(null);
@@ -650,7 +653,8 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
   // Story 054: "0912 345 678" and a stored "912345678" are the same number, not a change.
   const typedKey = number.trim() === '' ? '' : phoneKey({ country, number: number.replace(/\s+/g, '') });
   const savedKey = (person.phone?.number ?? '') === '' ? '' : phoneKey({ country: savedCountry, number: person.phone?.number ?? '' });
-  const dirty = name !== person.name || typedKey !== savedKey || (typedKey === '' && country !== savedCountry) || code !== (person.amwayCode ?? '');
+  const ownerChanged = owner !== undefined && ownerSel !== owner.current;
+  const dirty = ownerChanged || name !== person.name || typedKey !== savedKey || (typedKey === '' && country !== savedCountry) || code !== (person.amwayCode ?? '');
   const duplicate = name.trim() !== '' && findDuplicateNames(people, name, person.personId).duplicate;
   const sameCode = findDuplicateCodes(people).get(person.personId);
   const tasks = pendingTasks(person, config);
@@ -692,6 +696,7 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
     setCountry(person.phone?.country ?? DEFAULT_COUNTRY);
     setNumber(tidyNationalNumber(person.phone?.country ?? DEFAULT_COUNTRY, person.phone?.number ?? ''));
     setCode(person.amwayCode ?? '');
+    setOwnerSel(owner?.current ?? 'me');
     setError(null);
     setPhoneError(null);
     setCodeError(null);
@@ -738,6 +743,7 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
           name: checked.name,
           phone: phone.phone ?? { country, number: '' },
           amwayCode: amway.code ?? '',
+          ...(owner !== undefined && ownerChanged ? buildOwnerChange(person.personId, ownerSel, owner.meId, owner.spouseId).payload : {}),
         },
       });
       await onChanged();
@@ -1100,6 +1106,20 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
               <p className="message message--warn" role="status">
                 {STRINGS.personDuplicateWarning}
               </p>
+            )}
+            {owner !== undefined && (
+              <div className="popup__field owner-field" role="radiogroup" aria-labelledby="owner-field-label">
+                <span id="owner-field-label" className="owner-field__label">
+                  {STRINGS.ownerField}
+                </span>
+                <div className="owner-field__options">
+                  {(['me', 'spouse', 'both'] as const).map((c) => (
+                    <button key={c} type="button" role="radio" aria-checked={ownerSel === c} className={ownerSel === c ? 'owner-option owner-option--on' : 'owner-option'} onClick={() => setOwnerSel(c)} disabled={busy}>
+                      {c === 'me' ? STRINGS.ownerMe : c === 'spouse' ? owner.spouseName : STRINGS.ownerBoth}
+                    </button>
+                  ))}
+                </div>
+              </div>
             )}
             {error !== null && activeTask === null && (
               <p className="message message--error" role="alert">
