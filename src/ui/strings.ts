@@ -425,7 +425,7 @@ export const STRINGS = {
   historyFirstLabel: 'Liên hệ đầu tiên',
   historyLastLabel: 'Liên hệ gần nhất',
   historyDaysSinceLabel: 'Kể từ lần gần nhất',
-  historyAddedLabel: 'Thêm vào danh sách',
+  historyAddedLabel: 'Thêm tên vào danh sách',
   historyLatestLabel: 'Hoạt động gần nhất',
   noteEditButton: 'Sửa ghi chú',
   noteAddButton: '+ Thêm ghi chú',
