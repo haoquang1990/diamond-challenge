@@ -491,6 +491,7 @@ export const STRINGS = {
   pushEnable: 'Bật thông báo trên máy này',
   pushOn: '✓ Máy này đang nhận thông báo.',
   pushEnabled: 'Đã bật thông báo trên máy này.',
+  addedByDot: { spouse: 'vợ/chồng thêm', both: 'cả hai cùng có' },
   pushPromptAskTitle: 'Bật thông báo',
   pushPromptAskBody: (time: string) => `Nhận lời cổ vũ từ tuyến trên và nhắc học lúc ${time} nếu hôm nay chưa đạt mục tiêu.`,
   pushPromptLater: 'Để sau',

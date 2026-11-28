@@ -148,6 +148,8 @@ export interface Person {
   readonly lastContactAt?: string;
   /** When the person became NPP (= labelledAt when label is NPP), else null. */
   readonly nppAt?: string | null;
+  /** Accounts that added this contact or a contact merged into it (story 064), first adder first. */
+  readonly addedBy?: readonly string[];
 }
 
 /** Result of {@link buildTaskCompletionEvent}. */
@@ -473,6 +475,7 @@ interface MutablePerson {
   phone: PersonPhone | null;
   phones: PersonPhone[];
   absorbed: AbsorbedPerson[];
+  addedBy: string[];
   amwayCode: string | null;
   linkedUserId: string | null;
   done: Set<string>;
@@ -645,6 +648,7 @@ function foldMerged(
   }
   keep.linkedUserId = keep.linkedUserId ?? gone.linkedUserId;
   keep.absorbed.push({ personId: gone.personId, name: gone.name, mergeEventId: merge.eventId }, ...gone.absorbed);
+  for (const id of gone.addedBy) if (!keep.addedBy.includes(id)) keep.addedBy.push(id);
 }
 
 /**
@@ -765,6 +769,7 @@ export function derivePeople(events: readonly LogEvent[], config: PeopleConfig):
         phone: readPhone(p.phone) ?? null,
         phones: [],
         absorbed: [],
+        addedBy: [e.userId],
         amwayCode: readCode(p.amwayCode) ?? null,
         linkedUserId: null,
         done: new Set(),
@@ -831,6 +836,7 @@ export function derivePeople(events: readonly LogEvent[], config: PeopleConfig):
     labelledAt: m.labelledAt,
     lastContactAt: m.lastContactAt,
     nppAt: m.label === 'NPP' ? m.labelledAt : null,
+    addedBy: m.addedBy,
   }));
 }
 

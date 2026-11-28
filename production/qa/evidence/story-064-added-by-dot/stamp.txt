@@ -1,0 +1,5 @@
+Reviewed-Content-Hash: src/domain/people.ts ccab7b1024d5ed235ef633a8784046a00d587015
+Reviewed-Content-Hash: src/ui/people-helpers.ts 8f6d9fb14a1d59da68603f336395243fb15c864c
+Reviewed-Content-Hash: src/ui/screens/people-screen.tsx 34447cb1480a8afb0103d0a83b9b75350e36d31b
+Reviewed-Content-Hash: src/ui/strings.ts e1e5f9df42bd91d6bf86ee171597c2b42b325c4e
+Reviewed-Content-Hash: src/ui/styles.css 82426a6c7502fe9a1e918ffb716ab90b90c779c1

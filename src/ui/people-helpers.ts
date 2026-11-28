@@ -540,3 +540,20 @@ export function accountPhoneDiffers(contactPhone: PersonPhone | null | undefined
   if (account === null) return false;
   return contactPhone == null || contactPhone.number === '' || phoneKey(contactPhone) !== phoneKey(account);
 }
+
+/** Dot after a contact's name in Làm (story 064). */
+export type AddedByDot = 'spouse' | 'both';
+
+/**
+ * 'spouse' when only other current members of my household added the contact, 'both' when I (or
+ * this device before sign-in) and another member each had it before a merge, null otherwise.
+ * Former members count for nobody. `otherMembers`: the household's other current account ids.
+ */
+export function addedByDot(person: Pick<Person, 'addedBy'>, otherMembers: ReadonlySet<string>): AddedByDot | null {
+  if (otherMembers.size === 0) return null;
+  const ids = person.addedBy ?? [];
+  const others = ids.some((id) => otherMembers.has(id));
+  const mine = ids.some((id) => !otherMembers.has(id) && id !== FORMER_MEMBER_ID);
+  if (!others) return null;
+  return mine ? 'both' : 'spouse';
+}

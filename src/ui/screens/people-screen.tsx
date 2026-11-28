@@ -24,6 +24,7 @@ import {
   historyAuthorLabel,
   listUnassignedActivities,
   searchPeopleByName,
+  addedByDot,
 } from '../people-helpers';
 import type { ContactSort, ContactsFilter } from '../people-helpers';
 import { STRINGS, contactDaysAria, contactSortAria, duplicateCodeWarning, duplicatesEntryLabel, f1RowAria, filterChipLabel, shortDateLabel, xpLabel } from '../strings';
@@ -345,7 +346,18 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
               <li key={person.personId}>
                 <button type="button" className="person-row" onClick={() => setOpenId(person.personId)}>
                   <span className="person-row__main">
-                    <span className="person-row__name">{person.name}</span>
+                    {(() => {
+                      // Story 064: orange dot = my spouse added it, purple = both of us had it before the merge.
+                      const dot = addedByDot(person, others);
+                      return dot === null ? (
+                        <span className="person-row__name">{person.name}</span>
+                      ) : (
+                        <span className="person-row__name-line">
+                          <span className="person-row__name">{person.name}</span>
+                          <span className={`added-dot added-dot--${dot}`} role="img" aria-label={STRINGS.addedByDot[dot]} />
+                        </span>
+                      );
+                    })()}
                     {dupCodes.has(person.personId) && (
                       <span className="person-row__warn">{duplicateCodeWarning(duplicateCodeNames(dupCodes.get(person.personId) ?? []))}</span>
                     )}

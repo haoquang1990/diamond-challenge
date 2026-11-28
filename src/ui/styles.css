@@ -1259,3 +1259,10 @@ body.dialog-open { overflow: hidden; }
 .push-prompt--done { border-color: #bfe8a0; background: #f0fbe6; }
 .push-prompt--done .push-prompt__bell { background: #58cc02; }
 .push-prompt--done .push-prompt__title { color: #2b7a00; }
+
+/* Story 064: dot after a contact's name (orange = spouse added, purple = both had it) */
+.person-row__name-line { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.person-row > .person-row__main .person-row__name-line .person-row__name { min-width: 0; }
+.added-dot { flex: none; width: 10px; height: 10px; border-radius: 50%; }
+.added-dot--spouse { background: #ff9600; }
+.added-dot--both { background: #a560e8; }
