@@ -2,7 +2,7 @@
 import type { HouseholdMember } from '../data/contact-sync';
 import { STRINGS } from './strings';
 import { FORMER_MEMBER_ID } from '../data/event-store';
-import type { LogEvent } from '../data/event-store';
+import type { LogEvent, NewEvent } from '../data/event-store';
 import {
   UNKNOWN_PERSON_ID,
   deriveActivityOwners,
@@ -169,6 +169,8 @@ export interface HistoryEntry {
   readonly xp?: number;
   /** Free-text note of the activity; present only when non-empty. */
   readonly note?: string;
+  /** True when the note was changed from Lịch sử after the activity was logged (story 065). */
+  readonly noteEdited?: boolean;
 }
 
 /** One task's count in a {@link HistorySummary}. */
@@ -252,6 +254,15 @@ export function buildPersonHistory(
   }
   const owners = deriveActivityOwners(events);
   const { rootOf } = deriveMerges(events);
+  // Story 065: the latest non-undone note change per activity wins ('' removes the note).
+  const noteChanges = new Map<string, { readonly at: string; readonly note: string }>();
+  for (const e of events) {
+    if (e.type !== 'activity_note_changed' || compensated.has(e.id) || typeof e.payload.compensates === 'string') continue;
+    const { activityId, note } = e.payload;
+    if (typeof activityId !== 'string' || typeof note !== 'string') continue;
+    const prev = noteChanges.get(activityId);
+    if (prev === undefined || e.timestamp >= prev.at) noteChanges.set(activityId, { at: e.timestamp, note: note.trim() });
+  }
   const entries: HistoryEntry[] = [];
   for (const e of events) {
     if (compensated.has(e.id) || typeof e.payload.compensates === 'string') continue;
@@ -260,12 +271,14 @@ export function buildPersonHistory(
       const typeId = e.payload.activityType;
       const name = namedTypes.find((t) => t.id === typeId)?.name ?? '';
       const row: HistoryEntry = { id: e.id, timestamp: e.timestamp, kind: 'activity', name, userId: e.userId };
-      const note = typeof e.payload.note === 'string' ? e.payload.note.trim() : '';
+      const changed = noteChanges.get(e.id);
+      const note = changed !== undefined ? changed.note : typeof e.payload.note === 'string' ? e.payload.note.trim() : '';
       entries.push({
         ...row,
         ...(typeof typeId === 'string' ? { taskId: typeId } : {}),
         ...(typeof e.payload.xp === 'number' ? { xp: e.payload.xp } : {}),
         ...(note !== '' ? { note } : {}),
+        ...(changed !== undefined ? { noteEdited: true } : {}),
       });
     } else if (e.type === 'person_stage_changed' && typeof e.payload.personId === 'string' && (rootOf.get(e.payload.personId) ?? e.payload.personId) === personId) {
       const stage = config.stages.find((s) => s.id === e.payload.to);
@@ -365,7 +378,8 @@ export function calendarDaysSince(iso: string | null, now: Date): number | null 
 }
 
 /** Activity id written when a name is added; not worth a chip on the contact page (story 051). */
-const ADD_NAME_ID = 'add_name';
+/** Activity id of "Thêm tên vào danh sách": not counted in summaries, its note not editable. */
+export const ADD_NAME_ID = 'add_name';
 
 /** The contact page's per-task chips: every count but "Thêm tên" (story 051). Pure. */
 export function summaryCounts(counts: readonly HistoryTaskCount[]): HistoryTaskCount[] {
@@ -556,4 +570,29 @@ export function addedByDot(person: Pick<Person, 'addedBy'>, otherMembers: Readon
   const mine = ids.some((id) => !otherMembers.has(id) && id !== FORMER_MEMBER_ID);
   if (!others) return null;
   return mine ? 'both' : 'spouse';
+}
+
+/** Result of {@link buildNoteChangeEvent}. */
+export type NoteChangeResult = { readonly ok: true; readonly event: NewEvent } | { readonly ok: false; readonly reason: 'too_long' };
+
+/**
+ * `activity_note_changed { personId, activityId, note }` (story 065): changes only the note of
+ * a logged activity; type, time and XP stay. An empty note removes it. Pure.
+ */
+export function buildNoteChangeEvent(personId: string, activityId: string, note: string, maxLength: number): NoteChangeResult {
+  const text = note.trim();
+  if (text.length > maxLength) return { ok: false, reason: 'too_long' };
+  return { ok: true, event: { type: 'activity_note_changed', payload: { personId, activityId, note: text } } };
+}
+
+/** When the contact was added: its earliest `person_added`, merged contacts included; null when unknown. Pure. */
+export function personAddedAt(events: readonly LogEvent[], personId: string): string | null {
+  const { rootOf } = deriveMerges(events);
+  let first: string | null = null;
+  for (const e of events) {
+    if (e.type !== 'person_added' || typeof e.payload.personId !== 'string') continue;
+    if ((rootOf.get(e.payload.personId) ?? e.payload.personId) !== personId) continue;
+    if (first === null || e.timestamp < first) first = e.timestamp;
+  }
+  return first;
 }
