@@ -1382,3 +1382,4 @@ body.dialog-open { overflow: hidden; }
 .group-section { display: flex; flex-direction: column; gap: 10px; }
 .group-section > .settings-group { margin: 6px 4px 0; }
 .group-empty { margin: 0 4px; }
+.cheer-pick__more { margin-top: 4px; min-height: 44px; }

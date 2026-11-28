@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import gameConfig from '../../config/game-config.json';
 import type { EventStore } from '../../data/event-store';
-import { CHEER_MAX_LENGTH, cleanCheerMessage, notifyCheer, parseGroupConfig, sendCheer } from '../../data/group-service';
+import { CHEER_MAX_LENGTH, cheerBatch, cleanCheerMessage, notifyCheer, parseGroupConfig, sendCheer } from '../../data/group-service';
 import { loadNhomPeople, metToday, nhomSummary, weeklyRanking } from '../../data/nhom-service';
 import type { NhomPerson, NhomRelation } from '../../data/nhom-service';
 import { CHEER_XP, buildCheerXpEvent } from '../../domain/cheer-xp';
@@ -119,7 +119,12 @@ export function useNhom({ clientPromise, accountId, eventStore, memberIds, onXp,
 function CheerPicker({ name, busy, error, onSend, onCancel }: { readonly name: string; readonly busy: boolean; readonly error: string | null; readonly onSend: (message: string) => void; readonly onCancel: () => void }) {
   const [choice, setChoice] = useState(0);
   const [custom, setCustom] = useState('');
-  const options = GROUP_CONFIG.cheerMessages;
+  // 2026-11-28: a few random lines of ~100; "Câu khác" shows others, never the batch just shown.
+  const [options, setOptions] = useState<readonly string[]>(() => cheerBatch(GROUP_CONFIG.cheerMessages, [], gameConfig.cheerPicker.batchSize));
+  const more = () => {
+    setOptions(cheerBatch(GROUP_CONFIG.cheerMessages, options, gameConfig.cheerPicker.batchSize));
+    setChoice(0);
+  };
   const chosen = custom.trim() !== '' ? cleanCheerMessage(custom) : (options[choice] ?? null);
   return (
     <Dialog title={STRINGS.cheerPickTitle} onClose={onCancel}>
@@ -134,6 +139,11 @@ function CheerPicker({ name, busy, error, onSend, onCancel }: { readonly name: s
             <span>{text}</span>
           </label>
         ))}
+        {GROUP_CONFIG.cheerMessages.length > options.length && (
+          <button type="button" className="button button--secondary cheer-pick__more" onClick={more}>
+            {STRINGS.cheerMore}
+          </button>
+        )}
       </fieldset>
       <label className="note popup__field">
         <span className="note__label">{STRINGS.cheerCustomLabel}</span>

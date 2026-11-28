@@ -288,6 +288,7 @@ export const STRINGS = {
   spouseCheered: 'Đã cổ vũ',
   cheerSpouseNote: 'Đứng chung mã số với bạn',
   cheerPickTitle: 'Gửi lời cổ vũ',
+  cheerMore: '↻ Câu khác',
   cheerPickLabel: 'Chọn một lời',
   cheerCustomLabel: 'Hoặc tự viết (tối đa 200 ký tự)',
   cheerSend: 'Gửi',
