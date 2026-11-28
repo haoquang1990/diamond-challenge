@@ -1,0 +1,11 @@
+Reviewed-Content-Hash: supabase/migrations/20261129040000_friend_share_week.sql 5048d3d8d19d61f6d56c9cb33dc4f0fbf22fda71
+Reviewed-Content-Hash: src/domain/progress.ts 01434458bc2b31d92938c973d7cd14540993296f
+Reviewed-Content-Hash: src/data/member-progress-sync.ts 751572718d01d6eb837e068ab7db638b3fd2f336
+Reviewed-Content-Hash: src/data/nhom-service.ts 8aa326b4d55a55d5642c900f9df0f831842b6580
+Reviewed-Content-Hash: src/ui/screens/nhom-panel.tsx b0aaa35bccee7c70db58dc85a7578ef375c2c687
+Reviewed-Content-Hash: src/ui/screens/group-screen.tsx 7f1c554061d1dbc6f7e0a25076272d6461e4d17b
+Reviewed-Content-Hash: src/ui/screens/friend-share-card.tsx 5d7b2b02c4b93c3815e84891bc6eba6c5f6d39ae
+Reviewed-Content-Hash: src/ui/screens/settings-screen.tsx 12ce1a5106de5008018d1a8276135516e18099da
+Reviewed-Content-Hash: src/app.tsx 327d8abe26a50dc6cc356283596dcc65c0483419
+Reviewed-Content-Hash: src/ui/strings.ts 5a366605bf37bd31cbe4e314d6bb279378bab9db
+Reviewed-Content-Hash: src/ui/styles.css 84a68104bfc250850ecef543a0915e784adbf0de

@@ -23,7 +23,7 @@ const memory = () => {
 };
 const P = (xpTotal: number, xp7d: number, streak: number): ShareProgress => ({
   xpTotal, xp7d, streak, statsDay: '2026-11-26', goalToday: false, activeDays7d: 1,
-  tasks7d: { contact: 0, demo: 0, opp: 0, new_customer: 0, new_npp: 0 }, lessonsDistinct: 0, lastLessonAt: null, badges7d: 0, goalXp: 30,
+  tasks7d: { contact: 0, demo: 0, opp: 0, new_customer: 0, new_npp: 0 }, lessonsDistinct: 0, lastLessonAt: null, badges7d: 0, goalXp: 30, xpWeek: 1, weekStart: '2026-11-23',
 });
 
 describe('createMemberProgressSync', () => {
@@ -51,9 +51,12 @@ describe('createMemberProgressSync', () => {
     ready = true;
     expect(await s.flush()).toBe('failed');
     expect(await s.flush()).toBe('failed');
-    expect(failing.calls).toHaveLength(6); // each failure retries without goal_xp (story 056), then with the story 044 columns
-    expect(failing.calls[1]?.row).not.toHaveProperty('goal_xp');
-    expect(failing.calls[2]?.row).toEqual({ user_id: 'me', xp_total: 1, xp_7d: 1, streak: 0 });
+    expect(failing.calls).toHaveLength(8); // each failure retries without the week (story 071), without goal_xp (056), then with the 044 columns
+    expect(failing.calls[0]?.row).toMatchObject({ xp_week: 1, week_start: '2026-11-23' });
+    expect(failing.calls[1]?.row).not.toHaveProperty('xp_week');
+    expect(failing.calls[1]?.row).toHaveProperty('goal_xp');
+    expect(failing.calls[2]?.row).not.toHaveProperty('goal_xp');
+    expect(failing.calls[3]?.row).toEqual({ user_id: 'me', xp_total: 1, xp_7d: 1, streak: 0 });
   });
 
   it('remembers the last send across instances (no resend after a restart)', async () => {

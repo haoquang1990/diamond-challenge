@@ -122,6 +122,8 @@ export interface SettingsScreenProps {
   readonly householdSlot?: ReactNode;
   /** "Mục tiêu hằng ngày" card (story 056). */
   readonly goalSlot?: ReactNode;
+  /** "Chia sẻ với bạn bè" card (story 071), under Bạn bè. */
+  readonly friendShareSlot?: ReactNode;
   /** "Thông báo khi được cổ vũ" card (story 057), under Ứng dụng. */
   readonly pushSlot?: ReactNode;
 }
@@ -306,6 +308,7 @@ export function SettingsScreen({
   onEraseDevice,
   householdSlot,
   goalSlot,
+  friendShareSlot,
   pushSlot,
 }: SettingsScreenProps) {
   const [state, setState] = useState<ScreenState>({ kind: 'loading' });
@@ -484,6 +487,12 @@ export function SettingsScreen({
         <>
           <h2 className="settings-group">{STRINGS.settingsGroupGoal}</h2>
           {goalSlot}
+        </>
+      )}
+      {friendShareSlot !== undefined && (
+        <>
+          <h2 className="settings-group">{STRINGS.friendShareTitle2}</h2>
+          {friendShareSlot}
         </>
       )}
 

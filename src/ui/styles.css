@@ -1363,3 +1363,17 @@ body.dialog-open { overflow: hidden; }
 .nhom-list { display: flex; flex-direction: column; gap: 12px; padding: 12px 14px; }
 .group-friend__row { position: relative; }
 .group-friend__open { position: absolute; inset: 0 56px 0 0; padding: 0; border: 0; background: none; cursor: pointer; }
+
+/* Story 071: weekly ranking and "Chia sẻ với bạn bè" */
+.nhom-rank { display: flex; align-items: center; gap: 10px; margin: 0; padding: 10px 12px; border-radius: 12px; background: var(--color-diamond-light); color: #2f5f7a; font-weight: 700; font-size: 0.9rem; }
+.nhom-rank b { font-size: 1.25rem; color: var(--color-diamond-dark); }
+.nhom-rank__head { display: flex; justify-content: space-between; gap: 8px; }
+.nhom-rank__week { text-transform: none; letter-spacing: 0; font-weight: 700; }
+.nhom-rank__list { list-style: none; margin: 0; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+.nhom-rank__row { display: flex; align-items: center; gap: 10px; padding: 2px 0; }
+.nhom-rank__row--me { margin: 0 -8px; padding: 8px; border: 2px solid #b8e4fb; border-radius: 12px; background: var(--color-diamond-light); }
+.nhom-rank__pos { flex: none; width: 24px; text-align: center; font-weight: 900; color: var(--color-muted); }
+.nhom-rank__name { flex: 1; min-width: 0; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nhom-rank__note { margin: 4px 0 0; font-size: 0.85rem; }
+.group-friend__shared { margin: 4px 0 0 48px; color: var(--color-muted); font-size: 0.82rem; font-weight: 700; }
+.friend-share__lock { margin: 0; color: var(--color-muted); font-size: 0.88rem; font-weight: 700; }

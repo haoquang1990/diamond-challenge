@@ -25,6 +25,13 @@ export interface NhomPerson {
   readonly xp7d: number | null;
   readonly lastSeenAt: string | null;
   readonly cheeredToday: boolean;
+  /** XP since that person's Monday (story 071), and that Monday. */
+  readonly xpWeek: number | null;
+  readonly weekStart: string | null;
+  /** Shared by the server only when allowed (story 071): tasks of 7 days, KH and NPP counts. */
+  readonly tasks7d: Readonly<Record<string, number>> | null;
+  readonly customers: number | null;
+  readonly f1: number | null;
 }
 
 /** `nhom_people()` rows as {@link NhomPerson}s; malformed rows are dropped. Pure. */
@@ -47,6 +54,11 @@ export function parseNhomRows(raw: unknown): NhomPerson[] {
       xp7d: num(r.xp_7d),
       lastSeenAt: typeof r.last_seen_at === 'string' ? r.last_seen_at : null,
       cheeredToday: r.cheered_today === true,
+      xpWeek: num(r.xp_week),
+      weekStart: typeof r.week_start === 'string' ? r.week_start.slice(0, 10) : null,
+      tasks7d: typeof r.tasks_7d === 'object' && r.tasks_7d !== null && !Array.isArray(r.tasks_7d) ? (r.tasks_7d as Record<string, number>) : null,
+      customers: num(r.customers),
+      f1: num(r.f1),
     });
   }
   return out;
@@ -86,6 +98,41 @@ export function nhomSummary(people: readonly NhomPerson[], today: string, now: D
       return { ...p, daysAway: days !== null && days >= 2 ? days : null };
     });
   return { total: people.length, met: met.length, avatars: [...met, ...notMet], needs };
+}
+
+/** One line of the weekly ranking; `userId` 'me' is me. */
+export interface RankRow {
+  readonly userId: string;
+  readonly person: NhomPerson | null;
+  readonly xp: number;
+}
+
+/**
+ * Ranking of this week (story 071): me, my friends and my F1 by XP since Monday; someone whose
+ * numbers are of an earlier week counts 0. Ties keep me below. Pure.
+ */
+export function weeklyRanking(people: readonly NhomPerson[], myXpWeek: number, weekStart: string): {
+  readonly rows: readonly RankRow[];
+  readonly myRank: number;
+  /** The person just above me and the XP I need to pass them, or null when I am first. */
+  readonly ahead: { readonly userId: string; readonly gap: number } | null;
+  /** How far I lead the second, when I am first. */
+  readonly lead: number;
+} {
+  const others: RankRow[] = people
+    .filter((p) => p.relation === 'friend' || p.relation === 'downline')
+    .map((p) => ({ userId: p.userId, person: p, xp: p.weekStart === weekStart ? (p.xpWeek ?? 0) : 0 }));
+  const me: RankRow = { userId: 'me', person: null, xp: myXpWeek };
+  const rows = [...others, me].sort((a, b) => b.xp - a.xp || (a.userId === 'me' ? 1 : b.userId === 'me' ? -1 : 0));
+  const i = rows.indexOf(me);
+  const above = i > 0 ? rows[i - 1] : undefined;
+  const below = rows[i + 1];
+  return {
+    rows,
+    myRank: i + 1,
+    ahead: above === undefined ? null : { userId: above.userId, gap: above.xp - me.xp + 1 },
+    lead: above === undefined && below !== undefined ? me.xp - below.xp : 0,
+  };
 }
 
 /** My Nhóm, or null when it cannot be read (offline, older server). */

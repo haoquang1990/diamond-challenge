@@ -4,7 +4,7 @@ import { friendInviteUrl, loadFriendToken, loadFriends, removeFriend, requestFri
 import type { Friend } from '../../data/friends-service';
 import { STRINGS } from '../strings';
 import { Dialog } from './person-form';
-import { NhomFamilySections, pageRow, useNhom } from './nhom-panel';
+import { NhomFamilySections, RankingSection, pageRow, sharedLine, useNhom } from './nhom-panel';
 import type { NhomProps } from './nhom-panel';
 
 /** Props for {@link GroupScreen}. */
@@ -134,6 +134,7 @@ export function GroupScreen({ clientPromise, onBack, notice = null, nhom, appUrl
                       <div className="group-friend__row">
                         <button type="button" className="group-friend__open" onClick={() => setOpen(f)} aria-label={STRINGS.friendManageAria(f.name ?? STRINGS.friendNoName)} />
                         {pageRow(n, person)}
+                        {sharedLine(person) !== null && <p className="group-friend__shared">{sharedLine(person)}</p>}
                       </div>
                     ) : (
                       <button type="button" className="group-row group-row--button" onClick={() => setOpen(f)}>
@@ -154,6 +155,8 @@ export function GroupScreen({ clientPromise, onBack, notice = null, nhom, appUrl
           {parts.sent.length > 0 && <p className="message group-sent">{STRINGS.friendSent(parts.sent.length)}</p>}
         </section>
       )}
+
+      <RankingSection n={n} />
 
       {addOpen && (
         <AddFriendDialog

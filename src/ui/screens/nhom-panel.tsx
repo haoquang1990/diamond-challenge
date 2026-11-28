@@ -4,11 +4,11 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import gameConfig from '../../config/game-config.json';
 import type { EventStore } from '../../data/event-store';
 import { CHEER_MAX_LENGTH, cleanCheerMessage, notifyCheer, parseGroupConfig, sendCheer } from '../../data/group-service';
-import { loadNhomPeople, metToday, nhomSummary } from '../../data/nhom-service';
+import { loadNhomPeople, metToday, nhomSummary, weeklyRanking } from '../../data/nhom-service';
 import type { NhomPerson, NhomRelation } from '../../data/nhom-service';
 import { CHEER_XP, buildCheerXpEvent } from '../../domain/cheer-xp';
 import { derivePeople } from '../../domain/people';
-import { otherMemberIds } from '../../domain/progress';
+import { computeShareProgress, otherMemberIds, weekStartKey } from '../../domain/progress';
 import { linkedContactNames, localDayKey } from '../group-helpers';
 import { PEOPLE_CONFIG } from '../people-config';
 import { STRINGS, noteCounterLabel } from '../strings';
@@ -36,6 +36,7 @@ export interface NhomProps {
 export function useNhom({ clientPromise, accountId, eventStore, memberIds, onXp, dataVersion = 0, now = () => new Date(), timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone }: NhomProps) {
   const [people, setPeople] = useState<NhomPerson[] | null>(null);
   const [names, setNames] = useState<ReadonlyMap<string, string>>(() => new Map());
+  const [myXpWeek, setMyXpWeek] = useState(0);
   const [reloadKey, setReloadKey] = useState(0);
   const [picking, setPicking] = useState<NhomPerson | null>(null);
   const [busy, setBusy] = useState(false);
@@ -56,13 +57,16 @@ export function useNhom({ clientPromise, accountId, eventStore, memberIds, onXp,
     eventStore
       .list()
       .then((events) => {
-        if (!cancelled) setNames(linkedContactNames(derivePeople(events, PEOPLE_CONFIG)));
+        if (cancelled) return;
+        setNames(linkedContactNames(derivePeople(events, PEOPLE_CONFIG)));
+        setMyXpWeek(computeShareProgress(events, now(), { dailyXpGoal: gameConfig.dailyXpGoal }, timeZone, otherMemberIds(events, memberIds)).xpWeek);
       })
       .catch((error: unknown) => console.error('[nhom] could not read contact names', error));
     return () => {
       cancelled = true;
     };
-  }, [eventStore, dataVersion]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [eventStore, dataVersion, reloadKey]);
 
   const nameOf = (p: NhomPerson) => names.get(p.userId) ?? p.name ?? STRINGS.groupMemberUnnamed;
 
@@ -108,7 +112,7 @@ export function useNhom({ clientPromise, accountId, eventStore, memberIds, onXp,
   return { people, nameOf, picker, notice, busy, open: (p: NhomPerson) => {
     setNotice(null);
     setPicking(p);
-  }, today: localDayKey(now()), now };
+  }, today: localDayKey(now()), now, ranking: people === null ? null : weeklyRanking(people, myXpWeek, weekStartKey(now(), timeZone)), weekStart: weekStartKey(now(), timeZone) };
 }
 
 /** "Gửi lời cổ vũ": a standard line or my own words. */
@@ -260,9 +264,59 @@ export function NhomCardBody(props: NhomProps & { readonly onAddFriend: () => vo
           {n.notice.text}
         </p>
       )}
+      <RankStrip n={n} />
       {n.picker}
     </>
   );
+}
+
+/** "#3 tuần này · còn 31 XP để vượt …" (story 071); hidden when nobody else is ranked. */
+function RankStrip({ n }: { readonly n: NhomState }) {
+  const r = n.ranking;
+  if (r === null || r.rows.length < 2) return null;
+  const ahead = r.ahead === null ? null : r.rows.find((x) => x.userId === r.ahead!.userId)?.person ?? null;
+  return (
+    <p className="nhom-rank">
+      <b>#{r.myRank}</b>
+      <span>{r.ahead !== null && ahead !== null ? STRINGS.nhomRankBehind(r.ahead.gap, n.nameOf(ahead)) : STRINGS.nhomRankLead(r.lead)}</span>
+    </p>
+  );
+}
+
+/** "Xếp hạng tuần này" of the Nhóm page (story 071). */
+export function RankingSection({ n }: { readonly n: NhomState }) {
+  const r = n.ranking;
+  if (r === null || r.rows.length < 2) return null;
+  const monday = new Date(`${n.weekStart}T00:00:00`);
+  const sunday = new Date(monday.getTime() + 6 * 86_400_000);
+  const dm = (d: Date) => `${d.getDate()}/${d.getMonth() + 1}`;
+  return (
+    <section aria-label={STRINGS.nhomRankTitle}>
+      <h2 className="settings-group nhom-rank__head">
+        <span>{STRINGS.nhomRankTitle}</span>
+        <span className="nhom-rank__week">{STRINGS.nhomRankWeek(dm(monday), dm(sunday))}</span>
+      </h2>
+      <ol className="card nhom-rank__list">
+        {r.rows.map((row, i) => (
+          <li key={row.userId} className={row.userId === 'me' ? 'nhom-rank__row nhom-rank__row--me' : 'nhom-rank__row'}>
+            <span className="nhom-rank__pos">{i + 1}</span>
+            <span className="nhom-rank__name">{row.person === null ? STRINGS.nhomRankMe : n.nameOf(row.person)}</span>
+            <b>{STRINGS.nhomRankXp(row.xp)}</b>
+          </li>
+        ))}
+        <li className="message nhom-rank__note">{STRINGS.nhomRankNote}</li>
+      </ol>
+    </section>
+  );
+}
+
+/** What a friend chose to share (story 071): "12 việc 7 ngày · KH 3 · NPP 1", or null. */
+export function sharedLine(p: NhomPerson): string | null {
+  const parts: string[] = [];
+  if (p.tasks7d !== null) parts.push(STRINGS.nhomTasks7d(Object.values(p.tasks7d).reduce((a, b) => a + (typeof b === 'number' ? b : 0), 0)));
+  if (p.customers !== null) parts.push(STRINGS.nhomKh(p.customers));
+  if (p.f1 !== null) parts.push(STRINGS.nhomNpp(p.f1));
+  return parts.length === 0 ? null : parts.join(' · ');
 }
 
 /** Result of {@link useNhom}. */

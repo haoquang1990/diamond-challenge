@@ -55,6 +55,8 @@ export function memberProgressRow(accountId: string, p: ShareProgress, seenAt: s
     stats_day: p.statsDay,
     goal_today: p.goalToday,
     goal_xp: p.goalXp,
+    xp_week: p.xpWeek,
+    week_start: p.weekStart,
     active_days_7d: p.activeDays7d,
     tasks_7d: p.tasks7d,
     lessons_distinct: p.lessonsDistinct,
@@ -91,8 +93,13 @@ export function createMemberProgressSync(deps: MemberProgressSyncDeps): MemberPr
       if (!shareProgressChanged(lastSent, next)) return 'unchanged';
       let { error } = await deps.client.from('member_progress').upsert(memberProgressRow(deps.accountId, next, new Date().toISOString()), { onConflict: 'user_id' });
       if (error !== null) {
+        // A server before the story 071 migration has no xp_week / week_start.
+        const { xp_week: _w, week_start: _s, ...row056 } = memberProgressRow(deps.accountId, next, new Date().toISOString());
+        ({ error } = await deps.client.from('member_progress').upsert(row056, { onConflict: 'user_id' }));
+      }
+      if (error !== null) {
         // A server before the story 056 migration has no goal_xp column.
-        const { goal_xp: _goal, ...row050 } = memberProgressRow(deps.accountId, next, new Date().toISOString());
+        const { goal_xp: _goal, xp_week: _w2, week_start: _s2, ...row050 } = memberProgressRow(deps.accountId, next, new Date().toISOString());
         ({ error } = await deps.client.from('member_progress').upsert(row050, { onConflict: 'user_id' }));
       }
       if (error !== null) {
@@ -141,8 +148,8 @@ function readStored(storage: Pick<Storage, 'getItem'> | null, key: string): Shar
     const text = storage?.getItem(key);
     if (typeof text !== 'string') return null;
     const r = JSON.parse(text) as Record<string, unknown>;
-    // Only a full story 050 snapshot counts; an older one is sent again once.
-    return typeof r.xpTotal === 'number' && typeof r.statsDay === 'string' && typeof r.tasks7d === 'object' && typeof r.goalXp === 'number' ? (r as unknown as ShareProgress) : null;
+    // Only a full snapshot (story 071) counts; an older one is sent again once.
+    return typeof r.xpTotal === 'number' && typeof r.statsDay === 'string' && typeof r.tasks7d === 'object' && typeof r.goalXp === 'number' && typeof r.xpWeek === 'number' ? (r as unknown as ShareProgress) : null;
   } catch {
     return null;
   }
