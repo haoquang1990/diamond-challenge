@@ -36,6 +36,9 @@ import { PEOPLE_CONFIG } from './ui/people-config';
 import { AdminScreen } from './ui/screens/admin-screen';
 import { ChangePasswordScreen, DisplayNameScreen } from './ui/screens/change-password-screen';
 import { CodeRequiredScreen } from './ui/screens/code-required-screen';
+import { GroupScreen } from './ui/screens/group-screen';
+import { GroupTodayCard } from './ui/screens/group-today-card';
+import { readInviteToken, requestFriendByToken } from './data/friends-service';
 import { CreateAccountScreen } from './ui/screens/create-account-screen';
 import { ConsentScreen } from './ui/screens/consent-screen';
 import { BadgesScreen } from './ui/screens/badges-screen';
@@ -98,9 +101,12 @@ function realNow(): Date {
  * merged person list (Danh bạ). `settings` (opened from Hôm nay) is not in the tab bar.
  * Bảng 30x30 and Nhóm của tôi were removed in story 042.
  */
-type Tab = 'today' | 'learn' | 'people' | 'badges' | 'settings' | 'household' | 'admin' | 'duplicates';
+/** sessionStorage key holding an invite link token until the account is signed in (story 069). */
+const INVITE_STORAGE_KEY = 'diamond.pendingFriendInvite';
 
-const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'household' | 'admin' | 'duplicates'>; readonly label: string }[] = [
+type Tab = 'today' | 'learn' | 'people' | 'badges' | 'settings' | 'household' | 'admin' | 'duplicates' | 'group';
+
+const TABS: readonly { readonly id: Exclude<Tab, 'settings' | 'household' | 'admin' | 'duplicates' | 'group'>; readonly label: string }[] = [
   { id: 'today', label: STRINGS.tabToday },
   { id: 'learn', label: STRINGS.tabLearn },
   { id: 'people', label: STRINGS.tabPeople },
@@ -221,6 +227,43 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
       cancelled = true;
     };
   }, [clientPromise, accountId, passwordPending]);
+
+  // Story 069: an invite link (?ban=<token>) is kept until signed in, then sent as a friend request.
+  const [groupNotice, setGroupNotice] = useState<string | null>(null);
+  useEffect(() => {
+    const token = readInviteToken(window.location.search);
+    if (token === null) return;
+    try {
+      sessionStorage.setItem(INVITE_STORAGE_KEY, token);
+    } catch {
+      // Without storage the request is sent only when already signed in.
+    }
+    const url = new URL(window.location.href);
+    url.searchParams.delete('ban');
+    window.history.replaceState(null, '', url.toString());
+  }, []);
+  useEffect(() => {
+    if (clientPromise === null || accountId === null || passwordPending || codeReq === null || codeReq === 'missing') return;
+    let token: string | null = null;
+    try {
+      token = sessionStorage.getItem(INVITE_STORAGE_KEY);
+    } catch {
+      token = null;
+    }
+    if (token === null) return;
+    void clientPromise
+      .then((client) => requestFriendByToken(client, token))
+      .then((r) => {
+        if (r === 'failed') return;
+        try {
+          sessionStorage.removeItem(INVITE_STORAGE_KEY);
+        } catch {
+          // ignore
+        }
+        setGroupNotice(r === 'limit' ? STRINGS.friendLimit : STRINGS.friendInviteSentFromLink);
+        setTab('group');
+      });
+  }, [clientPromise, accountId, passwordPending, codeReq]);
 
   // Story 028: an unseen cheer from the sponsor household shows as a dismissible card on Hôm nay.
   const [unseenCheer, setUnseenCheer] = useState<{ readonly message: string; readonly senderName: string | null; readonly allIds: readonly string[] } | null>(null);
@@ -716,6 +759,23 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
     );
   }
 
+  if (tab === 'group' && clientPromise !== null && account !== null) {
+    return (
+      <div className="app-shell">
+        <GroupScreen
+          clientPromise={clientPromise}
+          notice={groupNotice}
+          appUrl={new URL(import.meta.env.BASE_URL, window.location.href).toString()}
+          onBack={() => {
+            setGroupNotice(null);
+            setDataVersion((v) => v + 1);
+            goToday();
+          }}
+        />
+      </div>
+    );
+  }
+
   if (tab === 'duplicates') {
     return (
       <div className="app-shell">
@@ -761,6 +821,9 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
           eventStore={eventStore}
           memberIds={memberIds}
           onLearn={() => setTab('learn')}
+          {...(clientPromise !== null && account !== null
+            ? { groupCard: <GroupTodayCard clientPromise={clientPromise} dataVersion={dataVersion} onOpen={() => setTab('group')} /> }
+            : {})}
           {...(clientPromise !== null && account !== null
             ? { cheerGroup: <GroupCheerCard clientPromise={clientPromise} accountId={account.accountId} eventStore={eventStore} dataVersion={dataVersion} /> }
             : {})}

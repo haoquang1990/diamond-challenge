@@ -82,6 +82,7 @@ Theo Build order của brief: nhật ký sự kiện + XP/streak → Làm + Hôm
 | 066 | Phụ trách liên hệ và lọc Của tôi / Của vợ chồng | UI | Complete | N/A |
 | 067 | Nút Học / Làm trong Mục tiêu hôm nay, bỏ thẻ Bài nên học tiếp | UI | Complete | N/A |
 | 068 | Bắt buộc mã số Amway cho tài khoản còn thiếu | UI | Complete | N/A |
+| 069 | Kết bạn bằng mã số hoặc link, trang Nhóm | UI | Complete | N/A |
 
 > 012–014 thay mô hình giai đoạn bằng việc cần làm + nhãn KH/NPP theo phản hồi dùng thử (2026-11-04, `design/gdd/crm.md`). Thứ tự gợi ý: 012 → 013 → 014 → 011.
 

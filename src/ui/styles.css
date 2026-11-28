@@ -1309,3 +1309,28 @@ body.dialog-open { overflow: hidden; }
 .code-required__input { font-size: 1.15rem; letter-spacing: 0.06em; }
 .code-required__sent { margin: 0; padding: 10px 12px; border-radius: 12px; background: #fff7e0; color: #7a4b00; font-weight: 600; }
 .code-required__input--error { border-color: var(--color-error); }
+
+/* Story 069: Nhóm page and the Hôm nay "Nhóm" card */
+.group-add { flex: none; width: auto; min-height: 44px; padding: 6px 14px; margin: 0; }
+.group-notice { padding: 10px 12px; border-radius: 12px; background: #f0fbe6; color: #2b7a00; font-weight: 700; }
+.group-list { list-style: none; margin: 0; padding: 12px 14px; display: flex; flex-direction: column; gap: 12px; }
+.group-invite { display: flex; flex-direction: column; gap: 10px; }
+.group-invite + .group-invite { padding-top: 12px; border-top: 1px solid var(--color-border); }
+.group-invite .button-row .button { margin: 0; }
+.group-row { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.group-row--button { width: 100%; padding: 0; border: 0; background: none; font: inherit; color: inherit; text-align: left; cursor: pointer; }
+.group-row__who { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.group-row__who b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.group-row__who small { color: var(--color-muted); font-weight: 700; font-size: 0.85rem; }
+.group-avatar { flex: none; width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-weight: 800; background: var(--color-diamond); }
+.group-avatar--friend { background: #a560e8; }
+.group-avatar--muted { background: #8a8a8a; }
+.group-empty, .group-sent { margin: 0 4px; }
+.group-ok { margin: 0; padding: 10px 12px; border-radius: 12px; background: #f0fbe6; color: #2b7a00; font-weight: 700; }
+.group-or { display: flex; align-items: center; gap: 10px; margin: 2px 0; color: #aaa; font-weight: 800; font-size: 0.8rem; }
+.group-or::before, .group-or::after { content: ''; flex: 1; border-top: 2px solid var(--color-border); }
+.group-card { gap: 12px; }
+.group-card__head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.group-card__head .card__title { margin: 0; }
+.group-card__more { flex: none; padding: 4px 0; border: 0; background: none; color: var(--color-diamond-dark); font: inherit; font-weight: 800; font-size: 0.92rem; cursor: pointer; }
+.group-card__invite { margin: 0; padding: 10px 12px; border-radius: 12px; background: #fff7e0; color: #7a4b00; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

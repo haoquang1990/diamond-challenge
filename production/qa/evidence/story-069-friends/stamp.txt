@@ -1,0 +1,8 @@
+Reviewed-Content-Hash: supabase/migrations/20261129020000_friends.sql 0cdfd6cd3ca412ea585ec79c27610ffc9549c618
+Reviewed-Content-Hash: src/data/friends-service.ts 0b62352549cf838cd4cba231c5c743c2a107238a
+Reviewed-Content-Hash: src/ui/screens/group-screen.tsx 63dfe94522db0d15791cc281213c7cc1efe21dd9
+Reviewed-Content-Hash: src/ui/screens/group-today-card.tsx 4f45db3e69b5f20213035d37bbf1036e8fff3a82
+Reviewed-Content-Hash: src/ui/screens/today-screen.tsx a4fcd5e9c489de28970c464b040b54e52250bc06
+Reviewed-Content-Hash: src/app.tsx 80baac3a3d184085e52b44c86ac46444efaa6c3f
+Reviewed-Content-Hash: src/ui/strings.ts a9ef78ce9383b5b18fa16cb2f45cbc85bb642ef2
+Reviewed-Content-Hash: src/ui/styles.css 3d43e234ddc8a9040bb202bd77a702be3e376315

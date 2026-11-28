@@ -60,6 +60,8 @@ export interface TodayScreenProps {
   readonly onStartLesson?: (lessonId: string) => void;
   /** Hôm nay "Cổ vũ nhóm" card (story 041); hidden when absent (signed out or no server). */
   readonly cheerGroup?: ReactNode;
+  /** Story 069: the "Nhóm" card, under today's goal. */
+  readonly groupCard?: ReactNode;
   /** Story 063: the "Bật thông báo" card, shown above today's goal. */
   readonly pushPrompt?: ReactNode;
   /** Lessons and stages for the suggestion; default to content/lessons.json. */
@@ -122,6 +124,7 @@ export function TodayScreen({
   onStartLesson,
   cheerGroup,
   pushPrompt,
+  groupCard,
   lessons = LOADED_LESSONS.lessons,
   lessonStages = LOADED_STAGES,
 }: TodayScreenProps) {
@@ -279,6 +282,8 @@ export function TodayScreen({
             {...(onOpenWork === undefined ? {} : { onWork: onOpenWork })}
           />
         ))}
+
+      {groupCard}
 
       {cheerGroup}
 
