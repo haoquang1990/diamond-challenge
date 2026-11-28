@@ -27,6 +27,7 @@ import {
   addedByDot,
   OWNER_FILTERS,
   spouseFor,
+  codeChangeFor,
   filterByOwner,
   ownerChoice,
   readOwnerFilter,
@@ -53,6 +54,8 @@ export interface PeopleScreenProps {
   /** Story 066: the signed-in account and the active members of its own household (for Phụ trách). */
   readonly accountId?: string | null;
   readonly householdMemberIds?: ReadonlySet<string> | null;
+  /** Story 074: old → new Amway code of my F1 households whose code was replaced. */
+  readonly codeChanges?: ReadonlyMap<string, string>;
   /** Person detail opened on first render (returning from the account screen, story 024). */
   readonly initialOpenId?: string | null;
   /** Opens the account screen for a person (story 024); absent when signed out or the build has no account feature. */
@@ -76,6 +79,9 @@ type LoadState =
 
 const NO_MEMBERS: ReadonlySet<string> = new Set();
 
+/** No code changes known (story 074). */
+const NO_CODE_CHANGES: ReadonlyMap<string, string> = new Map();
+
 /** Id of the activity type that gives XP for adding a person. */
 const ADD_NAME_ACTIVITY_ID = 'add_name';
 
@@ -87,7 +93,7 @@ const ADD_NAME_ACTIVITY_ID = 'add_name';
  * the per-filter totals and ignore the search. Re-reads the event log on
  * mount and after every write; keeps no copy of truth.
  */
-export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initialFilter = 'all', onBack, members = null, memberIds = NO_MEMBERS, dataVersion = 0, initialOpenId = null, onCreateAccount, onOpenDuplicates, renderPersonExtra, nppProgress, linkedAccountFor, accountId = null, householdMemberIds = null }: PeopleScreenProps) {
+export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initialFilter = 'all', onBack, members = null, memberIds = NO_MEMBERS, dataVersion = 0, initialOpenId = null, onCreateAccount, onOpenDuplicates, renderPersonExtra, nppProgress, linkedAccountFor, accountId = null, householdMemberIds = null, codeChanges = NO_CODE_CHANGES }: PeopleScreenProps) {
   const [load, setLoad] = useState<LoadState>({ kind: 'loading' });
   const [openId, setOpenId] = useState<string | null>(initialOpenId);
   const [addedXp, setAddedXp] = useState<number | null>(null);
@@ -164,6 +170,7 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
         extra={renderPersonExtra?.(opened) ?? null}
         linkedAccount={opened.linkedUserId == null ? null : (linkedAccountFor?.(opened.linkedUserId) ?? null)}
         {...(owner === undefined ? {} : { owner: { ...owner, current: ownerChoice(opened, ownerOthers) } })}
+        newCode={codeChangeFor(opened, codeChanges)}
         onChanged={reload}
         onBack={() => setOpenId(null)}
       />

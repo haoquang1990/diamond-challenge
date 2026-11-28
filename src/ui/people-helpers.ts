@@ -660,3 +660,11 @@ export function spouseFor(householdMemberIds: ReadonlySet<string> | null, accoun
   const others = [...householdMemberIds].filter((id) => id !== accountId);
   return others.length === 1 ? (others[0] ?? null) : null;
 }
+
+/** Story 074: the new code of an F1 whose old code this contact still holds, or null. Pure. */
+export function codeChangeFor(person: Pick<Person, 'amwayCode'>, changes: ReadonlyMap<string, string>): string | null {
+  const code = person.amwayCode ?? null;
+  if (code === null) return null;
+  const next = changes.get(code);
+  return next !== undefined && next !== code ? next : null;
+}
