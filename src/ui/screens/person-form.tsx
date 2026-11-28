@@ -895,12 +895,6 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
             ))}
           </ul>
         )}
-        {summary.firstAt !== null && (
-          <div className="person-summary__row">
-            <span className="person-summary__key">{STRINGS.historyFirstLabel}</span>
-            <span className="person-summary__value">{compactDateLabel(summary.firstAt)}</span>
-          </div>
-        )}
         <label className="note person-summary__note">
           <span className="note__label">{STRINGS.noteLabel}</span>
           <NoteTextarea value={note} onChange={changeNote} onBlur={() => void autosave.current?.flush()} disabled={false} placeholder={STRINGS.notePlaceholder} />
