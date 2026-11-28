@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 import { derivePeople } from '../../../src/domain/people';
 import { FORMER_MEMBER_ID } from '../../../src/data/event-store';
 import { PEOPLE_CONFIG } from '../../../src/ui/people-config';
-import { addedByDot, buildOwnerChange, filterByOwner, ownerChoice, readOwnerFilter, spouseFor } from '../../../src/ui/people-helpers';
+import { addedByDot, buildOwnerChange, filterByOwner, ownerChoice, readOwnerFilter, spouseFor, codeChangeFor } from '../../../src/ui/people-helpers';
 
 let n = 0;
 const mk = (type: string, ts: string, userId: string, payload: Record<string, unknown>) => ({ id: `e${++n}`, type, timestamp: ts, userId, schemaVersion: 1, payload, syncedAt: null }) as never;
@@ -96,5 +96,18 @@ describe('spouseFor', () => {
   it('is none when I am alone or the household is unknown', () => {
     expect(spouseFor(new Set(['lan']), 'lan')).toBeNull();
     expect(spouseFor(null, 'lan')).toBeNull();
+  });
+});
+
+// Story 074: a contact still holding an F1's old code is offered the new one.
+describe('codeChangeFor', () => {
+  const changes = new Map([['7004440000', '7004449999']]);
+  it('is the new code when the contact holds a replaced code', () => {
+    expect(codeChangeFor({ amwayCode: '7004440000' }, changes)).toBe('7004449999');
+  });
+  it('is null for another code, no code, or when nothing changed', () => {
+    expect(codeChangeFor({ amwayCode: '7001112223' }, changes)).toBeNull();
+    expect(codeChangeFor({ amwayCode: null }, changes)).toBeNull();
+    expect(codeChangeFor({ amwayCode: '7004440000' }, new Map())).toBeNull();
   });
 });

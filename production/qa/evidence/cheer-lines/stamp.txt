@@ -1,0 +1,5 @@
+Reviewed-Content-Hash: src/config/game-config.json 411ebf407f132c56d451191ca2f8e3b53c68fae4
+Reviewed-Content-Hash: src/data/group-service.ts 39a094ae19c2c0a93b06a4f6bdfea977e6a5bae3
+Reviewed-Content-Hash: src/ui/screens/nhom-panel.tsx 2cea4ba1ec7c45882562c483f6a564e94f81c7c9
+Reviewed-Content-Hash: src/ui/strings.ts c4f024cb30e3a04d19b0c0bbfe143756b8e5d4f9
+Reviewed-Content-Hash: src/ui/styles.css 1a02df75c21b797a9e311abbe6c86188c00c8d7c

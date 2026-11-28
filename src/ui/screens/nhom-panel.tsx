@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import gameConfig from '../../config/game-config.json';
 import type { EventStore } from '../../data/event-store';
-import { CHEER_MAX_LENGTH, cleanCheerMessage, notifyCheer, parseGroupConfig, sendCheer } from '../../data/group-service';
+import { CHEER_MAX_LENGTH, cheerBatch, cleanCheerMessage, notifyCheer, parseGroupConfig, sendCheer } from '../../data/group-service';
 import { loadNhomPeople, metToday, nhomSummary, weeklyRanking } from '../../data/nhom-service';
 import type { NhomPerson, NhomRelation } from '../../data/nhom-service';
 import { CHEER_XP, buildCheerXpEvent } from '../../domain/cheer-xp';
@@ -112,14 +112,19 @@ export function useNhom({ clientPromise, accountId, eventStore, memberIds, onXp,
   return { people, nameOf, picker, notice, busy, open: (p: NhomPerson) => {
     setNotice(null);
     setPicking(p);
-  }, today: localDayKey(now()), now, ranking: people === null ? null : weeklyRanking(people, myXpWeek, weekStartKey(now(), timeZone)), weekStart: weekStartKey(now(), timeZone) };
+  }, refresh: () => setReloadKey((k) => k + 1), today: localDayKey(now()), now, ranking: people === null ? null : weeklyRanking(people, myXpWeek, weekStartKey(now(), timeZone)), weekStart: weekStartKey(now(), timeZone) };
 }
 
 /** "Gửi lời cổ vũ": a standard line or my own words. */
 function CheerPicker({ name, busy, error, onSend, onCancel }: { readonly name: string; readonly busy: boolean; readonly error: string | null; readonly onSend: (message: string) => void; readonly onCancel: () => void }) {
   const [choice, setChoice] = useState(0);
   const [custom, setCustom] = useState('');
-  const options = GROUP_CONFIG.cheerMessages;
+  // 2026-11-28: a few random lines of ~100; "Câu khác" shows others, never the batch just shown.
+  const [options, setOptions] = useState<readonly string[]>(() => cheerBatch(GROUP_CONFIG.cheerMessages, [], gameConfig.cheerPicker.batchSize));
+  const more = () => {
+    setOptions(cheerBatch(GROUP_CONFIG.cheerMessages, options, gameConfig.cheerPicker.batchSize));
+    setChoice(0);
+  };
   const chosen = custom.trim() !== '' ? cleanCheerMessage(custom) : (options[choice] ?? null);
   return (
     <Dialog title={STRINGS.cheerPickTitle} onClose={onCancel}>
@@ -134,6 +139,11 @@ function CheerPicker({ name, busy, error, onSend, onCancel }: { readonly name: s
             <span>{text}</span>
           </label>
         ))}
+        {GROUP_CONFIG.cheerMessages.length > options.length && (
+          <button type="button" className="button button--secondary cheer-pick__more" onClick={more}>
+            {STRINGS.cheerMore}
+          </button>
+        )}
       </fieldset>
       <label className="note popup__field">
         <span className="note__label">{STRINGS.cheerCustomLabel}</span>
@@ -291,7 +301,7 @@ export function RankingSection({ n }: { readonly n: NhomState }) {
   const sunday = new Date(monday.getTime() + 6 * 86_400_000);
   const dm = (d: Date) => `${d.getDate()}/${d.getMonth() + 1}`;
   return (
-    <section aria-label={STRINGS.nhomRankTitle}>
+    <section className="group-section" aria-label={STRINGS.nhomRankTitle}>
       <h2 className="settings-group nhom-rank__head">
         <span>{STRINGS.nhomRankTitle}</span>
         <span className="nhom-rank__week">{STRINGS.nhomRankWeek(dm(monday), dm(sunday))}</span>
@@ -346,7 +356,7 @@ export function NhomFamilySections({ n }: { readonly n: NhomState }) {
     const list = n.people!.filter((p) => p.relation === relation);
     if (list.length === 0) return null;
     return (
-      <section key={relation} aria-label={title}>
+      <section key={relation} className="group-section" aria-label={title}>
         <h2 className="settings-group">{list.length > 1 ? `${title} (${list.length})` : title}</h2>
         <div className="card nhom-list">{list.map((p) => pageRow(n, p))}</div>
       </section>

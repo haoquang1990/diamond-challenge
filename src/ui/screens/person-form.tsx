@@ -603,6 +603,8 @@ export interface PersonDetailProps {
   readonly extra?: ReactNode;
   /** The linked F1 account (story 059): the name it set and its login phone; null when unknown. */
   readonly linkedAccount?: { readonly displayName: string | null; readonly phone: string | null } | null;
+  /** Story 074: the F1's new Amway code when this contact still holds the old one. */
+  readonly newCode?: string | null;
   /** Story 066 "Phụ trách": my id, my co-member's id and name, and who looks after it now. */
   readonly owner?: { readonly meId: string; readonly spouseId: string; readonly spouseName: string; readonly current: OwnerChoice };
   /** Re-read the log after any write. */
@@ -626,7 +628,7 @@ interface TaskUndo {
  * change in the "Sửa thông tin" popup. State of record is the event log; this only holds form
  * state.
  */
-export function PersonDetail({ eventStore, person, people, events, activityTypes, config = PEOPLE_CONFIG, authorLabel, createAccount, extra, linkedAccount = null, owner, onChanged, onBack }: PersonDetailProps) {
+export function PersonDetail({ eventStore, person, people, events, activityTypes, config = PEOPLE_CONFIG, authorLabel, createAccount, extra, linkedAccount = null, owner, newCode = null, onChanged, onBack }: PersonDetailProps) {
   const [ownerSel, setOwnerSel] = useState<OwnerChoice>(owner?.current ?? 'me');
   const [name, setName] = useState(person.name);
   const [note, setNote] = useState(person.note);
@@ -875,6 +877,26 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
         )}
       </header>
 
+      {newCode !== null && (
+        <section className="card form code-changed" role="status">
+          <p className="code-changed__text">{STRINGS.codeChangedNotice(newCode)}</p>
+          <button
+            type="button"
+            className="button button--primary"
+            disabled={busy}
+            onClick={() =>
+              void run(async () => {
+                await eventStore.append({ type: 'person_updated', payload: { personId: person.personId, amwayCode: newCode } });
+                await onChanged();
+                setCode(newCode);
+                setInfo(STRINGS.codeChangedDone);
+              })
+            }
+          >
+            {STRINGS.codeChangedButton}
+          </button>
+        </section>
+      )}
       <section className="card person-section person-summary" aria-labelledby="person-summary-title">
         <h2 id="person-summary-title" className="person-section__heading">
           {STRINGS.summaryTitle}

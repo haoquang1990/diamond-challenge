@@ -501,3 +501,19 @@ export async function loadMemberProgress(client: SupabaseClient, userIds: readon
   const rows = await loadProgressRows(client, userIds);
   return new Map(rows.map((r) => [r.user_id, toMemberProgress(r)]));
 }
+
+/**
+ * A random batch of cheer lines for the picker (2026-11-28): `size` different lines of `all`,
+ * none of `previous` (the batch shown just before) while enough others exist. Pure with `random`.
+ */
+export function cheerBatch(all: readonly string[], previous: readonly string[], size: number, random: () => number = Math.random): string[] {
+  const pick = (pool: string[], n: number) => {
+    const out: string[] = [];
+    const left = [...pool];
+    while (out.length < n && left.length > 0) out.push(...left.splice(Math.floor(random() * left.length), 1));
+    return out;
+  };
+  const fresh = all.filter((l) => !previous.includes(l));
+  const first = pick(fresh, size);
+  return first.length >= size ? first : [...first, ...pick(all.filter((l) => !first.includes(l)), size - first.length)];
+}

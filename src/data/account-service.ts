@@ -41,6 +41,9 @@ export type CreateAccountError =
   | 'not_allowed'
   | 'household_full_or_inactive'
   | 'create_failed'
+  | 'admin_only'
+  | 'invalid_sponsor_code'
+  | 'sponsor_not_found'
   /** No response (offline / network failure). */
   | 'network'
   /** Any other failure, including an unreadable error body. */
@@ -61,6 +64,10 @@ export interface CreateAccountInput {
   readonly amwayCode: string;
   /** Optional display name. */
   readonly displayName?: string;
+  /** Admin only (story 072): no sponsor. */
+  readonly root?: boolean;
+  /** Admin only (story 072): the active code of the household that sponsors the new one. */
+  readonly sponsorCode?: string;
 }
 
 const KNOWN_ERRORS: ReadonlySet<string> = new Set([
@@ -75,6 +82,9 @@ const KNOWN_ERRORS: ReadonlySet<string> = new Set([
   'not_allowed',
   'household_full_or_inactive',
   'create_failed',
+  'admin_only',
+  'invalid_sponsor_code',
+  'sponsor_not_found',
 ]);
 
 /**

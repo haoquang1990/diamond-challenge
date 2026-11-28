@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { loadFriends, splitFriends } from '../../data/friends-service';
+import { loadUplineInvites } from '../../data/upline-service';
 import { STRINGS } from '../strings';
 
 /** Props for {@link GroupTodayCard}. */
@@ -20,11 +21,16 @@ export interface GroupTodayCardProps {
  */
 export function GroupTodayCard({ clientPromise, onOpen, dataVersion = 0, children }: GroupTodayCardProps) {
   const [invites, setInvites] = useState(0);
+  const [uplineInvites, setUplineInvites] = useState(0);
   useEffect(() => {
     if (!navigator.onLine) return undefined;
     let cancelled = false;
     void clientPromise.then(loadFriends).then((list) => {
       if (!cancelled && list !== null) setInvites(splitFriends(list).invites.length);
+    });
+    // Story 073: requests to join my line count too.
+    void clientPromise.then(loadUplineInvites).then((list) => {
+      if (!cancelled && list !== null) setUplineInvites(list.length);
     });
     return () => {
       cancelled = true;
@@ -40,9 +46,9 @@ export function GroupTodayCard({ clientPromise, onOpen, dataVersion = 0, childre
           {STRINGS.groupSeeAll}
         </button>
       </div>
-      {invites > 0 && (
+      {invites + uplineInvites > 0 && (
         <p className="group-card__invite" role="status">
-          {STRINGS.groupInviteStrip}
+          {uplineInvites > 0 ? STRINGS.groupInviteAny : STRINGS.groupInviteStrip}
         </p>
       )}
       {children}
