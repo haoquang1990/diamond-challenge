@@ -1177,7 +1177,7 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
                   return (
                     <li key={h.id} className="history-row history-row--stacked">
                       <span className="history-row__name">
-                        {h.kind === 'stage' ? historyStageLabel(h.name) : h.kind === 'cancel' ? STRINGS.sponsorCancelHistory : h.name === '' ? STRINGS.legacyUnknownActivity : h.name}
+                        {h.kind === 'stage' ? historyStageLabel(h.name) : h.kind === 'cancel' ? STRINGS.sponsorCancelHistory : h.taskId === ADD_NAME_ID ? STRINGS.historyAddedLabel : h.name === '' ? STRINGS.legacyUnknownActivity : h.name}
                         {author !== null && <span className="history-row__author">{author}</span>}
                       </span>
                       <span className="person-row__stage">{dateTimeLabel(h.timestamp)}</span>
