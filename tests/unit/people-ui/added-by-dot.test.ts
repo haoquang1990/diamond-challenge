@@ -10,7 +10,8 @@ import { PEOPLE_CONFIG } from '../../../src/ui/people-config';
 
 let n = 0;
 const mk = (type: string, ts: string, userId: string, payload: Record<string, unknown>) => ({ id: `e${++n}`, type, timestamp: ts, userId, schemaVersion: 1, payload, syncedAt: null }) as never;
-const SPOUSE = new Set(['minh']);
+// As in the app: otherMemberIds always holds the former-member id too.
+const SPOUSE = new Set(['minh', FORMER_MEMBER_ID]);
 const events = [
   mk('person_added', '2026-11-01T01:00:00.000Z', 'lan', { personId: 'mine', name: 'Anh Bình Thử' }),
   mk('person_added', '2026-11-01T02:00:00.000Z', 'minh', { personId: 'his', name: 'Chị Lan Thử' }),
@@ -42,7 +43,7 @@ it('shows the shared dot when both of us had the contact', () => {
 
 it('shows no dot for a former member or when I have no spouse', () => {
   expect(addedByDot(byId().gone!, SPOUSE)).toBeNull();
-  expect(addedByDot(byId().his!, new Set())).toBeNull();
+  expect(addedByDot(byId().his!, new Set([FORMER_MEMBER_ID]))).toBeNull();
 });
 
 it('splitting a merge drops the shared dot', () => {

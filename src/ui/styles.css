@@ -1278,3 +1278,22 @@ body.dialog-open { overflow: hidden; }
 .history-row__add-note { flex-basis: 100%; background: none; border: 0; padding: 4px 0; text-align: left; color: var(--color-diamond-dark); font: inherit; font-weight: 800; cursor: pointer; }
 .note-edit__what { margin: 0; }
 .note-edit__hint { margin: 0; font-size: 0.85rem; }
+
+/* Story 066: "Phụ trách" filter sheet and field */
+.added-dot--mine { background: #cfcfcf; }
+.filter-select__button {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; max-width: 52vw;
+  padding: 0 34px 0 14px; border: 2px solid var(--color-border); border-radius: 14px;
+  background: var(--color-surface); color: var(--color-diamond-dark); font: inherit; font-weight: 800; font-size: 0.95rem; cursor: pointer;
+}
+.filter-select__button:focus-visible { outline: 3px solid var(--color-diamond-dark); outline-offset: 2px; }
+.filter-select__text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sort-option__text--row { flex-direction: row; align-items: center; gap: 10px; }
+.sort-option__end { display: inline-flex; align-items: center; gap: 10px; flex: none; }
+.sort-option__count { color: var(--color-muted); font-weight: 700; }
+.sort-options + .sort-options__group { margin-top: 14px; }
+.filter-sheet__note { display: flex; align-items: center; gap: 8px; margin: 10px 2px 0; font-size: 0.85rem; }
+.owner-field__label { font-weight: 800; color: var(--color-muted); }
+.owner-field__options { display: flex; gap: 6px; margin-top: 6px; }
+.owner-option { flex: 1; min-width: 0; min-height: 44px; padding: 8px 4px; border: 2px solid var(--color-border); border-radius: 12px; background: var(--color-surface); color: var(--color-muted); font: inherit; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
+.owner-option--on { border-color: var(--color-diamond); background: var(--color-diamond-light); color: var(--color-diamond-dark); }
