@@ -37,6 +37,7 @@ export const EVENT_SCHEMA_VERSION = 1;
  *   undoes that merge). Neither ever carries xp.
  * - `person_transferred_out`: written by the server only (pulled, never sent; story 023)
  * - `sponsorship_cancelled`: `{ personId, note? }` (Huỷ bảo trợ, story 040; no xp, not an activity)
+ * - `cheer_sent`: `{ xp, toHouseholdId, toUserId? }` (cheering earns XP, story 070; personal, not a Việc làm)
  * - `activity_note_changed`: `{ personId, activityId, note }` (Sửa ghi chú in Lịch sử, story 065; latest wins, '' removes)
  */
 export const EVENT_TYPES = [
@@ -54,6 +55,7 @@ export const EVENT_TYPES = [
   'person_transferred_out',
   'sponsorship_cancelled',
   'activity_note_changed',
+  'cheer_sent',
 ] as const;
 
 /** Discriminator for an event. */

@@ -58,8 +58,8 @@ export interface TodayScreenProps {
   readonly notificationPermission?: () => ReminderPermission;
   /** Starts a lesson in Học (story 039); the "Bài nên học tiếp" card is hidden when absent. */
   readonly onStartLesson?: (lessonId: string) => void;
-  /** Hôm nay "Cổ vũ nhóm" card (story 041); hidden when absent (signed out or no server). */
-  readonly cheerGroup?: ReactNode;
+  /** Bumped when something on Hôm nay wrote XP (story 070: a cheer), so the goal is read again. */
+  readonly refreshKey?: number;
   /** Story 069: the "Nhóm" card, under today's goal. */
   readonly groupCard?: ReactNode;
   /** Story 063: the "Bật thông báo" card, shown above today's goal. */
@@ -122,9 +122,9 @@ export function TodayScreen({
   cheer = null,
   onDismissCheer,
   onStartLesson,
-  cheerGroup,
   pushPrompt,
   groupCard,
+  refreshKey = 0,
   lessons = LOADED_LESSONS.lessons,
   lessonStages = LOADED_STAGES,
 }: TodayScreenProps) {
@@ -165,7 +165,7 @@ export function TodayScreen({
     return () => {
       cancelled = true;
     };
-  }, [eventStore, config, stages, now, timeZone, reminderConfig, reloadKey, memberIds]);
+  }, [eventStore, config, stages, now, timeZone, reminderConfig, reloadKey, memberIds, refreshKey]);
 
   useEffect(() => {
     const onVisible = () => {
@@ -284,8 +284,6 @@ export function TodayScreen({
         ))}
 
       {groupCard}
-
-      {cheerGroup}
 
 
     </main>

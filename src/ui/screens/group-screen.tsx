@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
-import type { ReactNode } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { friendInviteUrl, loadFriendToken, loadFriends, removeFriend, requestFriendByCode, respondFriend, splitFriends } from '../../data/friends-service';
 import type { Friend } from '../../data/friends-service';
 import { STRINGS } from '../strings';
 import { Dialog } from './person-form';
+import { NhomFamilySections, pageRow, useNhom } from './nhom-panel';
+import type { NhomProps } from './nhom-panel';
 
 /** Props for {@link GroupScreen}. */
 export interface GroupScreenProps {
@@ -12,8 +13,8 @@ export interface GroupScreenProps {
   readonly onBack: () => void;
   /** Shown above the lists once, e.g. after opening an invite link. */
   readonly notice?: string | null;
-  /** Vợ/chồng, tuyến trên and tuyến dưới sections (story 070), shown between invites and friends. */
-  readonly family?: ReactNode;
+  /** Story 070: my Nhóm (vợ/chồng, tuyến trên, tuyến dưới and friends' numbers, cheering). */
+  readonly nhom: NhomProps;
   /** The app address the invite link starts with. */
   readonly appUrl?: string;
 }
@@ -27,7 +28,8 @@ function initial(name: string | null): string {
  * Trang "Nhóm" (story 069): invitations to answer, my friends, requests I sent, and "+ Kết bạn"
  * (by Amway code or by sharing my invite link).
  */
-export function GroupScreen({ clientPromise, onBack, notice = null, family, appUrl = window.location.href }: GroupScreenProps) {
+export function GroupScreen({ clientPromise, onBack, notice = null, nhom, appUrl = window.location.href }: GroupScreenProps) {
+  const n = useNhom(nhom);
   const [list, setList] = useState<Friend[] | null | 'error'>(null);
   const [addOpen, setAddOpen] = useState(false);
   const [open, setOpen] = useState<Friend | null>(null);
@@ -112,7 +114,7 @@ export function GroupScreen({ clientPromise, onBack, notice = null, family, appU
         </section>
       )}
 
-      {family}
+      <NhomFamilySections n={n} />
 
       {parts !== null && (
         <section aria-labelledby="group-friends">
@@ -123,19 +125,30 @@ export function GroupScreen({ clientPromise, onBack, notice = null, family, appU
             <p className="message group-empty">{STRINGS.friendNone}</p>
           ) : (
             <ul className="card group-list">
-              {parts.friends.map((f) => (
-                <li key={f.id}>
-                  <button type="button" className="group-row group-row--button" onClick={() => setOpen(f)}>
-                    <span className="group-avatar group-avatar--friend" aria-hidden="true">
-                      {initial(f.name)}
-                    </span>
-                    <span className="group-row__who">
-                      <b>{f.name ?? STRINGS.friendNoName}</b>
-                      {f.code !== null && <small>{STRINGS.friendCode(f.code)}</small>}
-                    </span>
-                  </button>
-                </li>
-              ))}
+              {parts.friends.map((f) => {
+                // Story 070: a friend with shared numbers shows them and 👏; tap the name to manage.
+                const person = n.people?.find((p) => p.userId === f.id && p.relation === 'friend');
+                return (
+                  <li key={f.id} className="group-friend">
+                    {person !== undefined ? (
+                      <div className="group-friend__row">
+                        <button type="button" className="group-friend__open" onClick={() => setOpen(f)} aria-label={STRINGS.friendManageAria(f.name ?? STRINGS.friendNoName)} />
+                        {pageRow(n, person)}
+                      </div>
+                    ) : (
+                      <button type="button" className="group-row group-row--button" onClick={() => setOpen(f)}>
+                        <span className="group-avatar group-avatar--friend" aria-hidden="true">
+                          {initial(f.name)}
+                        </span>
+                        <span className="group-row__who">
+                          <b>{f.name ?? STRINGS.friendNoName}</b>
+                          {f.code !== null && <small>{STRINGS.friendCode(f.code)}</small>}
+                        </span>
+                      </button>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           )}
           {parts.sent.length > 0 && <p className="message group-sent">{STRINGS.friendSent(parts.sent.length)}</p>}
@@ -152,6 +165,8 @@ export function GroupScreen({ clientPromise, onBack, notice = null, family, appU
           }}
         />
       )}
+
+      {n.picker}
 
       {open !== null && (
         <Dialog title={open.name ?? STRINGS.friendNoName} onClose={() => setOpen(null)} variant="sheet">

@@ -38,6 +38,7 @@ import { ChangePasswordScreen, DisplayNameScreen } from './ui/screens/change-pas
 import { CodeRequiredScreen } from './ui/screens/code-required-screen';
 import { GroupScreen } from './ui/screens/group-screen';
 import { GroupTodayCard } from './ui/screens/group-today-card';
+import { NhomCardBody } from './ui/screens/nhom-panel';
 import { readInviteToken, requestFriendByToken } from './data/friends-service';
 import { CreateAccountScreen } from './ui/screens/create-account-screen';
 import { ConsentScreen } from './ui/screens/consent-screen';
@@ -46,7 +47,6 @@ import { LessonScreen } from './ui/screens/lesson-screen';
 import { GoalCard } from './ui/screens/goal-card';
 import { PushCard } from './ui/screens/push-card';
 import { HouseholdCard, HouseholdScreen } from './ui/screens/household-screen';
-import { GroupCheerCard } from './ui/screens/group-cheer-card';
 import type { Person } from './domain/people';
 import { F1HouseholdBox } from './ui/screens/f1-household-box';
 import { useGroupData } from './ui/use-group-data';
@@ -181,6 +181,8 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
   const [members, setMembers] = useState<ReadonlyMap<string, HouseholdMember> | null>(null);
   /** Bumped when a sync pulled new events, so the open Làm list re-reads the log. */
   const [dataVersion, setDataVersion] = useState(0);
+  /** Story 070: bumped when a cheer on Hôm nay earned XP. */
+  const [todayRefresh, setTodayRefresh] = useState(0);
   /** Persisted household member ids: their events are not mine (works offline and signed out). */
   const [memberIds, setMemberIds] = useState<ReadonlySet<string>>(() => new Set());
   const memberIdsRef = useRef(memberIds);
@@ -764,6 +766,7 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
       <div className="app-shell">
         <GroupScreen
           clientPromise={clientPromise}
+          nhom={{ clientPromise, accountId: account.accountId, eventStore, memberIds, dataVersion }}
           notice={groupNotice}
           appUrl={new URL(import.meta.env.BASE_URL, window.location.href).toString()}
           onBack={() => {
@@ -819,13 +822,17 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
       {tab === 'today' && (
         <TodayScreen
           eventStore={eventStore}
+          refreshKey={todayRefresh}
           memberIds={memberIds}
           onLearn={() => setTab('learn')}
           {...(clientPromise !== null && account !== null
-            ? { groupCard: <GroupTodayCard clientPromise={clientPromise} dataVersion={dataVersion} onOpen={() => setTab('group')} /> }
-            : {})}
-          {...(clientPromise !== null && account !== null
-            ? { cheerGroup: <GroupCheerCard clientPromise={clientPromise} accountId={account.accountId} eventStore={eventStore} dataVersion={dataVersion} /> }
+            ? {
+                groupCard: (
+                  <GroupTodayCard clientPromise={clientPromise} dataVersion={dataVersion} onOpen={() => setTab('group')}>
+                    <NhomCardBody clientPromise={clientPromise} accountId={account.accountId} eventStore={eventStore} memberIds={memberIds} dataVersion={dataVersion} onXp={() => setTodayRefresh((k) => k + 1)} onAddFriend={() => setTab('group')} />
+                  </GroupTodayCard>
+                ),
+              }
             : {})}
           onStartLesson={(lessonId) => {
             setStartLessonId(lessonId);
