@@ -106,7 +106,7 @@ export function browserNotificationPlatform(): NotificationPlatform {
     supportsTriggers: () =>
       hasNotificationApi() && 'showTrigger' in Notification.prototype && timestampTrigger() !== undefined,
     show: async ({ title, body, showAt }) => {
-      const options: TriggerNotificationOptions = { body, tag: REMINDER_TAG, icon: './icon.svg', data: { url: './' } };
+      const options: TriggerNotificationOptions = { body, tag: REMINDER_TAG, icon: './icons/icon-192x192.png', data: { url: './' } };
       const Trigger = timestampTrigger();
       if (showAt !== undefined && Trigger !== undefined) options.showTrigger = new Trigger(showAt);
       const reg = await registration();
