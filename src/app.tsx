@@ -40,6 +40,7 @@ import { GroupScreen } from './ui/screens/group-screen';
 import { GroupTodayCard } from './ui/screens/group-today-card';
 import { NhomCardBody } from './ui/screens/nhom-panel';
 import { FriendShareCard } from './ui/screens/friend-share-card';
+import { UplineRequestCard } from './ui/screens/upline-request-card';
 import { readInviteToken, requestFriendByToken } from './data/friends-service';
 import { CreateAccountScreen } from './ui/screens/create-account-screen';
 import { ConsentScreen } from './ui/screens/consent-screen';
@@ -829,7 +830,12 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
                 goalSlot: <GoalCard eventStore={eventStore} memberIds={memberIds} />,
                 ...(account !== null ? { friendShareSlot: <FriendShareCard clientPromise={clientPromise} accountId={account.accountId} /> } : {}),
                 ...(account !== null ? { pushSlot: <PushCard clientPromise={clientPromise} accountId={account.accountId} /> } : {}),
-                ...(account !== null ? { householdSlot: <HouseholdCard clientPromise={clientPromise} accountId={account.accountId} onAddMember={() => setTab('household')} /> } : {}),
+                ...(account !== null ? { householdSlot: (
+                      <>
+                        <HouseholdCard clientPromise={clientPromise} accountId={account.accountId} onAddMember={() => setTab('household')} />
+                        <UplineRequestCard clientPromise={clientPromise} accountId={account.accountId} />
+                      </>
+                    ) } : {}),
               })}
         />
       </div>

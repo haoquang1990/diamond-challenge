@@ -86,6 +86,7 @@ Theo Build order của brief: nhật ký sự kiện + XP/streak → Làm + Hôm
 | 070 | Thẻ Nhóm trên Hôm nay, cổ vũ bạn bè và tuyến trên, cổ vũ có XP | UI | Complete | N/A |
 | 071 | Chia sẻ với bạn bè và xếp hạng tuần | UI | Complete | N/A |
 | 072 | Quản trị: tạo tài khoản và đổi tuyến trên theo mã số | UI | Complete | N/A |
+| 073 | Tự khai mã tuyến trên, tuyến trên đồng ý trong Nhóm | UI | Complete | N/A |
 
 > 012–014 thay mô hình giai đoạn bằng việc cần làm + nhãn KH/NPP theo phản hồi dùng thử (2026-11-04, `design/gdd/crm.md`). Thứ tự gợi ý: 012 → 013 → 014 → 011.
 

@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { friendInviteUrl, loadFriendToken, loadFriends, removeFriend, requestFriendByCode, respondFriend, splitFriends } from '../../data/friends-service';
 import type { Friend } from '../../data/friends-service';
+import { loadUplineInvites, respondUpline } from '../../data/upline-service';
+import type { UplineInvite } from '../../data/upline-service';
 import { STRINGS } from '../strings';
 import { Dialog } from './person-form';
 import { NhomFamilySections, RankingSection, pageRow, sharedLine, useNhom } from './nhom-panel';
@@ -36,10 +38,22 @@ export function GroupScreen({ clientPromise, onBack, notice = null, nhom, appUrl
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(notice);
 
+  const [uplineInvites, setUplineInvites] = useState<UplineInvite[]>([]);
   const reload = useCallback(async () => {
-    const found = await loadFriends(await clientPromise);
+    const client = await clientPromise;
+    const [found, upline] = await Promise.all([loadFriends(client), loadUplineInvites(client)]);
     setList(found ?? 'error');
+    setUplineInvites(upline ?? []);
   }, [clientPromise]);
+  // Story 073: a request to join my line.
+  const answerUpline = async (r: UplineInvite, accept: boolean) => {
+    setBusy(true);
+    const res = await respondUpline(await clientPromise, r.id, accept);
+    setBusy(false);
+    if (res === 'ok' && accept) n.refresh();
+    setMessage(res === 'ok' ? (accept ? STRINGS.uplineAccepted : null) : res === 'has_upline' || res === 'cycle' || res === 'not_found' ? STRINGS.uplineResultErrors[res] : STRINGS.friendError);
+    await reload();
+  };
   useEffect(() => {
     void reload();
   }, [reload]);
@@ -83,12 +97,36 @@ export function GroupScreen({ clientPromise, onBack, notice = null, nhom, appUrl
       {list === null && <p className="message">{STRINGS.loading}</p>}
       {list === 'error' && <p className="message message--error">{STRINGS.friendLoadError}</p>}
 
-      {parts !== null && parts.invites.length > 0 && (
+      {parts !== null && parts.invites.length + uplineInvites.length > 0 && (
         <section className="group-section" aria-labelledby="group-invites">
           <h2 id="group-invites" className="settings-group">
-            {STRINGS.friendInvites(parts.invites.length)}
+            {STRINGS.friendInvites(parts.invites.length + uplineInvites.length)}
           </h2>
           <div className="card group-list">
+            {uplineInvites.map((r) => (
+              <div key={r.id} className="group-invite">
+                <div className="group-row">
+                  <span className="group-avatar group-avatar--muted" aria-hidden="true">
+                    {initial(r.names)}
+                  </span>
+                  <span className="group-row__who">
+                    <b>
+                      {r.names ?? STRINGS.friendNoName}
+                      <span className="upline-tag">{STRINGS.uplineInviteTag}</span>
+                    </b>
+                    <small>{STRINGS.uplineInviteLine(r.code)}</small>
+                  </span>
+                </div>
+                <div className="button-row">
+                  <button type="button" className="button button--secondary" onClick={() => void answerUpline(r, false)} disabled={busy}>
+                    {STRINGS.friendDecline}
+                  </button>
+                  <button type="button" className="button button--primary" onClick={() => void answerUpline(r, true)} disabled={busy}>
+                    {STRINGS.friendAccept}
+                  </button>
+                </div>
+              </div>
+            ))}
             {parts.invites.map((f) => (
               <div key={f.id} className="group-invite">
                 <div className="group-row">
@@ -97,7 +135,7 @@ export function GroupScreen({ clientPromise, onBack, notice = null, nhom, appUrl
                   </span>
                   <span className="group-row__who">
                     <b>{f.name ?? STRINGS.friendNoName}</b>
-                    {f.code !== null && <small>{STRINGS.friendCode(f.code)}</small>}
+                    <small>{f.code !== null ? `${STRINGS.friendCode(f.code)} · ${STRINGS.friendInviteLine}` : STRINGS.friendInviteLine}</small>
                   </span>
                 </div>
                 <div className="button-row">

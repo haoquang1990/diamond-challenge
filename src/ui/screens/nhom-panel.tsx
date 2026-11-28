@@ -112,7 +112,7 @@ export function useNhom({ clientPromise, accountId, eventStore, memberIds, onXp,
   return { people, nameOf, picker, notice, busy, open: (p: NhomPerson) => {
     setNotice(null);
     setPicking(p);
-  }, today: localDayKey(now()), now, ranking: people === null ? null : weeklyRanking(people, myXpWeek, weekStartKey(now(), timeZone)), weekStart: weekStartKey(now(), timeZone) };
+  }, refresh: () => setReloadKey((k) => k + 1), today: localDayKey(now()), now, ranking: people === null ? null : weeklyRanking(people, myXpWeek, weekStartKey(now(), timeZone)), weekStart: weekStartKey(now(), timeZone) };
 }
 
 /** "Gửi lời cổ vũ": a standard line or my own words. */
