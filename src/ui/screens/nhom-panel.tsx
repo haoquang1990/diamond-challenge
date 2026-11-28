@@ -291,7 +291,7 @@ export function RankingSection({ n }: { readonly n: NhomState }) {
   const sunday = new Date(monday.getTime() + 6 * 86_400_000);
   const dm = (d: Date) => `${d.getDate()}/${d.getMonth() + 1}`;
   return (
-    <section aria-label={STRINGS.nhomRankTitle}>
+    <section className="group-section" aria-label={STRINGS.nhomRankTitle}>
       <h2 className="settings-group nhom-rank__head">
         <span>{STRINGS.nhomRankTitle}</span>
         <span className="nhom-rank__week">{STRINGS.nhomRankWeek(dm(monday), dm(sunday))}</span>
@@ -346,7 +346,7 @@ export function NhomFamilySections({ n }: { readonly n: NhomState }) {
     const list = n.people!.filter((p) => p.relation === relation);
     if (list.length === 0) return null;
     return (
-      <section key={relation} aria-label={title}>
+      <section key={relation} className="group-section" aria-label={title}>
         <h2 className="settings-group">{list.length > 1 ? `${title} (${list.length})` : title}</h2>
         <div className="card nhom-list">{list.map((p) => pageRow(n, p))}</div>
       </section>

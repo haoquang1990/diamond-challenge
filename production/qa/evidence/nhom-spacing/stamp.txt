@@ -1,0 +1,4 @@
+Reviewed-Content-Hash: src/ui/screens/group-screen.tsx 384b1d385fa8ff7a413c22d185fa01a35366110a
+Reviewed-Content-Hash: src/ui/screens/nhom-panel.tsx 1c39a661a7d26650d9f4bb6d218f6a90367d0a6e
+Reviewed-Content-Hash: src/ui/strings.ts f4340bbfd275493fff3dea2b23c77fb7bf1c3a46
+Reviewed-Content-Hash: src/ui/styles.css 534656a01ee14548df7b9f74f2049b4f4b6b45bc

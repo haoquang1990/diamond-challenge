@@ -84,7 +84,7 @@ export function GroupScreen({ clientPromise, onBack, notice = null, nhom, appUrl
       {list === 'error' && <p className="message message--error">{STRINGS.friendLoadError}</p>}
 
       {parts !== null && parts.invites.length > 0 && (
-        <section aria-labelledby="group-invites">
+        <section className="group-section" aria-labelledby="group-invites">
           <h2 id="group-invites" className="settings-group">
             {STRINGS.friendInvites(parts.invites.length)}
           </h2>
@@ -117,7 +117,7 @@ export function GroupScreen({ clientPromise, onBack, notice = null, nhom, appUrl
       <NhomFamilySections n={n} />
 
       {parts !== null && (
-        <section aria-labelledby="group-friends">
+        <section className="group-section" aria-labelledby="group-friends">
           <h2 id="group-friends" className="settings-group">
             {STRINGS.friendSection(parts.friends.length)}
           </h2>

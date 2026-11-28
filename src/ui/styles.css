@@ -1313,7 +1313,7 @@ body.dialog-open { overflow: hidden; }
 /* Story 069: Nhóm page and the Hôm nay "Nhóm" card */
 .group-add { flex: none; width: auto; min-height: 44px; padding: 6px 14px; margin: 0; }
 .group-notice { padding: 10px 12px; border-radius: 12px; background: #f0fbe6; color: #2b7a00; font-weight: 700; }
-.group-list { list-style: none; margin: 0; padding: 12px 14px; display: flex; flex-direction: column; gap: 12px; }
+.group-list { list-style: none; margin: 0; padding: 16px; display: flex; flex-direction: column; gap: 14px; }
 .group-invite { display: flex; flex-direction: column; gap: 10px; }
 .group-invite + .group-invite { padding-top: 12px; border-top: 1px solid var(--color-border); }
 .group-invite .button-row .button { margin: 0; }
@@ -1360,7 +1360,7 @@ body.dialog-open { overflow: hidden; }
 .nhom-cheer--done { background: #f0f0f0; border-color: #e0e0e0; color: #aaa; font-weight: 900; font-size: 1rem; }
 .nhom-note { margin: -4px 0 0; color: var(--color-muted); font-size: 0.82rem; font-weight: 600; }
 .nhom-allgood { margin: 0; padding: 10px 12px; border-radius: 12px; background: #f0fbe6; color: #2b7a00; font-weight: 700; }
-.nhom-list { display: flex; flex-direction: column; gap: 12px; padding: 12px 14px; }
+.nhom-list { display: flex; flex-direction: column; gap: 14px; padding: 16px; }
 .group-friend__row { position: relative; }
 .group-friend__open { position: absolute; inset: 0 56px 0 0; padding: 0; border: 0; background: none; cursor: pointer; }
 
@@ -1369,7 +1369,7 @@ body.dialog-open { overflow: hidden; }
 .nhom-rank b { font-size: 1.25rem; color: var(--color-diamond-dark); }
 .nhom-rank__head { display: flex; justify-content: space-between; gap: 8px; }
 .nhom-rank__week { text-transform: none; letter-spacing: 0; font-weight: 700; }
-.nhom-rank__list { list-style: none; margin: 0; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+.nhom-rank__list { list-style: none; margin: 0; padding: 16px; display: flex; flex-direction: column; gap: 8px; }
 .nhom-rank__row { display: flex; align-items: center; gap: 10px; padding: 2px 0; }
 .nhom-rank__row--me { margin: 0 -8px; padding: 8px; border: 2px solid #b8e4fb; border-radius: 12px; background: var(--color-diamond-light); }
 .nhom-rank__pos { flex: none; width: 24px; text-align: center; font-weight: 900; color: var(--color-muted); }
@@ -1377,3 +1377,8 @@ body.dialog-open { overflow: hidden; }
 .nhom-rank__note { margin: 4px 0 0; font-size: 0.85rem; }
 .group-friend__shared { margin: 4px 0 0 48px; color: var(--color-muted); font-size: 0.82rem; font-weight: 700; }
 .friend-share__lock { margin: 0; color: var(--color-muted); font-size: 0.88rem; font-weight: 700; }
+
+/* 2026-11-28: Nhóm page sections keep the app's spacing between a heading and its card */
+.group-section { display: flex; flex-direction: column; gap: 10px; }
+.group-section > .settings-group { margin: 6px 4px 0; }
+.group-empty { margin: 0 4px; }

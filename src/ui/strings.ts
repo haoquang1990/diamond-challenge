@@ -284,7 +284,7 @@ export const STRINGS = {
   cheerGroupTitle: 'Cổ vũ nhóm',
   cheerAllDone: '✓ Hôm nay bạn đã cổ vũ tất cả mọi người.',
   spouseCardTitle: 'Vợ/chồng',
-  spouseNoNumbers: 'Chưa có số liệu (cần mở bản app mới)',
+  spouseNoNumbers: 'Chưa có số liệu',
   spouseCheered: 'Đã cổ vũ',
   cheerSpouseNote: 'Đứng chung mã số với bạn',
   cheerPickTitle: 'Gửi lời cổ vũ',
