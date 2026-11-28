@@ -740,6 +740,7 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
             setTab('learn');
           }}
           onOpenSettings={() => setTab('settings')}
+          onOpenWork={() => setTab('people')}
           notificationPermission={notificationPlatform.permission}
           {...(clientPromise !== null && account !== null
             ? { pushPrompt: <PushPromptCard clientPromise={clientPromise} accountId={account.accountId} eventStore={eventStore} onChanged={refreshReminders} /> }

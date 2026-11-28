@@ -1297,3 +1297,10 @@ body.dialog-open { overflow: hidden; }
 .owner-field__options { display: flex; gap: 6px; margin-top: 6px; }
 .owner-option { flex: 1; min-width: 0; min-height: 44px; padding: 8px 4px; border: 2px solid var(--color-border); border-radius: 12px; background: var(--color-surface); color: var(--color-muted); font: inherit; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
 .owner-option--on { border-color: var(--color-diamond); background: var(--color-diamond-light); color: var(--color-diamond-dark); }
+
+/* Story 067: "Học" / "Làm" at the end of today's goal rows */
+.checklist__item { min-height: 40px; }
+.checklist__label { flex: 1; min-width: 0; }
+.checklist__action { flex: none; min-height: 36px; padding: 4px 14px; border: 2px solid var(--color-diamond-dark); border-bottom-width: 3px; border-radius: 12px; background: var(--color-diamond); color: #fff; font: inherit; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; cursor: pointer; }
+.checklist__action--more { background: var(--color-surface); color: var(--color-diamond-dark); border-color: var(--color-border); }
+.checklist__action:focus-visible { outline: 3px solid var(--color-diamond-dark); outline-offset: 2px; }
