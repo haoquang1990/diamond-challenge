@@ -331,6 +331,17 @@ export const STRINGS = {
   historyFirstLabel: 'Liên hệ đầu tiên',
   historyLastLabel: 'Liên hệ gần nhất',
   historyDaysSinceLabel: 'Kể từ lần gần nhất',
+  historyAddedLabel: 'Thêm vào danh sách',
+  historyLatestLabel: 'Hoạt động gần nhất',
+  noteEditButton: 'Sửa ghi chú',
+  noteAddButton: '+ Thêm ghi chú',
+  noteEditTitle: 'Sửa ghi chú',
+  noteAddTitle: 'Thêm ghi chú',
+  noteEditHint: 'Xoá hết chữ rồi Lưu để bỏ ghi chú.',
+  noteEditSave: 'Lưu',
+  noteEditCancel: 'Huỷ',
+  noteEdited: 'đã sửa',
+  noteEditError: 'Chưa lưu được ghi chú. Thử lại nhé.',
   historyListTitle: 'Danh sách',
   personSaveChanges: 'Lưu thay đổi',
   personEditTitle: 'Sửa thông tin',
@@ -491,6 +502,7 @@ export const STRINGS = {
   pushEnable: 'Bật thông báo trên máy này',
   pushOn: '✓ Máy này đang nhận thông báo.',
   pushEnabled: 'Đã bật thông báo trên máy này.',
+  addedByDot: { spouse: 'vợ/chồng thêm', both: 'cả hai cùng có' },
   pushPromptAskTitle: 'Bật thông báo',
   pushPromptAskBody: (time: string) => `Nhận lời cổ vũ từ tuyến trên và nhắc học lúc ${time} nếu hôm nay chưa đạt mục tiêu.`,
   pushPromptLater: 'Để sau',
@@ -833,6 +845,11 @@ export function activityTimeTooOldLabel(days: number): string {
 }
 
 /** "Hôm nay" / "N ngày trước" for the days since the last contact. */
+/** "Kể từ lần gần nhất" in Lịch sử (story 065): "Hôm nay" or "14 ngày". */
+export function daysCountLabel(days: number): string {
+  return days === 0 ? 'Hôm nay' : `${days} ngày`;
+}
+
 export function daysSinceLabel(days: number): string {
   return days === 0 ? 'Hôm nay' : `${days} ngày trước`;
 }

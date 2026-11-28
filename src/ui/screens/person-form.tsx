@@ -17,8 +17,8 @@ import {
 } from '../../domain/people';
 import type { PeopleConfig, Person, PersonPhone, PersonTaskDef } from '../../domain/people';
 import { CONTACT_STALE_DAYS, COUNTRY_CODES, NOTE_AUTOSAVE_MS, PEOPLE_CONFIG, PERSON_TASKS } from '../people-config';
-import { activityInstant, buildPersonHistory, calendarDaysSince, countDoneTasks, createNoteAutosave, duplicateCodeNames, findDuplicateCodes, findPeopleWithCode, accountPhoneDiffers, formatPhone, phoneProblemText, splitE164, summarizeHistory, summaryCounts, toLocalInputValue } from '../people-helpers';
-import type { NoteAutosave, NoteSaveState } from '../people-helpers';
+import { ADD_NAME_ID, activityInstant, buildNoteChangeEvent, buildPersonHistory, personAddedAt, calendarDaysSince, countDoneTasks, createNoteAutosave, duplicateCodeNames, findDuplicateCodes, findPeopleWithCode, accountPhoneDiffers, formatPhone, phoneProblemText, splitE164, summarizeHistory, summaryCounts, toLocalInputValue } from '../people-helpers';
+import type { HistoryEntry, NoteAutosave, NoteSaveState } from '../people-helpers';
 import {
   STRINGS,
   activityTimeTooOldLabel,
@@ -26,6 +26,7 @@ import {
   linkedPhoneDiffersLabel,
   compactDateLabel,
   dateTimeLabel,
+  daysCountLabel,
   daysSinceLabel,
   duplicateCodeWarning,
   historyStageLabel,
@@ -55,6 +56,9 @@ export interface DialogProps {
  * backdrop call `onClose`; the page behind does not scroll (body class) and the focus returns to
  * the opener on close. The content scrolls inside (max-height ~90vh).
  */
+/** Dialogs open right now (they can stack). */
+let openDialogs = 0;
+
 export function Dialog({ title, onClose, children, variant }: DialogProps) {
   const titleId = useId();
   const panelRef = useRef<HTMLDivElement>(null);
@@ -63,6 +67,8 @@ export function Dialog({ title, onClose, children, variant }: DialogProps) {
 
   useEffect(() => {
     const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    // Story 065: dialogs can stack (Lịch sử › Sửa ghi chú); the page stays locked until the last one closes.
+    openDialogs += 1;
     document.body.classList.add('dialog-open');
     const panel = panelRef.current;
     (panel?.querySelector<HTMLElement>(FOCUSABLE) ?? panel)?.focus();
@@ -90,7 +96,8 @@ export function Dialog({ title, onClose, children, variant }: DialogProps) {
     document.addEventListener('keydown', onKey);
     return () => {
       document.removeEventListener('keydown', onKey);
-      document.body.classList.remove('dialog-open');
+      openDialogs -= 1;
+      if (openDialogs === 0) document.body.classList.remove('dialog-open');
       // After the commit, so an opener that was disabled while saving can take focus again.
       setTimeout(() => opener?.focus(), 0);
     };
@@ -110,6 +117,69 @@ export function Dialog({ title, onClose, children, variant }: DialogProps) {
         {children}
       </div>
     </div>
+  );
+}
+
+/** Pencil icon of the edit buttons. */
+function PencilIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M4 20h4L19 9l-4-4L4 16z" />
+      <path d="M13.5 6.5l4 4" />
+    </svg>
+  );
+}
+
+/** Props for {@link NoteEditDialog}. */
+interface NoteEditDialogProps {
+  readonly entry: HistoryEntry;
+  readonly maxLength: number;
+  /** Resolves true once saved (the dialog is then closed by the caller). */
+  readonly onSave: (note: string) => Promise<boolean>;
+  readonly onCancel: () => void;
+}
+
+/**
+ * "Sửa ghi chú" sheet (story 065): the activity and its time, the note to change (empty
+ * removes it), Huỷ / Lưu. Only the note changes; type, time and XP stay.
+ */
+function NoteEditDialog({ entry, maxLength, onSave, onCancel }: NoteEditDialogProps) {
+  const [text, setText] = useState(entry.note ?? '');
+  const [saving, setSaving] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const unchanged = text.trim() === (entry.note ?? '');
+  const save = async () => {
+    setSaving(true);
+    setFailed(false);
+    const ok = await onSave(text);
+    setSaving(false);
+    if (!ok) setFailed(true);
+  };
+  return (
+    <Dialog title={entry.note === undefined ? STRINGS.noteAddTitle : STRINGS.noteEditTitle} onClose={onCancel} variant="sheet">
+      <p className="person-row__stage note-edit__what">
+        {entry.name === '' ? STRINGS.legacyUnknownActivity : entry.name} · {dateTimeLabel(entry.timestamp)}
+      </p>
+      <label className="popup__field">
+        <span className="visually-hidden">{STRINGS.noteEditTitle}</span>
+        <textarea className="note__input" rows={4} maxLength={maxLength} value={text} onChange={(e) => setText(e.target.value)} disabled={saving} />
+        <span className="popup__counter">{noteCounterLabel(text.length, maxLength)}</span>
+      </label>
+      {entry.note !== undefined && <p className="message note-edit__hint">{STRINGS.noteEditHint}</p>}
+      {failed && (
+        <p className="message message--error" role="alert">
+          {STRINGS.noteEditError}
+        </p>
+      )}
+      <div className="button-row popup__actions">
+        <button type="button" className="button button--secondary" onClick={onCancel} disabled={saving}>
+          {STRINGS.noteEditCancel}
+        </button>
+        <button type="button" className="button button--primary" onClick={() => void save()} disabled={saving || unchanged}>
+          {STRINGS.noteEditSave}
+        </button>
+      </div>
+    </Dialog>
   );
 }
 
@@ -570,6 +640,7 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
   const [taskUndo, setTaskUndo] = useState<TaskUndo | null>(null);
   const [activeTask, setActiveTask] = useState<PersonTaskDef | null>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [noteEdit, setNoteEdit] = useState<HistoryEntry | null>(null);
   const [taskListOpen, setTaskListOpen] = useState(false);
   const [cancelSponsorOpen, setCancelSponsorOpen] = useState(false);
   const backdateDays = config.activityBackdateDays ?? PEOPLE_CONFIG.activityBackdateDays;
@@ -586,6 +657,7 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
   const history = buildPersonHistory(events, person.personId, config, [...PERSON_TASKS, ...activityTypes]);
   const doneCounts = countDoneTasks(history);
   const summary = summarizeHistory(history, new Date());
+  const addedAt = personAddedAt(events, person.personId);
   // Same "last activity" as the Làm list row (story 052): "Thêm tên" alone is not an activity.
   const lastDays = calendarDaysSince(person.lastContactAt ?? null, new Date());
   const chips = summaryCounts(summary.counts);
@@ -744,10 +816,7 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
             {person.label != null && <LabelBadge label={person.label} />}
           </h1>
           <button type="button" className="icon-button person-detail__edit" aria-label={STRINGS.personEditTitle} onClick={openEdit} disabled={busy}>
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M4 20h4L19 9l-4-4L4 16z" />
-              <path d="M13.5 6.5l4 4" />
-            </svg>
+            <PencilIcon />
           </button>
         </div>
         <p className="person-detail__contact">
@@ -1058,31 +1127,31 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
               <section className="history-summary" aria-label={STRINGS.historySummaryTitle}>
                 <h3 className="history-summary__heading">{STRINGS.historySummaryTitle}</h3>
                 <ul className="history-summary__counts">
-                  {summary.counts.map((c) => (
-                    <li key={c.id}>
-                      {c.name === '' ? STRINGS.legacyUnknownActivity : c.name}: <strong>{c.count}</strong>
-                    </li>
-                  ))}
+                  {summary.counts
+                    .filter((c) => c.id !== ADD_NAME_ID)
+                    .map((c) => (
+                      <li key={c.id}>
+                        {c.name === '' ? STRINGS.legacyUnknownActivity : c.name}: <strong>{c.count}</strong>
+                      </li>
+                    ))}
                 </ul>
-                <dl className="history-summary__facts">
-                  <dt>{STRINGS.historyTotalXpLabel}</dt>
-                  <dd>{xpLabel(summary.totalXp)}</dd>
-                  {summary.firstAt !== null && (
+                <dl className="history-summary__facts history-summary__facts--inline">
+                  {(addedAt ?? summary.firstAt) !== null && (
                     <>
-                      <dt>{STRINGS.historyFirstLabel}</dt>
-                      <dd>{dateTimeLabel(summary.firstAt)}</dd>
+                      <dt>{STRINGS.historyAddedLabel}</dt>
+                      <dd>{compactDateLabel((addedAt ?? summary.firstAt)!)}</dd>
                     </>
                   )}
                   {summary.lastAt !== null && (
                     <>
-                      <dt>{STRINGS.historyLastLabel}</dt>
-                      <dd>{dateTimeLabel(summary.lastAt)}</dd>
+                      <dt>{STRINGS.historyLatestLabel}</dt>
+                      <dd>{compactDateLabel(summary.lastAt)}</dd>
                     </>
                   )}
                   {summary.daysSinceLast !== null && (
                     <>
                       <dt>{STRINGS.historyDaysSinceLabel}</dt>
-                      <dd>{daysSinceLabel(summary.daysSinceLast)}</dd>
+                      <dd>{daysCountLabel(summary.daysSinceLast)}</dd>
                     </>
                   )}
                 </dl>
@@ -1098,7 +1167,29 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
                         {author !== null && <span className="history-row__author">{author}</span>}
                       </span>
                       <span className="person-row__stage">{dateTimeLabel(h.timestamp)}</span>
-                      {h.note !== undefined && <span className="history-row__note">{h.note}</span>}
+                      {(() => {
+                        // Story 065: activities (not "Thêm tên", stage rows or Huỷ bảo trợ) get ✏️ / "+ Thêm ghi chú".
+                        const editable = h.kind === 'activity' && h.taskId !== ADD_NAME_ID;
+                        if (h.note === undefined)
+                          return editable ? (
+                            <button type="button" className="history-row__add-note" onClick={() => setNoteEdit(h)} disabled={busy}>
+                              {STRINGS.noteAddButton}
+                            </button>
+                          ) : null;
+                        return (
+                          <span className="history-row__note-line">
+                            <span className="history-row__note">
+                              {h.note}
+                              {h.noteEdited === true && <small className="history-row__edited">{STRINGS.noteEdited}</small>}
+                            </span>
+                            {editable && (
+                              <button type="button" className="history-row__edit" aria-label={STRINGS.noteEditButton} onClick={() => setNoteEdit(h)} disabled={busy}>
+                                <PencilIcon />
+                              </button>
+                            )}
+                          </span>
+                        );
+                      })()}
                     </li>
                   );
                 })}
@@ -1109,6 +1200,27 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
             {STRINGS.historyClose}
           </button>
         </Dialog>
+      )}
+
+      {noteEdit !== null && (
+        <NoteEditDialog
+          entry={noteEdit}
+          maxLength={noteMaxLength}
+          onCancel={() => setNoteEdit(null)}
+          onSave={async (text) => {
+            const built = buildNoteChangeEvent(person.personId, noteEdit.id, text, noteMaxLength);
+            if (!built.ok) return false;
+            try {
+              await eventStore.append(built.event);
+              await onChanged();
+              setNoteEdit(null);
+              return true;
+            } catch (e) {
+              console.error('[person] could not save the note change', e);
+              return false;
+            }
+          }}
+        />
       )}
 
     </main>

@@ -1,0 +1,7 @@
+Reviewed-Content-Hash: src/data/event-store.ts f2c99c5042ac16910ff46f6df9c092021da9fefe
+Reviewed-Content-Hash: src/data/contact-sync.ts f2d919ba6d3e99a5dce9fb7c97446afbb16c3f43
+Reviewed-Content-Hash: src/ui/people-helpers.ts 743d04cc40aa19d49e26313151074f1623a81e2a
+Reviewed-Content-Hash: src/ui/screens/person-form.tsx 7f96f734ca5e4c3e0dd06e6f8b27c6b9023b1f22
+Reviewed-Content-Hash: src/ui/strings.ts 77fed13657f7b64cc109462779b0c860be6ca6e4
+Reviewed-Content-Hash: src/ui/styles.css 4251bb4930a52d623cac16e41e909b0e9bdd2d1e
+Reviewed-Content-Hash: supabase/migrations/20261129000000_activity_note_changed.sql 82bd30b80b7188379ab8006c2c13b6b09684d099

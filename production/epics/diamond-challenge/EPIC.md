@@ -77,6 +77,8 @@ Theo Build order của brief: nhật ký sự kiện + XP/streak → Làm + Hôm
 | 061 | Theo dõi tình hình vợ/chồng cùng mã số | UI | Complete | N/A |
 | 062 | Mục tiêu hằng ngày gồm XP, số bài học và số việc làm | Logic | Complete | N/A |
 | 063 | Thẻ "Bật thông báo" trên Hôm nay | UI | Complete | N/A |
+| 064 | Chấm sau tên liên hệ: vợ/chồng thêm, cả hai cùng có | UI | Complete | N/A |
+| 065 | Sửa ghi chú việc làm trong Lịch sử, Tóm tắt gọn | UI | Complete | N/A |
 
 > 012–014 thay mô hình giai đoạn bằng việc cần làm + nhãn KH/NPP theo phản hồi dùng thử (2026-11-04, `design/gdd/crm.md`). Thứ tự gợi ý: 012 → 013 → 014 → 011.
 

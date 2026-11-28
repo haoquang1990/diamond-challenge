@@ -25,6 +25,7 @@ export const CONTACT_EVENT_TYPES: readonly EventType[] = [
   'person_merged',
   'person_not_duplicate',
   'sponsorship_cancelled',
+  'activity_note_changed',
 ];
 
 /** `userId` given to a pulled event whose author account no longer exists (`author_id` null). */

@@ -1259,3 +1259,22 @@ body.dialog-open { overflow: hidden; }
 .push-prompt--done { border-color: #bfe8a0; background: #f0fbe6; }
 .push-prompt--done .push-prompt__bell { background: #58cc02; }
 .push-prompt--done .push-prompt__title { color: #2b7a00; }
+
+/* Story 064: dot after a contact's name (orange = spouse added, purple = both had it) */
+.person-row__name-line { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.person-row > .person-row__main .person-row__name-line .person-row__name { min-width: 0; }
+.added-dot { flex: none; width: 10px; height: 10px; border-radius: 50%; }
+.added-dot--spouse { background: #ff9600; }
+.added-dot--both { background: #a560e8; }
+
+/* Story 065: Lịch sử summary on one line per fact, note editing */
+.history-summary__facts--inline { grid-template-columns: minmax(0, 1fr) auto; column-gap: 8px; row-gap: 6px; align-items: baseline; }
+.history-summary__facts--inline dd { margin: 0; text-align: right; font-weight: 800; white-space: nowrap; }
+.history-row__note-line { flex-basis: 100%; display: flex; align-items: flex-start; gap: 8px; }
+.history-row__note-line .history-row__note { flex: 1; flex-basis: auto; min-width: 0; }
+.history-row__edited { display: block; color: var(--color-muted); font-size: 0.8rem; font-weight: 600; margin-top: 2px; }
+.history-row__edit { flex: none; width: 36px; height: 36px; padding: 0; border: 2px solid var(--color-border); border-bottom-width: 3px; border-radius: 12px; background: var(--color-surface); display: grid; place-items: center; cursor: pointer; }
+.history-row__edit svg { width: 18px; height: 18px; fill: none; stroke: var(--color-diamond-dark); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.history-row__add-note { flex-basis: 100%; background: none; border: 0; padding: 4px 0; text-align: left; color: var(--color-diamond-dark); font: inherit; font-weight: 800; cursor: pointer; }
+.note-edit__what { margin: 0; }
+.note-edit__hint { margin: 0; font-size: 0.85rem; }
