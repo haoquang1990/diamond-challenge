@@ -26,7 +26,7 @@ import {
   searchPeopleByName,
   addedByDot,
   OWNER_FILTERS,
-  coMemberIds,
+  spouseFor,
   filterByOwner,
   ownerChoice,
   readOwnerFilter,
@@ -50,6 +50,9 @@ export interface PeopleScreenProps {
   readonly onBack?: () => void;
   /** Household members (story 023), or null when the contact book is not synced: history then names no author. */
   readonly members?: ReadonlyMap<string, HouseholdMember> | null;
+  /** Story 066: the signed-in account and the active members of its own household (for Phụ trách). */
+  readonly accountId?: string | null;
+  readonly householdMemberIds?: ReadonlySet<string> | null;
   /** Person detail opened on first render (returning from the account screen, story 024). */
   readonly initialOpenId?: string | null;
   /** Opens the account screen for a person (story 024); absent when signed out or the build has no account feature. */
@@ -84,7 +87,7 @@ const ADD_NAME_ACTIVITY_ID = 'add_name';
  * the per-filter totals and ignore the search. Re-reads the event log on
  * mount and after every write; keeps no copy of truth.
  */
-export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initialFilter = 'all', onBack, members = null, memberIds = NO_MEMBERS, dataVersion = 0, initialOpenId = null, onCreateAccount, onOpenDuplicates, renderPersonExtra, nppProgress, linkedAccountFor }: PeopleScreenProps) {
+export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initialFilter = 'all', onBack, members = null, memberIds = NO_MEMBERS, dataVersion = 0, initialOpenId = null, onCreateAccount, onOpenDuplicates, renderPersonExtra, nppProgress, linkedAccountFor, accountId = null, householdMemberIds = null }: PeopleScreenProps) {
   const [load, setLoad] = useState<LoadState>({ kind: 'loading' });
   const [openId, setOpenId] = useState<string | null>(initialOpenId);
   const [addedXp, setAddedXp] = useState<number | null>(null);
@@ -139,10 +142,11 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
   const allPeople = derivePeople(events, PEOPLE_CONFIG);
   const people = allPeople.filter((p) => !p.archived);
   // Story 066 "Phụ trách": only with exactly one co-member whose id and mine are known.
-  const coMembers = coMemberIds(others);
-  const spouseId = coMembers.length === 1 ? coMembers[0] : undefined;
-  const meId = [...memberIds].find((id) => !others.has(id));
-  const owner = spouseId !== undefined && meId !== undefined ? { meId, spouseId, spouseName: historyAuthorLabel(spouseId, others, members) ?? STRINGS.ownerSpouseFallback } : undefined;
+  // The readable profiles (`memberIds`) include my F1 accounts, so the spouse comes from my household.
+  const spouseId = accountId === null ? null : spouseFor(householdMemberIds, accountId);
+  const owner = spouseId !== null && accountId !== null ? { meId: accountId, spouseId, spouseName: historyAuthorLabel(spouseId, others, members) ?? STRINGS.ownerSpouseFallback } : undefined;
+  /** Who counts as "not me" for Phụ trách and the dots: my spouse only. */
+  const ownerOthers: ReadonlySet<string> = owner === undefined ? NO_MEMBERS : new Set([owner.spouseId]);
   const opened = openId === null ? undefined : people.find((p) => p.personId === openId);
 
   if (opened !== undefined) {
@@ -159,7 +163,7 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
         {...(onCreateAccount === undefined ? {} : { createAccount: { onOpen: () => onCreateAccount(opened.personId) } })}
         extra={renderPersonExtra?.(opened) ?? null}
         linkedAccount={opened.linkedUserId == null ? null : (linkedAccountFor?.(opened.linkedUserId) ?? null)}
-        {...(owner === undefined ? {} : { owner: { ...owner, current: ownerChoice(opened, others) } })}
+        {...(owner === undefined ? {} : { owner: { ...owner, current: ownerChoice(opened, ownerOthers) } })}
         onChanged={reload}
         onBack={() => setOpenId(null)}
       />
@@ -203,9 +207,9 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
 
   const dupCodes = findDuplicateCodes(people);
   const ownerFilter: OwnerFilter = owner === undefined ? 'all' : readOwnerFilter(events, others);
-  const ownerScoped = filterByOwner(allPeople, ownerFilter, others);
+  const ownerScoped = filterByOwner(allPeople, ownerFilter, ownerOthers);
   const counts = countContacts(ownerScoped);
-  const ownerCounts = Object.fromEntries(OWNER_FILTERS.map((f) => [f, filterContacts(filterByOwner(allPeople, f, others), filter).length])) as Record<OwnerFilter, number>;
+  const ownerCounts = Object.fromEntries(OWNER_FILTERS.map((f) => [f, filterContacts(filterByOwner(allPeople, f, ownerOthers), filter).length])) as Record<OwnerFilter, number>;
   const listed = filterContacts(ownerScoped, filter);
   // Story 052: my chosen order (synced with my account); an NPP-only order outside NPP falls back.
   const chosenSort = readContactSort(events, others);
@@ -417,7 +421,7 @@ export function PeopleScreen({ eventStore, activityTypes = ACTIVITY_TYPES, initi
                   <span className="person-row__main">
                     {(() => {
                       // Story 064: orange dot = my spouse added it, purple = both of us had it before the merge.
-                      const dot = addedByDot(person, others);
+                      const dot = addedByDot(person, ownerOthers);
                       return dot === null ? (
                         <span className="person-row__name">{person.name}</span>
                       ) : (

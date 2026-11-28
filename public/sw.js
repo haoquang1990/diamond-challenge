@@ -20,8 +20,8 @@
  * subpath. Hand-written on purpose: no build plugin, no dependencies.
  * Bump CACHE_NAME only to force-drop old cached files.
  */
-const CACHE_NAME = 'diamond-challenge-v1';
-const SHELL_URLS = ['./', './index.html', './manifest.webmanifest', './icon.svg'];
+const CACHE_NAME = 'diamond-challenge-v2';
+const SHELL_URLS = ['./', './index.html', './manifest.webmanifest', './icons/icon-192x192.png'];
 const ASSET_URL_PATTERN = /(?:src|href)="(\.?\/?assets\/[^"]+)"/g;
 
 /** Shell URLs plus the hashed assets referenced by the current index.html. */
@@ -112,5 +112,5 @@ self.addEventListener('push', (event) => {
   const title = typeof data.title === 'string' ? data.title : 'Diamond Challenge';
   const body = typeof data.body === 'string' ? data.body : '';
   const tag = typeof data.tag === 'string' ? data.tag : 'push';
-  event.waitUntil(self.registration.showNotification(title, { body, tag, icon: './icon.svg', badge: './icon.svg' }));
+  event.waitUntil(self.registration.showNotification(title, { body, tag, icon: './icons/icon-192x192.png', badge: './icons/icon-96x96.png' }));
 });

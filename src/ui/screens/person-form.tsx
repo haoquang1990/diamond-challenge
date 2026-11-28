@@ -895,12 +895,6 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
             ))}
           </ul>
         )}
-        {summary.firstAt !== null && (
-          <div className="person-summary__row">
-            <span className="person-summary__key">{STRINGS.historyFirstLabel}</span>
-            <span className="person-summary__value">{compactDateLabel(summary.firstAt)}</span>
-          </div>
-        )}
         <label className="note person-summary__note">
           <span className="note__label">{STRINGS.noteLabel}</span>
           <NoteTextarea value={note} onChange={changeNote} onBlur={() => void autosave.current?.flush()} disabled={false} placeholder={STRINGS.notePlaceholder} />
@@ -1183,7 +1177,7 @@ export function PersonDetail({ eventStore, person, people, events, activityTypes
                   return (
                     <li key={h.id} className="history-row history-row--stacked">
                       <span className="history-row__name">
-                        {h.kind === 'stage' ? historyStageLabel(h.name) : h.kind === 'cancel' ? STRINGS.sponsorCancelHistory : h.name === '' ? STRINGS.legacyUnknownActivity : h.name}
+                        {h.kind === 'stage' ? historyStageLabel(h.name) : h.kind === 'cancel' ? STRINGS.sponsorCancelHistory : h.taskId === ADD_NAME_ID ? STRINGS.historyAddedLabel : h.name === '' ? STRINGS.legacyUnknownActivity : h.name}
                         {author !== null && <span className="history-row__author">{author}</span>}
                       </span>
                       <span className="person-row__stage">{dateTimeLabel(h.timestamp)}</span>

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import gameConfig from './config/game-config.json';
 import { getSupabaseClient } from './config/supabase';
 import { loadIsAdmin } from './data/admin-service';
-import { loadCodeRequirement } from './data/account-service';
+import { loadCodeRequirement, loadHousehold } from './data/account-service';
 import type { CodeRequirement } from './data/account-service';
 import { clearGroupCaches, dismissCheers, loadUnseenCheer } from './data/group-service';
 import { ensureAccountLinked, saveDisplayName, signOut } from './data/auth-service';
@@ -230,6 +230,23 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
       cancelled = true;
     };
   }, [clientPromise, accountId, passwordPending]);
+
+  // Story 066 fix: the members of my own household (my spouse), not every readable profile.
+  const [householdMemberIds, setHouseholdMemberIds] = useState<ReadonlySet<string> | null>(null);
+  useEffect(() => {
+    setHouseholdMemberIds(null);
+    if (clientPromise === null || accountId === null || passwordPending) return;
+    let cancelled = false;
+    clientPromise
+      .then((client) => loadHousehold(client, accountId, gameConfig.maxHouseholdMembers))
+      .then((info) => {
+        if (!cancelled && info !== null) setHouseholdMemberIds(new Set(info.members.map((m) => m.userId)));
+      })
+      .catch((error: unknown) => console.error('[household] could not read my household', error));
+    return () => {
+      cancelled = true;
+    };
+  }, [clientPromise, accountId, passwordPending, dataVersion]);
 
   // Story 069: an invite link (?ban=<token>) is kept until signed in, then sent as a friend request.
   const [groupNotice, setGroupNotice] = useState<string | null>(null);
@@ -863,6 +880,8 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
       {tab === 'people' && (
         <PeopleScreen
           eventStore={eventStore}
+          accountId={accountId}
+          householdMemberIds={householdMemberIds}
           members={members}
           memberIds={memberIds}
           dataVersion={dataVersion}
