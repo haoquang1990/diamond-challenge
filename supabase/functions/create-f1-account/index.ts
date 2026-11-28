@@ -1,8 +1,9 @@
 /**
  * create-f1-account (ADR-0001): creates a sign-in and a new F1 household for an NPP contact.
- * Body: { phone, password, amwayCode, displayName?, root? }.
+ * Body: { phone, password, amwayCode, displayName?, root?, sponsorCode? }.
  * The new household's sponsor is the caller's household and its active code is `amwayCode`
- * (the contact's code). An admin may pass `root: true` for a household with no sponsor.
+ * (the contact's code). An admin may pass `root: true` for a household with no sponsor, or
+ * (story 072) `sponsorCode`: the active Amway code of the household to sponsor it.
  * Responds { userId, householdId, phone }.
  */
 import { adminClient, getCaller } from '../_shared/auth.ts';
@@ -29,8 +30,17 @@ Deno.serve(async (req) => {
   const root = body?.root === true;
   if (root && caller.role !== 'admin') return json(req, 403, { error: 'admin_only' });
 
+  // Story 072: an admin creates an account under any household, found by its active code.
+  const sponsorCode = typeof body?.sponsorCode === 'string' && body.sponsorCode.trim() !== '' ? normalizeAmwayCode(body.sponsorCode) : undefined;
+  if (sponsorCode !== undefined && caller.role !== 'admin') return json(req, 403, { error: 'admin_only' });
+  if (sponsorCode === null) return json(req, 400, { error: 'invalid_sponsor_code' });
+
   let sponsorHousehold: string | null = null;
-  if (!root) {
+  if (typeof sponsorCode === 'string') {
+    const { data: sponsorRow } = await admin.from('household_codes').select('household_id').eq('code', sponsorCode).eq('status', 'active').maybeSingle();
+    if (!sponsorRow) return json(req, 404, { error: 'sponsor_not_found' });
+    sponsorHousehold = sponsorRow.household_id;
+  } else if (!root) {
     const { data: membership } = await admin
       .from('household_members')
       .select('household_id')

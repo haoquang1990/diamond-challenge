@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { EDGE_FUNCTION_TIMEOUT_MS, readFunctionError } from './account-service';
+import { formatE164 } from '../domain/people';
 
 /**
  * Reads the signed-in account's own `profiles.role`. True only for `admin`; any read error
@@ -37,6 +38,8 @@ export interface AdminHousehold {
   readonly activeCode: string | null;
   /** Cancelled codes, newest first. */
   readonly cancelledCodes: readonly AdminCancelledCode[];
+  /** Story 072: the active code of this household's sponsor, null for a root (or unreadable). */
+  readonly sponsorCode?: string | null;
 }
 
 /** What to search by: a member's normalized E.164 phone, or an Amway code (digits only). */
@@ -65,6 +68,15 @@ export async function loadAdminHouseholds(client: SupabaseClient, householdIds: 
     client.from('household_codes').select('household_id, code, status, cancelled_at, cancel_reason').in('household_id', householdIds as string[]),
   ]);
   if (memberRows.error || codeRows.error) return { ok: false, error: readFailure() };
+  // Story 072: the sponsor of each household and its active code.
+  const sponsorRows = await client.from('households').select('id, sponsor_household_id').in('id', householdIds as string[]);
+  const sponsorOf = new Map(((sponsorRows.data ?? []) as { id: string; sponsor_household_id: string | null }[]).map((r) => [r.id, r.sponsor_household_id]));
+  const sponsorIds = [...new Set([...sponsorOf.values()].filter((v): v is string => v !== null))];
+  const sponsorCodes = new Map<string, string>();
+  if (sponsorIds.length > 0) {
+    const rows = await client.from('household_codes').select('household_id, code').in('household_id', sponsorIds).eq('status', 'active');
+    for (const r of (rows.data ?? []) as { household_id: string; code: string }[]) sponsorCodes.set(r.household_id, r.code);
+  }
   const members = (memberRows.data ?? []) as { household_id: string; user_id: string }[];
   const codes = (codeRows.data ?? []) as { household_id: string; code: string; status: string; cancelled_at: string | null; cancel_reason: string | null }[];
   let profiles: { id: string; phone: string | null; display_name: string | null }[] = [];
@@ -88,6 +100,10 @@ export async function loadAdminHouseholds(client: SupabaseClient, householdIds: 
         .filter((c) => c.status === 'cancelled' && c.cancelled_at !== null)
         .map((c) => ({ code: c.code, cancelledAt: c.cancelled_at as string, reason: c.cancel_reason }))
         .sort((a, b) => b.cancelledAt.localeCompare(a.cancelledAt)),
+      sponsorCode: (() => {
+        const sponsor = sponsorOf.get(householdId);
+        return sponsor == null ? null : (sponsorCodes.get(sponsor) ?? null);
+      })(),
     };
   });
   return { ok: true, households };
@@ -169,5 +185,28 @@ export async function setHouseholdCode(client: SupabaseClient, householdId: stri
     return { ok: false, error: 'other' };
   } catch {
     return { ok: false, error: 'network' };
+  }
+}
+
+/** "Anh Hùng Thử & Chị Lan Thử" for a household's members (name, else phone). Pure. */
+export function adminHouseholdNames(members: readonly AdminMember[]): string {
+  return members.map((m) => m.displayName ?? (m.phone === null ? '' : formatE164(m.phone))).filter((x) => x !== '').join(' & ');
+}
+
+/** Answer of {@link setSponsorByCode}. */
+export type SponsorResult = 'ok' | 'not_found' | 'self' | 'cycle' | 'failed';
+
+/** A server answer as a {@link SponsorResult}; anything else is 'failed'. Pure. */
+export function parseSponsorResult(raw: unknown): SponsorResult {
+  return raw === 'ok' || raw === 'not_found' || raw === 'self' || raw === 'cycle' ? raw : 'failed';
+}
+
+/** Story 072: sets (or, with an empty code, clears) a household's sponsor by the sponsor's active code. Admin only. */
+export async function setSponsorByCode(client: SupabaseClient, householdId: string, code: string): Promise<SponsorResult> {
+  try {
+    const { data, error } = await client.rpc('admin_set_sponsor_by_code', { p_household: householdId, p_code: code });
+    return error === null ? parseSponsorResult(data) : 'failed';
+  } catch {
+    return 'failed';
   }
 }

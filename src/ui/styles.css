@@ -1383,3 +1383,10 @@ body.dialog-open { overflow: hidden; }
 .group-section > .settings-group { margin: 6px 4px 0; }
 .group-empty { margin: 0 4px; }
 .cheer-pick__more { margin-top: 4px; min-height: 44px; }
+
+/* Story 072: admin sponsor tools */
+.admin-sponsor-found { margin: 0; padding: 10px 12px; border-radius: 12px; background: #f0fbe6; color: #2b7a00; font-weight: 700; }
+.admin-sponsor { padding-top: 12px; border-top: 1px solid var(--color-border); }
+.admin-sponsor__current { display: flex; justify-content: space-between; gap: 8px; margin: 0; font-weight: 700; }
+.admin-sponsor__current span { color: var(--color-muted); }
+.admin-sponsor__current b { white-space: nowrap; }

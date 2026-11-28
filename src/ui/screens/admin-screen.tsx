@@ -10,6 +10,7 @@ import { COUNTRY_CODES, PEOPLE_CONFIG } from '../people-config';
 import { phoneProblemText } from '../people-helpers';
 import { adminCancelledLabel, adminCancelReason, adminResetAria, STRINGS } from '../strings';
 import { TempPasswordView } from './temp-password-view';
+import { AdminCreateAccountCard, AdminSponsorForm } from './admin-upline';
 
 /** Props for {@link AdminScreen}. */
 export interface AdminScreenProps {
@@ -183,6 +184,20 @@ function HouseholdCard({ household, clientPromise, online, onRefreshed, onResetD
         </button>
         {!online && <p className="message">{STRINGS.adminSetCodeOfflineReason}</p>}
       </form>
+
+      <AdminSponsorForm
+        clientPromise={clientPromise}
+        household={household}
+        online={online}
+        onChanged={() =>
+          void clientPromise
+            .then((c) => loadAdminHouseholds(c, [household.householdId]))
+            .then((r) => {
+              const next = r.ok ? r.households[0] : undefined;
+              if (next !== undefined) onRefreshed(next);
+            })
+        }
+      />
     </section>
   );
 }
@@ -212,6 +227,8 @@ export function AdminScreen({ clientPromise, onBack }: AdminScreenProps) {
   const [codeQuery, setCodeQuery] = useState('');
   const [search, setSearch] = useState<SearchState>({ kind: 'idle' });
   const [resetDone, setResetDone] = useState<ResetDone | null>(null);
+  /** Story 072: an account just created here, shown once with its temporary password. */
+  const [created, setCreated] = useState<{ readonly phone: string; readonly password: string } | null>(null);
 
   const onSearch = async (e: FormEvent) => {
     e.preventDefault();
@@ -252,6 +269,9 @@ export function AdminScreen({ clientPromise, onBack }: AdminScreenProps) {
     }
   };
 
+  if (created !== null) {
+    return <TempPasswordView title={STRINGS.adminCreateDone} phone={created.phone} password={created.password} onFinish={() => setCreated(null)} />;
+  }
   if (resetDone !== null) {
     return <TempPasswordView title={STRINGS.adminResetDone} phone={resetDone.phone} password={resetDone.password} onFinish={() => setResetDone(null)} />;
   }
@@ -266,6 +286,8 @@ export function AdminScreen({ clientPromise, onBack }: AdminScreenProps) {
         <h1 className="screen__title">{STRINGS.adminTitle}</h1>
         <p className="screen__prompt">{STRINGS.adminPrompt}</p>
       </header>
+
+      <AdminCreateAccountCard clientPromise={clientPromise} online={online} onCreated={(d) => setCreated(d)} />
 
       <form className="card form" onSubmit={(e) => void onSearch(e)} noValidate>
         <div className="admin-tabs" role="group">
