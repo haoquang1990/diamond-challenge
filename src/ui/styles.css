@@ -1304,3 +1304,8 @@ body.dialog-open { overflow: hidden; }
 .checklist__action { flex: none; min-height: 36px; padding: 4px 14px; border: 2px solid var(--color-diamond-dark); border-bottom-width: 3px; border-radius: 12px; background: var(--color-diamond); color: #fff; font: inherit; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; cursor: pointer; }
 .checklist__action--more { background: var(--color-surface); color: var(--color-diamond-dark); border-color: var(--color-border); }
 .checklist__action:focus-visible { outline: 3px solid var(--color-diamond-dark); outline-offset: 2px; }
+
+/* Story 068: "Mã số Amway của bạn" */
+.code-required__input { font-size: 1.15rem; letter-spacing: 0.06em; }
+.code-required__sent { margin: 0; padding: 10px 12px; border-radius: 12px; background: #fff7e0; color: #7a4b00; font-weight: 600; }
+.code-required__input--error { border-color: var(--color-error); }

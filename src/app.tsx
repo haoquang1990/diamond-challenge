@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import gameConfig from './config/game-config.json';
 import { getSupabaseClient } from './config/supabase';
 import { loadIsAdmin } from './data/admin-service';
+import { loadCodeRequirement } from './data/account-service';
+import type { CodeRequirement } from './data/account-service';
 import { clearGroupCaches, dismissCheers, loadUnseenCheer } from './data/group-service';
 import { ensureAccountLinked, saveDisplayName, signOut } from './data/auth-service';
 import { readDeviceAccount, updateDeviceAccount } from './data/account-stores';
@@ -33,6 +35,7 @@ import type { MemberProgressSync } from './data/member-progress-sync';
 import { PEOPLE_CONFIG } from './ui/people-config';
 import { AdminScreen } from './ui/screens/admin-screen';
 import { ChangePasswordScreen, DisplayNameScreen } from './ui/screens/change-password-screen';
+import { CodeRequiredScreen } from './ui/screens/code-required-screen';
 import { CreateAccountScreen } from './ui/screens/create-account-screen';
 import { ConsentScreen } from './ui/screens/consent-screen';
 import { BadgesScreen } from './ui/screens/badges-screen';
@@ -155,6 +158,8 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
   /** Temporary password typed at sign-in; memory only, cleared once the password is changed. */
   const temporaryPasswordRef = useRef<string | null>(session?.temporaryPassword ?? null);
   const [askDisplayName, setAskDisplayName] = useState(false);
+  /** Story 068: whether my household still needs its Amway code (null while unread). */
+  const [codeReq, setCodeReq] = useState<CodeRequirement | null>(null);
 
   // Household contact sync (story 023).
   // Consent is required (story 030): server state is the truth; the cached agreement opens the app offline.
@@ -196,6 +201,22 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
         updateDeviceAccount(accountId, { isAdmin: admin });
       })
       .catch((error: unknown) => console.error('[admin] could not read the role', error));
+    return () => {
+      cancelled = true;
+    };
+  }, [clientPromise, accountId, passwordPending]);
+
+  // Story 068: ask once for the household's Amway code when it has none (offline: never blocks).
+  useEffect(() => {
+    setCodeReq(null);
+    if (clientPromise === null || accountId === null || passwordPending) return;
+    let cancelled = false;
+    clientPromise
+      .then((client) => loadCodeRequirement(client, accountId))
+      .then((req) => {
+        if (!cancelled) setCodeReq(req);
+      })
+      .catch((error: unknown) => console.error('[code] could not read the household code', error));
     return () => {
       cancelled = true;
     };
@@ -651,6 +672,14 @@ export function App({ eventStore: rawEventStore, notificationPlatform = DEFAULT_
           needsNetwork={consent === 'unknown'}
           onRetry={() => void checkConsent()}
         />
+      </div>
+    );
+  }
+
+  if (clientPromise !== null && account !== null && codeReq === 'missing') {
+    return (
+      <div className="app-shell">
+        <CodeRequiredScreen clientPromise={clientPromise} onSaved={() => setCodeReq('ok')} onPending={() => setCodeReq('pending')} onSignOut={() => void onSignOut()} />
       </div>
     );
   }
